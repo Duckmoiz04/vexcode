@@ -75,30 +75,86 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
         r_id = f.get("rule_id")
         if r_id not in seen_rules:
             seen_rules.add(r_id)
-            unique_findings.append({
+            item = {
                 "rule_id": r_id,
                 "file": f.get("file"),
                 "line": f.get("line"),
                 "message": f.get("message")
-            })
+            }
+            if "ast_context" in f:
+                item["ast_context"] = f["ast_context"]
+            unique_findings.append(item)
 
     if not unique_findings:
         return {}
 
     system_prompt = (
-        "You are an expert security engineer. You will receive a JSON list of security findings.\n"
-        "For each unique rule_id, provide a suggestion on how to fix it and the remediation code to resolve it.\n"
+        "You are an expert security engineer. You will receive a list of security findings, "
+        "enriched with AST context including enclosing symbols, source code, direct caller chains, "
+        "and upstream blast radius (impact analysis).\n"
+        "For each unique rule_id, provide a suggestion on how to fix it and the remediation code to resolve it. "
+        "Ensure your recommendations are highly context-aware: review the symbol's implementation details, "
+        "caller chains, and blast radius to prevent regressions, type mismatches, or security side effects in callers.\n"
         "Your response MUST be a valid JSON object matching this schema:\n"
         "{\n"
         "  \"<rule_id>\": {\n"
         "    \"suggestion\": \"Detailed explanation of the fix.\",\n"
-        "    \"remediation_code\": \"Python code demonstrating the fix.\"\n"
+        "    \"remediation_code\": \"Python/JavaScript code demonstrating the fix.\"\n"
         "  }\n"
         "}\n"
         "Do not include any markdown formatting (like ```json) in your response. Just output raw valid JSON."
     )
     
-    user_prompt = f"Findings to resolve:\n{json.dumps(unique_findings, indent=2)}"
+    user_prompt_parts = []
+    for item in unique_findings:
+        rule_id = item["rule_id"]
+        file_path = item["file"]
+        line = item["line"]
+        message = item["message"]
+        
+        part = (
+            f"Rule ID: {rule_id}\n"
+            f"Vulnerability Message: {message}\n"
+        )
+        
+        ast_ctx = item.get("ast_context")
+        if ast_ctx:
+            callers_list = []
+            for caller in ast_ctx.get("callers", []):
+                callers_list.append(f"- {caller.get('name')} ({caller.get('relation')} in {caller.get('filePath')})")
+            callers_str = "\n".join(callers_list) if callers_list else "None detected"
+            
+            impact_summary_list = []
+            impact_data = ast_ctx.get("impact", {})
+            if impact_data:
+                risk = impact_data.get("risk", "UNKNOWN")
+                impacted_count = impact_data.get("impactedCount", 0)
+                impact_summary_list.append(f"Risk level: {risk}")
+                impact_summary_list.append(f"Impacted nodes count: {impacted_count}")
+                
+            for br in ast_ctx.get("blast_radius", []):
+                impact_summary_list.append(f"- Depth {br.get('depth')}: {br.get('name')} ({br.get('relation')} in {br.get('filePath')})")
+            impact_summary_str = "\n".join(impact_summary_list) if impact_summary_list else "None detected"
+            
+            part += (
+                f"Affected Symbol: {ast_ctx.get('symbol_name')} ({ast_ctx.get('kind')})\n"
+                f"File: {file_path} (Line {line})\n"
+                f"Symbol Source Code:\n"
+                f"{ast_ctx.get('source_code')}\n\n"
+                f"Direct Callers:\n"
+                f"{callers_str}\n\n"
+                f"Blast Radius / Upstream Impact:\n"
+                f"{impact_summary_str}\n"
+            )
+        else:
+            part += (
+                f"File: {file_path} (Line {line})\n"
+                f"AST Context: Not available\n"
+            )
+            
+        user_prompt_parts.append(part)
+        
+    user_prompt = "Findings to resolve:\n\n" + "\n---\n\n".join(user_prompt_parts)
     
     headers = {
         "Authorization": f"Bearer {NINEROUTER_API_KEY}",
