@@ -80,7 +80,7 @@ For the overall AI Code Review program:
 |-------|-------|------------------|--------|
 | **Phase 1** | Foundation Setup | `packages/cli-global/` & `packages/analysis-core/` basic layouts | ✅ VERIFIED |
 | **Phase 2** | Bridge & Express Server | Node-Python Bridge process spawner & Express REST API | ✅ VERIFIED |
-| **Phase 3** | AST Graph & AI Resolving | GitNexus AST integration & AI Prompt Context Construction | ⏳ PLANNED |
+| **Phase 3** | AST Graph & AI Resolving | GitNexus AST integration & AI Prompt Context Construction | ✅ VERIFIED |
 | **Phase 4** | Web UI Dashboard | HTML/JS local glassmorphic dashboard UI | ⏳ PLANNED |
 | **Phase 5** | Integration & Hardening | CLI wrapper command mapping & E2E verification | ⏳ PLANNED |
 
@@ -95,11 +95,13 @@ For the overall AI Code Review program:
 - **Archived Plan**: [completed_phase-02-bridge-and-server_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/completed/completed_phase-02-bridge-and-server_PLAN_31-05-26.md)
 - **Report Path**: `process/features/ai-code-review/reports/phase-02-bridge-and-server_REPORT.md`
 
-### Phase 3: AST Knowledge Graph Integration & AI Resolving (Status: ⏳ PLANNED - ACTIVE)
+### Phase 3: AST Knowledge Graph Integration & AI Resolving (Status: ✅ VERIFIED)
 - **Objective**: Build the codebase AST Knowledge Graph via GitNexus and use it to feed rich context into 9router AI queries.
+- **Done**: Connected to local `gitnexus` CLI, resolved node functions via Cypher location queries, and extracted caller contexts/blast-radius impacts to instruct the AI resolver.
+- **Archived Plan**: [completed_phase-03-ast-graph_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/completed/completed_phase-03-ast-graph_PLAN_31-05-26.md)
 - **Report Path**: `process/features/ai-code-review/reports/phase-03-ast-graph_REPORT.md`
 
-### Phase 4: Web UI Dashboard (Status: ⏳ PLANNED)
+### Phase 4: Web UI Dashboard (Status: ⏳ PLANNED - ACTIVE)
 - **Objective**: Implement a high-performance local dashboard UI for reviewing static analysis reports and applying suggested code modifications.
 - **Report Path**: `process/features/ai-code-review/reports/phase-04-web-ui_REPORT.md`
 
@@ -154,15 +156,15 @@ Verification proof will be preserved inside feature reports under `process/featu
 ---
 
 ## Resume and Execution Handoff
-- The primary execute anchor for Phase 3 is the Phase 3 plan: [phase-03-ast-graph_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/active/phase-03-ast-graph_PLAN_31-05-26.md).
-- To resume development, verify Phase 2 reports under `reports/` and then open Phase 3 plan.
+- The primary execute anchor for Phase 4 is the Phase 4 plan: [phase-04-web-ui_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/active/phase-04-web-ui_PLAN_31-05-26.md).
+- To resume development, verify Phase 3 reports under `reports/` and then open Phase 4 plan.
 
 ---
 
 ## Cursor and RIPER-5 Integration
 
 - **Cursor Plan Mode**: Focus on one phase plan at a time. Do not attempt to run steps from multiple phase plans simultaneously.
-- **RIPER-5 Mode**: Follow RESEARCH → INNOVATE → PLAN → EXECUTE → VERIFY. The next action is to approve Phase 3 planning.
+- **RIPER-5 Mode**: Follow RESEARCH → INNOVATE → PLAN → EXECUTE → VERIFY. The next action is to approve Phase 4 planning.
 
 **Next Step Instructions**:
-Review the Phase 3 Plan at `process/features/ai-code-review/active/phase-03-ast-graph_PLAN_31-05-26.md` and type `ENTER EXECUTE MODE` to begin development.
+Review the Phase 4 Plan at `process/features/ai-code-review/active/phase-04-web-ui_PLAN_31-05-26.md` and type `ENTER EXECUTE MODE` to begin development.
