@@ -144,6 +144,10 @@ DATN2/
   vc-manifest.json     -- Harness file versioning and manifest config
 ```
 
+## Current Features
+
+- **ai-code-review** (`process/features/ai-code-review/`): Main hybrid Node/Python static code scanner & AI code reviewer.
+
 ## Technology Stack
 
 - **Project Type:** Hybrid Local CLI + Web UI (Node.js/npm) with Python Analysis Core
