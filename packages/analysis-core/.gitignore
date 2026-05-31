@@ -1,0 +1,13 @@
+# Python virtual environment
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local environment variables
+.env
+
+# Runtime report output
+analysis_report.json
