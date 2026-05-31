@@ -79,7 +79,7 @@ For the overall AI Code Review program:
 | Phase | Title | Target Artifacts | Status |
 |-------|-------|------------------|--------|
 | **Phase 1** | Foundation Setup | `packages/cli-global/` & `packages/analysis-core/` basic layouts | ✅ VERIFIED |
-| **Phase 2** | Bridge & Express Server | Node-Python Bridge process spawner & Express REST API | ⏳ PLANNED |
+| **Phase 2** | Bridge & Express Server | Node-Python Bridge process spawner & Express REST API | ✅ VERIFIED |
 | **Phase 3** | AST Graph & AI Resolving | GitNexus AST integration & AI Prompt Context Construction | ⏳ PLANNED |
 | **Phase 4** | Web UI Dashboard | HTML/JS local glassmorphic dashboard UI | ⏳ PLANNED |
 | **Phase 5** | Integration & Hardening | CLI wrapper command mapping & E2E verification | ⏳ PLANNED |
@@ -89,12 +89,13 @@ For the overall AI Code Review program:
 - **Done**: Created the global CLI workspace under `packages/cli-global/` and Python Core under `packages/analysis-core/`. Implemented mock scan capabilities and validated standalone script runs.
 - **Report Path**: `process/features/ai-code-review/reports/python-core-setup_REPORT.md`
 
-### Phase 2: Node-Python Bridge & Express Server (Status: ⏳ PLANNED - ACTIVE)
+### Phase 2: Node-Python Bridge & Express Server (Status: ✅ VERIFIED)
 - **Objective**: Establish the communication bridge between Node.js CLI and Python Core and run a local REST API.
-- **Execution Plan**: [phase-02-bridge-and-server_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/active/phase-02-bridge-and-server_PLAN_31-05-26.md)
+- **Done**: Created the dynamic process spawner and Express server. Successfully verified with unit tests and E2E verification script.
+- **Archived Plan**: [completed_phase-02-bridge-and-server_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/completed/completed_phase-02-bridge-and-server_PLAN_31-05-26.md)
 - **Report Path**: `process/features/ai-code-review/reports/phase-02-bridge-and-server_REPORT.md`
 
-### Phase 3: AST Knowledge Graph Integration & AI Resolving (Status: ⏳ PLANNED)
+### Phase 3: AST Knowledge Graph Integration & AI Resolving (Status: ⏳ PLANNED - ACTIVE)
 - **Objective**: Build the codebase AST Knowledge Graph via GitNexus and use it to feed rich context into 9router AI queries.
 - **Report Path**: `process/features/ai-code-review/reports/phase-03-ast-graph_REPORT.md`
 
@@ -153,15 +154,15 @@ Verification proof will be preserved inside feature reports under `process/featu
 ---
 
 ## Resume and Execution Handoff
-- The primary execute anchor for Phase 2 is the Phase 2 plan: [phase-02-bridge-and-server_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/active/phase-02-bridge-and-server_PLAN_31-05-26.md).
-- To resume development, verify Phase 1 reports under `reports/` and then open Phase 2 plan.
+- The primary execute anchor for Phase 3 is the Phase 3 plan: [phase-03-ast-graph_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/active/phase-03-ast-graph_PLAN_31-05-26.md).
+- To resume development, verify Phase 2 reports under `reports/` and then open Phase 3 plan.
 
 ---
 
 ## Cursor and RIPER-5 Integration
 
 - **Cursor Plan Mode**: Focus on one phase plan at a time. Do not attempt to run steps from multiple phase plans simultaneously.
-- **RIPER-5 Mode**: Follow RESEARCH → INNOVATE → PLAN → EXECUTE → VERIFY. The next action is to approve Phase 2 execution.
+- **RIPER-5 Mode**: Follow RESEARCH → INNOVATE → PLAN → EXECUTE → VERIFY. The next action is to approve Phase 3 planning.
 
 **Next Step Instructions**:
-Review the Phase 2 Plan at `process/features/ai-code-review/active/phase-02-bridge-and-server_PLAN_31-05-26.md` and type `ENTER EXECUTE MODE` to begin development.
+Review the Phase 3 Plan at `process/features/ai-code-review/active/phase-03-ast-graph_PLAN_31-05-26.md` and type `ENTER EXECUTE MODE` to begin development.
