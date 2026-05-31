@@ -1,0 +1,45 @@
+{
+  "version": "2.2.0",
+  "include": [
+    ".claude/agents/**",
+    ".claude/skills/**",
+    ".claude/skills/**/.??*",
+    ".claude/hooks/**",
+    ".claude/settings.json",
+    ".codex/**",
+    "CLAUDE.md",
+    "AGENTS.md",
+    "process/development-protocols/**",
+    "process/context/planning/example-*.md",
+    "process/_seeds/**",
+    "process/_seeds/**/.gitkeep",
+    "process/_seeds/**/.gitignore",
+    "process/_seeds/**/.env.example"
+  ],
+  "exclude": [
+    "process/context/all-context.md",
+    "process/features/**",
+    "process/general-plans/**",
+    "**/.git/**",
+    "**/.logs/**",
+    ".codex/statusline.cjs",
+    ".claude/skills/vc-chrome-devtools/scripts/node_modules/**"
+  ],
+  "strip": ["CLAUDE.md", "AGENTS.md"],
+  "merge": [".claude/settings.json"],
+  "copyIfMissing": ["process/context/planning/example-*.md"],
+  "symlinks": { ".agents/skills": "../.claude/skills" },
+  "kitOnly": [
+    "README.md",
+    "README-preview*.html",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "TRADEMARK.md",
+    "LICENSE",
+    "docs/**",
+    "assets/**",
+    ".github/**",
+    "resolve-manifest.mjs",
+    "install.sh"
+  ]
+}

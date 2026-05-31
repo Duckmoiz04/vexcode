@@ -1,0 +1,24 @@
+{
+  "name": "cli-global",
+  "version": "1.0.0",
+  "description": "Global command-line interface for DATN2 AI Code Review",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "ai-code-review": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18.3.0"
+  },
+  "keywords": [
+    "ai",
+    "code",
+    "review",
+    "cli"
+  ],
+  "author": "",
+  "license": "ISC"
+}
