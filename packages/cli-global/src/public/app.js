@@ -229,6 +229,50 @@ async function loadProjects() {
   }
 }
 
+// Tab Switching Controller
+function switchTab(tabName) {
+  const detailDashboard = document.getElementById('detailDashboard');
+  const detailContent = document.getElementById('detailContent');
+  const detailEmpty = document.getElementById('detailEmpty');
+  const detailTabs = document.getElementById('detailTabs');
+
+  if (!currentProject) {
+    if (detailTabs) detailTabs.style.display = 'none';
+    if (detailEmpty) detailEmpty.style.display = 'flex';
+    if (detailDashboard) detailDashboard.style.display = 'none';
+    if (detailContent) detailContent.style.display = 'none';
+    return;
+  }
+
+  if (detailTabs) detailTabs.style.display = 'flex';
+
+  if (tabName === 'dashboard') {
+    if (detailDashboard) detailDashboard.style.display = 'flex';
+    if (detailContent) detailContent.style.display = 'none';
+    if (detailEmpty) detailEmpty.style.display = 'none';
+
+    const dashBtn = document.querySelector('[data-tab="dashboard"]');
+    const inspBtn = document.querySelector('[data-tab="inspector"]');
+    if (dashBtn) dashBtn.classList.add('active');
+    if (inspBtn) inspBtn.classList.remove('active');
+  } else if (tabName === 'inspector') {
+    if (detailDashboard) detailDashboard.style.display = 'none';
+    
+    if (selectedFindingIndex !== null) {
+      if (detailContent) detailContent.style.display = 'block';
+      if (detailEmpty) detailEmpty.style.display = 'none';
+    } else {
+      if (detailContent) detailContent.style.display = 'none';
+      if (detailEmpty) detailEmpty.style.display = 'flex';
+    }
+
+    const dashBtn = document.querySelector('[data-tab="dashboard"]');
+    const inspBtn = document.querySelector('[data-tab="inspector"]');
+    if (dashBtn) dashBtn.classList.remove('active');
+    if (inspBtn) inspBtn.classList.add('active');
+  }
+}
+
 // Select Project
 async function selectProject(projectName) {
   currentProject = projectName;
@@ -261,6 +305,8 @@ async function selectProject(projectName) {
     const detailDashboard = document.getElementById('detailDashboard');
     if (detailDashboard) detailDashboard.style.display = 'none';
     detailContent.style.display = 'none';
+    const detailTabs = document.getElementById('detailTabs');
+    if (detailTabs) detailTabs.style.display = 'none';
 
     await loadHistory(null);
     await loadProjects();
@@ -272,6 +318,9 @@ async function selectProject(projectName) {
         onboardingScreen.style.display = 'none';
       }
     }, 300);
+
+    const detailTabs = document.getElementById('detailTabs');
+    if (detailTabs) detailTabs.style.display = 'flex';
 
     await loadHistory(projectName);
   }
@@ -339,15 +388,62 @@ async function loadReport(projectName, reportId) {
   }
 }
 
+// Classify finding into 4 core criteria categories
+function classifyFinding(finding) {
+  const ruleId = (finding.rule_id || '').toLowerCase();
+
+  // 1. Security (Bảo mật)
+  const securityKeywords = [
+    'security', 'vuln', 'injection', 'xss', 'csrf', 'secret', 'key', 
+    'token', 'jwt', 'crypto', 'auth', 'password', 'credential', 'ssrf',
+    'overflow', 'leak', 'private', 'cert', 'hash', 'ssl', 'tls'
+  ];
+  if (securityKeywords.some(kw => ruleId.includes(kw))) {
+    return 'security';
+  }
+
+  // 2. AST & Architecture (Kiến trúc & Phân tích ngữ cảnh)
+  if (finding.ast_context && (finding.ast_context.symbol_name || (finding.ast_context.callers && finding.ast_context.callers.length > 0))) {
+    return 'architecture';
+  }
+
+  // 3. Style & Maintainability (Khả năng bảo trì & Viết sạch)
+  const styleKeywords = [
+    'style', 'format', 'naming', 'deprecated', 'convention', 'comment', 
+    'spacing', 'indent', 'unused', 'duplicate', 'complex', 'nest'
+  ];
+  if (styleKeywords.some(kw => ruleId.includes(kw))) {
+    return 'maintainability';
+  }
+
+  // 4. Code Quality & Bugs (Chất lượng code & Độ tin cậy) - default
+  return 'quality';
+}
+
 // Show statistics dashboard for the report
 function showDashboard(report) {
   if (!report) return;
 
   const findings = report.findings || [];
+  
+  // Categorize findings
+  let securityCount = 0;
+  let qualityCount = 0;
+  let architectureCount = 0;
+  let maintainabilityCount = 0;
+
+  findings.forEach(f => {
+    const category = classifyFinding(f);
+    if (category === 'security') securityCount++;
+    else if (category === 'quality') qualityCount++;
+    else if (category === 'architecture') architectureCount++;
+    else if (category === 'maintainability') maintainabilityCount++;
+  });
+
+  const totalCount = findings.length;
   const errorCount = findings.filter(f => (f.severity || '').toLowerCase() === 'error').length;
   const warningCount = findings.filter(f => (f.severity || '').toLowerCase() === 'warning').length;
   const infoCount = findings.filter(f => (f.severity || '').toLowerCase() === 'info').length;
-  const totalCount = findings.length;
 
   // Update DOM metrics
   const dbProj = document.getElementById('dashboardProjectName');
@@ -356,17 +452,99 @@ function showDashboard(report) {
   const mTotal = document.getElementById('metricTotal');
   if (mTotal) mTotal.textContent = totalCount;
   
-  const mError = document.getElementById('metricError');
-  if (mError) mError.textContent = errorCount;
+  const mSecurity = document.getElementById('metricSecurity');
+  if (mSecurity) mSecurity.textContent = securityCount;
   
-  const mWarning = document.getElementById('metricWarning');
-  if (mWarning) mWarning.textContent = warningCount;
+  const mQuality = document.getElementById('metricQuality');
+  if (mQuality) mQuality.textContent = qualityCount;
   
-  const mInfo = document.getElementById('metricInfo');
-  if (mInfo) mInfo.textContent = infoCount;
+  const mArchitecture = document.getElementById('metricArchitecture');
+  if (mArchitecture) mArchitecture.textContent = architectureCount;
+
+  const mMaintainability = document.getElementById('metricMaintainability');
+  if (mMaintainability) mMaintainability.textContent = maintainabilityCount;
+
+  // Calculate weighted health score
+  const categoryDeductions = {
+    security: 0,
+    quality: 0,
+    architecture: 0,
+    maintainability: 0
+  };
+
+  findings.forEach(f => {
+    const category = classifyFinding(f);
+    const severity = (f.severity || '').toLowerCase();
+    let deduction = 0;
+    if (severity === 'error') deduction = 15;
+    else if (severity === 'warning') deduction = 5;
+    else if (severity === 'info') deduction = 1;
+
+    if (categoryDeductions[category] !== undefined) {
+      categoryDeductions[category] += deduction;
+    }
+  });
+
+  const weights = {
+    security: 0.40,
+    quality: 0.30,
+    architecture: 0.15,
+    maintainability: 0.15
+  };
+
+  let totalDeduction = 0;
+  for (const c in categoryDeductions) {
+    totalDeduction += categoryDeductions[c] * weights[c];
+  }
+
+  const healthScore = Math.max(0, Math.round(100 - totalDeduction));
+
+  let strokeColor = 'hsl(145, 80%, 45%)';
+  if (healthScore < 70) {
+    strokeColor = 'hsl(350, 85%, 55%)';
+  } else if (healthScore < 90) {
+    strokeColor = 'hsl(35, 90%, 55%)';
+  }
+
+  const radialCircle = document.getElementById('healthScoreCircle');
+  const healthText = document.getElementById('healthScoreText');
+  if (radialCircle) {
+    const offset = 251.2 - (251.2 * healthScore) / 100;
+    radialCircle.setAttribute('stroke', strokeColor);
+    radialCircle.style.strokeDashoffset = offset;
+  }
+  if (healthText) {
+    healthText.textContent = healthScore;
+  }
 
   // Update SVG Donut chart
   updateDonutChart(errorCount, warningCount, infoCount);
+
+  // Render category breakdown list
+  const categoryList = document.getElementById('categoryList');
+  if (categoryList) {
+    const categories = [
+      { id: 'security', name: 'Security & Secrets', icon: '🛡️', count: securityCount },
+      { id: 'quality', name: 'Code Quality & Reliability', icon: '⚙️', count: qualityCount },
+      { id: 'architecture', name: 'AST & Call Flow', icon: '📊', count: architectureCount },
+      { id: 'maintainability', name: 'Style & Maintainability', icon: '💡', count: maintainabilityCount }
+    ];
+
+    categoryList.innerHTML = categories.map(cat => {
+      const pct = totalCount > 0 ? (cat.count / totalCount) * 100 : 0;
+      return `
+        <div class="category-row-item">
+          <div class="category-row-header">
+            <span class="category-row-name">${cat.icon} ${cat.name}</span>
+            <span class="category-row-val">${cat.count} issue(s)</span>
+          </div>
+          <div class="category-progress-bar">
+            <div class="category-progress-fill ${cat.id}" style="width: ${pct}%;"></div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 
   // Calculate top affected files
   const fileCounts = {};
@@ -411,11 +589,66 @@ function showDashboard(report) {
     }
   }
 
-  // Toggle display
-  const detailDashboard = document.getElementById('detailDashboard');
-  if (detailDashboard) detailDashboard.style.display = 'flex';
-  if (detailEmpty) detailEmpty.style.display = 'none';
-  if (detailContent) detailContent.style.display = 'none';
+  // Calculate top risky symbols leaderboard based on blast radius
+  const symbolsMap = new Map();
+  findings.forEach(f => {
+    if (f.ast_context && f.ast_context.symbol_name) {
+      const symName = f.ast_context.symbol_name;
+      const filePath = f.file;
+      const key = `${symName}@${filePath}`;
+      
+      const blastRadiusList = f.ast_context.blast_radius || [];
+      const blastCount = blastRadiusList.length;
+      
+      if (!symbolsMap.has(key)) {
+        symbolsMap.set(key, {
+          name: symName,
+          file: filePath,
+          blastCount: blastCount,
+          blastRadius: blastRadiusList,
+          issuesCount: 0
+        });
+      }
+      
+      symbolsMap.get(key).issuesCount++;
+    }
+  });
+
+  const sortedSymbols = Array.from(symbolsMap.values())
+    .sort((a, b) => b.blastCount - a.blastCount)
+    .slice(0, 5);
+
+  const leaderboardEl = document.getElementById('riskySymbolsLeaderboard');
+  if (leaderboardEl) {
+    if (sortedSymbols.length === 0) {
+      leaderboardEl.innerHTML = '<div class="empty-state-small">No risky symbols identified</div>';
+    } else {
+      leaderboardEl.innerHTML = sortedSymbols.map(sym => {
+        const displayFile = getRelativePath(sym.file, report.target_path);
+        const affectedDetails = sym.blastRadius.length > 0
+          ? `Blast: ${sym.blastRadius.slice(0, 3).map(br => br.name).join(', ')}${sym.blastRadius.length > 3 ? '...' : ''}`
+          : 'No affected symbols';
+        
+        return `
+          <div class="top-file-item" style="align-items: flex-start; flex-direction: column; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+              <span style="font-family: var(--font-mono); font-weight: 600; color: var(--text-primary);">${escapeHtml(sym.name)}</span>
+              <span class="top-file-count">${sym.blastCount} affected</span>
+            </div>
+            <div style="font-size: 11px; color: var(--text-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%;">
+              ${escapeHtml(displayFile)}
+            </div>
+            <div style="font-size: 11px; color: var(--text-secondary); width: 100%;">
+              ${escapeHtml(affectedDetails)}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  }
+
+  // Toggle display using switchTab controller
+  switchTab('dashboard');
 }
 
 // Update donut chart segments
@@ -690,11 +923,8 @@ async function selectFinding(index) {
     card.classList.toggle('active', i === index);
   });
 
-  // Show detail panel, hide dashboard
-  const detailDashboard = document.getElementById('detailDashboard');
-  if (detailDashboard) detailDashboard.style.display = 'none';
-  detailEmpty.style.display = 'none';
-  detailContent.style.display = 'block';
+  // Show detail panel, hide dashboard and auto-transition to inspector tab
+  switchTab('inspector');
 
   // Severity icon
   const severity = (finding.severity || '').toLowerCase();
@@ -1363,6 +1593,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (logo) {
     logo.addEventListener('click', () => {
       selectProject(null);
+    });
+  }
+
+  // Setup click listeners for tabs
+  const detailTabs = document.getElementById('detailTabs');
+  if (detailTabs) {
+    detailTabs.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchTab(btn.dataset.tab);
+      });
     });
   }
 

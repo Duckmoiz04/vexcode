@@ -103,6 +103,11 @@
 
       <!-- Detail Panel -->
       <section class="detail-panel">
+        <div class="detail-tabs" id="detailTabs" style="display: none;">
+          <button class="tab-btn active" data-tab="dashboard">Overview Dashboard</button>
+          <button class="tab-btn" data-tab="inspector">Code Inspector</button>
+        </div>
+
         <div class="detail-empty" id="detailEmpty">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
@@ -121,25 +126,65 @@
           <!-- Metrics Grid -->
           <div class="dashboard-grid">
             <div class="metric-card total">
+              <div class="metric-header">
+                <span class="metric-icon">🔍</span>
+                <span class="metric-label">Total Issues</span>
+              </div>
               <span class="metric-value" id="metricTotal">0</span>
-              <span class="metric-label">Total Findings</span>
+              <span class="metric-desc">Overall findings identified</span>
             </div>
             <div class="metric-card severity-error">
-              <span class="metric-value" id="metricError">0</span>
-              <span class="metric-label">Errors</span>
+              <div class="metric-header">
+                <span class="metric-icon">🛡️</span>
+                <span class="metric-label">Security</span>
+              </div>
+              <span class="metric-value" id="metricSecurity">0</span>
+              <span class="metric-desc">Vulnerabilities & secrets</span>
             </div>
             <div class="metric-card severity-warning">
-              <span class="metric-value" id="metricWarning">0</span>
-              <span class="metric-label">Warnings</span>
+              <div class="metric-header">
+                <span class="metric-icon">⚙️</span>
+                <span class="metric-label">Quality</span>
+              </div>
+              <span class="metric-value" id="metricQuality">0</span>
+              <span class="metric-desc">Logic bugs & code defects</span>
             </div>
             <div class="metric-card severity-info">
-              <span class="metric-value" id="metricInfo">0</span>
-              <span class="metric-label">Info</span>
+              <div class="metric-header">
+                <span class="metric-icon">📊</span>
+                <span class="metric-label">Architecture</span>
+              </div>
+              <span class="metric-value" id="metricArchitecture">0</span>
+              <span class="metric-desc">AST & call flow insights</span>
+            </div>
+            <div class="metric-card severity-maintainability">
+              <div class="metric-header">
+                <span class="metric-icon">💡</span>
+                <span class="metric-label">Maintainability</span>
+              </div>
+              <span class="metric-value" id="metricMaintainability">0</span>
+              <span class="metric-desc">Style & code complexity</span>
             </div>
           </div>
 
           <!-- Chart and Top Stats -->
           <div class="dashboard-charts-row">
+            <!-- Project Health Score Radial Meter -->
+            <div class="dashboard-chart-box">
+              <h4>Project Health Score</h4>
+              <div class="chart-container">
+                <svg width="180" height="180" viewBox="0 0 100 100" class="radial-chart">
+                  <circle class="radial-ring" cx="50" cy="50" r="40" fill="transparent" stroke="var(--card-border)" stroke-width="8"></circle>
+                  <circle class="radial-segment" id="healthScoreCircle" cx="50" cy="50" r="40" fill="transparent" stroke="var(--success)" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" transform="rotate(-90 50 50)"></circle>
+                </svg>
+                <div class="radial-label">
+                  <span class="radial-number" id="healthScoreText">100</span>
+                  <span class="radial-text">Score</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Severity Distribution Chart -->
             <div class="dashboard-chart-box">
               <h4>Severity Distribution</h4>
               <div class="chart-container">
@@ -158,10 +203,29 @@
               </div>
             </div>
 
+            <!-- Criteria Category Audit Details -->
+            <div class="dashboard-chart-box category-breakdown">
+              <h4>Criteria Category Audit</h4>
+              <div class="category-list" id="categoryList">
+                <div class="empty-state-small">No categories loaded</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-charts-row" style="margin-top: 20px;">
+            <!-- Top Affected Files -->
             <div class="dashboard-top-files">
               <h4>Top Affected Files</h4>
               <div class="top-files-list" id="topFilesList">
                 <div class="empty-state-small">No affected files</div>
+              </div>
+            </div>
+
+            <!-- Top Risky Symbols Leaderboard -->
+            <div class="dashboard-top-files" style="flex: 2;">
+              <h4>Top Risky Symbols</h4>
+              <div class="top-files-list" id="riskySymbolsLeaderboard">
+                <div class="empty-state-small">No risky symbols identified</div>
               </div>
             </div>
           </div>
@@ -176,64 +240,70 @@
             <span class="finding-status" id="detailStatus">Pending</span>
           </div>
 
-          <div class="detail-meta">
-            <div class="meta-item">
-              <span class="meta-label">File</span>
-              <span class="meta-value" id="detailFile"></span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">Line</span>
-              <span class="meta-value" id="detailLine"></span>
-            </div>
-          </div>
-
-          <div class="detail-message" id="detailMessage"></div>
-
-          <!-- AST Context -->
-          <div class="ast-context" id="astContext" style="display:none;">
-            <h4>AST Context</h4>
-            <div class="ast-info">
-              <div class="meta-item">
-                <span class="meta-label">Symbol</span>
-                <span class="meta-value" id="astSymbol"></span>
+          <div class="inspector-top-grid">
+            <div class="inspector-left-col">
+              <div class="detail-meta">
+                <div class="meta-item">
+                  <span class="meta-label">File</span>
+                  <span class="meta-value" id="detailFile"></span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Line</span>
+                  <span class="meta-value" id="detailLine"></span>
+                </div>
               </div>
-              <div class="meta-item">
-                <span class="meta-label">Kind</span>
-                <span class="meta-value" id="astKind"></span>
+
+              <div class="detail-message" id="detailMessage"></div>
+
+              <!-- AST Context -->
+              <div class="ast-context" id="astContext" style="display:none;">
+                <h4>AST Context</h4>
+                <div class="ast-info">
+                  <div class="meta-item">
+                    <span class="meta-label">Symbol</span>
+                    <span class="meta-value" id="astSymbol"></span>
+                  </div>
+                  <div class="meta-item">
+                    <span class="meta-label">Kind</span>
+                    <span class="meta-value" id="astKind"></span>
+                  </div>
+                </div>
+                <div class="callers-section" id="callersSection" style="display:none;">
+                  <span class="meta-label">Callers</span>
+                  <div class="callers-list" id="callersList"></div>
+                </div>
+                <div class="blast-section" id="blastSection" style="display:none;">
+                  <span class="meta-label">Blast Radius</span>
+                  <span class="meta-value" id="blastCount"></span>
+                </div>
               </div>
-            </div>
-            <div class="callers-section" id="callersSection" style="display:none;">
-              <span class="meta-label">Callers</span>
-              <div class="callers-list" id="callersList"></div>
-            </div>
-            <div class="blast-section" id="blastSection" style="display:none;">
-              <span class="meta-label">Blast Radius</span>
-              <span class="meta-value" id="blastCount"></span>
-            </div>
-          </div>
 
-          <!-- AI Suggestion -->
-          <div class="ai-suggestion" id="aiSuggestion">
-            <h4>AI Suggestion</h4>
-            <p id="suggestionText"></p>
-          </div>
-
-          <!-- Chat with AI -->
-          <div class="chat-section" id="chatSection">
-            <h4>Chat with AI</h4>
-            <div class="chat-messages" id="chatMessages">
-              <div class="chat-empty">
-                <p>Ask questions about this vulnerability</p>
-                <span>e.g., "Why is this dangerous?", "How does this affect callers?", "Show me more examples"</span>
+              <!-- AI Suggestion -->
+              <div class="ai-suggestion" id="aiSuggestion">
+                <h4>AI Suggestion</h4>
+                <p id="suggestionText"></p>
               </div>
             </div>
-            <div class="chat-input-area">
-              <input type="text" id="chatInput" placeholder="Ask about this vulnerability..." disabled>
-              <button class="btn btn-primary btn-sm" id="chatSendBtn" disabled>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                </svg>
-              </button>
+
+            <div class="inspector-right-col">
+              <!-- Chat with AI -->
+              <div class="chat-section" id="chatSection">
+                <h4>Chat with AI</h4>
+                <div class="chat-messages" id="chatMessages">
+                  <div class="chat-empty">
+                    <p>Ask questions about this vulnerability</p>
+                    <span>e.g., "Why is this dangerous?", "How does this affect callers?", "Show me more examples"</span>
+                  </div>
+                </div>
+                <div class="chat-input-area">
+                  <input type="text" id="chatInput" placeholder="Ask about this vulnerability..." disabled>
+                  <button class="btn btn-primary btn-sm" id="chatSendBtn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
