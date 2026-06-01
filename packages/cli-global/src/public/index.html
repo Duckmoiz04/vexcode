@@ -1,198 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Code Review - Premium Glassmorphic Dashboard</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Main Styleheet -->
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Code Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Background Ambient Glows -->
-    <div class="ambient-glow glow-top-left"></div>
-    <div class="ambient-glow glow-bottom-right"></div>
-
-    <!-- App Container -->
-    <div class="app-container">
-        
-        <!-- Header -->
-        <header class="main-header glass-panel">
-            <div class="logo-area">
-                <div class="logo-icon-wrapper">
-                    <i class="fa-solid fa-shield-halved logo-icon"></i>
-                </div>
-                <div class="logo-text">
-                    <h1>AI Code Review</h1>
-                    <span class="sub-title">Static Security & AST Insights</span>
-                </div>
-            </div>
-            
-            <div class="header-controls">
-                <div class="status-indicator">
-                    <span class="status-dot"></span>
-                    <span id="status-text">Ready</span>
-                </div>
-                <button id="btn-config" class="btn btn-secondary" title="Configure Settings">
-                    <i class="fa-solid fa-sliders"></i>
-                    <span>Config</span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Main Workspace -->
-        <div class="workspace-grid">
-            
-            <!-- Left Sidebar -->
-            <aside class="sidebar glass-panel">
-                
-                <!-- Scanning Controller -->
-                <div class="control-card">
-                    <h3>Project Scan</h3>
-                    
-                    <div class="scan-target-group">
-                        <label for="input-target-path">Target Path</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-folder-open input-icon"></i>
-                            <input type="text" id="input-target-path" placeholder="Path to local codebase..." value="">
-                        </div>
-                    </div>
-
-                    <div class="scan-options-row">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="check-mock-scan" checked>
-                            <span class="checkmark"></span>
-                            Mock Scan
-                        </label>
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="check-mock-ai" checked>
-                            <span class="checkmark"></span>
-                            Mock AI
-                        </label>
-                    </div>
-
-                    <button id="btn-scan" class="btn btn-primary btn-block">
-                        <div class="spinner-container">
-                            <div class="concentric-ring ring-1"></div>
-                            <div class="concentric-ring ring-2"></div>
-                            <i class="fa-solid fa-crosshairs scan-icon"></i>
-                        </div>
-                        <span>Scan Project</span>
-                    </button>
-                </div>
-
-                <!-- Findings Counter/Summary -->
-                <div class="findings-summary-card">
-                    <div class="summary-stat stat-error">
-                        <span class="stat-num" id="count-error">0</span>
-                        <span class="stat-label">High</span>
-                    </div>
-                    <div class="summary-stat stat-warning">
-                        <span class="stat-num" id="count-warning">0</span>
-                        <span class="stat-label">Med</span>
-                    </div>
-                    <div class="summary-stat stat-info">
-                        <span class="stat-num" id="count-info">0</span>
-                        <span class="stat-label">Low</span>
-                    </div>
-                </div>
-
-                <!-- Findings List -->
-                <div class="findings-list-wrapper">
-                    <div class="list-header">
-                        <h3>Findings</h3>
-                        <span class="badge" id="total-findings-badge">0 Issues</span>
-                    </div>
-                    <div id="findings-container" class="findings-list">
-                        <!-- Finding items injected by JS -->
-                        <div class="list-empty-state">
-                            <i class="fa-solid fa-clipboard-check empty-icon"></i>
-                            <p>No active findings. Click "Scan Project" to begin analysis.</p>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- Main Content Area -->
-            <main class="content-panel glass-panel">
-                <div id="remediation-detail-view" class="remediation-view empty-detail">
-                    <!-- Empty/Welcome State -->
-                    <div class="detail-empty-state">
-                        <i class="fa-solid fa-code-compare welcome-icon"></i>
-                        <h2>Code Review Workspace</h2>
-                        <p>Select a vulnerability card from the findings sidebar to view static analysis triggers, enclosing AST function contexts, and AI-powered remediation patches.</p>
-                    </div>
-                </div>
-            </main>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <rect width="28" height="28" rx="6" fill="hsl(210, 100%, 50%)"/>
+            <path d="M8 14L12 18L20 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="logo-text">AI Code Review</span>
         </div>
-    </div>
-
-    <!-- Config Modal (Glassmorphic) -->
-    <div id="modal-config" class="modal-overlay">
-        <div class="modal-content glass-panel animate-scale-in">
-            <div class="modal-header">
-                <h2><i class="fa-solid fa-sliders"></i> Configuration</h2>
-                <button id="btn-close-config" class="btn-close">&times;</button>
+        <!-- Project Selector -->
+        <div class="project-selector" id="projectSelector">
+          <button class="project-selector-btn" id="projectSelectorBtn">
+            <span id="currentProjectName">Select Project</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </button>
+          <div class="project-dropdown" id="projectDropdown">
+            <div class="project-dropdown-header">
+              <span>Projects</span>
+              <span class="project-count" id="projectCount">0</span>
             </div>
-            <div class="modal-body">
-                <form id="form-config">
-                    <div class="form-group">
-                        <label for="cfg-ninerouter-key">9router API Key</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-key input-icon"></i>
-                            <input type="password" id="cfg-ninerouter-key" placeholder="Enter 9router API key...">
-                            <button type="button" id="btn-toggle-key-visibility" class="btn-input-action">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                        </div>
-                        <span class="field-desc">Used to query AI models for remediation code patches.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cfg-ninerouter-url">9router Base URL</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-link input-icon"></i>
-                            <input type="text" id="cfg-ninerouter-url" placeholder="https://api.9router.com/v1">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cfg-ninerouter-model">9router Model</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-robot input-icon"></i>
-                            <input type="text" id="cfg-ninerouter-model" placeholder="openai/gpt-4o-mini">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="cfg-rules-path">Semgrep Rules Path</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-file-shield input-icon"></i>
-                            <input type="text" id="cfg-rules-path" placeholder="Path to semgrep rules directory (optional)...">
-                        </div>
-                    </div>
-
-                    <div class="modal-actions">
-                        <button type="button" id="btn-cancel-config" class="btn btn-secondary">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Configuration</button>
-                    </div>
-                </form>
+            <div class="project-list" id="projectList">
+              <div class="empty-state-small">No projects scanned yet</div>
             </div>
+          </div>
         </div>
-    </div>
+      </div>
+      <div class="header-right">
+        <button class="btn btn-ghost" id="settingsBtn" title="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+          </svg>
+        </button>
+        <button class="btn btn-primary" id="scanBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          Scan Project
+        </button>
+      </div>
+    </header>
 
-    <!-- Notification Toast -->
-    <div id="toast-notification" class="toast hidden">
-        <i class="toast-icon fa-solid fa-circle-info"></i>
-        <span class="toast-message">Message goes here</span>
-    </div>
+    <!-- Main Content -->
+    <main class="main">
+      <!-- History Sidebar -->
+      <aside class="sidebar" id="historySidebar">
+        <div class="sidebar-header">
+          <h2>History</h2>
+          <span class="badge" id="historyCount">0</span>
+        </div>
+        <div class="history-list" id="historyList">
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            <p>No scan history</p>
+            <span>Select a project or scan one</span>
+          </div>
+        </div>
+      </aside>
 
-    <!-- Main Application script -->
-    <script type="module" src="js/app.js"></script>
+      <!-- Findings Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h2>Findings</h2>
+          <span class="badge" id="findingCount">0</span>
+        </div>
+        <div class="findings-list" id="findingsList">
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 12l2 2 4-4"/>
+              <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <p>No findings yet</p>
+            <span>Click "Scan Project" to start</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Detail Panel -->
+      <section class="detail-panel">
+        <div class="detail-empty" id="detailEmpty">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/>
+          </svg>
+          <p>Select a finding to view details</p>
+        </div>
+
+        <div class="detail-content" id="detailContent" style="display:none;">
+          <div class="detail-header">
+            <div class="detail-title">
+              <span class="severity-icon" id="detailSeverity"></span>
+              <h3 id="detailRuleId"></h3>
+            </div>
+            <span class="finding-status" id="detailStatus">Pending</span>
+          </div>
+
+          <div class="detail-meta">
+            <div class="meta-item">
+              <span class="meta-label">File</span>
+              <span class="meta-value" id="detailFile"></span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Line</span>
+              <span class="meta-value" id="detailLine"></span>
+            </div>
+          </div>
+
+          <div class="detail-message" id="detailMessage"></div>
+
+          <!-- AST Context -->
+          <div class="ast-context" id="astContext" style="display:none;">
+            <h4>AST Context</h4>
+            <div class="ast-info">
+              <div class="meta-item">
+                <span class="meta-label">Symbol</span>
+                <span class="meta-value" id="astSymbol"></span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Kind</span>
+                <span class="meta-value" id="astKind"></span>
+              </div>
+            </div>
+            <div class="callers-section" id="callersSection" style="display:none;">
+              <span class="meta-label">Callers</span>
+              <div class="callers-list" id="callersList"></div>
+            </div>
+            <div class="blast-section" id="blastSection" style="display:none;">
+              <span class="meta-label">Blast Radius</span>
+              <span class="meta-value" id="blastCount"></span>
+            </div>
+          </div>
+
+          <!-- AI Suggestion -->
+          <div class="ai-suggestion" id="aiSuggestion">
+            <h4>AI Suggestion</h4>
+            <p id="suggestionText"></p>
+          </div>
+
+          <!-- Chat with AI -->
+          <div class="chat-section" id="chatSection">
+            <h4>Chat with AI</h4>
+            <div class="chat-messages" id="chatMessages">
+              <div class="chat-empty">
+                <p>Ask questions about this vulnerability</p>
+                <span>e.g., "Why is this dangerous?", "How does this affect callers?", "Show me more examples"</span>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <input type="text" id="chatInput" placeholder="Ask about this vulnerability..." disabled>
+              <button class="btn btn-primary btn-sm" id="chatSendBtn" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Diff Viewer -->
+          <div class="diff-viewer" id="diffViewer" style="display:none;">
+            <h4>Code Diff</h4>
+            <div class="diff-panels">
+              <div class="diff-panel diff-original">
+                <div class="diff-panel-header">Original</div>
+                <pre class="diff-code" id="diffOriginal"></pre>
+              </div>
+              <div class="diff-panel diff-remediation">
+                <div class="diff-panel-header">Remediation</div>
+                <pre class="diff-code" id="diffRemediation"></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="detail-actions">
+            <button class="btn btn-success" id="applyBtn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5"/>
+              </svg>
+              Apply Fix
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Settings Drawer -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+    <aside class="drawer" id="settingsDrawer">
+      <div class="drawer-header">
+        <h3>Settings</h3>
+        <button class="btn btn-ghost" id="closeDrawerBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="drawer-body">
+        <!-- AI Provider Selection -->
+        <div class="config-section">
+          <h4 class="config-section-title">AI Provider</h4>
+          <div class="provider-buttons" id="providerButtons">
+            <button class="provider-btn active" data-provider="openai">
+              <span class="provider-icon">O</span>
+              <span class="provider-name">OpenAI</span>
+            </button>
+            <button class="provider-btn" data-provider="anthropic">
+              <span class="provider-icon">A</span>
+              <span class="provider-name">Anthropic</span>
+            </button>
+            <button class="provider-btn" data-provider="google">
+              <span class="provider-icon">G</span>
+              <span class="provider-name">Google</span>
+            </button>
+            <button class="provider-btn" data-provider="9router">
+              <span class="provider-icon">9</span>
+              <span class="provider-name">9router</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- API Configuration -->
+        <div class="config-section">
+          <h4 class="config-section-title">API Configuration</h4>
+          <div class="form-group">
+            <label for="apiKey">API Key</label>
+            <input type="password" id="apiKey" placeholder="optional for 9router">
+          </div>
+          <div class="form-group">
+            <label for="apiBaseUrl">Base URL</label>
+            <input type="text" id="apiBaseUrl" placeholder="https://api.openai.com/v1">
+            <span class="form-hint" id="baseUrlHint">Auto-filled based on provider</span>
+          </div>
+          <div class="test-connection-row">
+            <button class="btn btn-ghost btn-sm" id="testConnectionBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <path d="M22 4L12 14.01l-3-3"/>
+              </svg>
+              Test Connection
+            </button>
+            <span class="test-connection-status" id="testConnectionStatus"></span>
+          </div>
+        </div>
+
+        <!-- AI Model Configuration -->
+        <div class="config-section">
+          <h4 class="config-section-title">AI Model</h4>
+          <div class="form-group">
+            <label for="aiModel">Model</label>
+            <select id="aiModel" class="form-select">
+              <!-- Models populated dynamically based on provider -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Advanced Settings -->
+        <div class="config-section">
+          <button class="advanced-toggle" id="advancedToggle">
+            <span>Advanced Settings</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </button>
+          <div class="advanced-content" id="advancedContent" style="display: none;">
+            <div class="form-row">
+              <div class="form-group form-group-half">
+                <label for="aiTemperature">Temperature</label>
+                <input type="number" id="aiTemperature" min="0" max="2" step="0.1" placeholder="0.1">
+                <span class="form-hint">0 = Precise, 2 = Creative</span>
+              </div>
+              <div class="form-group form-group-half">
+                <label for="aiMaxTokens">Max Tokens</label>
+                <input type="number" id="aiMaxTokens" min="256" max="128000" step="256" placeholder="4096">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Semgrep Configuration -->
+        <div class="config-section">
+          <h4 class="config-section-title">Semgrep</h4>
+          <div class="form-group">
+            <label for="semgrepRules">Rules Path</label>
+            <input type="text" id="semgrepRules" placeholder="Optional rules file path">
+          </div>
+        </div>
+      </div>
+      <div class="drawer-footer">
+        <button class="btn btn-primary" id="saveConfigBtn">Save Configuration</button>
+      </div>
+    </aside>
+
+    <!-- Scan Loading Overlay -->
+    <div class="scan-overlay" id="scanOverlay" style="display:none;">
+      <div class="scan-spinner"></div>
+      <p>Scanning project...</p>
+      <span class="scan-status" id="scanStatus">Initializing...</span>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>

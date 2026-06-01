@@ -1,0 +1,940 @@
+const API_BASE = '';
+
+// State
+let currentProject = null;
+let currentReportId = null;
+let currentReport = null;
+let selectedFindingIndex = null;
+
+// DOM Elements
+const scanBtn = document.getElementById('scanBtn');
+const settingsBtn = document.getElementById('settingsBtn');
+const projectSelectorBtn = document.getElementById('projectSelectorBtn');
+const projectDropdown = document.getElementById('projectDropdown');
+const projectList = document.getElementById('projectList');
+const projectCount = document.getElementById('projectCount');
+const currentProjectName = document.getElementById('currentProjectName');
+const historyCount = document.getElementById('historyCount');
+const historyList = document.getElementById('historyList');
+const findingCount = document.getElementById('findingCount');
+const findingsList = document.getElementById('findingsList');
+const detailEmpty = document.getElementById('detailEmpty');
+const detailContent = document.getElementById('detailContent');
+const detailSeverity = document.getElementById('detailSeverity');
+const detailRuleId = document.getElementById('detailRuleId');
+const detailStatus = document.getElementById('detailStatus');
+const detailFile = document.getElementById('detailFile');
+const detailLine = document.getElementById('detailLine');
+const detailMessage = document.getElementById('detailMessage');
+const astContext = document.getElementById('astContext');
+const astSymbol = document.getElementById('astSymbol');
+const astKind = document.getElementById('astKind');
+const callersSection = document.getElementById('callersSection');
+const callersList = document.getElementById('callersList');
+const blastSection = document.getElementById('blastSection');
+const blastCount = document.getElementById('blastCount');
+const suggestionText = document.getElementById('suggestionText');
+const diffViewer = document.getElementById('diffViewer');
+const diffOriginal = document.getElementById('diffOriginal');
+const diffRemediation = document.getElementById('diffRemediation');
+const applyBtn = document.getElementById('applyBtn');
+const scanOverlay = document.getElementById('scanOverlay');
+const scanStatus = document.getElementById('scanStatus');
+const drawerOverlay = document.getElementById('drawerOverlay');
+const settingsDrawer = document.getElementById('settingsDrawer');
+const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+const saveConfigBtn = document.getElementById('saveConfigBtn');
+const apiKey = document.getElementById('apiKey');
+const apiBaseUrl = document.getElementById('apiBaseUrl');
+const providerButtons = document.getElementById('providerButtons');
+const aiModel = document.getElementById('aiModel');
+const aiTemperature = document.getElementById('aiTemperature');
+const aiMaxTokens = document.getElementById('aiMaxTokens');
+const baseUrlHint = document.getElementById('baseUrlHint');
+const semgrepRules = document.getElementById('semgrepRules');
+
+// Advanced toggle elements
+const advancedToggle = document.getElementById('advancedToggle');
+const advancedContent = document.getElementById('advancedContent');
+
+// Test connection elements
+const testConnectionBtn = document.getElementById('testConnectionBtn');
+const testConnectionStatus = document.getElementById('testConnectionStatus');
+
+// Chat elements
+const chatSection = document.getElementById('chatSection');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSendBtn = document.getElementById('chatSendBtn');
+
+// Chat state
+let chatHistory = [];
+let isChatLoading = false;
+
+// Current selected provider
+let selectedProvider = 'openai';
+
+// Provider config data
+const PROVIDERS = {
+  openai: {
+    name: 'OpenAI',
+    configKey: 'openai',
+    models: [
+      { id: 'gpt-4o-mini', name: 'GPT-4o Mini (Fast)' },
+      { id: 'gpt-4o', name: 'GPT-4o (Balanced)' },
+      { id: 'gpt-4-turbo', name: 'GPT-4 Turbo (Advanced)' },
+      { id: 'gpt-3.5-turbo', name: 'GPT-3.5 Turbo (Legacy)' }
+    ],
+    defaultBaseUrl: 'https://api.openai.com/v1'
+  },
+  anthropic: {
+    name: 'Anthropic',
+    configKey: 'anthropic',
+    models: [
+      { id: 'claude-3-haiku-20240307', name: 'Claude 3 Haiku (Fast)' },
+      { id: 'claude-3-sonnet-20240229', name: 'Claude 3 Sonnet (Balanced)' },
+      { id: 'claude-3-opus-20240229', name: 'Claude 3 Opus (Advanced)' }
+    ],
+    defaultBaseUrl: 'https://api.anthropic.com'
+  },
+  google: {
+    name: 'Google',
+    configKey: 'google',
+    models: [
+      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash (Fast)' },
+      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Advanced)' },
+      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash (Latest)' }
+    ],
+    defaultBaseUrl: 'https://generativelanguage.googleapis.com'
+  },
+  '9router': {
+    name: '9router',
+    configKey: '9router',
+    models: [
+      { id: 'openai/gpt-4o-mini', name: 'GPT-4o Mini (Fast)' },
+      { id: 'openai/gpt-4o', name: 'GPT-4o (Balanced)' },
+      { id: 'openai/gpt-4-turbo', name: 'GPT-4 Turbo (Advanced)' },
+      { id: 'anthropic/claude-3-haiku', name: 'Claude 3 Haiku (Fast)' },
+      { id: 'anthropic/claude-3-sonnet', name: 'Claude 3 Sonnet (Balanced)' }
+    ],
+    defaultBaseUrl: 'http://localhost:20128/v1'
+  }
+};
+
+// API Helpers
+async function apiGet(path) {
+  const res = await fetch(`${API_BASE}${path}`);
+  if (!res.ok) throw new Error(`GET ${path} failed: ${res.statusText}`);
+  return res.json();
+}
+
+async function apiPost(path, body) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: res.statusText }));
+    throw new Error(err.error || res.statusText);
+  }
+  return res.json();
+}
+
+// Toast Notifications
+function showToast(message, type = 'success') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Format timestamp
+function formatTime(timestamp) {
+  if (!timestamp) return 'Unknown';
+  const date = new Date(timestamp);
+  return date.toLocaleString();
+}
+
+// Load Projects
+async function loadProjects() {
+  try {
+    const data = await apiGet('/api/reports');
+    const projects = data.projects || [];
+
+    projectCount.textContent = projects.length;
+
+    if (projects.length === 0) {
+      projectList.innerHTML = '<div class="empty-state-small">No projects scanned yet</div>';
+      return;
+    }
+
+    projectList.innerHTML = projects.map(p => `
+      <div class="project-item ${p.name === currentProject ? 'active' : ''}" data-project="${p.name}">
+        <span class="project-item-name">${escapeHtml(p.name)}</span>
+        <span class="project-item-count">${p.reportCount} scan(s)</span>
+      </div>
+    `).join('');
+
+    projectList.querySelectorAll('.project-item').forEach(item => {
+      item.addEventListener('click', () => {
+        selectProject(item.dataset.project);
+        projectDropdown.classList.remove('active');
+      });
+    });
+  } catch (err) {
+    console.error('Failed to load projects:', err);
+  }
+}
+
+// Select Project
+async function selectProject(projectName) {
+  currentProject = projectName;
+  currentProjectName.textContent = projectName || 'Select Project';
+  currentReportId = null;
+
+  // Update project list selection
+  projectList.querySelectorAll('.project-item').forEach(item => {
+    item.classList.toggle('active', item.dataset.project === projectName);
+  });
+
+  await loadHistory(projectName);
+}
+
+// Load History for a project
+async function loadHistory(projectName) {
+  if (!projectName) {
+    historyList.innerHTML = '<div class="empty-state"><p>No project selected</p><span>Select a project from dropdown</span></div>';
+    historyCount.textContent = '0';
+    return;
+  }
+
+  try {
+    const data = await apiGet(`/api/reports/${projectName}`);
+    const reports = data.reports || [];
+
+    historyCount.textContent = reports.length;
+
+    if (reports.length === 0) {
+      historyList.innerHTML = '<div class="empty-state"><p>No scan history</p><span>This project has no reports</span></div>';
+      return;
+    }
+
+    historyList.innerHTML = reports.map(r => `
+      <div class="history-card" data-id="${r.id}">
+        <div class="history-card-time">${r.id.replace('report_', '').replace(/-/g, (m, i) => i > 10 ? ':' : i > 7 ? '-' : ' ')}</div>
+        <div class="history-card-meta">
+          <span>${r.findings} finding(s)</span>
+        </div>
+      </div>
+    `).join('');
+
+    historyList.querySelectorAll('.history-card').forEach(card => {
+      card.addEventListener('click', () => {
+        loadReport(projectName, card.dataset.id);
+        historyList.querySelectorAll('.history-card').forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+      });
+    });
+
+    // Auto-select latest report
+    if (reports.length > 0) {
+      loadReport(projectName, reports[0].id);
+    }
+  } catch (err) {
+    console.error('Failed to load history:', err);
+    historyList.innerHTML = '<div class="empty-state"><p>Error loading history</p></div>';
+  }
+}
+
+// Load Report
+async function loadReport(projectName, reportId) {
+  try {
+    const report = await apiGet(`/api/report/${projectName}/${reportId}`);
+    currentProject = projectName;
+    currentReportId = reportId;
+    currentReport = report;
+    selectedFindingIndex = null;
+
+    renderFindings(report.findings);
+    detailEmpty.style.display = 'flex';
+    detailContent.style.display = 'none';
+  } catch (err) {
+    console.error('Failed to load report:', err);
+    showToast('Failed to load report', 'error');
+  }
+}
+
+// Render Findings List
+function renderFindings(findings) {
+  if (!findings || findings.length === 0) {
+    findingsList.innerHTML = `
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 12l2 2 4-4"/>
+          <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p>No findings</p>
+        <span>Code looks clean!</span>
+      </div>
+    `;
+    findingCount.textContent = '0';
+    return;
+  }
+
+  findingCount.textContent = findings.length;
+
+  findingsList.innerHTML = findings.map((f, i) => {
+    const severity = (f.severity || '').toLowerCase();
+    const isActive = i === selectedFindingIndex;
+    const isApplied = f._applied;
+
+    return `
+      <div class="finding-card ${isActive ? 'active' : ''}" data-index="${i}">
+        <div class="finding-card-header">
+          <span class="severity-dot ${severity}"></span>
+          <span class="finding-rule">${escapeHtml(f.rule_id)}</span>
+          <span class="finding-status ${isApplied ? 'applied' : ''}">${isApplied ? 'Applied' : 'Pending'}</span>
+        </div>
+        <div class="finding-file">${escapeHtml(f.file)}:${f.line}</div>
+      </div>
+    `;
+  }).join('');
+
+  findingsList.querySelectorAll('.finding-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const index = parseInt(card.dataset.index);
+      selectFinding(index);
+    });
+  });
+}
+
+// Select Finding
+async function selectFinding(index) {
+  selectedFindingIndex = index;
+  const finding = currentReport.findings[index];
+  if (!finding) return;
+
+  // Update sidebar selection
+  findingsList.querySelectorAll('.finding-card').forEach((card, i) => {
+    card.classList.toggle('active', i === index);
+  });
+
+  // Show detail panel
+  detailEmpty.style.display = 'none';
+  detailContent.style.display = 'block';
+
+  // Severity icon
+  const severity = (finding.severity || '').toLowerCase();
+  detailSeverity.className = `severity-icon ${severity}`;
+  detailSeverity.textContent = severity === 'error' ? '!' : severity === 'warning' ? '?' : 'i';
+
+  detailRuleId.textContent = finding.rule_id;
+  detailStatus.textContent = finding._applied ? 'Applied' : 'Pending';
+  detailStatus.className = `finding-status ${finding._applied ? 'applied' : ''}`;
+  detailFile.textContent = finding.file;
+  detailLine.textContent = finding.line;
+  detailMessage.textContent = finding.message;
+
+  // AST Context
+  if (finding.ast_context) {
+    astContext.style.display = 'block';
+    const ast = finding.ast_context;
+    astSymbol.textContent = ast.symbol_name || '-';
+    astKind.textContent = ast.kind || '-';
+
+    if (ast.callers && ast.callers.length > 0) {
+      callersSection.style.display = 'block';
+      callersList.innerHTML = ast.callers
+        .map(c => `<span class="caller-tag">${escapeHtml(c.name)}</span>`)
+        .join('');
+    } else {
+      callersSection.style.display = 'none';
+    }
+
+    if (ast.blast_radius && ast.blast_radius.length > 0) {
+      blastSection.style.display = 'flex';
+      blastCount.textContent = `${ast.blast_radius.length} affected symbol(s)`;
+    } else {
+      blastSection.style.display = 'none';
+    }
+  } else {
+    astContext.style.display = 'none';
+  }
+
+  // AI Suggestion
+  const resolution = currentReport.ai_resolutions?.[finding.rule_id];
+  if (resolution) {
+    suggestionText.textContent = resolution.suggestion || 'No suggestion available.';
+  } else {
+    suggestionText.textContent = 'No AI suggestion available.';
+  }
+
+  // Diff Viewer
+  await renderDiff(finding, resolution);
+
+  // Reset and enable chat
+  resetChat();
+  enableChat(finding);
+}
+
+// Build context string from finding for chat
+function buildFindingContext(finding) {
+  let context = `Vulnerability Details:\n`;
+  context += `- Rule ID: ${finding.rule_id}\n`;
+  context += `- Severity: ${finding.severity}\n`;
+  context += `- File: ${finding.file}\n`;
+  context += `- Line: ${finding.line}\n`;
+  context += `- Message: ${finding.message}\n`;
+
+  if (finding.ast_context) {
+    const ast = finding.ast_context;
+    context += `\nAST Context:\n`;
+    context += `- Symbol: ${ast.symbol_name} (${ast.kind})\n`;
+
+    if (ast.source_code) {
+      context += `- Source Code:\n\`\`\`\n${ast.source_code}\`\`\`\n`;
+    }
+
+    if (ast.callers && ast.callers.length > 0) {
+      context += `- Callers: ${ast.callers.map(c => `${c.name} in ${c.filePath}`).join(', ')}\n`;
+    }
+
+    if (ast.blast_radius && ast.blast_radius.length > 0) {
+      context += `- Blast Radius: ${ast.blast_radius.length} affected symbol(s)\n`;
+      ast.blast_radius.forEach(br => {
+        context += `  - ${br.name} (${br.relation} in ${br.filePath}, depth ${br.depth})\n`;
+      });
+    }
+  }
+
+  const resolution = currentReport?.ai_resolutions?.[finding.rule_id];
+  if (resolution) {
+    context += `\nAI Suggestion: ${resolution.suggestion}\n`;
+    if (resolution.remediation_code) {
+      context += `Remediation Code:\n\`\`\`\n${resolution.remediation_code}\`\`\`\n`;
+    }
+  }
+
+  return context;
+}
+
+// Reset chat state
+function resetChat() {
+  chatHistory = [];
+  chatMessages.innerHTML = `
+    <div class="chat-empty">
+      <p>Ask questions about this vulnerability</p>
+      <span>e.g., "Why is this dangerous?", "How does this affect callers?", "Show me more examples"</span>
+    </div>
+  `;
+}
+
+// Enable chat for a finding
+function enableChat(finding) {
+  chatInput.disabled = false;
+  chatSendBtn.disabled = false;
+  chatInput.placeholder = `Ask about ${finding.rule_id}...`;
+}
+
+// Send chat message
+async function sendChatMessage() {
+  const message = chatInput.value.trim();
+  if (!message || isChatLoading) return;
+
+  // Clear input
+  chatInput.value = '';
+
+  // Remove empty state
+  const emptyState = chatMessages.querySelector('.chat-empty');
+  if (emptyState) emptyState.remove();
+
+  // Add user message to UI
+  addChatMessage('user', message);
+
+  // Build context for the finding
+  const finding = currentReport.findings[selectedFindingIndex];
+  const findingContext = buildFindingContext(finding);
+
+  // Build messages array
+  const messages = [
+    {
+      role: 'system',
+      content: `You are an expert security engineer helping analyze vulnerabilities. You have context about the current vulnerability being reviewed:
+
+${findingContext}
+
+Provide helpful, detailed answers about this vulnerability. Explain why it's dangerous, how it affects the codebase, and best practices for fixing it. Be concise but thorough.`
+    },
+    ...chatHistory.map(m => ({ role: m.role, content: m.content })),
+    { role: 'user', content: message }
+  ];
+
+  // Update chat history
+  chatHistory.push({ role: 'user', content: message });
+
+  // Show loading
+  isChatLoading = true;
+  chatInput.disabled = true;
+  chatSendBtn.disabled = true;
+  const loadingId = addChatLoading();
+
+  try {
+    const response = await apiPost('/api/chat', {
+      messages,
+      provider: selectedProvider,
+      apiKey: apiKey.value,
+      baseUrl: apiBaseUrl.value || PROVIDERS[selectedProvider]?.defaultBaseUrl,
+      model: aiModel.value,
+      temperature: parseFloat(aiTemperature.value) || 0.7,
+      maxTokens: parseInt(aiMaxTokens.value) || 2048
+    });
+
+    // Remove loading
+    removeChatLoading(loadingId);
+
+    if (response.success && response.response) {
+      // Add assistant message
+      addChatMessage('assistant', response.response);
+      chatHistory.push({ role: 'assistant', content: response.response });
+    } else {
+      addChatMessage('assistant', 'Sorry, I encountered an error. Please check your API configuration and try again.');
+    }
+  } catch (err) {
+    removeChatLoading(loadingId);
+    addChatMessage('assistant', `Error: ${err.message}`);
+  } finally {
+    isChatLoading = false;
+    chatInput.disabled = false;
+    chatSendBtn.disabled = false;
+    chatInput.focus();
+  }
+}
+
+// Add chat message to UI
+function addChatMessage(role, content) {
+  const div = document.createElement('div');
+  div.className = `chat-message ${role}`;
+  div.innerHTML = `
+    <div class="chat-message-role">${role === 'user' ? 'You' : 'AI'}</div>
+    <div class="chat-message-content">${escapeHtml(content)}</div>
+  `;
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Add loading indicator
+function addChatLoading() {
+  const id = 'loading-' + Date.now();
+  const div = document.createElement('div');
+  div.id = id;
+  div.className = 'chat-loading';
+  div.textContent = 'AI is thinking...';
+  chatMessages.appendChild(div);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  return id;
+}
+
+// Remove loading indicator
+function removeChatLoading(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+// Chat event listeners
+chatSendBtn.addEventListener('click', sendChatMessage);
+chatInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+});
+
+// Render Diff
+async function renderDiff(finding, resolution) {
+  if (!resolution || !resolution.remediation_code) {
+    diffViewer.style.display = 'none';
+    return;
+  }
+
+  try {
+    const fileContent = await apiGet(`/api/file-content?path=${encodeURIComponent(finding.file)}`);
+    if (!fileContent.success) {
+      diffViewer.style.display = 'none';
+      return;
+    }
+
+    const lines = fileContent.content.split('\n');
+    const targetLine = finding.line - 1;
+    const contextLines = 5;
+    const start = Math.max(0, targetLine - contextLines);
+    const end = Math.min(lines.length, targetLine + contextLines + 1);
+
+    // Original panel
+    let originalHtml = '';
+    for (let i = start; i < end; i++) {
+      const isTarget = i === targetLine;
+      const cls = isTarget ? 'removed' : 'context';
+      originalHtml += `<span class="diff-line ${cls}">${escapeHtml(lines[i] || '')}</span>`;
+    }
+    diffOriginal.innerHTML = originalHtml;
+
+    // Remediation panel
+    const remediationLines = resolution.remediation_code.split('\n');
+    let remediationHtml = '';
+    for (let i = start; i < end; i++) {
+      if (i === targetLine) {
+        remediationLines.forEach(line => {
+          remediationHtml += `<span class="diff-line added">${escapeHtml(line)}</span>`;
+        });
+      } else {
+        remediationHtml += `<span class="diff-line context">${escapeHtml(lines[i] || '')}</span>`;
+      }
+    }
+    diffRemediation.innerHTML = remediationHtml;
+
+    diffViewer.style.display = 'block';
+  } catch (err) {
+    console.error('Failed to load file content:', err);
+    diffViewer.style.display = 'none';
+  }
+}
+
+// Scan Handler
+scanBtn.addEventListener('click', async () => {
+  scanOverlay.style.display = 'flex';
+  scanStatus.textContent = 'Starting scan...';
+  scanBtn.disabled = true;
+
+  try {
+    const result = await apiPost('/api/scan', { mockScan: false, mockAi: false });
+
+    // Update current project and report
+    if (result.report) {
+      currentProject = result.report._project;
+      currentReportId = result.report._id;
+      currentProjectName.textContent = currentProject;
+
+      // Reload projects and history
+      await loadProjects();
+      await loadHistory(currentProject);
+    }
+
+    showToast('Scan completed successfully!');
+  } catch (err) {
+    showToast(`Scan failed: ${err.message}`, 'error');
+  } finally {
+    scanOverlay.style.display = 'none';
+    scanBtn.disabled = false;
+  }
+});
+
+// Apply Fix Handler
+applyBtn.addEventListener('click', async () => {
+  if (selectedFindingIndex === null) return;
+
+  const finding = currentReport.findings[selectedFindingIndex];
+  const resolution = currentReport.ai_resolutions?.[finding.rule_id];
+  if (!resolution || !resolution.remediation_code) {
+    showToast('No remediation code available.', 'error');
+    return;
+  }
+
+  applyBtn.disabled = true;
+
+  try {
+    await apiPost('/api/apply', {
+      filePath: finding.file,
+      targetLine: finding.line,
+      targetContent: finding.message,
+      replacementContent: resolution.remediation_code
+    });
+
+    finding._applied = true;
+    detailStatus.textContent = 'Applied';
+    detailStatus.className = 'finding-status applied';
+    renderFindings(currentReport.findings);
+    showToast('Fix applied successfully!');
+  } catch (err) {
+    showToast(`Failed to apply fix: ${err.message}`, 'error');
+  } finally {
+    applyBtn.disabled = false;
+  }
+});
+
+// Project Selector Toggle
+projectSelectorBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  projectDropdown.classList.toggle('active');
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.project-selector')) {
+    projectDropdown.classList.remove('active');
+  }
+});
+
+// Settings Drawer
+settingsBtn.addEventListener('click', async () => {
+  drawerOverlay.classList.add('active');
+  settingsDrawer.classList.add('active');
+  await loadConfig();
+});
+
+closeDrawerBtn.addEventListener('click', closeDrawer);
+drawerOverlay.addEventListener('click', closeDrawer);
+
+function closeDrawer() {
+  drawerOverlay.classList.remove('active');
+  settingsDrawer.classList.remove('active');
+}
+
+// Populate models dropdown based on selected provider
+async function populateModels(provider) {
+  const providerData = PROVIDERS[provider];
+  if (!providerData) return;
+
+  // Show loading state
+  aiModel.innerHTML = '<option value="">Loading models...</option>';
+
+  // Try to fetch models from API
+  let models = [];
+  try {
+    const baseUrl = apiBaseUrl.value || providerData.defaultBaseUrl;
+    const apiKeyVal = apiKey.value || '';
+    const response = await apiGet(`/api/models?baseUrl=${encodeURIComponent(baseUrl)}&apiKey=${encodeURIComponent(apiKeyVal)}`);
+    if (response.success && response.models && response.models.length > 0) {
+      models = response.models;
+    }
+  } catch (err) {
+    console.log('Failed to fetch models from API, using static list');
+  }
+
+  // Fall back to static list if API didn't return models
+  if (models.length === 0) {
+    models = providerData.models;
+  }
+
+  // Populate the dropdown
+  aiModel.innerHTML = '';
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model.id;
+    option.textContent = model.name;
+    aiModel.appendChild(option);
+  });
+
+  // Update base URL hint
+  baseUrlHint.textContent = `Default: ${providerData.defaultBaseUrl}`;
+}
+
+// Stored config data for per-provider settings
+let storedConfig = {};
+
+// Select provider
+async function selectProvider(provider) {
+  selectedProvider = provider;
+
+  // Update button states
+  providerButtons.querySelectorAll('.provider-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.provider === provider);
+  });
+
+  // Clear test connection status
+  testConnectionStatus.textContent = '';
+  testConnectionStatus.className = 'test-connection-status';
+
+  // Load per-provider API key from stored config
+  const providerKey = `${provider.toUpperCase()}_API_KEY`;
+  apiKey.value = storedConfig[providerKey] || '';
+
+  // Load per-provider base URL
+  const providerUrlKey = `${provider.toUpperCase()}_BASE_URL`;
+  apiBaseUrl.value = storedConfig[providerUrlKey] || PROVIDERS[provider].defaultBaseUrl;
+
+  // Populate models and restore saved model
+  await populateModels(provider);
+
+  // Restore saved model for this provider
+  const providerModelKey = `${provider.toUpperCase()}_MODEL`;
+  const savedModel = storedConfig[providerModelKey];
+  if (savedModel) {
+    const modelExists = Array.from(aiModel.options).some(opt => opt.value === savedModel);
+    if (modelExists) {
+      aiModel.value = savedModel;
+    }
+  }
+}
+
+// Provider button click handlers
+providerButtons.addEventListener('click', (e) => {
+  const btn = e.target.closest('.provider-btn');
+  if (btn && btn.dataset.provider) {
+    selectProvider(btn.dataset.provider);
+  }
+});
+
+async function loadConfig() {
+  try {
+    const config = await apiGet('/api/config');
+
+    // Store config for per-provider access
+    storedConfig = config;
+
+    // Load provider config (new format)
+    const provider = config.AI_PROVIDER || 'openai';
+    selectedProvider = provider;
+
+    // Update button states
+    providerButtons.querySelectorAll('.provider-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.provider === provider);
+    });
+
+    // Load per-provider API key
+    const providerKey = `${provider.toUpperCase()}_API_KEY`;
+    apiKey.value = config[providerKey] || '';
+
+    // Load per-provider base URL
+    const providerUrlKey = `${provider.toUpperCase()}_BASE_URL`;
+    apiBaseUrl.value = config[providerUrlKey] || PROVIDERS[provider].defaultBaseUrl;
+
+    // Load per-provider model
+    const providerModelKey = `${provider.toUpperCase()}_MODEL`;
+    const savedModel = config[providerModelKey];
+
+    // First populate models for this provider
+    await populateModels(provider);
+
+    // Then set the saved model if it exists in the dropdown
+    if (savedModel) {
+      const modelExists = Array.from(aiModel.options).some(opt => opt.value === savedModel);
+      if (modelExists) {
+        aiModel.value = savedModel;
+      }
+    }
+
+    // Load advanced settings
+    aiTemperature.value = config.AI_TEMPERATURE || '0.1';
+    aiMaxTokens.value = config.AI_MAX_TOKENS || '4096';
+    semgrepRules.value = config.SEMGREP_RULES_PATH || '';
+  } catch (err) {
+    console.error('Failed to load config:', err);
+  }
+}
+
+// Test Connection
+async function testConnection() {
+  const baseUrl = apiBaseUrl.value || PROVIDERS[selectedProvider]?.defaultBaseUrl;
+  const key = apiKey.value;
+
+  // For paid providers, API key is required
+  const requiresKey = ['openai', 'anthropic', 'google'].includes(selectedProvider);
+  if (requiresKey && !key) {
+    testConnectionStatus.textContent = 'API key is required for this provider';
+    testConnectionStatus.className = 'test-connection-status error';
+    return;
+  }
+
+  // Show loading state
+  testConnectionBtn.disabled = true;
+  testConnectionStatus.textContent = 'Testing...';
+  testConnectionStatus.className = 'test-connection-status loading';
+
+  try {
+    const url = `/api/models?baseUrl=${encodeURIComponent(baseUrl)}${key ? `&apiKey=${encodeURIComponent(key)}` : ''}`;
+    const response = await apiGet(url);
+
+    if (response.success) {
+      if (response.models && response.models.length > 0) {
+        testConnectionStatus.textContent = `Connected! ${response.models.length} model(s) available`;
+        testConnectionStatus.className = 'test-connection-status success';
+      } else {
+        // No models returned - could be invalid key or unsupported endpoint
+        if (requiresKey && key) {
+          testConnectionStatus.textContent = 'Invalid API key or access denied';
+          testConnectionStatus.className = 'test-connection-status error';
+        } else {
+          testConnectionStatus.textContent = 'Connected! No models found (endpoint may not support /models)';
+          testConnectionStatus.className = 'test-connection-status success';
+        }
+      }
+    } else {
+      testConnectionStatus.textContent = response.error || 'Connection failed';
+      testConnectionStatus.className = 'test-connection-status error';
+    }
+  } catch (err) {
+    testConnectionStatus.textContent = `Error: ${err.message}`;
+    testConnectionStatus.className = 'test-connection-status error';
+  } finally {
+    testConnectionBtn.disabled = false;
+  }
+}
+
+testConnectionBtn.addEventListener('click', testConnection);
+
+// Advanced toggle
+advancedToggle.addEventListener('click', () => {
+  const isOpen = advancedContent.style.display !== 'none';
+  advancedContent.style.display = isOpen ? 'none' : 'block';
+  advancedToggle.classList.toggle('active', !isOpen);
+});
+
+saveConfigBtn.addEventListener('click', async () => {
+  try {
+    const config = {};
+    const providerConfigKey = PROVIDERS[selectedProvider]?.configKey || selectedProvider;
+
+    // Save per-provider API key
+    config[`${providerConfigKey.toUpperCase()}_API_KEY`] = apiKey.value;
+
+    // Save per-provider base URL
+    config[`${providerConfigKey.toUpperCase()}_BASE_URL`] = apiBaseUrl.value;
+
+    // Save per-provider model
+    config[`${providerConfigKey.toUpperCase()}_MODEL`] = aiModel.value;
+
+    // Save current provider
+    config.AI_PROVIDER = selectedProvider;
+
+    // Save advanced settings
+    config.AI_TEMPERATURE = aiTemperature.value;
+    config.AI_MAX_TOKENS = aiMaxTokens.value;
+
+    // Legacy config for 9router (backward compatible)
+    if (selectedProvider === '9router') {
+      config.NINEROUTER_API_KEY = apiKey.value;
+      config.NINEROUTER_BASE_URL = apiBaseUrl.value;
+      config.NINEROUTER_MODEL = aiModel.value;
+    }
+
+    if (semgrepRules.value) config.SEMGREP_RULES_PATH = semgrepRules.value;
+
+    await apiPost('/api/config', config);
+    showToast('Configuration saved!');
+    closeDrawer();
+  } catch (err) {
+    showToast(`Failed to save config: ${err.message}`, 'error');
+  }
+});
+
+// Escape HTML
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  loadProjects();
+});

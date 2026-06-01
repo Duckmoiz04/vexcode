@@ -11,7 +11,16 @@ const __dirname = path.dirname(__filename);
 const envPath = path.resolve(__dirname, '../../../analysis-core/.env');
 
 vi.mock('../bridge.js', () => ({
-  runPythonAnalysis: vi.fn().mockImplementation(() => Promise.resolve())
+  runPythonAnalysis: vi.fn().mockImplementation((targetPath, reportOutputPath, mockScan, mockAi) => {
+    const fs = require('node:fs');
+    fs.writeFileSync(reportOutputPath, JSON.stringify({
+      scanner: 'semgrep',
+      target_path: targetPath,
+      timestamp: new Date().toISOString(),
+      findings: []
+    }), 'utf8');
+    return Promise.resolve();
+  })
 }));
 
 describe('Express REST Server API', () => {

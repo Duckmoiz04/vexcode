@@ -31,5 +31,5 @@ describe('Python Process Bridge', () => {
     if (existsSync(reportPath)) {
       unlinkSync(reportPath);
     }
-  });
+  }, 20000);
 });
