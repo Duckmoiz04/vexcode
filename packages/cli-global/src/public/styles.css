@@ -1,34 +1,35 @@
 :root {
-  /* HSL Color Tokens */
-  --bg-primary: hsl(220, 25%, 10%);
-  --bg-secondary: hsl(220, 20%, 13%);
-  --bg-tertiary: hsl(220, 18%, 16%);
-
-  --card-bg: hsla(220, 20%, 15%, 0.7);
-  --card-border: hsla(220, 20%, 25%, 0.5);
-
-  --accent: hsl(210, 100%, 50%);
-  --accent-hover: hsl(210, 100%, 55%);
-  --success: hsl(145, 80%, 45%);
-  --success-hover: hsl(145, 80%, 50%);
-  --error: hsl(350, 85%, 55%);
-  --warning: hsl(35, 90%, 55%);
-  --info: hsl(195, 80%, 50%);
-
-  --text-primary: hsl(220, 20%, 95%);
-  --text-secondary: hsl(220, 15%, 65%);
-  --text-tertiary: hsl(220, 10%, 45%);
-
-  --font-sans: 'Inter', 'Outfit', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Fira Code', 'Consolas', monospace;
-
+  /* GitNexus Theme Color Tokens */
+  --bg-primary: #06060a;      /* Void */
+  --bg-secondary: #0a0a10;    /* Deep */
+  --bg-tertiary: #101018;     /* Surface */
+ 
+  --card-bg: rgba(22, 22, 31, 0.75);      /* Elevated card with glass blur */
+  --card-border: rgba(42, 42, 58, 0.5);   /* Border default */
+ 
+  --accent: #7c3aed;          /* Accent purple */
+  --accent-hover: #9061f3;    /* Light accent hover */
+  --success: #10b981;         /* Function node green */
+  --success-hover: #34d399;
+  --error: #ef4444;           /* Red */
+  --warning: #f59e0b;         /* Class node orange */
+  --info: #3b82f6;            /* File node blue */
+ 
+  --text-primary: #e4e4ed;    /* Text primary */
+  --text-secondary: #8888a0;  /* Text secondary */
+  --text-tertiary: #5a5a70;   /* Text muted */
+ 
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+ 
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 14px;
-
-  --shadow-card: 0 4px 24px hsla(220, 25%, 5%, 0.3);
-  --shadow-elevated: 0 8px 32px hsla(220, 25%, 5%, 0.5);
-
+ 
+  --shadow-card: 0 4px 24px rgba(6, 6, 10, 0.3);
+  --shadow-elevated: 0 8px 32px rgba(6, 6, 10, 0.5);
+  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.3);
+ 
   --transition: all 0.2s ease-in-out;
 }
 
