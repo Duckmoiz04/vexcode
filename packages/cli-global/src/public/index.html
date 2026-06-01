@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Review - Premium Glassmorphic Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Styleheet -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Background Ambient Glows -->
+    <div class="ambient-glow glow-top-left"></div>
+    <div class="ambient-glow glow-bottom-right"></div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- Header -->
+        <header class="main-header glass-panel">
+            <div class="logo-area">
+                <div class="logo-icon-wrapper">
+                    <i class="fa-solid fa-shield-halved logo-icon"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>AI Code Review</h1>
+                    <span class="sub-title">Static Security & AST Insights</span>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span id="status-text">Ready</span>
+                </div>
+                <button id="btn-config" class="btn btn-secondary" title="Configure Settings">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Config</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="workspace-grid">
+            
+            <!-- Left Sidebar -->
+            <aside class="sidebar glass-panel">
+                
+                <!-- Scanning Controller -->
+                <div class="control-card">
+                    <h3>Project Scan</h3>
+                    
+                    <div class="scan-target-group">
+                        <label for="input-target-path">Target Path</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-folder-open input-icon"></i>
+                            <input type="text" id="input-target-path" placeholder="Path to local codebase..." value="">
+                        </div>
+                    </div>
+
+                    <div class="scan-options-row">
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="check-mock-scan" checked>
+                            <span class="checkmark"></span>
+                            Mock Scan
+                        </label>
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="check-mock-ai" checked>
+                            <span class="checkmark"></span>
+                            Mock AI
+                        </label>
+                    </div>
+
+                    <button id="btn-scan" class="btn btn-primary btn-block">
+                        <div class="spinner-container">
+                            <div class="concentric-ring ring-1"></div>
+                            <div class="concentric-ring ring-2"></div>
+                            <i class="fa-solid fa-crosshairs scan-icon"></i>
+                        </div>
+                        <span>Scan Project</span>
+                    </button>
+                </div>
+
+                <!-- Findings Counter/Summary -->
+                <div class="findings-summary-card">
+                    <div class="summary-stat stat-error">
+                        <span class="stat-num" id="count-error">0</span>
+                        <span class="stat-label">High</span>
+                    </div>
+                    <div class="summary-stat stat-warning">
+                        <span class="stat-num" id="count-warning">0</span>
+                        <span class="stat-label">Med</span>
+                    </div>
+                    <div class="summary-stat stat-info">
+                        <span class="stat-num" id="count-info">0</span>
+                        <span class="stat-label">Low</span>
+                    </div>
+                </div>
+
+                <!-- Findings List -->
+                <div class="findings-list-wrapper">
+                    <div class="list-header">
+                        <h3>Findings</h3>
+                        <span class="badge" id="total-findings-badge">0 Issues</span>
+                    </div>
+                    <div id="findings-container" class="findings-list">
+                        <!-- Finding items injected by JS -->
+                        <div class="list-empty-state">
+                            <i class="fa-solid fa-clipboard-check empty-icon"></i>
+                            <p>No active findings. Click "Scan Project" to begin analysis.</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="content-panel glass-panel">
+                <div id="remediation-detail-view" class="remediation-view empty-detail">
+                    <!-- Empty/Welcome State -->
+                    <div class="detail-empty-state">
+                        <i class="fa-solid fa-code-compare welcome-icon"></i>
+                        <h2>Code Review Workspace</h2>
+                        <p>Select a vulnerability card from the findings sidebar to view static analysis triggers, enclosing AST function contexts, and AI-powered remediation patches.</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Config Modal (Glassmorphic) -->
+    <div id="modal-config" class="modal-overlay">
+        <div class="modal-content glass-panel animate-scale-in">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-sliders"></i> Configuration</h2>
+                <button id="btn-close-config" class="btn-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="form-config">
+                    <div class="form-group">
+                        <label for="cfg-ninerouter-key">9router API Key</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-key input-icon"></i>
+                            <input type="password" id="cfg-ninerouter-key" placeholder="Enter 9router API key...">
+                            <button type="button" id="btn-toggle-key-visibility" class="btn-input-action">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="field-desc">Used to query AI models for remediation code patches.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cfg-ninerouter-url">9router Base URL</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-link input-icon"></i>
+                            <input type="text" id="cfg-ninerouter-url" placeholder="https://api.9router.com/v1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cfg-ninerouter-model">9router Model</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-robot input-icon"></i>
+                            <input type="text" id="cfg-ninerouter-model" placeholder="openai/gpt-4o-mini">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cfg-rules-path">Semgrep Rules Path</label>
+                        <div class="input-wrapper">
+                            <i class="fa-solid fa-file-shield input-icon"></i>
+                            <input type="text" id="cfg-rules-path" placeholder="Path to semgrep rules directory (optional)...">
+                        </div>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" id="btn-cancel-config" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast-notification" class="toast hidden">
+        <i class="toast-icon fa-solid fa-circle-info"></i>
+        <span class="toast-message">Message goes here</span>
+    </div>
+
+    <!-- Main Application script -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

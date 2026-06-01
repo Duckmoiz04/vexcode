@@ -33,6 +33,15 @@ describe('Express REST Server API', () => {
     }
   });
 
+  describe('Static Files Endpoint', () => {
+    it('should serve index.html on GET /', async () => {
+      const res = await request(app).get('/');
+      expect(res.status).toBe(200);
+      expect(res.text).toContain('AI Code Review');
+      expect(res.headers['content-type']).toContain('text/html');
+    });
+  });
+
   describe('Config Endpoints', () => {
     it('should read and write env config', async () => {
       // Test POST /api/config

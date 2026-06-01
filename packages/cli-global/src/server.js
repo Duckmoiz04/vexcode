@@ -69,6 +69,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(resolve(__dirname, 'public')));
 
 // GET /api/config
 app.get('/api/config', (req, res) => {
