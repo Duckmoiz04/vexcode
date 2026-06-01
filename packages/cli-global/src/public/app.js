@@ -5,6 +5,7 @@ let currentProject = null;
 let currentReportId = null;
 let currentReport = null;
 let selectedFindingIndex = null;
+let selectedFilePath = null;
 
 // DOM Elements
 const scanBtn = document.getElementById('scanBtn');
@@ -14,8 +15,8 @@ const projectDropdown = document.getElementById('projectDropdown');
 const projectList = document.getElementById('projectList');
 const projectCount = document.getElementById('projectCount');
 const currentProjectName = document.getElementById('currentProjectName');
-const historyCount = document.getElementById('historyCount');
-const historyList = document.getElementById('historyList');
+const historySelect = document.getElementById('historySelect');
+const codeTree = document.getElementById('codeTree');
 const findingCount = document.getElementById('findingCount');
 const findingsList = document.getElementById('findingsList');
 const detailEmpty = document.getElementById('detailEmpty');
@@ -277,8 +278,10 @@ async function selectProject(projectName) {
 // Load History for a project
 async function loadHistory(projectName) {
   if (!projectName) {
-    historyList.innerHTML = '<div class="empty-state"><p>No project selected</p><span>Select a project from dropdown</span></div>';
-    historyCount.textContent = '0';
+    historySelect.innerHTML = '<option value="">Select version...</option>';
+    if (codeTree) {
+      codeTree.innerHTML = '<div class="empty-state">No files indexed</div>';
+    }
     return;
   }
 
@@ -286,37 +289,27 @@ async function loadHistory(projectName) {
     const data = await apiGet(`/api/reports/${projectName}`);
     const reports = data.reports || [];
 
-    historyCount.textContent = reports.length;
-
     if (reports.length === 0) {
-      historyList.innerHTML = '<div class="empty-state"><p>No scan history</p><span>This project has no reports</span></div>';
+      historySelect.innerHTML = '<option value="">No history found</option>';
+      if (codeTree) {
+        codeTree.innerHTML = '<div class="empty-state">No files indexed</div>';
+      }
       return;
     }
 
-    historyList.innerHTML = reports.map(r => `
-      <div class="history-card" data-id="${r.id}">
-        <div class="history-card-time">${r.id.replace('report_', '').replace(/-/g, (m, i) => i > 10 ? ':' : i > 7 ? '-' : ' ')}</div>
-        <div class="history-card-meta">
-          <span>${r.findings} finding(s)</span>
-        </div>
-      </div>
-    `).join('');
-
-    historyList.querySelectorAll('.history-card').forEach(card => {
-      card.addEventListener('click', () => {
-        loadReport(projectName, card.dataset.id);
-        historyList.querySelectorAll('.history-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-      });
-    });
+    historySelect.innerHTML = reports.map(r => {
+      const timeStr = r.id.replace('report_', '').replace(/-/g, (m, i) => i > 10 ? ':' : i > 7 ? '-' : ' ');
+      return `<option value="${r.id}">${timeStr} (${r.findings} findings)</option>`;
+    }).join('');
 
     // Auto-select latest report
     if (reports.length > 0) {
+      historySelect.value = reports[0].id;
       loadReport(projectName, reports[0].id);
     }
   } catch (err) {
     console.error('Failed to load history:', err);
-    historyList.innerHTML = '<div class="empty-state"><p>Error loading history</p></div>';
+    historySelect.innerHTML = '<option value="">Error loading history</option>';
   }
 }
 
@@ -328,7 +321,12 @@ async function loadReport(projectName, reportId) {
     currentReportId = reportId;
     currentReport = report;
     selectedFindingIndex = null;
+    selectedFilePath = null;
 
+    // Build and render Code File Tree
+    renderCodeTree(report.findings);
+
+    // Initial render of all findings
     renderFindings(report.findings);
     detailEmpty.style.display = 'flex';
     detailContent.style.display = 'none';
@@ -338,8 +336,153 @@ async function loadReport(projectName, reportId) {
   }
 }
 
+// Build directory tree structure from findings file paths
+function buildFileTree(findings) {
+  const root = { name: currentProject || 'Project', type: 'folder', path: '', children: {} };
+
+  findings.forEach((finding, index) => {
+    const filePath = finding.file;
+    const parts = filePath.replace(/\\/g, '/').split('/');
+    
+    let current = root;
+    let accumulatedPath = '';
+
+    parts.forEach((part, i) => {
+      accumulatedPath = accumulatedPath ? `${accumulatedPath}/${part}` : part;
+      const isLast = i === parts.length - 1;
+
+      if (isLast) {
+        if (!current.children[part]) {
+          current.children[part] = {
+            name: part,
+            type: 'file',
+            path: filePath,
+            indices: []
+          };
+        }
+        current.children[part].indices.push(index);
+      } else {
+        if (!current.children[part]) {
+          current.children[part] = {
+            name: part,
+            type: 'folder',
+            path: accumulatedPath,
+            children: {}
+          };
+        }
+        current = current.children[part];
+      }
+    });
+  });
+
+  return root;
+}
+
+// Recursively render tree node to HTML
+function renderTreeNode(node, depth = 0) {
+  const indent = depth * 12;
+  const style = `padding-left: ${indent + 8}px;`;
+
+  if (node.type === 'file') {
+    const findingsCount = node.indices.length;
+    const isActive = node.path === selectedFilePath;
+    return `
+      <div class="tree-item tree-file ${isActive ? 'active' : ''}" data-path="${escapeHtml(node.path)}" style="${style}">
+        <svg class="tree-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+        <span class="tree-name">${escapeHtml(node.name)}</span>
+        <span class="tree-badge">${findingsCount}</span>
+      </div>
+    `;
+  } else {
+    const childKeys = Object.keys(node.children).sort((a, b) => {
+      const nodeA = node.children[a];
+      const nodeB = node.children[b];
+      if (nodeA.type !== nodeB.type) {
+        return nodeA.type === 'folder' ? -1 : 1;
+      }
+      return a.localeCompare(b);
+    });
+
+    const childrenHtml = childKeys.map(key => renderTreeNode(node.children[key], depth + 1)).join('');
+    
+    if (node.path === '') {
+      return childrenHtml;
+    }
+
+    return `
+      <div class="tree-folder-container">
+        <div class="tree-item tree-folder expanded" data-path="${escapeHtml(node.path)}" style="${style}">
+          <svg class="tree-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+          <svg class="tree-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span class="tree-name">${escapeHtml(node.name)}</span>
+        </div>
+        <div class="tree-folder-children">
+          ${childrenHtml}
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Render the code explorer tree UI
+function renderCodeTree(findings) {
+  if (!findings || findings.length === 0) {
+    codeTree.innerHTML = '<div class="empty-state-small">No files indexed</div>';
+    return;
+  }
+
+  const treeData = buildFileTree(findings);
+  codeTree.innerHTML = renderTreeNode(treeData);
+
+  // Setup click listeners for folder toggles
+  codeTree.querySelectorAll('.tree-folder').forEach(folder => {
+    folder.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const container = folder.closest('.tree-folder-container');
+      const children = container.querySelector('.tree-folder-children');
+      const isExpanded = folder.classList.contains('expanded');
+      
+      if (isExpanded) {
+        folder.classList.remove('expanded');
+        children.style.display = 'none';
+      } else {
+        folder.classList.add('expanded');
+        children.style.display = 'block';
+      }
+    });
+  });
+
+  // Setup click listeners for file selection
+  codeTree.querySelectorAll('.tree-file').forEach(fileItem => {
+    fileItem.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const path = fileItem.dataset.path;
+      
+      codeTree.querySelectorAll('.tree-file').forEach(f => f.classList.remove('active'));
+      fileItem.classList.add('active');
+
+      selectedFilePath = path;
+      filterFindingsByFile(path);
+    });
+  });
+}
+
+// Filter findings sidebar list by selected file path
+function filterFindingsByFile(path) {
+  if (!currentReport || !currentReport.findings) return;
+  const filtered = currentReport.findings.filter(f => f.file === path);
+  renderFindings(filtered, path);
+}
+
 // Render Findings List
-function renderFindings(findings) {
+function renderFindings(findings, filterPath = null) {
   if (!findings || findings.length === 0) {
     findingsList.innerHTML = `
       <div class="empty-state">
@@ -357,13 +500,29 @@ function renderFindings(findings) {
 
   findingCount.textContent = findings.length;
 
-  findingsList.innerHTML = findings.map((f, i) => {
+  let headerHtml = '';
+  if (filterPath) {
+    const filename = filterPath.split('/').pop();
+    headerHtml = `
+      <div class="findings-filter-header">
+        <span>File: ${escapeHtml(filename)}</span>
+        <button class="btn-clear-filter" id="clearFilterBtn" title="Clear Filter">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    `;
+  }
+
+  const itemsHtml = findings.map(f => {
+    const originalIndex = currentReport.findings.indexOf(f);
     const severity = (f.severity || '').toLowerCase();
-    const isActive = i === selectedFindingIndex;
+    const isActive = originalIndex === selectedFindingIndex;
     const isApplied = f._applied;
 
     return `
-      <div class="finding-card ${isActive ? 'active' : ''}" data-index="${i}">
+      <div class="finding-card ${isActive ? 'active' : ''}" data-index="${originalIndex}">
         <div class="finding-card-header">
           <span class="severity-dot ${severity}"></span>
           <span class="finding-rule">${escapeHtml(f.rule_id)}</span>
@@ -374,12 +533,24 @@ function renderFindings(findings) {
     `;
   }).join('');
 
+  findingsList.innerHTML = headerHtml + '<div class="findings-cards-container">' + itemsHtml + '</div>';
+
   findingsList.querySelectorAll('.finding-card').forEach(card => {
     card.addEventListener('click', () => {
       const index = parseInt(card.dataset.index);
       selectFinding(index);
     });
   });
+
+  const clearFilterBtn = document.getElementById('clearFilterBtn');
+  if (clearFilterBtn) {
+    clearFilterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectedFilePath = null;
+      codeTree.querySelectorAll('.tree-file').forEach(f => f.classList.remove('active'));
+      renderFindings(currentReport.findings);
+    });
+  }
 }
 
 // Select Finding
@@ -701,11 +872,9 @@ async function runScan(targetPath = null, mockScan = false, mockAi = false) {
       // Select the newly generated report
       await loadReport(projName, result.report._id);
 
-      // Mark active in the history sidebar
-      const activeCard = historyList.querySelector(`[data-id="${result.report._id}"]`);
-      if (activeCard) {
-        historyList.querySelectorAll('.history-card').forEach(c => c.classList.remove('active'));
-        activeCard.classList.add('active');
+      // Set the value in the select dropdown
+      if (historySelect) {
+        historySelect.value = result.report._id;
       }
     }
 
@@ -767,6 +936,15 @@ applyBtn.addEventListener('click', async () => {
     applyBtn.disabled = false;
   }
 });
+
+// History Selector Change
+if (historySelect) {
+  historySelect.addEventListener('change', () => {
+    if (historySelect.value && currentProject) {
+      loadReport(currentProject, historySelect.value);
+    }
+  });
+}
 
 // Project Selector Toggle
 projectSelectorBtn.addEventListener('click', (e) => {
