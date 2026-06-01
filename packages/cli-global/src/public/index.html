@@ -108,7 +108,63 @@
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
             <path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/>
           </svg>
-          <p>Select a finding to view details</p>
+          <p>Select a project to load scan findings</p>
+        </div>
+
+        <!-- Dashboard Panel -->
+        <div class="detail-dashboard" id="detailDashboard" style="display: none;">
+          <div class="dashboard-header">
+            <h3>Scan Summary</h3>
+            <span class="dashboard-project-name" id="dashboardProjectName">DATN2</span>
+          </div>
+
+          <!-- Metrics Grid -->
+          <div class="dashboard-grid">
+            <div class="metric-card total">
+              <span class="metric-value" id="metricTotal">0</span>
+              <span class="metric-label">Total Findings</span>
+            </div>
+            <div class="metric-card severity-error">
+              <span class="metric-value" id="metricError">0</span>
+              <span class="metric-label">Errors</span>
+            </div>
+            <div class="metric-card severity-warning">
+              <span class="metric-value" id="metricWarning">0</span>
+              <span class="metric-label">Warnings</span>
+            </div>
+            <div class="metric-card severity-info">
+              <span class="metric-value" id="metricInfo">0</span>
+              <span class="metric-label">Info</span>
+            </div>
+          </div>
+
+          <!-- Chart and Top Stats -->
+          <div class="dashboard-charts-row">
+            <div class="dashboard-chart-box">
+              <h4>Severity Distribution</h4>
+              <div class="chart-container">
+                <svg width="180" height="180" viewBox="0 0 42 42" class="donut-chart" id="donutChart">
+                  <circle class="donut-hole" cx="21" cy="21" r="15.91549430918954" fill="transparent"></circle>
+                  <circle class="donut-ring" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--card-border)" stroke-width="3"></circle>
+
+                  <circle class="donut-segment donut-segment-error" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--danger)" stroke-width="4.5" stroke-dasharray="0 100" stroke-dashoffset="25"></circle>
+                  <circle class="donut-segment donut-segment-warning" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--warning)" stroke-width="4.5" stroke-dasharray="0 100" stroke-dashoffset="25"></circle>
+                  <circle class="donut-segment donut-segment-info" cx="21" cy="21" r="15.91549430918954" fill="transparent" stroke="var(--info)" stroke-width="4.5" stroke-dasharray="0 100" stroke-dashoffset="25"></circle>
+                </svg>
+                <div class="donut-label">
+                  <span class="donut-number" id="donutTotal">0</span>
+                  <span class="donut-text">Issues</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-top-files">
+              <h4>Top Affected Files</h4>
+              <div class="top-files-list" id="topFilesList">
+                <div class="empty-state-small">No affected files</div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="detail-content" id="detailContent" style="display:none;">

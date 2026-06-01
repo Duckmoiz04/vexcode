@@ -258,6 +258,8 @@ async function selectProject(projectName) {
     `;
     findingCount.textContent = '0';
     detailEmpty.style.display = 'flex';
+    const detailDashboard = document.getElementById('detailDashboard');
+    if (detailDashboard) detailDashboard.style.display = 'none';
     detailContent.style.display = 'none';
 
     await loadHistory(null);
@@ -328,11 +330,132 @@ async function loadReport(projectName, reportId) {
 
     // Initial render of all findings
     renderFindings(report.findings);
-    detailEmpty.style.display = 'flex';
-    detailContent.style.display = 'none';
+    
+    // Show stats dashboard
+    showDashboard(report);
   } catch (err) {
     console.error('Failed to load report:', err);
     showToast('Failed to load report', 'error');
+  }
+}
+
+// Show statistics dashboard for the report
+function showDashboard(report) {
+  if (!report) return;
+
+  const findings = report.findings || [];
+  const errorCount = findings.filter(f => (f.severity || '').toLowerCase() === 'error').length;
+  const warningCount = findings.filter(f => (f.severity || '').toLowerCase() === 'warning').length;
+  const infoCount = findings.filter(f => (f.severity || '').toLowerCase() === 'info').length;
+  const totalCount = findings.length;
+
+  // Update DOM metrics
+  const dbProj = document.getElementById('dashboardProjectName');
+  if (dbProj) dbProj.textContent = report._project || currentProject || 'Project';
+  
+  const mTotal = document.getElementById('metricTotal');
+  if (mTotal) mTotal.textContent = totalCount;
+  
+  const mError = document.getElementById('metricError');
+  if (mError) mError.textContent = errorCount;
+  
+  const mWarning = document.getElementById('metricWarning');
+  if (mWarning) mWarning.textContent = warningCount;
+  
+  const mInfo = document.getElementById('metricInfo');
+  if (mInfo) mInfo.textContent = infoCount;
+
+  // Update SVG Donut chart
+  updateDonutChart(errorCount, warningCount, infoCount);
+
+  // Calculate top affected files
+  const fileCounts = {};
+  findings.forEach(f => {
+    fileCounts[f.file] = (fileCounts[f.file] || 0) + 1;
+  });
+
+  const sortedFiles = Object.keys(fileCounts)
+    .map(file => ({ file, count: fileCounts[file] }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 4);
+
+  const topFilesList = document.getElementById('topFilesList');
+  if (topFilesList) {
+    if (sortedFiles.length === 0) {
+      topFilesList.innerHTML = '<div class="empty-state-small">No affected files</div>';
+    } else {
+      topFilesList.innerHTML = sortedFiles.map(sf => {
+        const displayFile = getRelativePath(sf.file, report.target_path);
+        return `
+          <div class="top-file-item" style="cursor: pointer;" data-path="${escapeHtml(sf.file)}">
+            <span class="top-file-name" title="${escapeHtml(sf.file)}">${escapeHtml(displayFile)}</span>
+            <span class="top-file-count">${sf.count} issue(s)</span>
+          </div>
+        `;
+      }).join('');
+
+      // Click listener to select file from top files list
+      topFilesList.querySelectorAll('.top-file-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const path = item.dataset.path;
+          const treeFile = codeTree.querySelector(`[data-path="${CSS.escape(path)}"]`);
+          codeTree.querySelectorAll('.tree-file').forEach(f => f.classList.remove('active'));
+          if (treeFile) {
+            treeFile.classList.add('active');
+            treeFile.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+          selectedFilePath = path;
+          filterFindingsByFile(path);
+        });
+      });
+    }
+  }
+
+  // Toggle display
+  const detailDashboard = document.getElementById('detailDashboard');
+  if (detailDashboard) detailDashboard.style.display = 'flex';
+  if (detailEmpty) detailEmpty.style.display = 'none';
+  if (detailContent) detailContent.style.display = 'none';
+}
+
+// Update donut chart segments
+function updateDonutChart(errorCount, warningCount, infoCount) {
+  const total = errorCount + warningCount + infoCount;
+  const donutTotal = document.getElementById('donutTotal');
+  if (donutTotal) donutTotal.textContent = total;
+
+  const errorSeg = document.querySelector('.donut-segment-error');
+  const warningSeg = document.querySelector('.donut-segment-warning');
+  const infoSeg = document.querySelector('.donut-segment-info');
+
+  if (total === 0) {
+    if (errorSeg) errorSeg.setAttribute('stroke-dasharray', '0 100');
+    if (warningSeg) warningSeg.setAttribute('stroke-dasharray', '0 100');
+    if (infoSeg) infoSeg.setAttribute('stroke-dasharray', '0 100');
+    return;
+  }
+
+  const errorPct = (errorCount / total) * 100;
+  const warningPct = (warningCount / total) * 100;
+  const infoPct = (infoCount / total) * 100;
+
+  let offset = 25; // 12 o'clock start offset
+
+  if (errorSeg) {
+    errorSeg.setAttribute('stroke-dasharray', `${errorPct} ${100 - errorPct}`);
+    errorSeg.setAttribute('stroke-dashoffset', offset);
+    offset -= errorPct;
+  }
+
+  if (warningSeg) {
+    warningSeg.setAttribute('stroke-dasharray', `${warningPct} ${100 - warningPct}`);
+    warningSeg.setAttribute('stroke-dashoffset', offset);
+    offset -= warningPct;
+  }
+
+  if (infoSeg) {
+    infoSeg.setAttribute('stroke-dasharray', `${infoPct} ${100 - infoPct}`);
+    infoSeg.setAttribute('stroke-dashoffset', offset);
   }
 }
 
@@ -551,6 +674,7 @@ function renderFindings(findings, filterPath = null) {
       selectedFilePath = null;
       codeTree.querySelectorAll('.tree-file').forEach(f => f.classList.remove('active'));
       renderFindings(currentReport.findings);
+      showDashboard(currentReport);
     });
   }
 }
@@ -566,7 +690,9 @@ async function selectFinding(index) {
     card.classList.toggle('active', i === index);
   });
 
-  // Show detail panel
+  // Show detail panel, hide dashboard
+  const detailDashboard = document.getElementById('detailDashboard');
+  if (detailDashboard) detailDashboard.style.display = 'none';
   detailEmpty.style.display = 'none';
   detailContent.style.display = 'block';
 
