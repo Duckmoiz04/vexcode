@@ -308,6 +308,54 @@
       </div>
     </aside>
 
+    <!-- Onboarding / Project Selection Screen -->
+    <div class="onboarding-screen" id="onboardingScreen" style="display: none;">
+      <div class="onboarding-card">
+        <!-- Ambient glows -->
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+
+        <div class="onboarding-header">
+          <div class="onboarding-logo">
+            <svg width="40" height="40" viewBox="0 0 28 28" fill="none">
+              <rect width="28" height="28" rx="6" fill="var(--accent)"/>
+              <path d="M8 14L12 18L20 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2>Select a Project</h2>
+          <p>Choose a previously scanned project from the list, or initiate a new codebase scan below.</p>
+        </div>
+
+        <!-- Project Cards List -->
+        <div class="onboarding-projects" id="onboardingProjects">
+          <div class="empty-state-small">Loading projects...</div>
+        </div>
+
+        <div class="onboarding-divider">
+          <span>Or Scan a New Project</span>
+        </div>
+
+        <!-- Scan Form -->
+        <div class="onboarding-form">
+          <div class="form-group">
+            <label for="onboardingTargetPath">Target Directory Path</label>
+            <input type="text" id="onboardingTargetPath" placeholder="Leave empty for current workspace">
+          </div>
+          <div class="form-row" style="margin-top: 12px; display: flex; gap: 16px; justify-content: center;">
+            <label class="checkbox-label">
+              <input type="checkbox" id="onboardingMockScan"> Mock Scan
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="onboardingMockAi"> Mock AI
+            </label>
+          </div>
+          <button class="btn btn-primary btn-full" id="onboardingScanBtn" style="margin-top: 18px;">
+            Start Code Review Scan
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Scan Loading Overlay -->
     <div class="scan-overlay" id="scanOverlay" style="display:none;">
       <div class="scan-spinner"></div>

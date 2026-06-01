@@ -1,5 +1,5 @@
 :root {
-  /* GitNexus Theme Color Tokens */
+  /* GitNexus Theme Color Tokens (Blue Variant) */
   --bg-primary: #06060a;      /* Void */
   --bg-secondary: #0a0a10;    /* Deep */
   --bg-tertiary: #101018;     /* Surface */
@@ -7,8 +7,8 @@
   --card-bg: rgba(22, 22, 31, 0.75);      /* Elevated card with glass blur */
   --card-border: rgba(42, 42, 58, 0.5);   /* Border default */
  
-  --accent: #7c3aed;          /* Accent purple */
-  --accent-hover: #9061f3;    /* Light accent hover */
+  --accent: #2563eb;          /* Accent blue */
+  --accent-hover: #3b82f6;    /* Light accent hover */
   --success: #10b981;         /* Function node green */
   --success-hover: #34d399;
   --error: #ef4444;           /* Red */
@@ -28,7 +28,7 @@
  
   --shadow-card: 0 4px 24px rgba(6, 6, 10, 0.3);
   --shadow-elevated: 0 8px 32px rgba(6, 6, 10, 0.5);
-  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.3);
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.3);
  
   --transition: all 0.2s ease-in-out;
 }
@@ -76,6 +76,13 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.2s ease;
+}
+
+.logo:hover {
+  opacity: 0.9;
 }
 
 .logo-text {
@@ -1238,4 +1245,196 @@ body {
   .drawer {
     width: 100%;
   }
+}
+
+/* Onboarding / Project Selection Page */
+.onboarding-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  z-index: 200;
+  padding: 24px;
+  overflow-y: auto;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.onboarding-screen.fade-out {
+  opacity: 0;
+  transform: scale(0.98);
+  pointer-events: none;
+}
+
+.onboarding-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-elevated);
+  overflow: hidden;
+}
+
+.onboarding-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.onboarding-logo {
+  display: inline-flex;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 12px rgba(37, 99, 235, 0.4));
+}
+
+.onboarding-header h2 {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.onboarding-header p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.onboarding-projects {
+  max-height: 180px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 4px;
+}
+
+.onboarding-projects::-webkit-scrollbar {
+  width: 4px;
+}
+.onboarding-projects::-webkit-scrollbar-thumb {
+  background: var(--card-border);
+  border-radius: 2px;
+}
+
+.onboarding-project-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  width: 100%;
+}
+
+.onboarding-project-card:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  background: rgba(37, 99, 235, 0.05);
+  transform: translateY(-1px);
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.1);
+}
+
+.onboarding-project-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.onboarding-project-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.onboarding-project-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.onboarding-project-arrow {
+  color: var(--text-tertiary);
+  transition: var(--transition);
+}
+
+.onboarding-project-card:hover .onboarding-project-arrow {
+  color: var(--accent);
+  transform: translateX(2px);
+}
+
+.onboarding-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.onboarding-divider::before,
+.onboarding-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--card-border);
+}
+
+.onboarding-divider span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input {
+  cursor: pointer;
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Ambient glow backgrounds inside onboarding */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+}
+
+.glow-1 {
+  top: -40px;
+  right: -40px;
+  width: 160px;
+  height: 160px;
+  background: var(--accent);
+}
+
+.glow-2 {
+  bottom: -40px;
+  left: -40px;
+  width: 160px;
+  height: 160px;
+  background: var(--info);
 }

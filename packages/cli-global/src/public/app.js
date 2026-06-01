@@ -52,6 +52,12 @@ const aiTemperature = document.getElementById('aiTemperature');
 const aiMaxTokens = document.getElementById('aiMaxTokens');
 const baseUrlHint = document.getElementById('baseUrlHint');
 const semgrepRules = document.getElementById('semgrepRules');
+const onboardingScreen = document.getElementById('onboardingScreen');
+const onboardingProjects = document.getElementById('onboardingProjects');
+const onboardingTargetPath = document.getElementById('onboardingTargetPath');
+const onboardingMockScan = document.getElementById('onboardingMockScan');
+const onboardingMockAi = document.getElementById('onboardingMockAi');
+const onboardingScanBtn = document.getElementById('onboardingScanBtn');
 
 // Advanced toggle elements
 const advancedToggle = document.getElementById('advancedToggle');
@@ -175,6 +181,9 @@ async function loadProjects() {
 
     if (projects.length === 0) {
       projectList.innerHTML = '<div class="empty-state-small">No projects scanned yet</div>';
+      if (onboardingProjects) {
+        onboardingProjects.innerHTML = '<div class="empty-state-small">No projects scanned yet</div>';
+      }
       return;
     }
 
@@ -191,6 +200,29 @@ async function loadProjects() {
         projectDropdown.classList.remove('active');
       });
     });
+
+    if (onboardingProjects) {
+      onboardingProjects.innerHTML = projects.map(p => {
+        const timestamp = p.latestReport?.timestamp ? formatTime(p.latestReport.timestamp) : 'N/A';
+        return `
+          <div class="onboarding-project-card" data-project="${escapeHtml(p.name)}">
+            <div class="onboarding-project-info">
+              <span class="onboarding-project-name">${escapeHtml(p.name)}</span>
+              <span class="onboarding-project-meta">${p.reportCount} scan(s) • Last scan: ${timestamp}</span>
+            </div>
+            <svg class="onboarding-project-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        `;
+      }).join('');
+
+      onboardingProjects.querySelectorAll('.onboarding-project-card').forEach(card => {
+        card.addEventListener('click', () => {
+          selectProject(card.dataset.project);
+        });
+      });
+    }
   } catch (err) {
     console.error('Failed to load projects:', err);
   }
@@ -207,7 +239,39 @@ async function selectProject(projectName) {
     item.classList.toggle('active', item.dataset.project === projectName);
   });
 
-  await loadHistory(projectName);
+  if (!projectName) {
+    // Show onboarding screen
+    onboardingScreen.classList.remove('fade-out');
+    onboardingScreen.style.display = 'flex';
+
+    // Clear findings list and details
+    findingsList.innerHTML = `
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 12l2 2 4-4"/>
+          <path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p>No findings yet</p>
+        <span>Click "Scan Project" to start</span>
+      </div>
+    `;
+    findingCount.textContent = '0';
+    detailEmpty.style.display = 'flex';
+    detailContent.style.display = 'none';
+
+    await loadHistory(null);
+    await loadProjects();
+  } else {
+    // Hide onboarding screen with transition
+    onboardingScreen.classList.add('fade-out');
+    setTimeout(() => {
+      if (currentProject === projectName) {
+        onboardingScreen.style.display = 'none';
+      }
+    }, 300);
+
+    await loadHistory(projectName);
+  }
 }
 
 // Load History for a project
@@ -609,24 +673,40 @@ async function renderDiff(finding, resolution) {
   }
 }
 
-// Scan Handler
-scanBtn.addEventListener('click', async () => {
+// Scan implementation
+async function runScan(targetPath = null, mockScan = false, mockAi = false) {
   scanOverlay.style.display = 'flex';
   scanStatus.textContent = 'Starting scan...';
-  scanBtn.disabled = true;
+  if (scanBtn) scanBtn.disabled = true;
+  if (onboardingScanBtn) onboardingScanBtn.disabled = true;
 
   try {
-    const result = await apiPost('/api/scan', { mockScan: false, mockAi: false });
+    const body = { mockScan, mockAi };
+    if (targetPath) {
+      body.targetPath = targetPath;
+    }
+
+    const result = await apiPost('/api/scan', body);
 
     // Update current project and report
     if (result.report) {
-      currentProject = result.report._project;
-      currentReportId = result.report._id;
-      currentProjectName.textContent = currentProject;
+      const projName = result.report._project;
 
-      // Reload projects and history
+      // Reload projects list
       await loadProjects();
-      await loadHistory(currentProject);
+
+      // Select the scanned project
+      await selectProject(projName);
+
+      // Select the newly generated report
+      await loadReport(projName, result.report._id);
+
+      // Mark active in the history sidebar
+      const activeCard = historyList.querySelector(`[data-id="${result.report._id}"]`);
+      if (activeCard) {
+        historyList.querySelectorAll('.history-card').forEach(c => c.classList.remove('active'));
+        activeCard.classList.add('active');
+      }
     }
 
     showToast('Scan completed successfully!');
@@ -634,9 +714,26 @@ scanBtn.addEventListener('click', async () => {
     showToast(`Scan failed: ${err.message}`, 'error');
   } finally {
     scanOverlay.style.display = 'none';
-    scanBtn.disabled = false;
+    if (scanBtn) scanBtn.disabled = false;
+    if (onboardingScanBtn) onboardingScanBtn.disabled = false;
   }
-});
+}
+
+// Scan Handlers
+if (scanBtn) {
+  scanBtn.addEventListener('click', () => {
+    runScan(null, false, false);
+  });
+}
+
+if (onboardingScanBtn) {
+  onboardingScanBtn.addEventListener('click', () => {
+    const targetPath = onboardingTargetPath.value.trim() || null;
+    const mockScan = onboardingMockScan.checked;
+    const mockAi = onboardingMockAi.checked;
+    runScan(targetPath, mockScan, mockAi);
+  });
+}
 
 // Apply Fix Handler
 applyBtn.addEventListener('click', async () => {
@@ -935,6 +1032,16 @@ function escapeHtml(str) {
 }
 
 // Init
-document.addEventListener('DOMContentLoaded', () => {
-  loadProjects();
+document.addEventListener('DOMContentLoaded', async () => {
+  // Make logo clickable to return to project selection onboarding page
+  const logo = document.querySelector('.logo');
+  if (logo) {
+    logo.addEventListener('click', () => {
+      selectProject(null);
+    });
+  }
+
+  await loadConfig();
+  await loadProjects();
+  selectProject(null);
 });
