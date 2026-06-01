@@ -339,10 +339,11 @@ async function loadReport(projectName, reportId) {
 // Build directory tree structure from findings file paths
 function buildFileTree(findings) {
   const root = { name: currentProject || 'Project', type: 'folder', path: '', children: {} };
+  const targetPath = currentReport?.target_path;
 
   findings.forEach((finding, index) => {
-    const filePath = finding.file;
-    const parts = filePath.replace(/\\/g, '/').split('/');
+    const relPath = getRelativePath(finding.file, targetPath);
+    const parts = relPath.split('/');
     
     let current = root;
     let accumulatedPath = '';
@@ -356,7 +357,7 @@ function buildFileTree(findings) {
           current.children[part] = {
             name: part,
             type: 'file',
-            path: filePath,
+            path: finding.file,
             indices: []
           };
         }
@@ -520,6 +521,7 @@ function renderFindings(findings, filterPath = null) {
     const severity = (f.severity || '').toLowerCase();
     const isActive = originalIndex === selectedFindingIndex;
     const isApplied = f._applied;
+    const relFile = getRelativePath(f.file, currentReport?.target_path);
 
     return `
       <div class="finding-card ${isActive ? 'active' : ''}" data-index="${originalIndex}">
@@ -528,7 +530,7 @@ function renderFindings(findings, filterPath = null) {
           <span class="finding-rule">${escapeHtml(f.rule_id)}</span>
           <span class="finding-status ${isApplied ? 'applied' : ''}">${isApplied ? 'Applied' : 'Pending'}</span>
         </div>
-        <div class="finding-file">${escapeHtml(f.file)}:${f.line}</div>
+        <div class="finding-file">${escapeHtml(relFile)}:${f.line}</div>
       </div>
     `;
   }).join('');
@@ -576,7 +578,7 @@ async function selectFinding(index) {
   detailRuleId.textContent = finding.rule_id;
   detailStatus.textContent = finding._applied ? 'Applied' : 'Pending';
   detailStatus.className = `finding-status ${finding._applied ? 'applied' : ''}`;
-  detailFile.textContent = finding.file;
+  detailFile.textContent = getRelativePath(finding.file, currentReport?.target_path);
   detailLine.textContent = finding.line;
   detailMessage.textContent = finding.message;
 
@@ -1207,6 +1209,25 @@ function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
+}
+
+// Get relative path of a file with respect to a target path
+function getRelativePath(absolutePath, targetPath) {
+  if (!absolutePath) return '';
+  if (!targetPath) return absolutePath;
+
+  const abs = absolutePath.replace(/\\/g, '/');
+  const target = targetPath.replace(/\\/g, '/');
+
+  if (abs.startsWith(target)) {
+    let rel = abs.slice(target.length);
+    if (rel.startsWith('/')) {
+      rel = rel.slice(1);
+    }
+    return rel || '.';
+  }
+
+  return abs;
 }
 
 // Init
