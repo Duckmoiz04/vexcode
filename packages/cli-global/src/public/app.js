@@ -257,7 +257,7 @@ function switchTab(tabName) {
     if (inspBtn) inspBtn.classList.remove('active');
   } else if (tabName === 'inspector') {
     if (detailDashboard) detailDashboard.style.display = 'none';
-    
+
     if (selectedFindingIndex !== null) {
       if (detailContent) detailContent.style.display = 'block';
       if (detailEmpty) detailEmpty.style.display = 'none';
@@ -394,7 +394,7 @@ function classifyFinding(finding) {
 
   // 1. Security (Bảo mật)
   const securityKeywords = [
-    'security', 'vuln', 'injection', 'xss', 'csrf', 'secret', 'key', 
+    'security', 'vuln', 'injection', 'xss', 'csrf', 'secret', 'key',
     'token', 'jwt', 'crypto', 'auth', 'password', 'credential', 'ssrf',
     'overflow', 'leak', 'private', 'cert', 'hash', 'ssl', 'tls'
   ];
@@ -409,7 +409,7 @@ function classifyFinding(finding) {
 
   // 3. Style & Maintainability (Khả năng bảo trì & Viết sạch)
   const styleKeywords = [
-    'style', 'format', 'naming', 'deprecated', 'convention', 'comment', 
+    'style', 'format', 'naming', 'deprecated', 'convention', 'comment',
     'spacing', 'indent', 'unused', 'duplicate', 'complex', 'nest'
   ];
   if (styleKeywords.some(kw => ruleId.includes(kw))) {
@@ -425,7 +425,7 @@ function showDashboard(report) {
   if (!report) return;
 
   const findings = report.findings || [];
-  
+
   // Categorize findings
   let securityCount = 0;
   let qualityCount = 0;
@@ -596,10 +596,10 @@ function showDashboard(report) {
       const symName = f.ast_context.symbol_name;
       const filePath = f.file;
       const key = `${symName}@${filePath}`;
-      
+
       const blastRadiusList = f.ast_context.blast_radius || [];
       const blastCount = blastRadiusList.length;
-      
+
       if (!symbolsMap.has(key)) {
         symbolsMap.set(key, {
           name: symName,
@@ -609,7 +609,7 @@ function showDashboard(report) {
           issuesCount: 0
         });
       }
-      
+
       symbolsMap.get(key).issuesCount++;
     }
   });
@@ -628,7 +628,7 @@ function showDashboard(report) {
         const affectedDetails = sym.blastRadius.length > 0
           ? `Blast: ${sym.blastRadius.slice(0, 3).map(br => br.name).join(', ')}${sym.blastRadius.length > 3 ? '...' : ''}`
           : 'No affected symbols';
-        
+
         return `
           <div class="top-file-item" style="align-items: flex-start; flex-direction: column; gap: 4px;">
             <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
