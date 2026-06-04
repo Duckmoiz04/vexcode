@@ -13,6 +13,8 @@ interface SidebarProps {
   setFilterSeverity: (sev: 'all' | 'error' | 'warning' | 'info') => void;
   filterCategory: 'all' | 'security' | 'quality' | 'maintainability' | 'architecture';
   setFilterCategory: (cat: 'all' | 'security' | 'quality' | 'maintainability' | 'architecture') => void;
+  selectedFindingIndex: number | null;
+  onSelectFindingIndex?: (index: number | null) => void;
 }
 
 interface TreeNode {
@@ -35,8 +37,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setFilterSeverity,
   filterCategory,
   setFilterCategory,
+  selectedFindingIndex,
+  onSelectFindingIndex,
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+  const [sidebarTab, setSidebarTab] = useState<'explorer' | 'findings'>('explorer');
+
   
   const toggleFolder = (path: string) => {
     setExpandedFolders((prev) => {
@@ -235,13 +241,39 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="w-80 min-w-80 bg-bg-primary border-r border-card-border flex flex-col h-full overflow-hidden">
-      {/* Explorer / File Tree Section */}
+      {/* Explorer / Findings Tabs Header */}
+      <div className="flex border-b border-card-border/50 bg-bg-secondary/40 shrink-0 px-4 pt-2 gap-3">
+        <button
+          onClick={() => setSidebarTab('explorer')}
+          className={`pb-2 text-[10.5px] font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+            sidebarTab === 'explorer'
+              ? 'border-accent text-accent'
+              : 'border-transparent text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <Folder className="h-3 w-3" />
+          <span>Cây thư mục</span>
+        </button>
+        <button
+          onClick={() => setSidebarTab('findings')}
+          className={`pb-2 text-[10.5px] font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+            sidebarTab === 'findings'
+              ? 'border-accent text-accent'
+              : 'border-transparent text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          <ShieldAlert className="h-3 w-3" />
+          <span>Danh sách lỗi</span>
+        </button>
+      </div>
+
       <div className="flex-1 flex flex-col min-h-0">
-        
         {/* Title, Stats Counter and Filter Controls */}
         <div className="px-4 py-3 border-b border-card-border/50 flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-text-secondary">Explorer</h3>
+            <h3 className="text-xs font-semibold text-text-secondary">
+              {sidebarTab === 'explorer' ? 'Explorer' : 'Project Findings'}
+            </h3>
             <span className="text-[10px] font-mono text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
               {searchedAndFilteredFindings.length} / {findings.length}
             </span>
@@ -297,13 +329,67 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
+        {/* Dynamic Tab Panel Content */}
         <div className="flex-1 overflow-y-auto p-3 scrollbar-thin">
           {findings.length === 0 ? (
-            <div className="text-xs text-text-tertiary text-center py-6">No files indexed</div>
+            <div className="text-xs text-text-tertiary text-center py-6">No data indexed</div>
           ) : searchedAndFilteredFindings.length === 0 ? (
-            <div className="text-xs text-text-tertiary text-center py-6 italic">No matching files found</div>
-          ) : (
+            <div className="text-xs text-text-tertiary text-center py-6 italic">No matching results found</div>
+          ) : sidebarTab === 'explorer' ? (
             renderTreeNode(fileTree)
+          ) : (
+            <div className="space-y-2">
+              {searchedAndFilteredFindings.map((f: any) => {
+                const originalIndex = findings.indexOf(f);
+                const isActive = originalIndex === selectedFindingIndex;
+                const severity = (f.severity || '').toLowerCase();
+                const isApplied = f._applied;
+
+                return (
+                  <div
+                    key={originalIndex}
+                    onClick={() => {
+                      onSelectFilePath(f.file);
+                      if (onSelectFindingIndex) {
+                        onSelectFindingIndex(originalIndex);
+                      }
+                    }}
+                    className={`p-2.5 rounded-lg border cursor-pointer transition-all flex flex-col gap-1 ${
+                      isActive
+                        ? 'bg-accent/10 border border-accent/30 text-text-primary shadow-sm'
+                        : 'bg-bg-tertiary/20 border border-card-border/30 hover:bg-bg-tertiary/40 text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full shrink-0 ${
+                          severity === 'error'
+                            ? 'bg-error shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                            : severity === 'warning'
+                            ? 'bg-warning shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                            : 'bg-info shadow-[0_0_8px_rgba(59,130,246,0.5)]'
+                        }`}
+                      />
+                      <span className="text-[10px] font-mono font-bold truncate flex-1 leading-none text-text-primary">
+                        {f.rule_id.split('.').pop() || f.rule_id}
+                      </span>
+                      {isApplied && (
+                        <span className="text-[8px] px-1 bg-success/15 border border-success/30 text-success rounded font-semibold font-sans uppercase">
+                          applied
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[9px] font-mono text-text-tertiary flex items-center justify-between">
+                      <span className="truncate pr-2 font-medium">{f.file.split(/[\\/]/).pop()}</span>
+                      <span className="shrink-0">Dòng {f.line}</span>
+                    </div>
+                    <p className="text-[10px] text-text-secondary leading-normal line-clamp-2 select-none font-sans mt-0.5">
+                      {f.message}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>

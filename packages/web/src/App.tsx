@@ -602,7 +602,10 @@ export const App: React.FC = () => {
               setFilterSeverity={setFilterSeverity}
               filterCategory={filterCategory}
               setFilterCategory={setFilterCategory}
+              selectedFindingIndex={selectedFindingIndex}
+              onSelectFindingIndex={handleSelectFindingIndex}
             />
+
 
             {/* Central Panels with Tab Controllers */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
