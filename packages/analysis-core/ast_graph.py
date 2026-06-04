@@ -10,6 +10,8 @@ def is_gitnexus_available() -> bool:
     Invokes 'gitnexus --version' to check if the GitNexus CLI is installed
     globally and is executable.
     """
+    if os.environ.get("TEST_SKIP_GITNEXUS") == "true":
+        return False
     try:
         shell = (sys.platform == 'win32')
         result = subprocess.run(

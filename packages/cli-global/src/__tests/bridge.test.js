@@ -7,6 +7,8 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+process.env.TEST_SKIP_GITNEXUS = 'true';
+
 describe('Python Process Bridge', () => {
   it('should resolve python path', () => {
     const pythonPath = getPythonPath();

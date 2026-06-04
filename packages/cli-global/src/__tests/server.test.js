@@ -9,9 +9,18 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const envPath = path.resolve(__dirname, '../../../analysis-core/.env');
+process.env.TEST_SKIP_GITNEXUS = 'true';
+
+let mockCancelled = false;
 
 vi.mock('../bridge.js', () => ({
   runPythonAnalysis: vi.fn().mockImplementation((targetPath, reportOutputPath, mockScan, mockAi) => {
+    if (mockCancelled) {
+      mockCancelled = false; // Reset for subsequent tests
+      const err = new Error('Scan cancelled by user');
+      err.cancelled = true;
+      return Promise.reject(err);
+    }
     const fs = require('node:fs');
     fs.writeFileSync(reportOutputPath, JSON.stringify({
       scanner: 'semgrep',
@@ -20,6 +29,10 @@ vi.mock('../bridge.js', () => ({
       findings: []
     }), 'utf8');
     return Promise.resolve();
+  }),
+  cancelActiveScan: vi.fn().mockImplementation(() => {
+    mockCancelled = true;
+    return true;
   })
 }));
 
@@ -87,6 +100,21 @@ describe('Express REST Server API', () => {
       expect(res.body.reportPath).toBeDefined();
     });
 
+    it('should trigger a fast scan and return success', async () => {
+      const res = await request(app)
+        .post('/api/scan')
+        .send({
+          targetPath: path.resolve(__dirname, '../..'),
+          mockScan: true,
+          mockAi: true,
+          fastScan: true
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.reportPath).toBeDefined();
+    });
+
     it('should reject unsafe target path', async () => {
       const res = await request(app)
         .post('/api/scan')
@@ -97,6 +125,45 @@ describe('Express REST Server API', () => {
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
       expect(res.body.error).toContain('outside the workspace directory');
+    });
+
+    it('should support scan cancellation', async () => {
+      // 1. Request cancellation
+      const cancelRes = await request(app)
+        .post('/api/scan/cancel')
+        .send();
+      
+      expect(cancelRes.status).toBe(200);
+      expect(cancelRes.body.success).toBe(true);
+      expect(cancelRes.body.cancelled).toBe(true);
+
+      // 2. Trigger scan (should reject with cancellation error)
+      const scanRes = await request(app)
+        .post('/api/scan')
+        .send({
+          targetPath: path.resolve(__dirname, '../..'),
+          mockScan: true,
+          mockAi: true
+        });
+
+      expect(scanRes.status).toBe(400);
+      expect(scanRes.body.success).toBe(false);
+      expect(scanRes.body.error).toBe('Scan cancelled by user');
+    });
+
+    it('should support real-time scan streaming (SSE)', async () => {
+      const res = await request(app)
+        .get('/api/scan/stream')
+        .query({
+          targetPath: path.resolve(__dirname, '../..'),
+          mockScan: true,
+          mockAi: true
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('text/event-stream');
+      expect(res.text).toContain('data: {"type":"status",');
+      expect(res.text).toContain('data: {"type":"complete",');
     });
   });
 
@@ -204,6 +271,96 @@ describe('Express REST Server API', () => {
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
       expect(res.body.error).toContain('outside the workspace directory');
+    });
+  });
+
+  describe('Line Mapping and Alignment', () => {
+    const tempMapFilePath = path.join(__dirname, 'temp_map_file.py');
+
+    beforeEach(() => {
+      fs.writeFileSync(
+        tempMapFilePath,
+        '# Line 1\n' +
+        '# Line 2\n' +
+        'exec(user_input)\n' +
+        '# Line 4\n',
+        'utf8'
+      );
+    });
+
+    afterEach(() => {
+      if (fs.existsSync(tempMapFilePath)) {
+        fs.unlinkSync(tempMapFilePath);
+      }
+    });
+
+    it('should resolve line mapping with exact match at original line', async () => {
+      const res = await request(app)
+        .get('/api/line-map')
+        .query({
+          path: tempMapFilePath,
+          line: 3,
+          codeText: 'exec(user_input)'
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.mappedLine).toBe(3);
+    });
+
+    it('should resolve line mapping if content shifts down', async () => {
+      // Shift content by adding two lines at the top
+      fs.writeFileSync(
+        tempMapFilePath,
+        '# Line 1\n' +
+        '# New Line A\n' +
+        '# New Line B\n' +
+        '# Line 2\n' +
+        'exec(user_input)\n' +
+        '# Line 4\n',
+        'utf8'
+      );
+
+      const res = await request(app)
+        .get('/api/line-map')
+        .query({
+          path: tempMapFilePath,
+          line: 3,
+          codeText: 'exec(user_input)'
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.mappedLine).toBe(5);
+    });
+
+    it('should apply remediation successfully even after line shift', async () => {
+      // Shift content by adding two lines at the top
+      fs.writeFileSync(
+        tempMapFilePath,
+        '# Line 1\n' +
+        '# New Line A\n' +
+        '# New Line B\n' +
+        '# Line 2\n' +
+        'exec(user_input)\n' +
+        '# Line 4\n',
+        'utf8'
+      );
+
+      const res = await request(app)
+        .post('/api/apply')
+        .send({
+          filePath: tempMapFilePath,
+          targetLine: 3,
+          targetContent: 'exec(user_input)',
+          replacementContent: 'subprocess.run(["echo", user_input])',
+          codeText: 'exec(user_input)'
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+
+      const fileContent = fs.readFileSync(tempMapFilePath, 'utf8');
+      expect(fileContent).toContain('subprocess.run(["echo", user_input])');
+      expect(fileContent).not.toContain('exec(user_input)');
     });
   });
 });

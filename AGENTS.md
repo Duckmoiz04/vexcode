@@ -13,7 +13,16 @@ Codex discovers project-local skills from `.agents/skills/`. In this repo, `.age
 
 Prefer updating `.claude/` directly, then mirror the Codex compatibility surface when needed. Because `.agents/skills/` resolves to the same folder, new skills added in either path appear in both places automatically.
 
-See `process/context/all-context.md` for project-specific coding preferences and conventions.
+## Project Overview
+
+**AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
+
+- **CLI + Web UI** (`packages/cli-global/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **Analysis Engine** (`packages/analysis-core/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
+- **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
+- **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
+
+See `process/context/all-context.md` for full project context and conventions.
 
 ## RIPER-5 Spec-Driven Development System
 
@@ -209,3 +218,87 @@ Promotion protocol from general to feature folder:
 4. Inform subagents of the new feature scope going forward
 
 Feature list maintenance: The Current features list in `process/context/all-context.md` must be updated whenever a new feature folder is created or an empty one is removed.
+
+---
+
+## Repository Structure
+
+```
+./
+  .agents/           → .claude/skills/ (junction)
+  .claude/
+    agents/          – 12 RIPER-5 agent definitions
+    skills/          – 32 skill directories (SKILL.md + refs/scripts)
+    hooks/           – Session lifecycle hooks
+  .codex/            – Codex mirror of .claude/ agents + hooks
+  packages/
+    cli-global/      – Node.js ESM CLI + Express API + Web UI
+    analysis-core/   – Python 3.12 security analysis engine
+  process/
+    context/         – Durable repo knowledge (all-context.md)
+    development-protocols/ – Workflow rules (orchestration, implementation-standards, etc.)
+    features/        – Feature-scoped clusters ({feature}/active/, completed/, etc.)
+    general-plans/   – Cross-cutting plans (active/, completed/, backlog/)
+  AGENTS.md           – This file
+  CLAUDE.md           – Claude-specific orchestrator rules
+  opencode.json       – OpenCode/Codex config
+  vc-manifest.json    – Kit manifest
+  resolve-manifest.mjs – Manifest resolver
+```
+
+## Where to Look
+
+| Task | Start Here |
+|------|------------|
+| Agent harness, RIPER-5 modes, skills, hooks | `.claude/agents/`, `.claude/skills/`, `process/development-protocols/` |
+| Python analysis engine | `packages/analysis-core/` ([AGENTS.md](packages/analysis-core/AGENTS.md)) |
+| Node.js CLI + Express + Web UI | `packages/cli-global/` ([AGENTS.md](packages/cli-global/AGENTS.md)) |
+| Project context & conventions | `process/context/all-context.md` |
+| Active plans | `process/general-plans/active/`, `process/features/*/active/` |
+| Test docs | `process/context/tests/all-tests.md` |
+| UI/UX guidelines | `process/context/uxui/all-uxui.md` |
+| Plan format examples | `process/context/planning/all-planning.md` |
+
+## Commands
+
+```bash
+# --- Node.js CLI (packages/cli-global) ---
+cd packages/cli-global
+npm install                # Install deps (Node >= 18.3)
+npm test                   # vitest run (3 test suites)
+
+# CLI usage (via npm link or directly):
+node bin/cli.js scan --target <dir>          # Full scan
+node bin/cli.js scan --target <dir> --mock-scan --mock-ai  # Offline mode
+node bin/cli.js serve --port 3000            # Express dashboard
+
+# --- Python analysis engine (packages/analysis-core) ---
+cd packages/analysis-core
+python -m venv .venv
+.venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
+python -m unittest test_ast_graph.py         # Run Python tests
+
+python main.py --target <dir> --output report.json           # Full pipeline
+python main.py --target <dir> --mock-scan --mock-ai          # Offline
+```
+
+**No CI/CD pipeline configured.** No linter/formatter configured.
+
+## Anti-Patterns (This Project)
+
+| Rule | Source |
+|------|--------|
+| **NEVER** commit secrets or credentials | implementation-standards.md |
+| **NEVER** paper over a regression — classify and record it | phase-programs.md |
+| **NEVER** ignore BLOCKED or NEEDS_CONTEXT subagent status | orchestration.md |
+| **NEVER** retry the exact same blocked approach 3+ times | orchestration.md |
+| **NEVER** wave away failing tests to force green status | implementation-standards.md |
+| **NEVER** auto-archive a plan without user-visible action | orchestration.md |
+| **NEVER** silently widen scope across phases | phase-programs.md |
+| **NEVER** load whole `process/context/` tree — read router first | all-context.md |
+| **DO NOT** jump from phase plan to implementation without fresh research | phase-programs.md |
+| **DO NOT** run a multi-phase program as one giant EXECUTE pass | phase-programs.md |
+| **DO NOT** assume every feature folder has active plans | plan-lifecycle.md |
+| **DO NOT** add features not in the approved plan (scope creep) | example-complex-prd.md |
+| **MUST** keep TS/JS source files under ~200 lines (markdown exempt) | implementation-standards.md |
+| **MUST** use result objects over throwing for recoverable errors | implementation-standards.md |

@@ -1,0 +1,117 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { ChevronDown, Folder, Settings, Search } from 'lucide-react';
+
+interface HeaderProps {
+  projectName: string | null;
+  projects: any[];
+  onSelectProject: (name: string | null) => void;
+  onOpenSettings: () => void;
+  onStartScan: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({
+  projectName,
+  projects,
+  onSelectProject,
+  onOpenSettings,
+  onStartScan,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <header className="flex items-center justify-between px-6 py-3 bg-bg-secondary/75 backdrop-blur-md border-b border-card-border z-40">
+      {/* Left side: Logo & Project selector */}
+      <div className="flex items-center gap-6">
+        <div 
+          className="flex items-center gap-2.5 cursor-pointer hover:opacity-90 transition-opacity"
+          onClick={() => onSelectProject(null)}
+        >
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-accent text-sm font-bold text-white shadow-lg">
+            ◇
+          </div>
+          <span className="text-[15px] font-semibold tracking-tight text-text-primary">AI Code Review</span>
+        </div>
+
+        {/* Project Selector (Custom Dropdown) */}
+        {projectName && (
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-mono transition-all ${
+                isOpen
+                  ? 'border-accent/40 bg-accent/10 text-text-primary'
+                  : 'border-card-border bg-bg-tertiary text-text-secondary hover:border-text-secondary hover:bg-bg-tertiary/80'
+              }`}
+            >
+              <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
+              <span className="max-w-[160px] truncate">{projectName}</span>
+              <ChevronDown className={`h-3 w-3 text-text-tertiary transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            {isOpen && (
+              <div className="absolute top-full left-0 z-50 mt-1.5 w-80 animate-slide-up overflow-hidden rounded-xl border border-card-border bg-bg-tertiary shadow-2xl">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-card-border text-[10px] font-semibold tracking-wider text-text-tertiary uppercase">
+                  <span>Projects</span>
+                  <span className="bg-accent px-1.5 py-0.5 rounded-full text-white text-[9px]">{projects.length}</span>
+                </div>
+                <div className="max-h-72 overflow-y-auto p-1.5">
+                  {projects.length === 0 ? (
+                    <div className="px-4 py-3 text-xs text-text-tertiary text-center">No projects scanned yet</div>
+                  ) : (
+                    projects.map((p) => (
+                      <button
+                        key={p.name}
+                        onClick={() => {
+                          onSelectProject(p.name);
+                          setIsOpen(false);
+                        }}
+                        className={`flex w-full items-center gap-3 px-3 py-2 rounded-lg text-left transition-all ${
+                          p.name === projectName
+                            ? 'bg-accent/10 border-l-2 border-accent text-text-primary'
+                            : 'hover:bg-bg-secondary text-text-secondary hover:text-text-primary'
+                        }`}
+                      >
+                        <Folder className="h-4 w-4 shrink-0 text-accent/80" />
+                        <span className="flex-1 truncate font-mono text-xs">{p.name}</span>
+                        <span className="text-[10px] text-text-tertiary font-sans shrink-0">{p.reportCount} scan(s)</span>
+                      </button>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Right side: Control buttons */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onOpenSettings}
+          className="flex h-9 w-9 items-center justify-center rounded-md border border-card-border text-text-secondary hover:text-text-primary hover:bg-bg-tertiary transition-all"
+          title="Settings"
+        >
+          <Settings className="h-4.5 w-4.5" />
+        </button>
+        <button
+          onClick={onStartScan}
+          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white text-xs font-semibold rounded-lg shadow-lg hover:-translate-y-0.5 transition-all"
+        >
+          <Search className="h-3.5 w-3.5" />
+          <span>Scan Project</span>
+        </button>
+      </div>
+    </header>
+  );
+};

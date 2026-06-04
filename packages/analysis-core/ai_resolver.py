@@ -15,7 +15,7 @@ else:
 
 # Load env variables
 NINEROUTER_API_KEY = os.getenv("NINEROUTER_API_KEY")
-NINEROUTER_BASE_URL = os.getenv("NINEROUTER_BASE_URL", "https://api.9router.com/v1")
+NINEROUTER_BASE_URL = os.getenv("NINEROUTER_BASE_URL", "http://localhost:20128/v1")
 NINEROUTER_MODEL = os.getenv("NINEROUTER_MODEL", "openai/gpt-4o-mini")
 
 # Standard mock AI resolutions map

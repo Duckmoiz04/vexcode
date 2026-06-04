@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "mcp": {
+    "gitnexus": {
+      "type": "local",
+      "command": ["npx", "--prefix", "D:\\GitNexus\\gitnexus", "tsx", "src/cli/index.ts", "mcp"],
+      "enabled": true
+    }
+  }
+}

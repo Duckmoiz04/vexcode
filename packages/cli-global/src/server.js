@@ -4,7 +4,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSy
 import { resolve, dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
-import { runPythonAnalysis } from './bridge.js';
+import { runPythonAnalysis, cancelActiveScan } from './bridge.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -133,10 +133,121 @@ app.post('/api/config', (req, res) => {
   }
 });
 
+// POST /api/scan/cancel
+app.post('/api/scan/cancel', (req, res) => {
+  const cancelled = cancelActiveScan();
+  res.json({ success: true, cancelled });
+});
+
+// GET /api/scan/stream (SSE)
+app.get('/api/scan/stream', async (req, res) => {
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive'
+  });
+
+  try {
+    const { targetPath, mockScan, mockAi, fastScan } = req.query;
+    const finalTarget = targetPath ? resolve(targetPath) : workspaceDir;
+
+    if (!isPathSafe(finalTarget)) {
+      res.write(`data: ${JSON.stringify({ type: 'error', error: 'Target path is outside the workspace directory.' })}\n\n`);
+      return res.end();
+    }
+
+    const projectName = getProjectName(finalTarget);
+    const projectDir = getProjectReportDir(projectName);
+    mkdirSync(projectDir, { recursive: true });
+    const reportFilename = getReportFilename();
+    const reportPath = join(projectDir, reportFilename);
+
+    // Send initial status event to satisfy tests expecting data: {"type":"status",
+    res.write(`data: ${JSON.stringify({ type: 'status', message: 'Starting scan...' })}\n\n`);
+
+    await runPythonAnalysis(
+      finalTarget,
+      reportPath,
+      mockScan === 'true' || mockScan === true,
+      mockAi === 'true' || mockAi === true,
+      fastScan === 'true' || fastScan === true,
+      (progress) => {
+        res.write(`data: ${JSON.stringify({ type: 'status', message: progress.line })}\n\n`);
+      }
+    );
+
+    const reportContent = JSON.parse(readFileSync(reportPath, 'utf8'));
+    reportContent._id = reportFilename.replace('.json', '');
+    reportContent._project = projectName;
+    reportContent._savedAt = reportPath;
+
+    res.write(`data: ${JSON.stringify({ type: 'complete', report: reportContent })}\n\n`);
+    res.end();
+  } catch (error) {
+    res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+    res.end();
+  }
+});
+
+// GET /api/line-map
+app.get('/api/line-map', (req, res) => {
+  try {
+    const { path: filePath, line, codeText } = req.query;
+    if (!filePath || line === undefined || !codeText) {
+      return res.status(400).json({ success: false, error: 'Missing required parameters: path, line, codeText' });
+    }
+
+    const resolvedPath = resolve(filePath);
+    if (!isPathSafe(resolvedPath)) {
+      return res.status(400).json({ success: false, error: 'File path is outside the workspace directory.' });
+    }
+
+    if (!existsSync(resolvedPath)) {
+      return res.status(404).json({ success: false, error: 'File not found.' });
+    }
+
+    const targetLineNum = parseInt(line, 10);
+    const fileContent = readFileSync(resolvedPath, 'utf8');
+    const lines = fileContent.split(/\r?\n/);
+
+    // 1. Check if original line matches
+    if (targetLineNum >= 1 && targetLineNum <= lines.length) {
+      const originalLineContent = lines[targetLineNum - 1];
+      if (originalLineContent.includes(codeText) || originalLineContent.trim() === codeText.trim()) {
+        return res.json({ success: true, mappedLine: targetLineNum });
+      }
+    }
+
+    // 2. Otherwise search for closest matching line
+    let closestLine = -1;
+    let minDiff = Infinity;
+
+    for (let i = 0; i < lines.length; i++) {
+      const currentLineContent = lines[i];
+      if (currentLineContent.includes(codeText) || currentLineContent.trim() === codeText.trim()) {
+        const lineNum = i + 1;
+        const diff = Math.abs(lineNum - targetLineNum);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestLine = lineNum;
+        }
+      }
+    }
+
+    if (closestLine !== -1) {
+      return res.json({ success: true, mappedLine: closestLine });
+    }
+
+    return res.status(404).json({ success: false, error: 'Target code text not found in file.' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // POST /api/scan
 app.post('/api/scan', async (req, res) => {
   try {
-    const { targetPath, mockScan, mockAi } = req.body;
+    const { targetPath, mockScan, mockAi, fastScan } = req.body;
 
     const finalTarget = targetPath ? resolve(targetPath) : workspaceDir;
 
@@ -151,7 +262,7 @@ app.post('/api/scan', async (req, res) => {
     const reportFilename = getReportFilename();
     const reportPath = join(projectDir, reportFilename);
 
-    await runPythonAnalysis(finalTarget, reportPath, !!mockScan, !!mockAi);
+    await runPythonAnalysis(finalTarget, reportPath, !!mockScan, !!mockAi, !!fastScan);
 
     // Read the saved report to return it
     const reportContent = JSON.parse(readFileSync(reportPath, 'utf8'));
@@ -166,7 +277,8 @@ app.post('/api/scan', async (req, res) => {
       reportPath: reportPath
     });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    const statusCode = error.cancelled ? 400 : 500;
+    res.status(statusCode).json({ success: false, error: error.message });
   }
 });
 
@@ -338,7 +450,7 @@ app.get('/api/report', (req, res) => {
 // POST /api/apply
 app.post('/api/apply', (req, res) => {
   try {
-    const { filePath, targetLine, targetContent, replacementContent } = req.body;
+    const { filePath, targetLine, targetContent, replacementContent, codeText } = req.body;
 
     if (!filePath || targetLine === undefined || targetContent === undefined || replacementContent === undefined) {
       return res.status(400).json({ success: false, error: 'Missing required parameters: filePath, targetLine, targetContent, replacementContent.' });
@@ -357,11 +469,35 @@ app.post('/api/apply', (req, res) => {
     const lines = fileContent.split(/\r?\n/);
     const targetLines = targetContent.split(/\r?\n/);
 
-    if (targetLine < 1 || targetLine + targetLines.length - 1 > lines.length) {
-      return res.status(400).json({ success: false, error: `Target line ${targetLine} is out of file bounds.` });
+    let lineToUse = parseInt(targetLine, 10);
+
+    if (codeText) {
+      // Resolve line mapping first
+      let closestLine = -1;
+      let minDiff = Infinity;
+
+      for (let i = 0; i < lines.length; i++) {
+        const currentLineContent = lines[i];
+        if (currentLineContent.includes(codeText) || currentLineContent.trim() === codeText.trim()) {
+          const lineNum = i + 1;
+          const diff = Math.abs(lineNum - lineToUse);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestLine = lineNum;
+          }
+        }
+      }
+
+      if (closestLine !== -1) {
+        lineToUse = closestLine;
+      }
     }
 
-    const fileSegment = lines.slice(targetLine - 1, targetLine - 1 + targetLines.length).join('\n');
+    if (lineToUse < 1 || lineToUse + targetLines.length - 1 > lines.length) {
+      return res.status(400).json({ success: false, error: `Target line ${lineToUse} is out of file bounds.` });
+    }
+
+    const fileSegment = lines.slice(lineToUse - 1, lineToUse - 1 + targetLines.length).join('\n');
 
     const normalizedFileSegment = fileSegment.replace(/\r/g, '');
     const normalizedTarget = targetContent.replace(/\r/g, '');
@@ -376,7 +512,7 @@ app.post('/api/apply', (req, res) => {
     const replacedSegment = normalizedFileSegment.replace(normalizedTarget, replacementContent);
     const replacedLines = replacedSegment.split('\n');
 
-    lines.splice(targetLine - 1, targetLines.length, ...replacedLines);
+    lines.splice(lineToUse - 1, targetLines.length, ...replacedLines);
 
     const hasCRLF = fileContent.includes('\r\n');
     const newFileContent = lines.join(hasCRLF ? '\r\n' : '\n');

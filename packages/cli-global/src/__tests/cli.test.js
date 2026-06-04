@@ -16,7 +16,8 @@ function runCli(args = []) {
         env: {
           ...process.env,
           NODE_ENV: 'test',
-          TEST_SKIP_BROWSER: 'true'
+          TEST_SKIP_BROWSER: 'true',
+          TEST_SKIP_GITNEXUS: 'true'
         }
       },
       (error, stdout, stderr) => {

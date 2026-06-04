@@ -17,6 +17,8 @@ export function getPythonPath() {
   return resolve(analysisCoreDir, pythonRelativePath);
 }
 
+let activeScan = null;
+
 /**
  * Run the Python Analysis Core subprocess.
  * @param {string} targetPath - The path to run scanning on.
@@ -25,7 +27,7 @@ export function getPythonPath() {
  * @param {boolean} [mockAi=false] - Use mock AI suggestions.
  * @returns {Promise<{stdout: string, stderr: string}>}
  */
-export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false, mockAi = false) {
+export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false, mockAi = false, fastScan = false, onProgress = null) {
   return new Promise((resolvePromise, rejectPromise) => {
     const pythonPath = getPythonPath();
 
@@ -45,6 +47,9 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
     if (mockAi) {
       args.push('--mock-ai');
     }
+    if (fastScan) {
+      args.push('--fast');
+    }
 
     console.log(`Spawning Python process: ${pythonPath} ${args.join(' ')}`);
 
@@ -53,11 +58,21 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
       stdio: ['ignore', 'pipe', 'pipe']
     });
 
+    const scanRecord = { child, cancelled: false };
+    activeScan = scanRecord;
+
     let stdout = '';
     let stderr = '';
 
     child.stdout.on('data', (data) => {
-      stdout += data.toString();
+      const text = data.toString();
+      stdout += text;
+      if (onProgress) {
+        const lines = text.split('\n').filter(l => l.trim());
+        for (const line of lines) {
+          onProgress({ type: 'stdout', line });
+        }
+      }
     });
 
     child.stderr.on('data', (data) => {
@@ -67,10 +82,22 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
       const lines = text.split('\n').filter(l => l.trim());
       for (const line of lines) {
         console.log(`  \x1b[90m[python]\x1b[0m ${line}`);
+        if (onProgress) {
+          onProgress({ type: 'stderr', line });
+        }
       }
     });
 
     child.on('close', (code) => {
+      if (activeScan === scanRecord) {
+        activeScan = null;
+      }
+      if (scanRecord.cancelled) {
+        const err = new Error('Scan cancelled by user');
+        err.cancelled = true;
+        rejectPromise(err);
+        return;
+      }
       if (code === 0) {
         resolvePromise({ stdout, stderr });
       } else {
@@ -79,9 +106,25 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
     });
 
     child.on('error', (err) => {
+      if (activeScan === scanRecord) {
+        activeScan = null;
+      }
       rejectPromise(err);
     });
   });
+}
+
+/**
+ * Cancel the active running scan, if any.
+ * @returns {boolean} True if cancellation was requested, false if no active scan was running.
+ */
+export function cancelActiveScan() {
+  if (activeScan && activeScan.child) {
+    activeScan.cancelled = true;
+    activeScan.child.kill();
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -90,10 +133,11 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
  * @param {string} reportOutputPath
  * @param {boolean} [mockScan=false]
  * @param {boolean} [mockAi=false]
+ * @param {boolean} [fastScan=false]
  * @returns {Promise<object>} Parsed report JSON
  */
-export async function runScanAndReadReport(targetPath, reportOutputPath, mockScan = false, mockAi = false) {
-  await runPythonAnalysis(targetPath, reportOutputPath, mockScan, mockAi);
+export async function runScanAndReadReport(targetPath, reportOutputPath, mockScan = false, mockAi = false, fastScan = false) {
+  await runPythonAnalysis(targetPath, reportOutputPath, mockScan, mockAi, fastScan);
 
   if (!existsSync(reportOutputPath)) {
     throw new Error(`Report file not found at ${reportOutputPath} after scan.`);

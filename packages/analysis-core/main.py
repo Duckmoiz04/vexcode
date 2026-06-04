@@ -15,6 +15,50 @@ from ast_graph import (
     MOCK_AST_CONTEXTS
 )
 
+import subprocess
+from typing import Dict, Any, Optional
+
+def get_git_state(target_dir: str) -> Optional[Dict[str, Any]]:
+    try:
+        shell = (sys.platform == 'win32')
+        res = subprocess.run(
+            ["git", "rev-parse", "--is-inside-work-tree"],
+            cwd=target_dir,
+            capture_output=True,
+            text=True,
+            check=False,
+            shell=shell
+        )
+        if res.returncode != 0 or res.stdout.strip() != "true":
+            return None
+            
+        res_commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=target_dir,
+            capture_output=True,
+            text=True,
+            check=False,
+            shell=shell
+        )
+        commit_hash = res_commit.stdout.strip() if res_commit.returncode == 0 else None
+        
+        res_status = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=target_dir,
+            capture_output=True,
+            text=True,
+            check=False,
+            shell=shell
+        )
+        is_dirty = bool(res_status.stdout.strip()) if res_status.returncode == 0 else False
+        
+        return {
+            "commit": commit_hash,
+            "is_dirty": is_dirty
+        }
+    except Exception:
+        return None
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Python Core Analysis Engine")
     parser.add_argument(
@@ -39,14 +83,73 @@ def main() -> None:
         action="store_true",
         help="Forces mock AI suggestions instead of contacting the 9router API."
     )
+    parser.add_argument(
+        "--fast",
+        action="store_true",
+        help="Runs an incremental scan on modified and untracked files in the Git working directory."
+    )
     
     args = parser.parse_args()
     
     print(f"Starting analysis on target: {args.target}", file=sys.stderr)
     
     try:
+        # Resolve target files if fast scan is requested
+        target_files = None
+        if args.fast:
+            if args.mock_scan:
+                # For mock testing, pretend example.py is modified
+                target_files = [os.path.join(args.target, "example.py")]
+                print(f"[Mock] Fast Scan: Pretending 'example.py' is modified.", file=sys.stderr)
+            else:
+                print("Fast Scan requested. Detecting changed files...", file=sys.stderr)
+                git_state = get_git_state(args.target)
+                if git_state:
+                    shell = (sys.platform == 'win32')
+                    res = subprocess.run(
+                        ["git", "status", "--porcelain"],
+                        cwd=args.target,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        shell=shell
+                    )
+                    if res.returncode == 0:
+                        changed_files = []
+                        for line in res.stdout.splitlines():
+                            line = line.strip()
+                            if not line:
+                                continue
+                            parts = line.split(None, 1)
+                            if len(parts) > 1:
+                                rel_file = parts[1].strip('"').strip()
+                                abs_file = os.path.abspath(os.path.join(args.target, rel_file))
+                                if os.path.isfile(abs_file):
+                                    changed_files.append(abs_file)
+                                    
+                        if not changed_files:
+                            print("No changes detected in Git repository. Codebase is clean.", file=sys.stderr)
+                            target_files = []
+                        else:
+                            print(f"Detected {len(changed_files)} changed file(s) in Git.", file=sys.stderr)
+                            target_files = changed_files
+                else:
+                    print("No Git repository detected. Falling back to Full Scan...", file=sys.stderr)
+
         # 1. Run static security scanning
-        scan_results = run_scan(args.target, use_mock=args.mock_scan)
+        if target_files == []:
+            scan_time = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            scan_results = {
+                "scanner": "semgrep-fast",
+                "timestamp": scan_time,
+                "target_path": args.target,
+                "findings": []
+            }
+        else:
+            scan_results = run_scan(args.target, use_mock=args.mock_scan, files=target_files)
+            if target_files is not None:
+                scan_results["scanner"] = "semgrep-fast"
+                
         findings = scan_results.get("findings", [])
         
         print(f"Scan complete. Found {len(findings)} finding(s).", file=sys.stderr)
@@ -151,7 +254,8 @@ def main() -> None:
             "timestamp": scan_results.get("timestamp", datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")),
             "target_path": scan_results.get("target_path", args.target),
             "findings": findings,
-            "ai_resolutions": resolutions
+            "ai_resolutions": resolutions,
+            "git_state": get_git_state(args.target)
         }
         
         # 4. Write to output file
