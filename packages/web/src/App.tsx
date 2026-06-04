@@ -5,7 +5,7 @@ import { OverviewDashboard } from './components/OverviewDashboard';
 import { CodeInspector } from './components/CodeInspector';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { Onboarding } from './components/Onboarding';
-import { Search, X, CheckSquare, Square, RotateCcw } from 'lucide-react';
+import { Search, X, CheckSquare, Square, RotateCcw, AlertOctagon, AlertTriangle, Info, Shield, Bug, Wrench, Layout, Clock, CheckCircle2, Terminal } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [currentProject, setCurrentProject] = useState<string | null>(null);
@@ -791,9 +791,9 @@ export const App: React.FC = () => {
                               <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Severity</label>
                               <div className="flex flex-col gap-1.5">
                                 {[
-                                  { id: 'error', label: '🔴 Error', key: 'error' },
-                                  { id: 'warning', label: '🟡 Warning', key: 'warning' },
-                                  { id: 'info', label: '🔵 Info', key: 'info' }
+                                  { id: 'error', label: 'Error', key: 'error', icon: <AlertOctagon className="h-3.5 w-3.5 text-error shrink-0" /> },
+                                  { id: 'warning', label: 'Warning', key: 'warning', icon: <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0" /> },
+                                  { id: 'info', label: 'Info', key: 'info', icon: <Info className="h-3.5 w-3.5 text-info shrink-0" /> }
                                 ].map(opt => {
                                   const isActive = filterSeverities.includes(opt.id);
                                   const count = filterCounts.severity[opt.key as keyof typeof filterCounts.severity] || 0;
@@ -817,6 +817,7 @@ export const App: React.FC = () => {
                                         ) : (
                                           <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
                                         )}
+                                        {opt.icon}
                                         <span className="font-sans text-[11px] font-bold">{opt.label}</span>
                                       </div>
                                       <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
@@ -833,10 +834,10 @@ export const App: React.FC = () => {
                               <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Category</label>
                               <div className="flex flex-col gap-1.5">
                                 {[
-                                  { id: 'security', label: '🛡️ Security', key: 'security' },
-                                  { id: 'quality', label: '🐞 Quality', key: 'quality' },
-                                  { id: 'maintainability', label: '⚙️ Maintainability', key: 'maintainability' },
-                                  { id: 'architecture', label: '🏗️ Architecture', key: 'architecture' }
+                                  { id: 'security', label: 'Security', key: 'security', icon: <Shield className="h-3.5 w-3.5 text-error shrink-0" /> },
+                                  { id: 'quality', label: 'Quality', key: 'quality', icon: <Bug className="h-3.5 w-3.5 text-warning shrink-0" /> },
+                                  { id: 'maintainability', label: 'Maintainability', key: 'maintainability', icon: <Wrench className="h-3.5 w-3.5 text-success shrink-0" /> },
+                                  { id: 'architecture', label: 'Architecture', key: 'architecture', icon: <Layout className="h-3.5 w-3.5 text-info shrink-0" /> }
                                 ].map(opt => {
                                   const isActive = filterCategories.includes(opt.id);
                                   const count = filterCounts.category[opt.key as keyof typeof filterCounts.category] || 0;
@@ -860,6 +861,7 @@ export const App: React.FC = () => {
                                         ) : (
                                           <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
                                         )}
+                                        {opt.icon}
                                         <span className="font-sans text-[11px] font-bold">{opt.label}</span>
                                       </div>
                                       <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
@@ -876,8 +878,8 @@ export const App: React.FC = () => {
                               <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Fix Status</label>
                               <div className="flex flex-col gap-1.5">
                                 {[
-                                  { id: 'pending', label: '⏳ Pending', key: 'pending' },
-                                  { id: 'applied', label: '✅ Applied', key: 'applied' }
+                                  { id: 'pending', label: 'Pending', key: 'pending', icon: <Clock className="h-3.5 w-3.5 text-text-secondary shrink-0" /> },
+                                  { id: 'applied', label: 'Applied', key: 'applied', icon: <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" /> }
                                 ].map(opt => {
                                   const isActive = filterStatuses.includes(opt.id);
                                   const count = filterCounts.status[opt.key as keyof typeof filterCounts.status] || 0;
@@ -901,6 +903,7 @@ export const App: React.FC = () => {
                                         ) : (
                                           <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
                                         )}
+                                        {opt.icon}
                                         <span className="font-sans text-[11px] font-bold">{opt.label}</span>
                                       </div>
                                       <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
@@ -940,6 +943,7 @@ export const App: React.FC = () => {
                                           ) : (
                                             <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
                                           )}
+                                          <Terminal className="h-3.5 w-3.5 text-text-secondary shrink-0" />
                                           <span className="font-sans text-[11px] font-bold">{lang}</span>
                                         </div>
                                         <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
