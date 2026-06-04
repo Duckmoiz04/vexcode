@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShieldAlert, Info, HelpCircle, CornerDownLeft, Check, Play, Send } from 'lucide-react';
+import { ShieldAlert, Info, HelpCircle, CornerDownLeft, Check, Play, Send, X } from 'lucide-react';
+
 
 interface CodeInspectorProps {
   finding: any;
@@ -43,6 +44,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
 
   // New state & refs for Full File Viewer & Auto-scrolling
   const [viewMode, setViewMode] = useState<'full' | 'diff'>('full');
+  const [isChatOpen, setIsChatOpen] = useState(false);
   const activeLineRef = useRef<HTMLDivElement>(null);
   const codeContainerRef = useRef<HTMLPreElement>(null);
 
@@ -250,9 +252,9 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const severity = (finding.severity || '').toLowerCase();
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin bg-bg-secondary">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg-secondary relative">
       {/* Detail Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-card-border">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-card-border bg-bg-secondary shrink-0 z-10">
         <div className="flex items-center gap-3">
           <span
             className={`flex h-6 w-6 items-center justify-center rounded-md font-bold text-sm ${
@@ -267,20 +269,36 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
           </span>
           <h3 className="text-sm font-bold text-text-primary font-mono">{finding.rule_id}</h3>
         </div>
-        <span
-          className={`text-xs px-2.5 py-0.5 rounded font-semibold border ${
-            finding._applied
-              ? 'bg-success/15 border-success/30 text-success'
-              : 'bg-bg-tertiary border-card-border text-text-secondary'
-          }`}
-        >
-          {finding._applied ? 'Applied' : 'Pending'}
-        </span>
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={() => setIsChatOpen(!isChatOpen)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+              isChatOpen
+                ? 'bg-accent/20 border-accent text-accent shadow-sm'
+                : 'bg-bg-tertiary/40 border-card-border/60 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60'
+            }`}
+          >
+            <HelpCircle className="h-3.5 w-3.5" />
+            <span>{isChatOpen ? 'Đóng AI Chat' : 'Hỏi AI Assistant'}</span>
+          </button>
+          <span
+            className={`text-xs px-2.5 py-0.5 rounded font-semibold border ${
+              finding._applied
+                ? 'bg-success/15 border-success/30 text-success'
+                : 'bg-bg-tertiary border-card-border text-text-secondary'
+            }`}
+          >
+            {finding._applied ? 'Applied' : 'Pending'}
+          </span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left Column: Metadata, Suggestion, Diff */}
-        <div className="lg:col-span-3 space-y-5">
+      {/* Main Body: Content on left, collapsible Chat Drawer on right */}
+      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+        {/* Left Column: Scrollable Workspace with transition padding to clear the chat drawer */}
+        <div className={`flex-1 overflow-y-auto p-6 space-y-5 scrollbar-thin transition-all duration-300 ${
+          isChatOpen ? 'lg:pr-[404px]' : ''
+        }`}>
           {/* File Metadata */}
           <div className="flex flex-wrap gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
             <div className="flex flex-col gap-1">
@@ -591,73 +609,86 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
           )}
         </div>
 
-        {/* Right Column: Chat copilot */}
-        <div className="lg:col-span-2">
-          <div className="border border-card-border bg-card-bg backdrop-blur-md rounded-xl flex flex-col h-[520px] overflow-hidden">
-            <div className="px-4 py-3 border-b border-card-border flex items-center gap-2">
+        {/* Right Column: Collapsible AI Chat drawer/sidebar overlay */}
+        <div className={`absolute top-0 right-0 z-20 border-l border-card-border bg-bg-tertiary/85 backdrop-blur-lg h-full w-[380px] flex flex-col shadow-2xl transition-transform duration-300 ease-in-out ${
+          isChatOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}>
+          {/* Chat Header */}
+          <div className="px-4.5 py-3.5 border-b border-card-border/60 flex items-center justify-between bg-bg-tertiary/20 shrink-0">
+            <div className="flex items-center gap-2">
               <HelpCircle className="h-4 w-4 text-accent" />
-              <h4 className="text-[10px] text-text-secondary uppercase font-bold tracking-wider">Chat with AI</h4>
+              <h4 className="text-[10.5px] text-text-primary uppercase font-bold tracking-wider">AI Assistant</h4>
             </div>
+            <button
+              onClick={() => setIsChatOpen(false)}
+              className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-secondary/60 transition-colors cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
 
-            {/* Message Box */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
-              {chatMessages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center text-xs text-text-tertiary py-8 space-y-1.5">
-                  <p className="font-semibold text-text-secondary">Ask questions about this vulnerability</p>
-                  <span className="max-w-[200px] leading-relaxed text-[10px]">
-                    e.g., "Why is this dangerous?", "How does this affect callers?", "Show me how to fix it manually"
+          {/* Message Box */}
+          <div className="flex-1 overflow-y-auto p-4.5 space-y-4 scrollbar-thin">
+            {chatMessages.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center text-xs text-text-tertiary py-8 space-y-2 select-none">
+                <div className="h-10 w-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-lg shadow-sm">
+                  💬
+                </div>
+                <p className="font-semibold text-text-secondary text-[12px]">Hỏi AI về lỗi này</p>
+                <span className="max-w-[240px] leading-relaxed text-[10px] text-text-tertiary/80">
+                  Bạn có thể hỏi: "Tại sao lỗi này nguy hiểm?", "Làm cách nào sửa thủ công?", hoặc "Ảnh hưởng của lỗi này thế nào?"
+                </span>
+              </div>
+            ) : (
+              chatMessages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`flex flex-col p-3 rounded-xl text-xs max-w-[85%] leading-relaxed shadow-sm ${
+                    msg.role === 'user'
+                      ? 'bg-accent/10 border border-accent/25 text-text-primary self-end ml-auto rounded-tr-none'
+                      : 'bg-bg-secondary/90 border border-card-border/60 text-text-primary mr-auto rounded-tl-none'
+                  }`}
+                >
+                  <span className="text-[8.5px] font-extrabold uppercase tracking-wider mb-1 text-text-tertiary select-none">
+                    {msg.role === 'user' ? 'Bạn' : 'AI Assistant'}
                   </span>
+                  <p className="whitespace-pre-wrap font-sans text-text-primary text-[11.5px]">{msg.content}</p>
                 </div>
-              ) : (
-                chatMessages.map((msg, i) => (
-                  <div
-                    key={i}
-                    className={`flex flex-col p-3 rounded-lg text-xs max-w-[85%] leading-normal ${
-                      msg.role === 'user'
-                        ? 'bg-accent/15 border border-accent/20 text-text-primary self-end ml-auto rounded-tr-none'
-                        : 'bg-bg-tertiary/70 border border-card-border/40 text-text-secondary mr-auto rounded-tl-none'
-                    }`}
-                  >
-                    <span className="text-[9px] font-bold uppercase tracking-wider mb-1 text-text-tertiary select-none">
-                      {msg.role === 'user' ? 'You' : 'AI'}
-                    </span>
-                    <p className="whitespace-pre-wrap font-sans text-text-primary">{msg.content}</p>
-                  </div>
-                ))
-              )}
-              {isChatLoading && (
-                <div className="flex items-center gap-2 p-3 bg-bg-tertiary/75 border border-card-border/30 rounded-lg text-xs text-text-tertiary animate-pulse w-max rounded-tl-none mr-auto">
-                  <span className="h-2 w-2 rounded-full bg-accent animate-bounce" />
-                  <span>AI is thinking...</span>
-                </div>
-              )}
-              <div ref={chatEndRef} />
-            </div>
+              ))
+            )}
+            {isChatLoading && (
+              <div className="flex items-center gap-2.5 p-3 bg-bg-secondary/90 border border-card-border/60 rounded-xl text-xs text-text-secondary animate-pulse w-max rounded-tl-none mr-auto shadow-sm">
+                <span className="h-2 w-2 rounded-full bg-accent animate-bounce" />
+                <span>AI đang suy nghĩ...</span>
+              </div>
+            )}
+            <div ref={chatEndRef} />
+          </div>
 
-            {/* Input Form */}
-            <div className="p-3 border-t border-card-border bg-bg-primary/20 flex gap-2">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleSendChat();
-                }}
-                disabled={isChatLoading}
-                placeholder={`Ask about ${finding.rule_id}...`}
-                className="flex-1 bg-bg-tertiary text-text-primary border border-card-border rounded-lg px-3 py-2 text-xs outline-none focus:border-accent disabled:opacity-50 transition-all placeholder:text-text-tertiary"
-              />
-              <button
-                onClick={handleSendChat}
-                disabled={isChatLoading || !chatInput.trim()}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-accent text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent cursor-pointer transition-all"
-              >
-                <Send className="h-3.5 w-3.5" />
-              </button>
-            </div>
+          {/* Input Form */}
+          <div className="p-3.5 border-t border-card-border/65 bg-bg-primary/25 flex gap-2 shrink-0">
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSendChat();
+              }}
+              disabled={isChatLoading}
+              placeholder={`Hỏi về ${finding.rule_id}...`}
+              className="flex-1 bg-bg-tertiary text-text-primary border border-card-border/80 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-accent disabled:opacity-50 transition-all placeholder:text-text-tertiary/60 shadow-inner"
+            />
+            <button
+              onClick={handleSendChat}
+              disabled={isChatLoading || !chatInput.trim()}
+              className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-xl bg-accent text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent cursor-pointer transition-all shadow-md"
+            >
+              <Send className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
