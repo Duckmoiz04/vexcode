@@ -282,7 +282,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className="w-80 min-w-80 bg-bg-primary border-r border-card-border flex flex-col h-full overflow-hidden">
+    <div className="w-80 min-w-80 bg-[#161622] border-r border-card-border flex flex-col h-full overflow-hidden">
       {/* Explorer / Findings Tabs Header */}
       <div className="flex border-b border-card-border/50 bg-bg-secondary/40 shrink-0 px-4 pt-2 gap-3">
         <button
