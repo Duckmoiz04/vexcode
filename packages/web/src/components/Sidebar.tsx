@@ -4,11 +4,15 @@ import { ChevronDown, Folder, File, ShieldAlert, X, Search } from 'lucide-react'
 interface SidebarProps {
   projectName: string | null;
   findings: any[];
-  selectedFindingIndex: number | null;
-  onSelectFindingIndex: (index: number | null) => void;
   selectedFilePath: string | null;
   onSelectFilePath: (path: string | null) => void;
   targetPath: string | null;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  filterSeverity: 'all' | 'error' | 'warning' | 'info';
+  setFilterSeverity: (sev: 'all' | 'error' | 'warning' | 'info') => void;
+  filterCategory: 'all' | 'security' | 'quality' | 'maintainability' | 'architecture';
+  setFilterCategory: (cat: 'all' | 'security' | 'quality' | 'maintainability' | 'architecture') => void;
 }
 
 interface TreeNode {
@@ -22,19 +26,18 @@ interface TreeNode {
 export const Sidebar: React.FC<SidebarProps> = ({
   projectName,
   findings,
-  selectedFindingIndex,
-  onSelectFindingIndex,
   selectedFilePath,
   onSelectFilePath,
   targetPath,
+  searchQuery,
+  setSearchQuery,
+  filterSeverity,
+  setFilterSeverity,
+  filterCategory,
+  setFilterCategory,
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
   
-  // Filter states
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterSeverity, setFilterSeverity] = useState<'all' | 'error' | 'warning' | 'info'>('all');
-  const [filterCategory, setFilterCategory] = useState<'all' | 'security' | 'quality' | 'maintainability' | 'architecture'>('all');
-
   const toggleFolder = (path: string) => {
     setExpandedFolders((prev) => {
       const currentVal = prev[path] !== false; // defaults to true
@@ -230,17 +233,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  // Filter findings based on selected file path and active filters
-  const filteredFindings = useMemo(() => {
-    if (!selectedFilePath) return searchedAndFilteredFindings;
-    return searchedAndFilteredFindings.filter((f) => f.file === selectedFilePath);
-  }, [searchedAndFilteredFindings, selectedFilePath]);
-
   return (
     <div className="w-80 min-w-80 bg-bg-primary border-r border-card-border flex flex-col h-full overflow-hidden">
-
       {/* Explorer / File Tree Section */}
-      <div className="flex-1 border-b border-card-border flex flex-col min-h-0">
+      <div className="flex-1 flex flex-col min-h-0">
         
         {/* Title, Stats Counter and Filter Controls */}
         <div className="px-4 py-3 border-b border-card-border/50 flex flex-col gap-2.5">
@@ -308,88 +304,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <div className="text-xs text-text-tertiary text-center py-6 italic">No matching files found</div>
           ) : (
             renderTreeNode(fileTree)
-          )}
-        </div>
-      </div>
-
-      {/* Findings List Section */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <div className="px-4 py-3 border-b border-card-border/50 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h3 className="text-xs font-semibold text-text-secondary">Findings</h3>
-            <span className="px-1.5 py-0.2 bg-accent text-white rounded-full text-[10px] font-bold">
-              {filteredFindings.length}
-            </span>
-          </div>
-        </div>
-
-        {/* Selected File Filter Bar */}
-        {selectedFilePath && (
-          <div className="px-4 py-2 bg-accent/5 border-b border-card-border/30 flex items-center justify-between text-xs text-text-secondary">
-            <span className="truncate pr-4 font-mono text-[10px]">
-              File: {getRelativePath(selectedFilePath)}
-            </span>
-            <button
-              onClick={() => onSelectFilePath(null)}
-              className="text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
-              title="Clear file filter"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        )}
-
-        <div className="flex-1 overflow-y-auto p-2 space-y-1 scrollbar-thin">
-          {filteredFindings.length === 0 ? (
-            <div className="text-xs text-text-tertiary text-center py-8">
-              No findings identified
-            </div>
-          ) : (
-            filteredFindings.map((f) => {
-              const originalIndex = findings.indexOf(f);
-              const severity = (f.severity || '').toLowerCase();
-              const isActive = originalIndex === selectedFindingIndex;
-              const isApplied = f._applied;
-
-              return (
-                <div
-                  key={originalIndex}
-                  onClick={() => onSelectFindingIndex(originalIndex)}
-                  className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                    isActive
-                      ? 'bg-accent/10 border-accent/40 shadow-glow-soft'
-                      : 'bg-bg-tertiary/30 border-transparent hover:bg-bg-tertiary/60'
-                  }`}
-                >
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <span
-                      className={`h-2 w-2 rounded-full shrink-0 ${
-                        severity === 'error'
-                          ? 'bg-error shadow-[0_0_8px_rgba(239,68,68,0.5)]'
-                          : severity === 'warning'
-                          ? 'bg-warning shadow-[0_0_8px_rgba(245,158,11,0.5)]'
-                          : 'bg-info shadow-[0_0_8px_rgba(59,130,246,0.5)]'
-                      }`}
-                    />
-                    <span className="text-[11px] font-mono font-semibold text-text-primary truncate flex-1">
-                      {f.rule_id}
-                    </span>
-                    <span
-                      className={`text-[9px] px-1.5 py-0.2 rounded font-medium border ${
-                        isApplied
-                          ? 'bg-success/10 border-success/30 text-success'
-                          : 'bg-bg-tertiary border-card-border text-text-secondary'
-                      }`}
-                    >
-                      {isApplied ? 'Applied' : 'Pending'}
-                    </span>
-                  </div>
-                  <div className="text-[10px] text-text-tertiary font-mono truncate">
-                    {getRelativePath(f.file)}:{f.line}
-                  </div>
-                </div>
-              );
-            })
           )}
         </div>
       </div>

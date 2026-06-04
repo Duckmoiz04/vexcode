@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { OverviewDashboard } from './components/OverviewDashboard';
@@ -15,7 +15,78 @@ export const App: React.FC = () => {
   const [selectedFindingIndex, setSelectedFindingIndex] = useState<number | null>(null);
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'inspector'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'issues'>('dashboard');
+  
+  // Lifted filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterSeverity, setFilterSeverity] = useState<'all' | 'error' | 'warning' | 'info'>('all');
+  const [filterCategory, setFilterCategory] = useState<'all' | 'security' | 'quality' | 'maintainability' | 'architecture'>('all');
+
+  // Classification helper for findings (lifted from Sidebar)
+  const classifyFinding = (finding: any) => {
+    const ruleId = (finding.rule_id || '').toLowerCase();
+    
+    // 1. Security
+    const securityKeywords = [
+      'security', 'vuln', 'injection', 'xss', 'csrf', 'secret', 'key',
+      'token', 'jwt', 'crypto', 'auth', 'password', 'credential', 'ssrf',
+      'overflow', 'leak', 'private', 'cert', 'hash', 'ssl', 'tls'
+    ];
+    if (securityKeywords.some(kw => ruleId.includes(kw))) {
+      return 'security';
+    }
+
+    // 2. AST & Architecture
+    if (finding.ast_context && (finding.ast_context.symbol_name || (finding.ast_context.callers && finding.ast_context.callers.length > 0))) {
+      return 'architecture';
+    }
+
+    // 3. Style & Maintainability
+    const styleKeywords = [
+      'style', 'format', 'naming', 'deprecated', 'convention', 'comment',
+      'spacing', 'indent', 'unused', 'duplicate', 'complex', 'nest'
+    ];
+    if (styleKeywords.some(kw => ruleId.includes(kw))) {
+      return 'maintainability';
+    }
+
+    // 4. Code Quality & Bugs (default)
+    return 'quality';
+  };
+
+  // Searched & Filtered findings list
+  const searchedAndFilteredFindings = useMemo(() => {
+    const rawFindings = currentReport?.findings || [];
+    return rawFindings.filter((finding: any) => {
+      // 1. Search filter
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        const ruleId = (finding.rule_id || '').toLowerCase();
+        const message = (finding.message || '').toLowerCase();
+        const file = (finding.file || '').toLowerCase();
+        if (!ruleId.includes(query) && !message.includes(query) && !file.includes(query)) {
+          return false;
+        }
+      }
+
+      // 2. Severity filter
+      if (filterSeverity !== 'all') {
+        if ((finding.severity || '').toLowerCase() !== filterSeverity) {
+          return false;
+        }
+      }
+
+      // 3. Category filter
+      if (filterCategory !== 'all') {
+        if (classifyFinding(finding) !== filterCategory) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [currentReport, searchQuery, filterSeverity, filterCategory]);
+
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [config, setConfig] = useState<any>(null);
 
@@ -304,7 +375,7 @@ export const App: React.FC = () => {
       const firstIndex = currentReport.findings.findIndex((f: any) => f.file === path);
       if (firstIndex !== -1) {
         setSelectedFindingIndex(firstIndex);
-        setActiveTab('inspector');
+        setActiveTab('issues');
       }
     }
   };
@@ -312,7 +383,7 @@ export const App: React.FC = () => {
   const handleSelectFindingIndex = (index: number | null) => {
     setSelectedFindingIndex(index);
     if (index !== null) {
-      setActiveTab('inspector');
+      setActiveTab('issues');
     }
   };
 
@@ -522,11 +593,15 @@ export const App: React.FC = () => {
             <Sidebar
               projectName={currentProject}
               findings={currentReport?.findings || []}
-              selectedFindingIndex={selectedFindingIndex}
-              onSelectFindingIndex={handleSelectFindingIndex}
               selectedFilePath={selectedFilePath}
               onSelectFilePath={handleSelectFilePath}
               targetPath={currentReport?.target_path || null}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              filterSeverity={filterSeverity}
+              setFilterSeverity={setFilterSeverity}
+              filterCategory={filterCategory}
+              setFilterCategory={setFilterCategory}
             />
 
             {/* Central Panels with Tab Controllers */}
@@ -544,19 +619,14 @@ export const App: React.FC = () => {
                   Overview Dashboard
                 </button>
                 <button
-                  onClick={() => {
-                    if (selectedFindingIndex !== null) {
-                      setActiveTab('inspector');
-                    }
-                  }}
-                  disabled={selectedFindingIndex === null}
-                  className={`pb-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed ${
-                    activeTab === 'inspector'
+                  onClick={() => setActiveTab('issues')}
+                  className={`pb-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
+                    activeTab === 'issues'
                       ? 'border-accent text-accent'
                       : 'border-transparent text-text-secondary hover:text-text-primary'
                   }`}
                 >
-                  Code Inspector
+                  Code & Issues
                 </button>
               </div>
 
@@ -571,26 +641,196 @@ export const App: React.FC = () => {
                     onSelectFindingIndex={handleSelectFindingIndex}
                   />
                 ) : (
-                  selectedFindingIndex !== null &&
-                  currentReport &&
-                  currentReport.findings && (
-                    <CodeInspector
-                      finding={currentReport.findings[selectedFindingIndex]}
-                      aiResolutions={currentReport.ai_resolutions || {}}
-                      targetPath={currentReport.target_path || null}
-                      selectedProvider={config?.AI_PROVIDER || 'openai'}
-                      apiKey={config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_API_KEY`] || ''}
-                      apiBaseUrl={
-                        config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_BASE_URL`] || ''
-                      }
-                      aiModel={config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_MODEL`] || ''}
-                      aiTemperature={parseFloat(config?.AI_TEMPERATURE) || 0.1}
-                      aiMaxTokens={parseInt(config?.AI_MAX_TOKENS) || 4096}
-                      onApplyFix={handleApplyFix}
-                      metrics={currentReport.metrics}
-                      allFindings={currentReport.findings}
-                      onSelectFindingIndex={handleSelectFindingIndex}
-                    />
+                  currentReport && currentReport.findings && (
+                    selectedFindingIndex === null ? (
+                      /* 1. All Issues List (No finding selected) */
+                      <div className="flex-1 flex flex-col min-h-0 bg-bg-secondary p-6 overflow-y-auto scrollbar-thin">
+                        <div className="flex items-center justify-between pb-4 border-b border-card-border mb-6">
+                          <div className="flex items-center gap-3">
+                            <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
+                              Danh sách phát hiện lỗi
+                            </h3>
+                            <span className="px-2.5 py-0.5 bg-accent text-white rounded-full text-[10px] font-bold shadow-sm font-sans">
+                              {searchedAndFilteredFindings.length} lỗi khớp bộ lọc
+                            </span>
+                          </div>
+                        </div>
+
+                        {searchedAndFilteredFindings.length === 0 ? (
+                          <div className="flex-1 flex flex-col items-center justify-center py-20 text-center text-text-tertiary">
+                            <span className="text-3xl mb-3">🔍</span>
+                            <p className="font-semibold text-text-secondary text-sm">Không tìm thấy phát hiện lỗi nào</p>
+                            <span className="text-xs max-w-sm mt-1.5 leading-relaxed">
+                              Không tìm thấy lỗi khớp với từ khóa hoặc bộ lọc của bạn. Hãy thử thay đổi cấu hình lọc bên sidebar.
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-1 gap-3 max-w-5xl">
+                            {searchedAndFilteredFindings.map((f: any) => {
+                              const originalIndex = currentReport.findings.indexOf(f);
+                              const severity = (f.severity || '').toLowerCase();
+                              const cat = classifyFinding(f);
+                              const isApplied = f._applied;
+
+                              return (
+                                <div
+                                  key={originalIndex}
+                                  onClick={() => {
+                                    setSelectedFilePath(f.file);
+                                    setSelectedFindingIndex(originalIndex);
+                                  }}
+                                  className="p-4 rounded-xl border border-card-border bg-card-bg hover:border-accent/30 hover:bg-bg-tertiary/20 cursor-pointer transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm group"
+                                >
+                                  <div className="flex-1 min-w-0 space-y-2">
+                                    <div className="flex items-center gap-2.5 flex-wrap">
+                                      <span
+                                        className={`h-2 w-2 rounded-full shrink-0 ${
+                                          severity === 'error'
+                                            ? 'bg-error shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                                            : severity === 'warning'
+                                            ? 'bg-warning shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                                            : 'bg-info shadow-[0_0_8px_rgba(59,130,246,0.5)]'
+                                        }`}
+                                      />
+                                      <span className="text-[12px] font-mono font-bold text-text-primary group-hover:text-accent transition-colors truncate">
+                                        {f.rule_id}
+                                      </span>
+                                      <span className={`text-[9.5px] px-2 py-0.5 rounded-full font-bold border uppercase tracking-wider font-sans ${
+                                        cat === 'security'
+                                          ? 'bg-danger/10 border-danger/35 text-danger'
+                                          : cat === 'maintainability'
+                                          ? 'bg-warning/10 border-warning/35 text-warning'
+                                          : cat === 'architecture'
+                                          ? 'bg-accent/10 border-accent/35 text-accent'
+                                          : 'bg-info/10 border-info/35 text-info'
+                                      }`}>
+                                        {cat === 'security' ? '🛡️ Security' : cat === 'maintainability' ? '⚙️ Maintainability' : cat === 'architecture' ? '🏗️ Architecture' : '🐞 Quality'}
+                                      </span>
+                                      <span className="text-[10px] text-text-tertiary font-mono font-semibold">
+                                        {f.file.split(/[\\/]/).pop()}:{f.line}
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-text-secondary select-text font-normal leading-relaxed line-clamp-2">
+                                      {f.message}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-3 shrink-0 self-end md:self-center font-mono text-xs">
+                                    <span className="text-[10px] text-text-tertiary bg-bg-secondary px-2.5 py-0.5 rounded border border-card-border/40 truncate max-w-xs hidden lg:inline-block">
+                                      {f.file.replace(/\\/g, '/').replace(currentReport.target_path?.replace(/\\/g, '/') || '', '').replace(/^\//, '')}
+                                    </span>
+                                    <span className={`text-[10px] px-2.5 py-0.5 rounded border font-semibold font-sans ${
+                                      isApplied
+                                        ? 'bg-success/15 border-success/35 text-success'
+                                        : 'bg-bg-tertiary border-card-border text-text-secondary'
+                                    }`}>
+                                      {isApplied ? 'Applied' : 'Pending'}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      /* 2. Split Screen Giao diện (Option C) */
+                      <div className="flex-1 flex overflow-hidden min-h-0">
+                        {/* Column 1: Danh sách lỗi của tệp đang chọn */}
+                        <div className="w-80 min-w-80 border-r border-card-border bg-bg-primary flex flex-col h-full overflow-hidden animate-slide-right">
+                          <div className="px-4 py-3 border-b border-card-border/50 flex flex-col gap-2 shrink-0">
+                            <button
+                              onClick={() => {
+                                setSelectedFindingIndex(null);
+                                setSelectedFilePath(null);
+                              }}
+                              className="w-full flex items-center justify-center gap-1.5 py-1.5 bg-bg-secondary hover:bg-bg-tertiary border border-card-border text-text-secondary hover:text-text-primary text-[10.5px] font-bold rounded-lg cursor-pointer transition-colors shadow-sm font-sans"
+                            >
+                              ← Quay lại tất cả lỗi
+                            </button>
+                            <div className="flex items-center justify-between mt-1 text-[11px] font-mono text-text-tertiary bg-bg-secondary/40 px-2 py-1 rounded border border-card-border/30">
+                              <span className="truncate pr-3 font-semibold">
+                                File: {selectedFilePath?.split(/[\\/]/).pop()}
+                              </span>
+                              <span className="font-bold text-accent shrink-0 font-sans">
+                                {currentReport.findings.filter((f: any) => f.file === selectedFilePath).length} lỗi
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex-1 overflow-y-auto p-2 space-y-1.5 scrollbar-thin">
+                            {currentReport.findings
+                              .filter((f: any) => f.file === selectedFilePath)
+                              .map((f: any) => {
+                                const originalIndex = currentReport.findings.indexOf(f);
+                                const severity = (f.severity || '').toLowerCase();
+                                const isActive = originalIndex === selectedFindingIndex;
+                                const isApplied = f._applied;
+
+                                return (
+                                  <div
+                                    key={originalIndex}
+                                    onClick={() => setSelectedFindingIndex(originalIndex)}
+                                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                                      isActive
+                                        ? 'bg-accent/10 border-accent/40 shadow-glow-soft'
+                                        : 'bg-bg-tertiary/30 border-transparent hover:bg-bg-tertiary/60'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                      <span
+                                        className={`h-2 w-2 rounded-full shrink-0 ${
+                                          severity === 'error'
+                                            ? 'bg-error shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                                            : severity === 'warning'
+                                            ? 'bg-warning shadow-[0_0_8px_rgba(245,158,11,0.5)]'
+                                            : 'bg-info shadow-[0_0_8px_rgba(59,130,246,0.5)]'
+                                        }`}
+                                      />
+                                      <span className="text-[10.5px] font-mono font-bold text-text-primary truncate flex-1">
+                                        {f.rule_id}
+                                      </span>
+                                      <span className={`text-[8.5px] px-1.5 py-0.2 rounded font-medium border font-sans ${
+                                        isApplied
+                                          ? 'bg-success/10 border-success/30 text-success'
+                                          : 'bg-bg-tertiary border-card-border text-text-secondary'
+                                      }`}>
+                                        {isApplied ? 'Applied' : 'Pending'}
+                                      </span>
+                                    </div>
+                                    <div className="text-[10px] text-text-tertiary font-mono flex items-center justify-between">
+                                      <span>Dòng: {f.line}</span>
+                                      <span className="opacity-80 uppercase text-[8px] font-sans font-bold bg-bg-secondary px-1.5 py-0.2 rounded border border-card-border/40">
+                                        {classifyFinding(f)}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </div>
+
+                        {/* Column 2: Code Inspector details */}
+                        <div className="flex-1 flex overflow-hidden min-h-0 bg-bg-secondary animate-slide-left">
+                          <CodeInspector
+                            finding={currentReport.findings[selectedFindingIndex]}
+                            aiResolutions={currentReport.ai_resolutions || {}}
+                            targetPath={currentReport.target_path || null}
+                            selectedProvider={config?.AI_PROVIDER || 'openai'}
+                            apiKey={config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_API_KEY`] || ''}
+                            apiBaseUrl={
+                              config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_BASE_URL`] || ''
+                            }
+                            aiModel={config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_MODEL`] || ''}
+                            aiTemperature={parseFloat(config?.AI_TEMPERATURE) || 0.1}
+                            aiMaxTokens={parseInt(config?.AI_MAX_TOKENS) || 4096}
+                            onApplyFix={handleApplyFix}
+                            metrics={currentReport.metrics}
+                            allFindings={currentReport.findings}
+                            onSelectFindingIndex={handleSelectFindingIndex}
+                          />
+                        </div>
+                      </div>
+                    )
                   )
                 )}
               </div>
