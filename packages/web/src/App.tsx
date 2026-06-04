@@ -263,6 +263,9 @@ export const App: React.FC = () => {
         onSelectProject={handleSelectProject}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onStartScan={() => handleStartScan('')}
+        reports={reports}
+        currentReportId={currentReportId}
+        onSelectReportId={setCurrentReportId}
       />
 
       {/* Main Content Area */}
@@ -278,9 +281,6 @@ export const App: React.FC = () => {
             {/* Sidebar selection panels */}
             <Sidebar
               projectName={currentProject}
-              reports={reports}
-              currentReportId={currentReportId}
-              onSelectReportId={setCurrentReportId}
               findings={currentReport?.findings || []}
               selectedFindingIndex={selectedFindingIndex}
               onSelectFindingIndex={handleSelectFindingIndex}

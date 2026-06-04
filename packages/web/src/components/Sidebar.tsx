@@ -3,9 +3,6 @@ import { ChevronDown, Folder, File, ShieldAlert, X } from 'lucide-react';
 
 interface SidebarProps {
   projectName: string | null;
-  reports: any[];
-  currentReportId: string | null;
-  onSelectReportId: (id: string) => void;
   findings: any[];
   selectedFindingIndex: number | null;
   onSelectFindingIndex: (index: number | null) => void;
@@ -24,9 +21,6 @@ interface TreeNode {
 
 export const Sidebar: React.FC<SidebarProps> = ({
   projectName,
-  reports,
-  currentReportId,
-  onSelectReportId,
   findings,
   selectedFindingIndex,
   onSelectFindingIndex,
@@ -174,29 +168,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="w-80 min-w-80 bg-bg-primary border-r border-card-border flex flex-col h-full overflow-hidden">
-      {/* Scan Version Dropdown Section */}
-      <div className="p-4 border-b border-card-border">
-        <h3 className="text-xs font-semibold text-text-secondary mb-2">Scan Version</h3>
-        <div className="relative">
-          <select
-            value={currentReportId || ''}
-            onChange={(e) => onSelectReportId(e.target.value)}
-            className="w-full bg-bg-tertiary text-text-primary border border-card-border rounded-lg px-3 py-1.5 text-xs font-mono outline-none cursor-pointer focus:border-accent transition-all appearance-none"
-          >
-            {reports.map((r) => {
-              const timeStr = r.id
-                .replace('report_', '')
-                .replace(/-/g, (m: string, i: number) => (i > 10 ? ':' : i > 7 ? '-' : ' '));
-              return (
-                <option key={r.id} value={r.id}>
-                  {timeStr} ({r.findings} findings)
-                </option>
-              );
-            })}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-text-tertiary pointer-events-none" />
-        </div>
-      </div>
 
       {/* Explorer / File Tree Section */}
       <div className="flex-1 border-b border-card-border flex flex-col min-h-0">
