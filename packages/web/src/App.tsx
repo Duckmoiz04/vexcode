@@ -695,7 +695,7 @@ export const App: React.FC = () => {
             {/* Central Panels with Tab Controllers */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
               {/* Tabs list */}
-              <div className="flex px-6 pt-3 border-b border-card-border bg-bg-secondary/40 gap-4">
+              <div className="flex px-6 pt-3 border-b border-card-border bg-[#161622] gap-4">
                 <button
                   onClick={() => setActiveTab('dashboard')}
                   className={`pb-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${

@@ -53,7 +53,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 bg-bg-secondary/75 backdrop-blur-md border-b border-card-border z-40">
+    <header className="flex items-center justify-between px-6 py-3 bg-[#161622] border-b border-card-border z-40">
       {/* Left side: Logo & Project selector */}
       <div className="flex items-center gap-6">
         <div 
