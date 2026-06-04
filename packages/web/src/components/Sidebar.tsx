@@ -15,6 +15,11 @@ interface SidebarProps {
   setFilterCategory: (cat: 'all' | 'security' | 'quality' | 'maintainability' | 'architecture') => void;
   selectedFindingIndex: number | null;
   onSelectFindingIndex?: (index: number | null) => void;
+  filterStatus: 'all' | 'pending' | 'applied';
+  setFilterStatus: (status: 'all' | 'pending' | 'applied') => void;
+  filterLanguage: string;
+  setFilterLanguage: (lang: string) => void;
+  availableLanguages: string[];
 }
 
 interface TreeNode {
@@ -24,6 +29,24 @@ interface TreeNode {
   indices?: number[];
   children?: Record<string, TreeNode>;
 }
+
+const getFileLanguage = (filePath: string) => {
+  if (!filePath) return 'Other';
+  const ext = filePath.split('.').pop()?.toLowerCase();
+  switch (ext) {
+    case 'py': return 'Python';
+    case 'js':
+    case 'jsx': return 'JavaScript';
+    case 'ts':
+    case 'tsx': return 'TypeScript';
+    case 'sh':
+    case 'bash': return 'Shell';
+    case 'css': return 'CSS';
+    case 'html': return 'HTML';
+    case 'json': return 'JSON';
+    default: return 'Other';
+  }
+};
 
 export const Sidebar: React.FC<SidebarProps> = ({
   projectName,
@@ -39,6 +62,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setFilterCategory,
   selectedFindingIndex,
   onSelectFindingIndex,
+  filterStatus,
+  setFilterStatus,
+  filterLanguage,
+  setFilterLanguage,
+  availableLanguages,
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
   const [sidebarTab, setSidebarTab] = useState<'explorer' | 'findings'>('explorer');
@@ -125,9 +153,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }
       }
 
+      // 4. Status filter
+      if (filterStatus !== 'all') {
+        const isApplied = !!finding._applied;
+        if (filterStatus === 'applied' && !isApplied) return false;
+        if (filterStatus === 'pending' && isApplied) return false;
+      }
+
+      // 5. Language filter
+      if (filterLanguage !== 'all') {
+        if (getFileLanguage(finding.file) !== filterLanguage) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [findings, searchQuery, filterSeverity, filterCategory]);
+  }, [findings, searchQuery, filterSeverity, filterCategory, filterStatus, filterLanguage]);
 
   // Build File Tree based on filtered findings
   const fileTree = useMemo(() => {
@@ -325,6 +367,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <option value="quality">🐞 Quality</option>
               <option value="maintainability">⚙️ Maintainability</option>
               <option value="architecture">🏗️ Architecture</option>
+            </select>
+          </div>
+
+          {/* Filter Options Row 2 */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Status Filter Dropdown */}
+            <select
+              value={filterStatus}
+              onChange={(e: any) => setFilterStatus(e.target.value)}
+              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg px-2 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
+            >
+              <option value="all">Mọi trạng thái</option>
+              <option value="pending">⏳ Chưa sửa</option>
+              <option value="applied">✅ Đã sửa</option>
+            </select>
+
+            {/* Language Filter Dropdown */}
+            <select
+              value={filterLanguage}
+              onChange={(e: any) => setFilterLanguage(e.target.value)}
+              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg px-2 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
+            >
+              <option value="all">Mọi ngôn ngữ</option>
+              {availableLanguages.map((lang) => (
+                <option key={lang} value={lang}>
+                  {lang}
+                </option>
+              ))}
             </select>
           </div>
         </div>

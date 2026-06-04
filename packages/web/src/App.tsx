@@ -21,6 +21,8 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterSeverity, setFilterSeverity] = useState<'all' | 'error' | 'warning' | 'info'>('all');
   const [filterCategory, setFilterCategory] = useState<'all' | 'security' | 'quality' | 'maintainability' | 'architecture'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'applied'>('all');
+  const [filterLanguage, setFilterLanguage] = useState<string>('all');
 
   // Classification helper for findings (lifted from Sidebar)
   const classifyFinding = (finding: any) => {
@@ -54,6 +56,35 @@ export const App: React.FC = () => {
     return 'quality';
   };
 
+  // Helper to extract file language dynamically
+  const getFileLanguage = useCallback((filePath: string) => {
+    if (!filePath) return 'Other';
+    const ext = filePath.split('.').pop()?.toLowerCase();
+    switch (ext) {
+      case 'py': return 'Python';
+      case 'js':
+      case 'jsx': return 'JavaScript';
+      case 'ts':
+      case 'tsx': return 'TypeScript';
+      case 'sh':
+      case 'bash': return 'Shell';
+      case 'css': return 'CSS';
+      case 'html': return 'HTML';
+      case 'json': return 'JSON';
+      default: return 'Other';
+    }
+  }, []);
+
+  // Compute unique languages present in the current report's findings
+  const availableLanguages = useMemo(() => {
+    const rawFindings = currentReport?.findings || [];
+    const langs = new Set<string>();
+    rawFindings.forEach((f: any) => {
+      langs.add(getFileLanguage(f.file));
+    });
+    return Array.from(langs).sort();
+  }, [currentReport, getFileLanguage]);
+
   // Searched & Filtered findings list
   const searchedAndFilteredFindings = useMemo(() => {
     const rawFindings = currentReport?.findings || [];
@@ -83,9 +114,24 @@ export const App: React.FC = () => {
         }
       }
 
+      // 4. Status filter
+      if (filterStatus !== 'all') {
+        const isApplied = !!finding._applied;
+        if (filterStatus === 'applied' && !isApplied) return false;
+        if (filterStatus === 'pending' && isApplied) return false;
+      }
+
+      // 5. Language filter
+      if (filterLanguage !== 'all') {
+        if (getFileLanguage(finding.file) !== filterLanguage) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [currentReport, searchQuery, filterSeverity, filterCategory]);
+  }, [currentReport, searchQuery, filterSeverity, filterCategory, filterStatus, filterLanguage, getFileLanguage]);
+
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [config, setConfig] = useState<any>(null);
@@ -604,6 +650,11 @@ export const App: React.FC = () => {
               setFilterCategory={setFilterCategory}
               selectedFindingIndex={selectedFindingIndex}
               onSelectFindingIndex={handleSelectFindingIndex}
+              filterStatus={filterStatus}
+              setFilterStatus={setFilterStatus}
+              filterLanguage={filterLanguage}
+              setFilterLanguage={setFilterLanguage}
+              availableLanguages={availableLanguages}
             />
 
 
