@@ -12,6 +12,9 @@ interface CodeInspectorProps {
   aiTemperature: number;
   aiMaxTokens: number;
   onApplyFix: (finding: any, remediationCode: string) => Promise<boolean>;
+  metrics?: any;
+  allFindings?: any[];
+  onSelectFindingIndex?: (index: number | null) => void;
 }
 
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
@@ -25,6 +28,9 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   aiTemperature,
   aiMaxTokens,
   onApplyFix,
+  metrics,
+  allFindings = [],
+  onSelectFindingIndex,
 }) => {
   const [fileContent, setFileContent] = useState<string>('');
   const [diffOriginal, setDiffOriginal] = useState<string[]>([]);
@@ -35,7 +41,23 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const [isApplying, setIsApplying] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // New state & refs for Full File Viewer & Auto-scrolling
+  const [viewMode, setViewMode] = useState<'full' | 'diff'>('full');
+  const activeLineRef = useRef<HTMLDivElement>(null);
+  const codeContainerRef = useRef<HTMLPreElement>(null);
+
   const resolution = aiResolutions?.[finding.rule_id];
+
+  const fileFindings = allFindings.filter(
+    (f: any) => f.file.replace(/\\/g, '/') === finding.file.replace(/\\/g, '/')
+  );
+
+  // Keep viewMode as 'full' if there's no remediation code for the selected finding
+  useEffect(() => {
+    if (!resolution?.remediation_code) {
+      setViewMode('full');
+    }
+  }, [finding, resolution]);
 
   // Helper to strip path prefix
   const getRelativePath = (absolutePath: string) => {
@@ -104,6 +126,22 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
     fetchFileAndDiff();
     setChatMessages([]); // Reset chat for new finding
   }, [finding, resolution]);
+
+  // Auto-scroll to active finding line
+  useEffect(() => {
+    if (viewMode === 'full' && fileContent) {
+      const timer = setTimeout(() => {
+        if (activeLineRef.current) {
+          activeLineRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest',
+          });
+        }
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [finding, fileContent, viewMode]);
 
   // Scroll chat to bottom
   useEffect(() => {
@@ -244,7 +282,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
         {/* Left Column: Metadata, Suggestion, Diff */}
         <div className="lg:col-span-3 space-y-5">
           {/* File Metadata */}
-          <div className="flex gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
+          <div className="flex flex-wrap gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
             <div className="flex flex-col gap-1">
               <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">File</span>
               <span className="font-mono text-text-primary break-all">{getRelativePath(finding.file)}</span>
@@ -253,6 +291,29 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
               <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Line</span>
               <span className="font-mono text-text-primary">{finding.line}</span>
             </div>
+            {metrics?.files?.[getRelativePath(finding.file)] && (() => {
+              const fileMetric = metrics.files[getRelativePath(finding.file)];
+              return (
+                <>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Complexity (CCN)</span>
+                    <span className={`font-mono font-semibold ${
+                      fileMetric.level === 'HIGH' ? 'text-danger' : fileMetric.level === 'MEDIUM' ? 'text-warning' : 'text-success'
+                    }`}>
+                      {fileMetric.complexity} ({fileMetric.level})
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Cognitive</span>
+                    <span className="font-mono text-text-primary">{fileMetric.cognitive_complexity || 0}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">LOC</span>
+                    <span className="font-mono text-text-primary">{fileMetric.loc || 0}</span>
+                  </div>
+                </>
+              );
+            })()}
           </div>
 
           {/* Finding Message */}
@@ -311,15 +372,153 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             </p>
           </div>
 
-          {/* Code Diff Viewer */}
-          {resolution?.remediation_code && diffOriginal.length > 0 && (
-            <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3">
-              <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Code Diff</h4>
+          {/* Code Viewer Panel (Full Code or Split Diff) */}
+          <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3 flex flex-col">
+            <div className="flex items-center justify-between border-b border-card-border/40 pb-2">
+              <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
+                {viewMode === 'full' ? 'Trình xem Code' : 'So sánh Code Diff'}
+              </span>
+              {resolution?.remediation_code && (
+                <div className="flex bg-bg-primary/80 border border-card-border/80 rounded-md p-0.5 shadow-inner">
+                  <button
+                    onClick={() => setViewMode('full')}
+                    className={`px-2.5 py-1 text-[9px] font-bold rounded-sm transition-all cursor-pointer ${
+                      viewMode === 'full'
+                        ? 'bg-accent text-white shadow-sm'
+                        : 'text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    Xem Code Đầy Đủ
+                  </button>
+                  <button
+                    onClick={() => setViewMode('diff')}
+                    className={`px-2.5 py-1 text-[9px] font-bold rounded-sm transition-all cursor-pointer ${
+                      viewMode === 'diff'
+                        ? 'bg-accent text-white shadow-sm'
+                        : 'text-text-secondary hover:text-text-primary'
+                    }`}
+                  >
+                    Xem Đề Xuất AI
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {viewMode === 'full' ? (
+              <pre
+                ref={codeContainerRef}
+                className="p-3 overflow-auto text-[10.5px] font-mono leading-relaxed max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-black/95 border border-card-border/40 rounded-xl relative flex flex-col shadow-inner"
+              >
+                {fileContent ? (
+                  fileContent.split(/\r?\n/).map((line, idx) => {
+                    const lineNum = idx + 1;
+                    const isTarget = lineNum === finding.line;
+                    
+                    // Filter findings on this line
+                    const findingsOnLine = fileFindings.filter((f: any) => f.line === lineNum);
+                    const hasFinding = findingsOnLine.length > 0;
+                    const isOtherFinding = hasFinding && !isTarget;
+                    
+                    // Determine severity for class names and indicator colors
+                    let lineSeverity = 'info';
+                    if (hasFinding) {
+                      const severities = findingsOnLine.map((f: any) => (f.severity || '').toLowerCase());
+                      if (severities.includes('error')) lineSeverity = 'error';
+                      else if (severities.includes('warning')) lineSeverity = 'warning';
+                    }
+
+                    return (
+                      <div key={idx} className="w-full flex flex-col">
+                        <div
+                          ref={isTarget ? activeLineRef : undefined}
+                          className={`group flex items-start w-full py-0.5 px-2 -mx-2 transition-colors ${
+                            isTarget
+                              ? 'bg-danger/15 border-l-3 border-danger font-semibold text-text-primary'
+                              : isOtherFinding
+                              ? 'bg-warning/5 border-l-3 border-warning/30 hover:bg-warning/10 text-text-secondary'
+                              : 'hover:bg-bg-tertiary/20 text-text-secondary/80'
+                          }`}
+                        >
+                          {/* Line Number / Indicator Gutter */}
+                          <div className="flex items-center justify-end w-12 shrink-0 select-none text-right pr-3 font-semibold border-r border-card-border/20 mr-3">
+                            {hasFinding ? (
+                              <button
+                                onClick={() => {
+                                  if (onSelectFindingIndex && findingsOnLine[0]) {
+                                    const originalIndex = allFindings.indexOf(findingsOnLine[0]);
+                                    if (originalIndex !== -1) {
+                                      onSelectFindingIndex(originalIndex);
+                                    }
+                                  }
+                                }}
+                                title={`Dòng ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
+                                className={`h-4 w-4 rounded-full flex items-center justify-center text-[9px] font-extrabold cursor-pointer border ${
+                                  lineSeverity === 'error'
+                                    ? 'bg-danger/20 border-danger/60 text-danger hover:bg-danger/40'
+                                    : lineSeverity === 'warning'
+                                    ? 'bg-warning/20 border-warning/60 text-warning hover:bg-warning/40'
+                                    : 'bg-info/20 border-info/60 text-info hover:bg-info/40'
+                                }`}
+                              >
+                                {isTarget ? '!' : '•'}
+                              </button>
+                            ) : (
+                              <span className="text-text-tertiary/40 group-hover:text-text-tertiary text-[10px] font-medium pr-1">
+                                {lineNum}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Code Content */}
+                          <div className="flex-1 whitespace-pre pl-1 select-text">
+                            {line || ' '}
+                          </div>
+                        </div>
+
+                        {/* Inline Expandable Error Card under target line */}
+                        {isTarget && (
+                          <div className="my-2 ml-14 p-4.5 bg-danger/10 border border-danger/25 rounded-xl text-xs leading-relaxed font-sans text-text-primary flex flex-col gap-2.5 shadow-md select-text relative glass">
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono font-bold text-[9px] text-danger uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-danger animate-pulse" />
+                                PHÁT HIỆN LỖI (Dòng {lineNum})
+                              </span>
+                              <span className={`text-[8.5px] px-2 py-0.5 rounded-full font-bold border uppercase tracking-wider ${
+                                severity === 'error'
+                                  ? 'bg-error/15 border-error/35 text-error shadow-[0_0_8px_rgba(239,68,68,0.1)]'
+                                  : severity === 'warning'
+                                  ? 'bg-warning/15 border-warning/35 text-warning shadow-[0_0_8px_rgba(245,158,11,0.1)]'
+                                  : 'bg-info/15 border-info/35 text-info shadow-[0_0_8px_rgba(59,130,246,0.1)]'
+                              }`}>
+                                {finding.severity}
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-text-secondary select-text font-medium leading-relaxed">
+                              {finding.message}
+                            </div>
+                            {resolution?.suggestion && (
+                              <div className="text-[10px] text-text-tertiary border-t border-card-border/30 pt-2.5 flex items-start gap-1.5 select-text font-normal italic">
+                                <span className="shrink-0 text-amber-400 font-sans">💡</span>
+                                <div className="flex-1">
+                                  <strong>Đề xuất sửa lỗi:</strong> {resolution.suggestion}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="text-center py-8 text-text-tertiary italic">Đang tải nội dung tệp...</div>
+                )}
+              </pre>
+            ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Original Panel */}
                 <div className="border border-card-border/60 rounded-lg overflow-hidden bg-bg-primary/30 flex flex-col">
                   <div className="bg-bg-tertiary/60 px-3 py-1.5 text-[10px] font-semibold text-text-secondary border-b border-card-border/60 uppercase">
-                    Original
+                    Original (Dòng {finding.line})
                   </div>
                   <pre className="p-3 overflow-x-auto text-[10px] font-mono leading-normal flex-1 flex flex-col max-h-64 scrollbar-thin">
                     {diffOriginal.map((line, i) => {
@@ -374,8 +573,8 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                   </pre>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Action Button */}
           {resolution?.remediation_code && !finding._applied && (

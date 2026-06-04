@@ -151,6 +151,35 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       .sort((a, b) => b.blastCount - a.blastCount)
       .slice(0, 5);
 
+    // Parse complexity metrics
+    const filesMetrics = report?.metrics?.files || {};
+    const metricFilesList = Object.keys(filesMetrics);
+    
+    let totalComplexity = 0;
+    let totalCognitive = 0;
+    let avgComplexity = 0;
+    let avgCognitive = 0;
+    
+    if (metricFilesList.length > 0) {
+      metricFilesList.forEach(file => {
+        totalComplexity += filesMetrics[file].complexity || 0;
+        totalCognitive += filesMetrics[file].cognitive_complexity || 0;
+      });
+      avgComplexity = Math.round(totalComplexity / metricFilesList.length);
+      avgCognitive = Math.round(totalCognitive / metricFilesList.length);
+    }
+
+    const topComplexFiles = Object.keys(filesMetrics)
+      .map(file => ({
+        file,
+        complexity: filesMetrics[file].complexity || 0,
+        cognitive: filesMetrics[file].cognitive_complexity || 0,
+        level: filesMetrics[file].level || 'LOW',
+        loc: filesMetrics[file].loc || 0
+      }))
+      .sort((a, b) => b.complexity - a.complexity)
+      .slice(0, 4);
+
     return {
       security,
       quality,
@@ -161,7 +190,10 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       infos,
       healthScore,
       topFiles,
-      topSymbols
+      topSymbols,
+      avgComplexity,
+      avgCognitive,
+      topComplexFiles
     };
   }, [findings, report]);
 
@@ -258,8 +290,17 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             <Info className="h-4 w-4 text-success" />
             <span>Maintainability</span>
           </div>
-          <div className="text-2xl font-bold text-text-primary">{stats.maintainability}</div>
-          <div className="text-[10px] text-text-tertiary mt-1">Style & complexity issues</div>
+          <div className="flex items-baseline gap-2">
+            <div className="text-2xl font-bold text-text-primary">{stats.maintainability}</div>
+            {stats.avgComplexity > 0 && (
+              <span className="text-[10px] font-mono text-text-secondary">
+                (Avg CCN: {stats.avgComplexity})
+              </span>
+            )}
+          </div>
+          <div className="text-[10px] text-text-tertiary mt-1">
+            {stats.avgComplexity > 0 ? `Avg Cognitive: ${stats.avgCognitive}` : 'Style & complexity issues'}
+          </div>
         </div>
       </div>
 
@@ -380,8 +421,46 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </div>
         </div>
 
+        {/* Top Complex Files */}
+        <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col col-span-1">
+          <h4 className="text-xs font-bold text-text-secondary mb-3 uppercase tracking-wider">Top Complex Files</h4>
+          <div className="space-y-2 flex-1">
+            {stats.topComplexFiles.length === 0 ? (
+              <div className="text-xs text-text-tertiary py-4 text-center">No complexity metrics available</div>
+            ) : (
+              stats.topComplexFiles.map((cf) => {
+                const badgeColor = cf.level === 'HIGH'
+                  ? 'text-danger bg-danger/10 border-danger/20'
+                  : cf.level === 'MEDIUM'
+                  ? 'text-warning bg-warning/10 border-warning/20'
+                  : 'text-success bg-success/10 border-success/20';
+                return (
+                  <div
+                    key={cf.file}
+                    onClick={() => onSelectFilePath(cf.file)}
+                    className="flex flex-col p-2 bg-bg-primary/40 hover:bg-bg-primary/80 border border-card-border/40 rounded-lg cursor-pointer transition-all gap-1"
+                  >
+                    <div className="flex justify-between items-center w-full">
+                      <span className="text-[11px] font-mono text-text-primary truncate pr-2" title={cf.file}>
+                        {getRelativePath(cf.file)}
+                      </span>
+                      <span className={`text-[9px] border px-1.5 py-0.5 rounded font-semibold shrink-0 ${badgeColor}`}>
+                        CCN: {cf.complexity}
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-[9px] text-text-tertiary font-mono">
+                      <span>LOC: {cf.loc}</span>
+                      <span>Cognitive: {cf.cognitive}</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
         {/* Top Risky Symbols (Blast radius) */}
-        <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col col-span-2">
+        <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col col-span-1">
           <h4 className="text-xs font-bold text-text-secondary mb-3 uppercase tracking-wider">Top Risky Symbols</h4>
           <div className="space-y-3 flex-1">
             {stats.topSymbols.length === 0 ? (
@@ -389,7 +468,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             ) : (
               stats.topSymbols.map((sym) => {
                 const affectedDetails = sym.blastRadius.length > 0
-                  ? `Blast: ${sym.blastRadius.slice(0, 3).map((br: any) => br.name).join(', ')}${sym.blastRadius.length > 3 ? '...' : ''}`
+                  ? `Blast: ${sym.blastRadius.slice(0, 2).map((br: any) => br.name).join(', ')}${sym.blastRadius.length > 2 ? '...' : ''}`
                   : 'No affected symbols';
                 return (
                   <div
@@ -397,8 +476,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                     className="flex flex-col p-2.5 rounded-lg bg-bg-primary/40 border border-card-border/40 text-xs text-text-secondary gap-1"
                   >
                     <div className="flex justify-between items-center w-full">
-                      <span className="font-mono font-bold text-text-primary text-[11px]">{sym.name}</span>
-                      <span className="text-[10px] bg-accent/10 border border-accent/20 px-2 py-0.5 rounded text-accent font-semibold shrink-0">
+                      <span className="font-mono font-bold text-text-primary text-[11px] truncate pr-2">{sym.name}</span>
+                      <span className="text-[9px] bg-accent/10 border border-accent/20 px-2 py-0.5 rounded text-accent font-semibold shrink-0">
                         {sym.blastCount} affected
                       </span>
                     </div>

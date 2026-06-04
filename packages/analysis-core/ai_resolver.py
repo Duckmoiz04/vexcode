@@ -3,7 +3,7 @@ import sys
 import json
 import requests
 from dotenv import load_dotenv
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple
 
 # Try loading from the current package directory first, then fallback to CWD
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,6 +27,10 @@ MOCK_AI_RESOLUTIONS = {
     "python.lang.security.audit.hardcoded-password": {
         "suggestion": "Load password from environment variables instead of hardcoding it in the connection string.",
         "remediation_code": "import os\npassword = os.environ.get('DB_PASSWORD')\n# conn = connect(password=password)"
+    },
+    "maintainability.naming.obscure": {
+        "suggestion": "Đổi tên hàm 'do_it' thành 'process_user_data' và tham số 'x' thành 'user_input' để tăng tính rõ nghĩa và dễ bảo trì.",
+        "remediation_code": "def process_user_data(user_input):"
     }
 }
 
@@ -205,6 +209,133 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
                     "remediation_code": f"# Remediation code for {rule_id}"
                 }
         return resolutions
+
+def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool = False) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """
+    Scans source files to audit naming quality of variables/functions/classes.
+    Returns a list of naming findings and a dictionary of resolutions.
+    """
+    findings = []
+    resolutions = {}
+    
+    if not files_to_audit:
+        return findings, resolutions
+        
+    if use_mock or not NINEROUTER_API_KEY:
+        if not NINEROUTER_API_KEY and not use_mock:
+            print("NINEROUTER_API_KEY not found. Using mock naming audit.", file=sys.stderr)
+        
+        # Look for mock target example.py
+        for f_path in files_to_audit:
+            rel_path = os.path.relpath(f_path, target_path).replace("\\", "/")
+            if "example.py" in rel_path:
+                rule_id = "maintainability.naming.obscure"
+                finding = {
+                    "file": rel_path,
+                    "line": 8,
+                    "rule_id": rule_id,
+                    "message": "Tên hàm 'do_it' và tham số 'x' quá chung chung và tối nghĩa. Đề xuất đổi tên để phản ánh rõ chức năng xử lý dữ liệu người dùng.",
+                    "severity": "WARNING",
+                    "code_text": "def do_it(x):"
+                }
+                findings.append(finding)
+                resolutions[rule_id] = MOCK_AI_RESOLUTIONS[rule_id]
+                break
+        return findings, resolutions
+
+    # Real AI execution via 9router
+    print(f"Querying 9router for naming audit on {len(files_to_audit)} files...", file=sys.stderr)
+    
+    for f_path in files_to_audit:
+        if not os.path.exists(f_path):
+            continue
+            
+        try:
+            with open(f_path, "r", encoding="utf-8") as f:
+                code_content = f.read()
+                
+            if not code_content.strip():
+                continue
+                
+            rel_path = os.path.relpath(f_path, target_path).replace("\\", "/")
+            
+            system_prompt = (
+                "You are an expert software architect. Analyze the provided source code and review "
+                "the naming quality of classes, functions, and key variables. Identify any obscure, "
+                "too generic (like x, a, temp, data, obj, process), or misleading names.\n"
+                "Your response MUST be a valid JSON array of objects matching this schema:\n"
+                "[\n"
+                "  {\n"
+                "    \"line\": 12,\n"
+                "    \"code_text\": \"const temp = req.body;\",\n"
+                "    \"message\": \"Variable 'temp' is too generic.\",\n"
+                "    \"suggestion\": \"Rename 'temp' to 'requestPayload' to describe the data structure.\",\n"
+                "    \"remediation_code\": \"const requestPayload = req.body;\"\n"
+                "  }\n"
+                "]\n"
+                "If no naming issues are found, return an empty array []. Just return raw JSON, no markdown formatting."
+            )
+            
+            user_prompt = f"File: {rel_path}\n\nCode Content:\n{code_content}"
+            
+            headers = {
+                "Authorization": f"Bearer {NINEROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "model": NINEROUTER_MODEL,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                "temperature": 0.1
+            }
+            
+            url = f"{NINEROUTER_BASE_URL.rstrip('/')}/chat/completions"
+            response = requests.post(url, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+            
+            content = response.json()["choices"][0]["message"]["content"].strip()
+            if content.startswith("```"):
+                lines = content.splitlines()
+                if lines[0].startswith("```"):
+                    lines = lines[1:]
+                if lines[-1].startswith("```"):
+                    lines = lines[:-1]
+                content = "\n".join(lines).strip()
+                
+            issues = json.loads(content)
+            
+            if isinstance(issues, list):
+                for idx, issue in enumerate(issues):
+                    rule_id = f"maintainability.naming.obscure.{rel_path.replace('/', '_').replace('.', '_')}_{idx}"
+                    line_num = issue.get("line")
+                    code_line = issue.get("code_text")
+                    msg = issue.get("message")
+                    sug = issue.get("suggestion")
+                    rem = issue.get("remediation_code")
+                    
+                    finding = {
+                        "file": rel_path,
+                        "line": line_num,
+                        "rule_id": rule_id,
+                        "message": msg,
+                        "severity": "WARNING",
+                        "code_text": code_line
+                    }
+                    findings.append(finding)
+                    
+                    resolutions[rule_id] = {
+                        "suggestion": sug,
+                        "remediation_code": rem
+                    }
+                    
+        except Exception as e:
+            print(f"Error auditing naming for {f_path}: {e}", file=sys.stderr)
+            
+    return findings, resolutions
+
 
 if __name__ == "__main__":
     # Test script run

@@ -4,7 +4,8 @@ import sys
 import os
 from datetime import datetime, timezone
 from scanner import run_scan
-from ai_resolver import resolve_findings
+from ai_resolver import resolve_findings, run_naming_audit
+from complexity import analyze_file_complexity
 from ast_graph import (
     is_gitnexus_available,
     get_repo_info_for_path,
@@ -240,11 +241,48 @@ def main() -> None:
                     if key in MOCK_AST_CONTEXTS:
                         finding["ast_context"] = MOCK_AST_CONTEXTS[key]
                         
+        # Calculate complexity metrics for all relevant source files
+        print("Calculating file complexity metrics with Lizard...", file=sys.stderr)
+        metrics = {"files": {}}
+        source_files = []
+        if target_files:
+            source_files = target_files
+        else:
+            # Walk directory to find files (limit to 100 files to avoid performance bottleneck)
+            ignored_dirs = {".git", "node_modules", ".venv", "__pycache__", "dist", "build", "public", ".gemini", ".gitnexus"}
+            valid_exts = {".py", ".js", ".jsx", ".ts", ".tsx"}
+            for root, dirs, files in os.walk(args.target):
+                dirs[:] = [d for d in dirs if d not in ignored_dirs]
+                for file in files:
+                    ext = os.path.splitext(file)[1].lower()
+                    if ext in valid_exts:
+                        full_path = os.path.join(root, file)
+                        source_files.append(full_path)
+                        if len(source_files) >= 100:
+                            break
+                if len(source_files) >= 100:
+                    break
+                    
+        for f_path in source_files:
+            rel_path = os.path.relpath(f_path, args.target).replace("\\", "/")
+            metrics["files"][rel_path] = analyze_file_complexity(f_path)
+            
+        # Run AI Naming Quality Audit
+        print("Auditing code naming quality...", file=sys.stderr)
+        # Audit files with findings or first 5 files of the source files list
+        files_to_audit = list(set([os.path.join(args.target, f.get("file")) for f in findings if f.get("file")] + source_files[:5]))
+        naming_findings, naming_resolutions = run_naming_audit(files_to_audit, args.target, use_mock=args.mock_ai)
+        
+        # Merge naming findings into main findings list
+        findings.extend(naming_findings)
+        
         # 2. Query AI resolutions for the findings
         resolutions = {}
         if findings:
             print("Resolving findings with AI...", file=sys.stderr)
             resolutions = resolve_findings(findings, use_mock=args.mock_ai)
+            # Merge naming resolutions
+            resolutions.update(naming_resolutions)
         else:
             print("No findings to resolve.", file=sys.stderr)
             
@@ -255,7 +293,8 @@ def main() -> None:
             "target_path": scan_results.get("target_path", args.target),
             "findings": findings,
             "ai_resolutions": resolutions,
-            "git_state": get_git_state(args.target)
+            "git_state": get_git_state(args.target),
+            "metrics": metrics
         }
         
         # 4. Write to output file

@@ -6,7 +6,7 @@ interface HeaderProps {
   projects: any[];
   onSelectProject: (name: string | null) => void;
   onOpenSettings: () => void;
-  onStartScan: () => void;
+  onStartScan: (fastScan: boolean) => void;
   reports: any[];
   currentReportId: string | null;
   onSelectReportId: (id: string) => void;
@@ -24,8 +24,10 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isVersionOpen, setIsVersionOpen] = useState(false);
+  const [isScanOpen, setIsScanOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const versionDropdownRef = useRef<HTMLDivElement>(null);
+  const scanRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -34,6 +36,9 @@ export const Header: React.FC<HeaderProps> = ({
       }
       if (versionDropdownRef.current && !versionDropdownRef.current.contains(event.target as Node)) {
         setIsVersionOpen(false);
+      }
+      if (scanRef.current && !scanRef.current.contains(event.target as Node)) {
+        setIsScanOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -179,13 +184,61 @@ export const Header: React.FC<HeaderProps> = ({
         >
           <Settings className="h-4.5 w-4.5" />
         </button>
-        <button
-          onClick={onStartScan}
-          className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover text-white text-xs font-semibold rounded-lg shadow-lg hover:-translate-y-0.5 transition-all"
-        >
-          <Search className="h-3.5 w-3.5" />
-          <span>Scan Project</span>
-        </button>
+        <div className="relative" ref={scanRef}>
+          <div className="flex items-center">
+            <button
+              onClick={() => onStartScan(false)}
+              className="flex items-center gap-2 px-3 py-2 bg-accent hover:bg-accent-hover text-white text-xs font-semibold rounded-l-lg shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer border-r border-accent/20"
+              title="Quét toàn bộ dự án"
+            >
+              <Search className="h-3.5 w-3.5" />
+              <span>Scan Project</span>
+            </button>
+            <button
+              onClick={() => setIsScanOpen(!isScanOpen)}
+              className="flex h-[32px] items-center justify-center px-2 bg-accent hover:bg-accent-hover text-white rounded-r-lg shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
+              title="Tùy chọn quét"
+            >
+              <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+          </div>
+
+          {isScanOpen && (
+            <div className="absolute top-full right-0 z-50 mt-1.5 w-56 animate-slide-up overflow-hidden rounded-xl border border-card-border bg-bg-tertiary shadow-2xl">
+              <div className="px-3 py-2 border-b border-card-border text-[9px] font-semibold tracking-wider text-text-tertiary uppercase">
+                Scan Options
+              </div>
+              <div className="p-1 space-y-0.5">
+                <button
+                  onClick={() => {
+                    onStartScan(false);
+                    setIsScanOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs hover:bg-bg-secondary text-text-secondary hover:text-text-primary transition-all"
+                >
+                  <Search className="h-3.5 w-3.5 text-accent shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="font-semibold">Full Scan</span>
+                    <span className="text-[9px] text-text-tertiary">Quét toàn bộ thư mục</span>
+                  </div>
+                </button>
+                <button
+                  onClick={() => {
+                    onStartScan(true);
+                    setIsScanOpen(false);
+                  }}
+                  className="flex w-full items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs hover:bg-bg-secondary text-text-secondary hover:text-text-primary transition-all"
+                >
+                  <Folder className="h-3.5 w-3.5 text-success shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="font-semibold">Fast Scan (Git)</span>
+                    <span className="text-[9px] text-text-tertiary">Chỉ quét tệp tin thay đổi</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, Folder, File, ShieldAlert, X } from 'lucide-react';
+import { ChevronDown, Folder, File, ShieldAlert, X, Search } from 'lucide-react';
 
 interface SidebarProps {
   projectName: string | null;
@@ -29,6 +29,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
   targetPath,
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
+  
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterSeverity, setFilterSeverity] = useState<'all' | 'error' | 'warning' | 'info'>('all');
+  const [filterCategory, setFilterCategory] = useState<'all' | 'security' | 'quality' | 'maintainability' | 'architecture'>('all');
 
   const toggleFolder = (path: string) => {
     setExpandedFolders((prev) => {
@@ -51,7 +56,71 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return abs;
   };
 
-  // Build File Tree
+  // Classification helper for findings
+  const classifyFinding = (finding: any) => {
+    const ruleId = (finding.rule_id || '').toLowerCase();
+    
+    // 1. Security
+    const securityKeywords = [
+      'security', 'vuln', 'injection', 'xss', 'csrf', 'secret', 'key',
+      'token', 'jwt', 'crypto', 'auth', 'password', 'credential', 'ssrf',
+      'overflow', 'leak', 'private', 'cert', 'hash', 'ssl', 'tls'
+    ];
+    if (securityKeywords.some(kw => ruleId.includes(kw))) {
+      return 'security';
+    }
+
+    // 2. AST & Architecture
+    if (finding.ast_context && (finding.ast_context.symbol_name || (finding.ast_context.callers && finding.ast_context.callers.length > 0))) {
+      return 'architecture';
+    }
+
+    // 3. Style & Maintainability
+    const styleKeywords = [
+      'style', 'format', 'naming', 'deprecated', 'convention', 'comment',
+      'spacing', 'indent', 'unused', 'duplicate', 'complex', 'nest'
+    ];
+    if (styleKeywords.some(kw => ruleId.includes(kw))) {
+      return 'maintainability';
+    }
+
+    // 4. Code Quality & Bugs (default)
+    return 'quality';
+  };
+
+  // Searched & Filtered findings list
+  const searchedAndFilteredFindings = useMemo(() => {
+    return findings.filter((finding) => {
+      // 1. Search filter (match rule_id, message, or file path)
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        const ruleId = (finding.rule_id || '').toLowerCase();
+        const message = (finding.message || '').toLowerCase();
+        const file = (finding.file || '').toLowerCase();
+        if (!ruleId.includes(query) && !message.includes(query) && !file.includes(query)) {
+          return false;
+        }
+      }
+
+      // 2. Severity filter
+      if (filterSeverity !== 'all') {
+        if ((finding.severity || '').toLowerCase() !== filterSeverity) {
+          return false;
+        }
+      }
+
+      // 3. Category filter
+      if (filterCategory !== 'all') {
+        if (classifyFinding(finding) !== filterCategory) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [findings, searchQuery, filterSeverity, filterCategory]);
+
+  // Build File Tree based on filtered findings
   const fileTree = useMemo(() => {
     const root: TreeNode = {
       name: projectName || 'Project',
@@ -60,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       children: {},
     };
 
-    findings.forEach((finding, index) => {
+    searchedAndFilteredFindings.forEach((finding) => {
       const relPath = getRelativePath(finding.file);
       const parts = relPath.split('/');
       let current = root;
@@ -80,7 +149,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               indices: [],
             };
           }
-          current.children[part].indices?.push(index);
+          const originalIndex = findings.indexOf(finding);
+          current.children[part].indices?.push(originalIndex);
         } else {
           if (!current.children) current.children = {};
           if (!current.children[part]) {
@@ -97,7 +167,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     });
 
     return root;
-  }, [findings, projectName, targetPath]);
+  }, [searchedAndFilteredFindings, projectName, targetPath, findings]);
 
   // Render tree node recursively
   const renderTreeNode = (node: TreeNode, depth = 0) => {
@@ -160,23 +230,82 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  // Filter findings based on selected file path
+  // Filter findings based on selected file path and active filters
   const filteredFindings = useMemo(() => {
-    if (!selectedFilePath) return findings;
-    return findings.filter((f) => f.file === selectedFilePath);
-  }, [findings, selectedFilePath]);
+    if (!selectedFilePath) return searchedAndFilteredFindings;
+    return searchedAndFilteredFindings.filter((f) => f.file === selectedFilePath);
+  }, [searchedAndFilteredFindings, selectedFilePath]);
 
   return (
     <div className="w-80 min-w-80 bg-bg-primary border-r border-card-border flex flex-col h-full overflow-hidden">
 
       {/* Explorer / File Tree Section */}
       <div className="flex-1 border-b border-card-border flex flex-col min-h-0">
-        <div className="px-4 py-3 border-b border-card-border/50">
-          <h3 className="text-xs font-semibold text-text-secondary">Explorer</h3>
+        
+        {/* Title, Stats Counter and Filter Controls */}
+        <div className="px-4 py-3 border-b border-card-border/50 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold text-text-secondary">Explorer</h3>
+            <span className="text-[10px] font-mono text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
+              {searchedAndFilteredFindings.length} / {findings.length}
+            </span>
+          </div>
+
+          {/* Keyword Search Input */}
+          <div className="relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Tìm kiếm lỗi, tệp..."
+              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg pl-7.5 pr-7.5 py-1 text-[11px] text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
+            />
+            <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-text-tertiary" />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-2 text-text-tertiary hover:text-text-primary cursor-pointer"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
+
+          {/* Filter Options Row */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Severity Filter Dropdown */}
+            <select
+              value={filterSeverity}
+              onChange={(e: any) => setFilterSeverity(e.target.value)}
+              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg px-2 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
+            >
+              <option value="all">Mọi mức độ</option>
+              <option value="error">🔴 Error</option>
+              <option value="warning">🟡 Warning</option>
+              <option value="info">🔵 Info</option>
+            </select>
+
+            {/* Category Filter Dropdown */}
+            <select
+              value={filterCategory}
+              onChange={(e: any) => setFilterCategory(e.target.value)}
+              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg px-2 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
+            >
+              <option value="all">Mọi nhóm</option>
+              <option value="security">🛡️ Security</option>
+              <option value="quality">🐞 Quality</option>
+              <option value="maintainability">⚙️ Maintainability</option>
+              <option value="architecture">🏗️ Architecture</option>
+            </select>
+          </div>
         </div>
+
         <div className="flex-1 overflow-y-auto p-3 scrollbar-thin">
           {findings.length === 0 ? (
             <div className="text-xs text-text-tertiary text-center py-6">No files indexed</div>
+          ) : searchedAndFilteredFindings.length === 0 ? (
+            <div className="text-xs text-text-tertiary text-center py-6 italic">No matching files found</div>
           ) : (
             renderTreeNode(fileTree)
           )}
