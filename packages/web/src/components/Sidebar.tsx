@@ -150,7 +150,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           className="flex items-center gap-2 py-1.5 pr-3 text-[11px] font-medium rounded cursor-pointer text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/50 transition-all"
         >
           <ChevronDown className={`h-3 w-3 shrink-0 text-text-tertiary transition-transform duration-150 ${isExpanded ? '' : '-rotate-90'}`} />
-          <Folder className="h-3.5 w-3.5 shrink-0 text-accent/70" />
+          <Folder className="h-3.5 w-3.5 shrink-0 text-warning/80" />
           <span className="truncate flex-1">{node.name}</span>
         </div>
       );
