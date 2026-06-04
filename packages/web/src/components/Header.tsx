@@ -189,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => onStartScan(false)}
               className="flex items-center gap-2 px-3 py-2 bg-accent hover:bg-accent-hover text-white text-xs font-semibold rounded-l-lg shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer border-r border-accent/20"
-              title="Quét toàn bộ dự án"
+              title="Scan entire project"
             >
               <Search className="h-3.5 w-3.5" />
               <span>Scan Project</span>
@@ -197,7 +197,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={() => setIsScanOpen(!isScanOpen)}
               className="flex h-[32px] items-center justify-center px-2 bg-accent hover:bg-accent-hover text-white rounded-r-lg shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
-              title="Tùy chọn quét"
+              title="Scan options"
             >
               <ChevronDown className="h-3.5 w-3.5" />
             </button>
@@ -219,7 +219,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Search className="h-3.5 w-3.5 text-accent shrink-0" />
                   <div className="flex flex-col">
                     <span className="font-semibold">Full Scan</span>
-                    <span className="text-[9px] text-text-tertiary">Quét toàn bộ thư mục</span>
+                    <span className="text-[9px] text-text-tertiary">Scan entire directory</span>
                   </div>
                 </button>
                 <button
@@ -232,7 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
                   <Folder className="h-3.5 w-3.5 text-success shrink-0" />
                   <div className="flex flex-col">
                     <span className="font-semibold">Fast Scan (Git)</span>
-                    <span className="text-[9px] text-text-tertiary">Chỉ quét tệp tin thay đổi</span>
+                    <span className="text-[9px] text-text-tertiary">Only scan changed files</span>
                   </div>
                 </button>
               </div>

@@ -9,16 +9,16 @@ interface SidebarProps {
   targetPath: string | null;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  filterSeverity: 'all' | 'error' | 'warning' | 'info';
-  setFilterSeverity: (sev: 'all' | 'error' | 'warning' | 'info') => void;
-  filterCategory: 'all' | 'security' | 'quality' | 'maintainability' | 'architecture';
-  setFilterCategory: (cat: 'all' | 'security' | 'quality' | 'maintainability' | 'architecture') => void;
+  filterSeverities: string[];
+  setFilterSeverities: (sevs: string[]) => void;
+  filterCategories: string[];
+  setFilterCategories: (cats: string[]) => void;
   selectedFindingIndex: number | null;
   onSelectFindingIndex?: (index: number | null) => void;
-  filterStatus: 'all' | 'pending' | 'applied';
-  setFilterStatus: (status: 'all' | 'pending' | 'applied') => void;
-  filterLanguage: string;
-  setFilterLanguage: (lang: string) => void;
+  filterStatuses: string[];
+  setFilterStatuses: (statuses: string[]) => void;
+  filterLanguages: string[];
+  setFilterLanguages: (langs: string[]) => void;
   availableLanguages: string[];
 }
 
@@ -56,16 +56,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
   targetPath,
   searchQuery,
   setSearchQuery,
-  filterSeverity,
-  setFilterSeverity,
-  filterCategory,
-  setFilterCategory,
+  filterSeverities,
+  setFilterSeverities,
+  filterCategories,
+  setFilterCategories,
   selectedFindingIndex,
   onSelectFindingIndex,
-  filterStatus,
-  setFilterStatus,
-  filterLanguage,
-  setFilterLanguage,
+  filterStatuses,
+  setFilterStatuses,
+  filterLanguages,
+  setFilterLanguages,
   availableLanguages,
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
@@ -140,36 +140,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }
 
       // 2. Severity filter
-      if (filterSeverity !== 'all') {
-        if ((finding.severity || '').toLowerCase() !== filterSeverity) {
+      if (filterSeverities.length > 0) {
+        if (!filterSeverities.includes((finding.severity || '').toLowerCase())) {
           return false;
         }
       }
 
       // 3. Category filter
-      if (filterCategory !== 'all') {
-        if (classifyFinding(finding) !== filterCategory) {
+      if (filterCategories.length > 0) {
+        if (!filterCategories.includes(classifyFinding(finding))) {
           return false;
         }
       }
 
       // 4. Status filter
-      if (filterStatus !== 'all') {
+      if (filterStatuses.length > 0) {
         const isApplied = !!finding._applied;
-        if (filterStatus === 'applied' && !isApplied) return false;
-        if (filterStatus === 'pending' && isApplied) return false;
+        const status = isApplied ? 'applied' : 'pending';
+        if (!filterStatuses.includes(status)) {
+          return false;
+        }
       }
 
       // 5. Language filter
-      if (filterLanguage !== 'all') {
-        if (getFileLanguage(finding.file) !== filterLanguage) {
+      if (filterLanguages.length > 0) {
+        if (!filterLanguages.includes(getFileLanguage(finding.file))) {
           return false;
         }
       }
 
       return true;
     });
-  }, [findings, searchQuery, filterSeverity, filterCategory, filterStatus, filterLanguage]);
+  }, [findings, searchQuery, filterSeverities, filterCategories, filterStatuses, filterLanguages]);
 
   // Build File Tree based on filtered findings
   const fileTree = useMemo(() => {
@@ -294,7 +296,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }`}
         >
           <Folder className="h-3 w-3" />
-          <span>Cây thư mục</span>
+          <span>File Tree</span>
         </button>
         <button
           onClick={() => setSidebarTab('findings')}
@@ -305,21 +307,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           }`}
         >
           <ShieldAlert className="h-3 w-3" />
-          <span>Danh sách lỗi</span>
+          <span>Findings</span>
         </button>
       </div>
-
+ 
       <div className="flex-1 flex flex-col min-h-0">
         {/* Title and Stats Counter */}
         <div className="px-4 py-2.5 border-b border-card-border/50 flex items-center justify-between shrink-0 bg-bg-secondary/10">
           <h3 className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
-            {sidebarTab === 'explorer' ? 'Cấu trúc tệp' : 'Lỗi dự án'}
+            {sidebarTab === 'explorer' ? 'File Structure' : 'Project Issues'}
           </h3>
           <span className="text-[10px] font-mono font-bold text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
             {searchedAndFilteredFindings.length} / {findings.length}
           </span>
         </div>
-
+ 
         {/* Dynamic Tab Panel Content */}
         <div className="flex-1 overflow-y-auto p-3 scrollbar-thin">
           {findings.length === 0 ? (
@@ -335,7 +337,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 const isActive = originalIndex === selectedFindingIndex;
                 const severity = (f.severity || '').toLowerCase();
                 const isApplied = f._applied;
-
+ 
                 return (
                   <div
                     key={originalIndex}
@@ -372,7 +374,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </div>
                     <div className="text-[9px] font-mono text-text-tertiary flex items-center justify-between">
                       <span className="truncate pr-2 font-medium">{f.file.split(/[\\/]/).pop()}</span>
-                      <span className="shrink-0">Dòng {f.line}</span>
+                      <span className="shrink-0">Line {f.line}</span>
                     </div>
                     <p className="text-[10px] text-text-secondary leading-normal line-clamp-2 select-none font-sans mt-0.5">
                       {f.message}

@@ -260,7 +260,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             <button
               onClick={() => onSelectFindingIndex(null)}
               className="mr-1 flex items-center justify-center p-1.5 rounded-lg border border-card-border bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-all cursor-pointer shadow-sm"
-              title="Quay lại tất cả lỗi"
+              title="Back to all findings"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-3.5 w-3.5">
                 <path d="M19 12H5M12 19l-7-7 7-7" />
@@ -290,7 +290,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             }`}
           >
             <HelpCircle className="h-3.5 w-3.5" />
-            <span>{isChatOpen ? 'Đóng AI Chat' : 'Hỏi AI Assistant'}</span>
+            <span>{isChatOpen ? 'Close AI Chat' : 'Ask AI Assistant'}</span>
           </button>
           <span
             className={`text-xs px-2.5 py-0.5 rounded font-semibold border ${
@@ -405,7 +405,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
           <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3 flex flex-col">
             <div className="flex items-center justify-between border-b border-card-border/40 pb-2">
               <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
-                {viewMode === 'full' ? 'Trình xem Code' : 'So sánh Code Diff'}
+                {viewMode === 'full' ? 'Full Code View' : 'Code Diff View'}
               </span>
               {resolution?.remediation_code && (
                 <div className="flex bg-bg-primary/80 border border-card-border/80 rounded-md p-0.5 shadow-inner">
@@ -417,7 +417,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         : 'text-text-secondary hover:text-text-primary'
                     }`}
                   >
-                    Xem Code Đầy Đủ
+                    Full Code View
                   </button>
                   <button
                     onClick={() => setViewMode('diff')}
@@ -427,7 +427,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         : 'text-text-secondary hover:text-text-primary'
                     }`}
                   >
-                    Xem Đề Xuất AI
+                    Remediation Diff
                   </button>
                 </div>
               )}
@@ -480,7 +480,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                                     }
                                   }
                                 }}
-                                title={`Dòng ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
+                                title={`Line ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
                                 className={`h-4 w-4 rounded-full flex items-center justify-center text-[9px] font-extrabold cursor-pointer border ${
                                   lineSeverity === 'error'
                                     ? 'bg-danger/20 border-danger/60 text-danger hover:bg-danger/40'
@@ -510,7 +510,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                             <div className="flex items-center justify-between">
                               <span className="font-mono font-bold text-[9px] text-danger uppercase tracking-wider flex items-center gap-1.5">
                                 <span className="h-1.5 w-1.5 rounded-full bg-danger animate-pulse" />
-                                PHÁT HIỆN LỖI (Dòng {lineNum})
+                                FINDING (Line {lineNum})
                               </span>
                               <span className={`text-[8.5px] px-2 py-0.5 rounded-full font-bold border uppercase tracking-wider ${
                                 severity === 'error'
@@ -529,7 +529,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                               <div className="text-[10px] text-text-tertiary border-t border-card-border/30 pt-2.5 flex items-start gap-1.5 select-text font-normal italic">
                                 <span className="shrink-0 text-amber-400 font-sans">💡</span>
                                 <div className="flex-1">
-                                  <strong>Đề xuất sửa lỗi:</strong> {resolution.suggestion}
+                                  <strong>Remediation advice:</strong> {resolution.suggestion}
                                 </div>
                               </div>
                             )}
@@ -539,7 +539,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                     );
                   })
                 ) : (
-                  <div className="text-center py-8 text-text-tertiary italic">Đang tải nội dung tệp...</div>
+                  <div className="text-center py-8 text-text-tertiary italic">Loading file content...</div>
                 )}
               </pre>
             ) : (
@@ -547,7 +547,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 {/* Original Panel */}
                 <div className="border border-card-border/60 rounded-lg overflow-hidden bg-bg-primary/30 flex flex-col">
                   <div className="bg-bg-tertiary/60 px-3 py-1.5 text-[10px] font-semibold text-text-secondary border-b border-card-border/60 uppercase">
-                    Original (Dòng {finding.line})
+                    Original (Line {finding.line})
                   </div>
                   <pre className="p-3 overflow-x-auto text-[10px] font-mono leading-normal flex-1 flex flex-col max-h-64 scrollbar-thin">
                     {diffOriginal.map((line, i) => {
@@ -645,9 +645,9 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 <div className="h-10 w-10 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-lg shadow-sm">
                   💬
                 </div>
-                <p className="font-semibold text-text-secondary text-[12px]">Hỏi AI về lỗi này</p>
+                <p className="font-semibold text-text-secondary text-[12px]">Ask AI about this finding</p>
                 <span className="max-w-[240px] leading-relaxed text-[10px] text-text-tertiary/80">
-                  Bạn có thể hỏi: "Tại sao lỗi này nguy hiểm?", "Làm cách nào sửa thủ công?", hoặc "Ảnh hưởng của lỗi này thế nào?"
+                  Ask questions like: "Why is this finding dangerous?", "How can I fix this manually?", or "What is the blast radius of this issue?"
                 </span>
               </div>
             ) : (
@@ -661,7 +661,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                   }`}
                 >
                   <span className="text-[8.5px] font-extrabold uppercase tracking-wider mb-1 text-text-tertiary select-none">
-                    {msg.role === 'user' ? 'Bạn' : 'AI Assistant'}
+                    {msg.role === 'user' ? 'You' : 'AI Assistant'}
                   </span>
                   <p className="whitespace-pre-wrap font-sans text-text-primary text-[11.5px]">{msg.content}</p>
                 </div>
@@ -670,7 +670,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             {isChatLoading && (
               <div className="flex items-center gap-2.5 p-3 bg-bg-secondary/90 border border-card-border/60 rounded-xl text-xs text-text-secondary animate-pulse w-max rounded-tl-none mr-auto shadow-sm">
                 <span className="h-2 w-2 rounded-full bg-accent animate-bounce" />
-                <span>AI đang suy nghĩ...</span>
+                <span>AI is thinking...</span>
               </div>
             )}
             <div ref={chatEndRef} />
@@ -686,7 +686,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 if (e.key === 'Enter') handleSendChat();
               }}
               disabled={isChatLoading}
-              placeholder={`Hỏi về ${finding.rule_id}...`}
+              placeholder={`Ask about ${finding.rule_id}...`}
               className="flex-1 bg-bg-tertiary text-text-primary border border-card-border/80 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-accent disabled:opacity-50 transition-all placeholder:text-text-tertiary/60 shadow-inner"
             />
             <button

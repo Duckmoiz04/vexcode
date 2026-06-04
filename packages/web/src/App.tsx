@@ -5,7 +5,7 @@ import { OverviewDashboard } from './components/OverviewDashboard';
 import { CodeInspector } from './components/CodeInspector';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { Onboarding } from './components/Onboarding';
-import { Search, X } from 'lucide-react';
+import { Search, X, CheckSquare, Square, RotateCcw } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [currentProject, setCurrentProject] = useState<string | null>(null);
@@ -20,10 +20,10 @@ export const App: React.FC = () => {
   
   // Lifted filter states
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterSeverity, setFilterSeverity] = useState<'all' | 'error' | 'warning' | 'info'>('all');
-  const [filterCategory, setFilterCategory] = useState<'all' | 'security' | 'quality' | 'maintainability' | 'architecture'>('all');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'applied'>('all');
-  const [filterLanguage, setFilterLanguage] = useState<string>('all');
+  const [filterSeverities, setFilterSeverities] = useState<string[]>([]);
+  const [filterCategories, setFilterCategories] = useState<string[]>([]);
+  const [filterStatuses, setFilterStatuses] = useState<string[]>([]);
+  const [filterLanguages, setFilterLanguages] = useState<string[]>([]);
 
   // Classification helper for findings (lifted from Sidebar)
   const classifyFinding = (finding: any) => {
@@ -86,6 +86,37 @@ export const App: React.FC = () => {
     return Array.from(langs).sort();
   }, [currentReport, getFileLanguage]);
 
+  // Compute total counts dynamically for visual checkboxes
+  const filterCounts = useMemo(() => {
+    const raw = currentReport?.findings || [];
+    const counts = {
+      severity: { error: 0, warning: 0, info: 0 },
+      category: { security: 0, quality: 0, maintainability: 0, architecture: 0 },
+      status: { pending: 0, applied: 0 },
+      language: {} as Record<string, number>
+    };
+
+    raw.forEach((f: any) => {
+      const sev = (f.severity || '').toLowerCase();
+      if (sev in counts.severity) {
+        counts.severity[sev as keyof typeof counts.severity]++;
+      }
+
+      const cat = classifyFinding(f);
+      if (cat in counts.category) {
+        counts.category[cat as keyof typeof counts.category]++;
+      }
+
+      const status = f._applied ? 'applied' : 'pending';
+      counts.status[status]++;
+
+      const lang = getFileLanguage(f.file);
+      counts.language[lang] = (counts.language[lang] || 0) + 1;
+    });
+
+    return counts;
+  }, [currentReport, getFileLanguage]);
+
   // Searched & Filtered findings list
   const searchedAndFilteredFindings = useMemo(() => {
     const rawFindings = currentReport?.findings || [];
@@ -102,36 +133,38 @@ export const App: React.FC = () => {
       }
 
       // 2. Severity filter
-      if (filterSeverity !== 'all') {
-        if ((finding.severity || '').toLowerCase() !== filterSeverity) {
+      if (filterSeverities.length > 0) {
+        if (!filterSeverities.includes((finding.severity || '').toLowerCase())) {
           return false;
         }
       }
 
       // 3. Category filter
-      if (filterCategory !== 'all') {
-        if (classifyFinding(finding) !== filterCategory) {
+      if (filterCategories.length > 0) {
+        if (!filterCategories.includes(classifyFinding(finding))) {
           return false;
         }
       }
 
       // 4. Status filter
-      if (filterStatus !== 'all') {
+      if (filterStatuses.length > 0) {
         const isApplied = !!finding._applied;
-        if (filterStatus === 'applied' && !isApplied) return false;
-        if (filterStatus === 'pending' && isApplied) return false;
+        const status = isApplied ? 'applied' : 'pending';
+        if (!filterStatuses.includes(status)) {
+          return false;
+        }
       }
 
       // 5. Language filter
-      if (filterLanguage !== 'all') {
-        if (getFileLanguage(finding.file) !== filterLanguage) {
+      if (filterLanguages.length > 0) {
+        if (!filterLanguages.includes(getFileLanguage(finding.file))) {
           return false;
         }
       }
 
       return true;
     });
-  }, [currentReport, searchQuery, filterSeverity, filterCategory, filterStatus, filterLanguage, getFileLanguage]);
+  }, [currentReport, searchQuery, filterSeverities, filterCategories, filterStatuses, filterLanguages, getFileLanguage]);
 
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -289,7 +322,7 @@ export const App: React.FC = () => {
   const handleStartScan = async (targetPath: string, mockScan = false, mockAi = false, fastScan = false) => {
     setIsScanning(true);
     setScanStatus('Starting scan connection...');
-    setScanLogs(['[SYSTEM] Khởi động tiến trình quét...']);
+    setScanLogs(['[SYSTEM] Starting scan process...']);
     
     // Construct query parameters
     const params = new URLSearchParams({
@@ -323,7 +356,7 @@ export const App: React.FC = () => {
             return nextLogs;
           });
         } else if (data.type === 'complete' && data.report) {
-          setScanLogs((prev) => [...prev, '[SYSTEM] Phân tích hoàn tất! Đang đóng gói dữ liệu...']);
+          setScanLogs((prev) => [...prev, '[SYSTEM] Analysis complete! Packaging report data...']);
           eventSource.close();
           eventSourceRef.current = null;
           const projName = data.report._project;
@@ -336,7 +369,7 @@ export const App: React.FC = () => {
           setIsScanning(false);
           showToast('Scan completed successfully!');
         } else if (data.type === 'error') {
-          setScanLogs((prev) => [...prev, `[ERROR] Quét thất bại: ${data.error || 'Scan execution failed'}`]);
+          setScanLogs((prev) => [...prev, `[ERROR] Scan failed: ${data.error || 'Scan execution failed'}`]);
           eventSource.close();
           eventSourceRef.current = null;
           setIsScanning(false);
@@ -349,7 +382,7 @@ export const App: React.FC = () => {
     
     eventSource.onerror = (err) => {
       console.error('EventSource connection lost:', err);
-      setScanLogs((prev) => [...prev, '[ERROR] Mất kết nối Server-Sent Events với máy chủ']);
+      setScanLogs((prev) => [...prev, '[ERROR] Lost connection with code scan server']);
       eventSource.close();
       eventSourceRef.current = null;
       setIsScanning(false);
@@ -438,12 +471,12 @@ export const App: React.FC = () => {
     const txt = (statusText || '').toLowerCase();
     
     // Step index mappings:
-    // 0: Quét bảo mật tĩnh (Semgrep)
-    // 1: Phân tích kiến trúc (GitNexus AST)
-    // 2: Đo độ phức tạp (Lizard)
-    // 3: Kiểm tra đặt tên (AI Naming Quality)
-    // 4: AI Đề xuất sửa lỗi (AI Resolutions)
-    // 5: Đóng gói & Lưu báo cáo
+    // 0: Static Security Scan (Semgrep)
+    // 1: AST Structural Analysis (GitNexus)
+    // 2: Complexity Metrics (Lizard)
+    // 3: Obscure Naming Audit (AI)
+    // 4: Generate Fix Suggestions (9router AI)
+    // 5: Package & Save Report
     
     let currentStep = 0;
     if (txt.includes('gitnexus') || txt.includes('ast context') || txt.includes('enriching')) {
@@ -464,12 +497,12 @@ export const App: React.FC = () => {
   };
 
   const scanSteps = [
-    { label: 'Quét bảo mật tĩnh (Semgrep)', desc: 'Tìm kiếm lỗ hổng và secrets' },
-    { label: 'Phân tích cấu trúc AST (GitNexus)', desc: 'Dựng đồ thị gọi hàm & vùng ảnh hưởng' },
-    { label: 'Tính toán chỉ số phức tạp (Lizard)', desc: 'Đo lường độ phức tạp Cyclomatic & LOC' },
-    { label: 'Rà soát đặt tên tối nghĩa (AI)', desc: 'Đánh giá ngữ nghĩa biến/hàm bằng AI' },
-    { label: 'Sinh đề xuất vá lỗi (9router AI)', desc: 'Tạo mã sửa lỗi tối ưu theo ngữ cảnh' },
-    { label: 'Đóng gói & Lưu báo cáo', desc: 'Đồng bộ hóa dữ liệu phân tích' }
+    { label: 'Static Security Scan (Semgrep)', desc: 'Identify vulnerabilities & secrets' },
+    { label: 'AST Structural Analysis (GitNexus)', desc: 'Construct call graph & blast radius' },
+    { label: 'Calculate Complexity Metrics (Lizard)', desc: 'Measure Cyclomatic complexity & LOC' },
+    { label: 'Audit Obscure Naming (AI)', desc: 'Evaluate symbol naming semantics' },
+    { label: 'Generate Fix Suggestions (9router AI)', desc: 'Generate context-aware remediation code' },
+    { label: 'Package & Save Report', desc: 'Synchronize analysis results' }
   ];
 
   return (
@@ -505,7 +538,7 @@ export const App: React.FC = () => {
                       </svg>
                     </div>
                     <h3 className="text-[13px] font-bold text-text-primary uppercase tracking-wider bg-gradient-to-r from-text-primary to-text-secondary bg-clip-text text-transparent">
-                      Tiến trình Phân tích
+                      Analysis Progress
                     </h3>
                   </div>
                   <div className="flex items-center gap-2">
@@ -579,7 +612,7 @@ export const App: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider flex items-center gap-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
-                    Bảng điều khiển Log (Terminal)
+                    Log Console (Terminal)
                   </span>
                   <span className="text-[8px] font-mono text-text-tertiary">Real-time SSE Stream</span>
                 </div>
@@ -592,7 +625,7 @@ export const App: React.FC = () => {
                     </div>
                   ))}
                   {scanLogs.length === 0 && (
-                    <div className="text-text-tertiary italic">Đang chờ tín hiệu log...</div>
+                    <div className="text-text-tertiary italic">Waiting for logs...</div>
                   )}
                 </div>
               </div>
@@ -606,7 +639,7 @@ export const App: React.FC = () => {
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  Hủy quét (Cancel)
+                  Cancel Scan
                 </button>
               </div>
             </div>
@@ -645,16 +678,16 @@ export const App: React.FC = () => {
               targetPath={currentReport?.target_path || null}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
-              filterSeverity={filterSeverity}
-              setFilterSeverity={setFilterSeverity}
-              filterCategory={filterCategory}
-              setFilterCategory={setFilterCategory}
+              filterSeverities={filterSeverities}
+              setFilterSeverities={setFilterSeverities}
+              filterCategories={filterCategories}
+              setFilterCategories={setFilterCategories}
               selectedFindingIndex={selectedFindingIndex}
               onSelectFindingIndex={handleSelectFindingIndex}
-              filterStatus={filterStatus}
-              setFilterStatus={setFilterStatus}
-              filterLanguage={filterLanguage}
-              setFilterLanguage={setFilterLanguage}
+              filterStatuses={filterStatuses}
+              setFilterStatuses={setFilterStatuses}
+              filterLanguages={filterLanguages}
+              setFilterLanguages={setFilterLanguages}
               availableLanguages={availableLanguages}
             />
 
@@ -701,14 +734,31 @@ export const App: React.FC = () => {
                       /* 1. All Issues List (No finding selected) */
                       <div className="flex-1 flex overflow-hidden min-h-0 bg-bg-secondary animate-slide-left">
                         {/* Left Column: Search & Filters (width: 80 / 320px) */}
-                        <div className="w-80 min-w-80 border-r border-card-border bg-bg-primary flex flex-col h-full overflow-hidden p-5 gap-5 shrink-0 select-none">
-                          <div className="flex flex-col gap-1">
-                            <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
-                              Bộ lọc tìm kiếm
-                            </h3>
-                            <span className="text-[10px] text-text-tertiary">
-                              Thu hẹp phạm vi phát hiện lỗi
-                            </span>
+                        <div className="w-80 min-w-80 border-r border-card-border bg-[#161622] flex flex-col h-full overflow-hidden p-5 gap-5 shrink-0 select-none">
+                          <div className="flex items-center justify-between">
+                            <div className="flex flex-col gap-1">
+                              <h3 className="text-xs font-extrabold text-text-primary uppercase tracking-wider">
+                                Search & Filters
+                              </h3>
+                              <span className="text-[9px] text-text-tertiary">
+                                Narrow down findings scope
+                              </span>
+                            </div>
+                            {(searchQuery || filterSeverities.length > 0 || filterCategories.length > 0 || filterStatuses.length > 0 || filterLanguages.length > 0) && (
+                              <button
+                                onClick={() => {
+                                  setSearchQuery('');
+                                  setFilterSeverities([]);
+                                  setFilterCategories([]);
+                                  setFilterStatuses([]);
+                                  setFilterLanguages([]);
+                                }}
+                                className="flex items-center gap-1 text-[9.5px] font-extrabold text-accent hover:text-accent-hover transition-colors cursor-pointer bg-accent/10 border border-accent/25 rounded-lg px-2.5 py-1.5 shadow-sm hover:scale-95 duration-100"
+                              >
+                                <RotateCcw className="h-3 w-3" />
+                                <span>Clear All</span>
+                              </button>
+                            )}
                           </div>
 
                           {/* Keyword Search Input */}
@@ -717,82 +767,190 @@ export const App: React.FC = () => {
                               type="text"
                               value={searchQuery}
                               onChange={(e) => setSearchQuery(e.target.value)}
-                              placeholder="Tìm kiếm lỗi, tệp..."
+                              placeholder="Search rule ID, message, path..."
                               autoComplete="off"
                               name="searchQuery"
-                              className="w-full bg-bg-secondary border border-card-border/60 rounded-xl pl-9 pr-9 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
+                              className="w-full bg-bg-primary border border-card-border/60 rounded-xl pl-9 pr-9 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
                             />
-                            <Search className="absolute left-3 top-3.5 h-4 w-4 text-text-tertiary" />
+                            <Search className="absolute left-3 top-3 h-4 w-4 text-text-tertiary animate-none" />
                             {searchQuery && (
                               <button
                                 type="button"
                                 onClick={() => setSearchQuery('')}
-                                className="absolute right-3 top-3 text-text-tertiary hover:text-text-primary cursor-pointer"
+                                className="absolute right-3 top-2.5 text-text-tertiary hover:text-text-primary cursor-pointer"
                               >
                                 <X className="h-3.5 w-3.5" />
                               </button>
                             )}
                           </div>
 
-                          {/* Filter Dropdowns stacked vertically */}
-                          <div className="flex flex-col gap-4">
-                            <div className="space-y-1.5">
-                              <label className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Mức độ lỗi</label>
-                              <select
-                                value={filterSeverity}
-                                onChange={(e: any) => setFilterSeverity(e.target.value)}
-                                className="w-full bg-bg-secondary border border-card-border/60 rounded-xl px-3 py-2 text-xs font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
-                              >
-                                <option value="all">Mọi mức độ</option>
-                                <option value="error">🔴 Error</option>
-                                <option value="warning">🟡 Warning</option>
-                                <option value="info">🔵 Info</option>
-                              </select>
+                          {/* Filter Option Checklist stacked vertically inside scrollable container */}
+                          <div className="flex-1 overflow-y-auto scrollbar-thin space-y-5 pr-1 pb-4">
+                            {/* Severity Filter */}
+                            <div className="space-y-2 border border-card-border/40 bg-bg-primary/20 p-3.5 rounded-xl">
+                              <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Severity</label>
+                              <div className="flex flex-col gap-1.5">
+                                {[
+                                  { id: 'error', label: '🔴 Error', key: 'error' },
+                                  { id: 'warning', label: '🟡 Warning', key: 'warning' },
+                                  { id: 'info', label: '🔵 Info', key: 'info' }
+                                ].map(opt => {
+                                  const isActive = filterSeverities.includes(opt.id);
+                                  const count = filterCounts.severity[opt.key as keyof typeof filterCounts.severity] || 0;
+                                  return (
+                                    <div
+                                      key={opt.id}
+                                      onClick={() => {
+                                        setFilterSeverities(prev =>
+                                          prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
+                                        );
+                                      }}
+                                      className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all select-none ${
+                                        isActive
+                                          ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
+                                          : 'border-card-border/30 bg-bg-primary/20 text-text-secondary hover:border-card-border hover:bg-bg-primary/55'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        {isActive ? (
+                                          <CheckSquare className="h-3.5 w-3.5 text-accent shrink-0" />
+                                        ) : (
+                                          <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+                                        )}
+                                        <span className="font-sans text-[11px] font-bold">{opt.label}</span>
+                                      </div>
+                                      <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                                        {count}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                              <label className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Nhóm lỗi</label>
-                              <select
-                                value={filterCategory}
-                                onChange={(e: any) => setFilterCategory(e.target.value)}
-                                className="w-full bg-bg-secondary border border-card-border/60 rounded-xl px-3 py-2 text-xs font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
-                              >
-                                <option value="all">Mọi nhóm</option>
-                                <option value="security">🛡️ Security</option>
-                                <option value="quality">🐞 Quality</option>
-                                <option value="maintainability">⚙️ Maintainability</option>
-                                <option value="architecture">🏗️ Architecture</option>
-                              </select>
+                            {/* Category Filter */}
+                            <div className="space-y-2 border border-card-border/40 bg-bg-primary/20 p-3.5 rounded-xl">
+                              <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Category</label>
+                              <div className="flex flex-col gap-1.5">
+                                {[
+                                  { id: 'security', label: '🛡️ Security', key: 'security' },
+                                  { id: 'quality', label: '🐞 Quality', key: 'quality' },
+                                  { id: 'maintainability', label: '⚙️ Maintainability', key: 'maintainability' },
+                                  { id: 'architecture', label: '🏗️ Architecture', key: 'architecture' }
+                                ].map(opt => {
+                                  const isActive = filterCategories.includes(opt.id);
+                                  const count = filterCounts.category[opt.key as keyof typeof filterCounts.category] || 0;
+                                  return (
+                                    <div
+                                      key={opt.id}
+                                      onClick={() => {
+                                        setFilterCategories(prev =>
+                                          prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
+                                        );
+                                      }}
+                                      className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all select-none ${
+                                        isActive
+                                          ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
+                                          : 'border-card-border/30 bg-bg-primary/20 text-text-secondary hover:border-card-border hover:bg-bg-primary/55'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        {isActive ? (
+                                          <CheckSquare className="h-3.5 w-3.5 text-accent shrink-0" />
+                                        ) : (
+                                          <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+                                        )}
+                                        <span className="font-sans text-[11px] font-bold">{opt.label}</span>
+                                      </div>
+                                      <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                                        {count}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                              <label className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Trạng thái sửa</label>
-                              <select
-                                value={filterStatus}
-                                onChange={(e: any) => setFilterStatus(e.target.value)}
-                                className="w-full bg-bg-secondary border border-card-border/60 rounded-xl px-3 py-2 text-xs font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
-                              >
-                                <option value="all">Mọi trạng thái</option>
-                                <option value="pending">⏳ Chưa sửa</option>
-                                <option value="applied">✅ Đã sửa</option>
-                              </select>
+                            {/* Status Filter */}
+                            <div className="space-y-2 border border-card-border/40 bg-bg-primary/20 p-3.5 rounded-xl">
+                              <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Fix Status</label>
+                              <div className="flex flex-col gap-1.5">
+                                {[
+                                  { id: 'pending', label: '⏳ Pending', key: 'pending' },
+                                  { id: 'applied', label: '✅ Applied', key: 'applied' }
+                                ].map(opt => {
+                                  const isActive = filterStatuses.includes(opt.id);
+                                  const count = filterCounts.status[opt.key as keyof typeof filterCounts.status] || 0;
+                                  return (
+                                    <div
+                                      key={opt.id}
+                                      onClick={() => {
+                                        setFilterStatuses(prev =>
+                                          prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
+                                        );
+                                      }}
+                                      className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all select-none ${
+                                        isActive
+                                          ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
+                                          : 'border-card-border/30 bg-bg-primary/20 text-text-secondary hover:border-card-border hover:bg-bg-primary/55'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        {isActive ? (
+                                          <CheckSquare className="h-3.5 w-3.5 text-accent shrink-0" />
+                                        ) : (
+                                          <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+                                        )}
+                                        <span className="font-sans text-[11px] font-bold">{opt.label}</span>
+                                      </div>
+                                      <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                                        {count}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                              <label className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Ngôn ngữ</label>
-                              <select
-                                value={filterLanguage}
-                                onChange={(e: any) => setFilterLanguage(e.target.value)}
-                                className="w-full bg-bg-secondary border border-card-border/60 rounded-xl px-3 py-2 text-xs font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
-                              >
-                                <option value="all">Mọi ngôn ngữ</option>
-                                {availableLanguages.map((lang) => (
-                                  <option key={lang} value={lang}>
-                                    {lang}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+                            {/* Language Filter */}
+                            {availableLanguages.length > 0 && (
+                              <div className="space-y-2 border border-card-border/40 bg-bg-primary/20 p-3.5 rounded-xl">
+                                <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Language</label>
+                                <div className="flex flex-col gap-1.5">
+                                  {availableLanguages.map(lang => {
+                                    const isActive = filterLanguages.includes(lang);
+                                    const count = filterCounts.language[lang] || 0;
+                                    return (
+                                      <div
+                                        key={lang}
+                                        onClick={() => {
+                                          setFilterLanguages(prev =>
+                                            prev.includes(lang) ? prev.filter(x => x !== lang) : [...prev, lang]
+                                          );
+                                        }}
+                                        className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all select-none ${
+                                          isActive
+                                            ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
+                                            : 'border-card-border/30 bg-bg-primary/20 text-text-secondary hover:border-card-border hover:bg-bg-primary/55'
+                                        }`}
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          {isActive ? (
+                                            <CheckSquare className="h-3.5 w-3.5 text-accent shrink-0" />
+                                          ) : (
+                                            <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
+                                          )}
+                                          <span className="font-sans text-[11px] font-bold">{lang}</span>
+                                        </div>
+                                        <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                                          {count}
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -801,20 +959,20 @@ export const App: React.FC = () => {
                           <div className="flex items-center justify-between pb-4 border-b border-card-border mb-6">
                             <div className="flex items-center gap-3">
                               <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
-                                Danh sách phát hiện lỗi
+                                PROJECT FINDINGS
                               </h3>
                               <span className="px-2.5 py-0.5 bg-accent text-white rounded-full text-[10px] font-bold shadow-sm font-sans">
-                                {searchedAndFilteredFindings.length} lỗi khớp bộ lọc
+                                {searchedAndFilteredFindings.length} finding(s) match filters
                               </span>
                             </div>
                           </div>
 
                           {searchedAndFilteredFindings.length === 0 ? (
-                            <div className="flex-1 flex flex-col items-center justify-center py-20 text-center text-text-tertiary">
+                            <div className="flex-1 flex flex-col items-center justify-center py-20 text-center text-text-tertiary animate-fade-in">
                               <span className="text-3xl mb-3">🔍</span>
-                              <p className="font-semibold text-text-secondary text-sm">Không tìm thấy phát hiện lỗi nào</p>
+                              <p className="font-semibold text-text-secondary text-sm">No Findings Found</p>
                               <span className="text-xs max-w-sm mt-1.5 leading-relaxed">
-                                Không tìm thấy lỗi khớp với từ khóa hoặc bộ lọc của bạn. Hãy thử thay đổi cấu hình lọc bên cột trái.
+                                No findings match your search query or active filters. Try resetting or adjusting the options in the left column.
                               </span>
                             </div>
                           ) : (
