@@ -310,93 +310,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       <div className="flex-1 flex flex-col min-h-0">
-        {/* Title, Stats Counter and Filter Controls */}
-        <div className="px-4 py-3 border-b border-card-border/50 flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-text-secondary">
-              {sidebarTab === 'explorer' ? 'Explorer' : 'Project Findings'}
-            </h3>
-            <span className="text-[10px] font-mono text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
-              {searchedAndFilteredFindings.length} / {findings.length}
-            </span>
-          </div>
-
-          {/* Keyword Search Input */}
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Tìm kiếm lỗi, tệp..."
-              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg pl-7.5 pr-7.5 py-1 text-[11px] text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
-            />
-            <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-text-tertiary" />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-2 text-text-tertiary hover:text-text-primary cursor-pointer"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            )}
-          </div>
-
-          {/* Filter Options Row */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* Severity Filter Dropdown */}
-            <select
-              value={filterSeverity}
-              onChange={(e: any) => setFilterSeverity(e.target.value)}
-              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg px-2 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
-            >
-              <option value="all">Mọi mức độ</option>
-              <option value="error">🔴 Error</option>
-              <option value="warning">🟡 Warning</option>
-              <option value="info">🔵 Info</option>
-            </select>
-
-            {/* Category Filter Dropdown */}
-            <select
-              value={filterCategory}
-              onChange={(e: any) => setFilterCategory(e.target.value)}
-              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg px-2 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
-            >
-              <option value="all">Mọi nhóm</option>
-              <option value="security">🛡️ Security</option>
-              <option value="quality">🐞 Quality</option>
-              <option value="maintainability">⚙️ Maintainability</option>
-              <option value="architecture">🏗️ Architecture</option>
-            </select>
-          </div>
-
-          {/* Filter Options Row 2 */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* Status Filter Dropdown */}
-            <select
-              value={filterStatus}
-              onChange={(e: any) => setFilterStatus(e.target.value)}
-              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg px-2 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
-            >
-              <option value="all">Mọi trạng thái</option>
-              <option value="pending">⏳ Chưa sửa</option>
-              <option value="applied">✅ Đã sửa</option>
-            </select>
-
-            {/* Language Filter Dropdown */}
-            <select
-              value={filterLanguage}
-              onChange={(e: any) => setFilterLanguage(e.target.value)}
-              className="w-full bg-bg-secondary border border-card-border/60 rounded-lg px-2 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
-            >
-              <option value="all">Mọi ngôn ngữ</option>
-              {availableLanguages.map((lang) => (
-                <option key={lang} value={lang}>
-                  {lang}
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Title and Stats Counter */}
+        <div className="px-4 py-2.5 border-b border-card-border/50 flex items-center justify-between shrink-0 bg-bg-secondary/10">
+          <h3 className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+            {sidebarTab === 'explorer' ? 'Cấu trúc tệp' : 'Lỗi dự án'}
+          </h3>
+          <span className="text-[10px] font-mono font-bold text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
+            {searchedAndFilteredFindings.length} / {findings.length}
+          </span>
         </div>
 
         {/* Dynamic Tab Panel Content */}

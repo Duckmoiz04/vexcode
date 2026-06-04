@@ -5,6 +5,7 @@ import { OverviewDashboard } from './components/OverviewDashboard';
 import { CodeInspector } from './components/CodeInspector';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { Onboarding } from './components/Onboarding';
+import { Search, X } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [currentProject, setCurrentProject] = useState<string | null>(null);
@@ -699,14 +700,93 @@ export const App: React.FC = () => {
                     selectedFindingIndex === null ? (
                       /* 1. All Issues List (No finding selected) */
                       <div className="flex-1 flex flex-col min-h-0 bg-bg-secondary p-6 overflow-y-auto scrollbar-thin">
-                        <div className="flex items-center justify-between pb-4 border-b border-card-border mb-6">
-                          <div className="flex items-center gap-3">
-                            <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
-                              Danh sách phát hiện lỗi
-                            </h3>
-                            <span className="px-2.5 py-0.5 bg-accent text-white rounded-full text-[10px] font-bold shadow-sm font-sans">
-                              {searchedAndFilteredFindings.length} lỗi khớp bộ lọc
-                            </span>
+                        <div className="pb-4 border-b border-card-border mb-6 flex flex-col gap-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
+                                Danh sách phát hiện lỗi
+                              </h3>
+                              <span className="px-2.5 py-0.5 bg-accent text-white rounded-full text-[10px] font-bold shadow-sm font-sans">
+                                {searchedAndFilteredFindings.length} lỗi khớp bộ lọc
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Search & Filters Row */}
+                          <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center">
+                            {/* Keyword Search Input */}
+                            <div className="relative flex-1">
+                              <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Tìm kiếm lỗi, tệp..."
+                                className="w-full bg-bg-primary border border-card-border/60 rounded-xl pl-9 pr-9 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
+                              />
+                              <Search className="absolute left-3 top-3.5 h-4 w-4 text-text-tertiary" />
+                              {searchQuery && (
+                                <button
+                                  type="button"
+                                  onClick={() => setSearchQuery('')}
+                                  className="absolute right-3 top-3 text-text-tertiary hover:text-text-primary cursor-pointer"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Dropdowns Row */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 shrink-0">
+                              {/* Severity Filter Dropdown */}
+                              <select
+                                value={filterSeverity}
+                                onChange={(e: any) => setFilterSeverity(e.target.value)}
+                                className="bg-bg-primary border border-card-border/60 rounded-xl px-3 py-2 text-xs font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all min-w-[120px]"
+                              >
+                                <option value="all">Mọi mức độ</option>
+                                <option value="error">🔴 Error</option>
+                                <option value="warning">🟡 Warning</option>
+                                <option value="info">🔵 Info</option>
+                              </select>
+
+                              {/* Category Filter Dropdown */}
+                              <select
+                                value={filterCategory}
+                                onChange={(e: any) => setFilterCategory(e.target.value)}
+                                className="bg-bg-primary border border-card-border/60 rounded-xl px-3 py-2 text-xs font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all min-w-[120px]"
+                              >
+                                <option value="all">Mọi nhóm</option>
+                                <option value="security">🛡️ Security</option>
+                                <option value="quality">🐞 Quality</option>
+                                <option value="maintainability">⚙️ Maintainability</option>
+                                <option value="architecture">🏗️ Architecture</option>
+                              </select>
+
+                              {/* Status Filter Dropdown */}
+                              <select
+                                value={filterStatus}
+                                onChange={(e: any) => setFilterStatus(e.target.value)}
+                                className="bg-bg-primary border border-card-border/60 rounded-xl px-3 py-2 text-xs font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all min-w-[120px]"
+                              >
+                                <option value="all">Mọi trạng thái</option>
+                                <option value="pending">⏳ Chưa sửa</option>
+                                <option value="applied">✅ Đã sửa</option>
+                              </select>
+
+                              {/* Language Filter Dropdown */}
+                              <select
+                                value={filterLanguage}
+                                onChange={(e: any) => setFilterLanguage(e.target.value)}
+                                className="bg-bg-primary border border-card-border/60 rounded-xl px-3 py-2 text-xs font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all min-w-[120px]"
+                              >
+                                <option value="all">Mọi ngôn ngữ</option>
+                                {availableLanguages.map((lang) => (
+                                  <option key={lang} value={lang}>
+                                    {lang}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
                           </div>
                         </div>
 
@@ -806,13 +886,86 @@ export const App: React.FC = () => {
                                 File: {selectedFilePath?.split(/[\\/]/).pop()}
                               </span>
                               <span className="font-bold text-accent shrink-0 font-sans">
-                                {currentReport.findings.filter((f: any) => f.file === selectedFilePath).length} lỗi
+                                {searchedAndFilteredFindings.filter((f: any) => f.file === selectedFilePath).length} / {currentReport.findings.filter((f: any) => f.file === selectedFilePath).length} lỗi
                               </span>
+                            </div>
+
+                            {/* Search bar inside split-screen left column */}
+                            <div className="relative mt-1">
+                              <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Tìm trong file..."
+                                className="w-full bg-bg-secondary border border-card-border/60 rounded-lg pl-7 pr-7 py-1 text-[11px] text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
+                              />
+                              <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-text-tertiary" />
+                              {searchQuery && (
+                                <button
+                                  type="button"
+                                  onClick={() => setSearchQuery('')}
+                                  className="absolute right-2.5 top-2 text-text-tertiary hover:text-text-primary cursor-pointer"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Dropdowns Row 1 in Split-screen Left Column */}
+                            <div className="grid grid-cols-2 gap-1.5 mt-1">
+                              <select
+                                value={filterSeverity}
+                                onChange={(e: any) => setFilterSeverity(e.target.value)}
+                                className="w-full bg-bg-secondary border border-card-border/50 rounded-lg px-1.5 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
+                              >
+                                <option value="all">Mọi mức độ</option>
+                                <option value="error">🔴 Error</option>
+                                <option value="warning">🟡 Warning</option>
+                                <option value="info">🔵 Info</option>
+                              </select>
+
+                              <select
+                                value={filterCategory}
+                                onChange={(e: any) => setFilterCategory(e.target.value)}
+                                className="w-full bg-bg-secondary border border-card-border/50 rounded-lg px-1.5 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
+                              >
+                                <option value="all">Mọi nhóm</option>
+                                <option value="security">🛡️ Security</option>
+                                <option value="quality">🐞 Quality</option>
+                                <option value="maintainability">⚙️ Maint</option>
+                                <option value="architecture">🏗️ Arch</option>
+                              </select>
+                            </div>
+
+                            {/* Dropdowns Row 2 in Split-screen Left Column */}
+                            <div className="grid grid-cols-2 gap-1.5 mt-1">
+                              <select
+                                value={filterStatus}
+                                onChange={(e: any) => setFilterStatus(e.target.value)}
+                                className="w-full bg-bg-secondary border border-card-border/50 rounded-lg px-1.5 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
+                              >
+                                <option value="all">Mọi t.thái</option>
+                                <option value="pending">⏳ Chưa</option>
+                                <option value="applied">✅ Sửa</option>
+                              </select>
+
+                              <select
+                                value={filterLanguage}
+                                onChange={(e: any) => setFilterLanguage(e.target.value)}
+                                className="w-full bg-bg-secondary border border-card-border/50 rounded-lg px-1.5 py-1 text-[10px] font-semibold text-text-secondary outline-none focus:border-accent cursor-pointer transition-all"
+                              >
+                                <option value="all">Mọi ng.ngữ</option>
+                                {availableLanguages.map((lang) => (
+                                  <option key={lang} value={lang}>
+                                    {lang}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
                           </div>
 
                           <div className="flex-1 overflow-y-auto p-2 space-y-1.5 scrollbar-thin">
-                            {currentReport.findings
+                            {searchedAndFilteredFindings
                               .filter((f: any) => f.file === selectedFilePath)
                               .map((f: any) => {
                                 const originalIndex = currentReport.findings.indexOf(f);
