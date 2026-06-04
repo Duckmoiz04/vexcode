@@ -721,6 +721,8 @@ export const App: React.FC = () => {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Tìm kiếm lỗi, tệp..."
+                                autoComplete="off"
+                                name="searchQuery"
                                 className="w-full bg-bg-primary border border-card-border/60 rounded-xl pl-9 pr-9 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
                               />
                               <Search className="absolute left-3 top-3.5 h-4 w-4 text-text-tertiary" />
@@ -897,6 +899,8 @@ export const App: React.FC = () => {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Tìm trong file..."
+                                autoComplete="off"
+                                name="splitSearchQuery"
                                 className="w-full bg-bg-secondary border border-card-border/60 rounded-lg pl-7 pr-7 py-1 text-[11px] text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
                               />
                               <Search className="absolute left-2.5 top-2 h-3.5 w-3.5 text-text-tertiary" />

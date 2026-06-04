@@ -257,6 +257,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
                 placeholder={provider === '9router' ? 'optional for 9router' : 'Enter API Key'}
+                autoComplete="new-password"
                 className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary"
               />
             </div>
