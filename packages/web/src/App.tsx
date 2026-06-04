@@ -734,7 +734,9 @@ export const App: React.FC = () => {
                       /* 1. All Issues List (No finding selected) */
                       <div className="flex-1 flex overflow-hidden min-h-0 bg-bg-secondary animate-slide-left">
                         {/* Left Column: Search & Filters (width: 80 / 320px) */}
-                        <div className="w-80 min-w-80 border-r border-card-border bg-[#161622] flex flex-col h-full overflow-hidden p-5 gap-5 shrink-0 select-none">
+                        <div className="w-80 min-w-80 flex flex-col h-full overflow-hidden p-4 pr-2 gap-4 shrink-0 select-none bg-bg-secondary">
+                          {/* Floating Card Wrapper for filters */}
+                          <div className="flex-1 bg-[#161622] border border-card-border/40 rounded-2xl p-5 flex flex-col gap-5 overflow-hidden shadow-xl">
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col gap-1">
                               <h3 className="text-xs font-extrabold text-text-primary uppercase tracking-wider">
@@ -957,9 +959,10 @@ export const App: React.FC = () => {
                             )}
                           </div>
                         </div>
+                      </div>
 
                         {/* Right Column: List of Findings */}
-                        <div className="flex-1 flex flex-col min-h-0 bg-bg-secondary p-6 overflow-y-auto scrollbar-thin">
+                        <div className="flex-1 flex flex-col min-h-0 bg-bg-secondary p-4 pl-2 overflow-y-auto scrollbar-thin">
                           <div className="flex items-center justify-between pb-4 border-b border-card-border mb-6">
                             <div className="flex items-center gap-3">
                               <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
