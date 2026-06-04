@@ -256,6 +256,17 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
       {/* Detail Header */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-card-border bg-bg-secondary shrink-0 z-10">
         <div className="flex items-center gap-3">
+          {onSelectFindingIndex && (
+            <button
+              onClick={() => onSelectFindingIndex(null)}
+              className="mr-1 flex items-center justify-center p-1.5 rounded-lg border border-card-border bg-bg-secondary hover:bg-bg-tertiary text-text-secondary hover:text-text-primary transition-all cursor-pointer shadow-sm"
+              title="Quay lại tất cả lỗi"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="h-3.5 w-3.5">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
           <span
             className={`flex h-6 w-6 items-center justify-center rounded-md font-bold text-sm ${
               severity === 'error'
@@ -267,7 +278,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
           >
             {severity === 'error' ? '!' : severity === 'warning' ? '?' : 'i'}
           </span>
-          <h3 className="text-sm font-bold text-text-primary font-mono">{finding.rule_id}</h3>
+          <h3 className="text-sm font-bold text-text-primary font-mono truncate max-w-md lg:max-w-xl">{finding.rule_id}</h3>
         </div>
         <div className="flex items-center gap-2.5">
           <button
