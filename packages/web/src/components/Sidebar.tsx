@@ -37,7 +37,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
 
   const toggleFolder = (path: string) => {
-    setExpandedFolders((prev) => ({ ...prev, [path]: !prev[path] }));
+    setExpandedFolders((prev) => {
+      const currentVal = prev[path] !== false; // defaults to true
+      return { ...prev, [path]: !currentVal };
+    });
   };
 
   // Helper to strip target path prefix
@@ -107,7 +110,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const indent = depth * 12;
     if (node.type === 'file') {
       const findingsCount = node.indices?.length || 0;
-      const isActive = node.path === selectedFilePath;
+      const isActive = selectedFilePath && node.path.replace(/\\/g, '/') === selectedFilePath.replace(/\\/g, '/');
       return (
         <div
           key={node.path}
@@ -119,6 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               : 'hover:bg-bg-tertiary/50 text-text-secondary hover:text-text-primary'
           }`}
         >
+          <div className="w-3 h-3 shrink-0" /> {/* Spacer to align with ChevronDown */}
           <File className="h-3.5 w-3.5 shrink-0 text-info" />
           <span className="truncate flex-1">{node.name}</span>
           <span className="px-1.5 py-0.2 bg-bg-tertiary text-text-tertiary rounded text-[9px] font-sans border border-card-border">
@@ -128,7 +132,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       );
     } else {
       const isRoot = node.path === '';
-      const isExpanded = isRoot || !!expandedFolders[node.path];
+      const isExpanded = isRoot || expandedFolders[node.path] !== false;
       const childKeys = Object.keys(node.children || {}).sort((a, b) => {
         const nodeA = node.children![a];
         const nodeB = node.children![b];
