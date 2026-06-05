@@ -430,8 +430,9 @@ export const App: React.FC = () => {
         body: JSON.stringify({
           filePath: finding.file,
           targetLine: finding.line,
-          targetContent: finding.message,
+          targetContent: finding.code_text || finding.message,
           replacementContent: remediationCode,
+          codeText: finding.code_text,
         }),
       });
 
