@@ -2,6 +2,7 @@ import argparse
 import json
 import sys
 import os
+import time
 from datetime import datetime, timezone
 from scanner import run_scan
 from ai_resolver import resolve_findings, run_naming_audit
@@ -283,10 +284,14 @@ def main() -> None:
         
         # Merge naming findings into main findings list
         findings.extend(naming_findings)
-        
+
         # 2. Query AI resolutions for the findings
         resolutions = {}
         if findings:
+            # Cooldown: let 9router recover from naming audit requests before the resolution call
+            if not args.mock_ai and files_to_audit:
+                print("Cooling down 5s before AI resolution to avoid rate limiting...", file=sys.stderr)
+                time.sleep(5)
             print("Resolving findings with AI...", file=sys.stderr)
             resolutions = resolve_findings(findings, use_mock=args.mock_ai)
             # Merge naming resolutions

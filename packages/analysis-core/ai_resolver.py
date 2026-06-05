@@ -76,7 +76,7 @@ MOCK_AI_RESOLUTIONS = {
 
 MAX_CODE_CHARS = 3000         # Max characters of file/code content sent to AI per request
 MAX_NAMING_AUDIT_FILES = 10  # Max files to audit per analysis run
-MAX_RESOLVE_FINDINGS = 20    # Max unique rules sent to AI in one resolve_findings call
+MAX_RESOLVE_FINDINGS = 10    # Max unique rules sent to AI in one resolve_findings call
 
 def safe_json_parse(text: str) -> Any:
     """
@@ -299,7 +299,7 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     
     try:
         url = f"{base_url.rstrip('/')}/chat/completions"
-        response = requests.post(url, headers=headers, json=payload, timeout=60)
+        response = post_with_retry(url, headers, payload, timeout=60)
         response.raise_for_status()
 
         # Use parse_api_response on raw response text because 9router may return
