@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import re
+import time
 import requests
 from dotenv import load_dotenv
 from typing import Dict, Any, List, Tuple
@@ -253,7 +254,9 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
         response = requests.post(url, headers=headers, json=payload, timeout=30)
         response.raise_for_status()
         
-        response_data = response.json()
+        # Use safe_json_parse on raw response text because 9router may return
+        # trailing garbage after the JSON body, causing response.json() to fail.
+        response_data = safe_json_parse(response.text)
         content = response_data["choices"][0]["message"]["content"].strip()
         resolutions = safe_json_parse(content)
         return resolutions
@@ -371,8 +374,11 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
             url = f"{base_url.rstrip('/')}/chat/completions"
             response = requests.post(url, headers=headers, json=payload, timeout=60)
             response.raise_for_status()
-            
-            content = response.json()["choices"][0]["message"]["content"].strip()
+
+            # Use safe_json_parse on raw response text to handle 9router trailing
+            # garbage that causes response.json() to raise "Extra data" errors.
+            response_data = safe_json_parse(response.text)
+            content = response_data["choices"][0]["message"]["content"].strip()
             issues = safe_json_parse(content)
             
             if isinstance(issues, list):
@@ -401,6 +407,9 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                     
         except Exception as e:
             print(f"Error auditing naming for {f_path}: {e}", file=sys.stderr)
+
+        # Throttle requests to avoid 429 Too Many Requests from 9router
+        time.sleep(1.5)
             
     return findings, resolutions
 
