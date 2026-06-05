@@ -233,16 +233,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           key={node.path}
           style={{ paddingLeft: `${indent + 8}px` }}
           onClick={() => onSelectFilePath(node.path)}
-          className={`flex items-center gap-2 py-1.5 pr-3 text-[11px] font-medium font-mono rounded cursor-pointer transition-all ${
+          className={`flex items-center gap-1.5 py-1 pr-1 text-[13px] font-medium font-mono rounded cursor-pointer transition-all ${
             isActive
               ? 'bg-accent/10 border-l-2 border-accent text-text-primary'
               : 'hover:bg-bg-tertiary/50 text-text-secondary hover:text-text-primary'
           }`}
         >
-          <div className="w-3 h-3 shrink-0" /> {/* Spacer to align with ChevronDown */}
-          <File className="h-3.5 w-3.5 shrink-0 text-info" />
+          <div className="w-4 h-4 shrink-0" /> {/* Spacer to align with ChevronDown */}
+          <File className="h-4 w-4 shrink-0 text-info" />
           <span className="truncate flex-1">{node.name}</span>
-          <span className="px-1.5 py-0.2 bg-bg-tertiary text-text-tertiary rounded text-[9px] font-sans border border-card-border">
+          <span className="px-1.5 py-0.2 bg-bg-tertiary text-text-tertiary rounded text-[11px] font-sans border border-card-border">
             {findingsCount}
           </span>
         </div>
@@ -264,10 +264,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           key={node.path}
           style={{ paddingLeft: `${indent + 8}px` }}
           onClick={() => toggleFolder(node.path)}
-          className="flex items-center gap-2 py-1.5 pr-3 text-[11px] font-medium rounded cursor-pointer text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/50 transition-all"
+          className="flex items-center gap-1.5 py-1 pr-1 text-[13px] font-medium rounded cursor-pointer text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/50 transition-all"
         >
-          <ChevronDown className={`h-3 w-3 shrink-0 text-text-tertiary transition-transform duration-150 ${isExpanded ? '' : '-rotate-90'}`} />
-          <Folder className="h-3.5 w-3.5 shrink-0 text-warning/80" />
+          <ChevronDown className={`h-4 w-4 shrink-0 text-text-tertiary transition-transform duration-150 ${isExpanded ? '' : '-rotate-90'}`} />
+          <Folder className="h-4 w-4 shrink-0 text-warning/80" />
           <span className="truncate flex-1">{node.name}</span>
         </div>
       );
@@ -284,29 +284,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <div className="w-80 min-w-80 bg-[#161622] border-r border-card-border flex flex-col h-full overflow-hidden">
+    <div className="w-72 min-w-72 bg-[#161622] border-r border-card-border flex flex-col h-full overflow-hidden">
       {/* Explorer / Findings Tabs Header */}
       <div className="flex border-b border-card-border/50 bg-bg-secondary/40 shrink-0 px-4 pt-2 gap-3">
         <button
           onClick={() => setSidebarTab('explorer')}
-          className={`pb-2 text-[10.5px] font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`pb-2 text-[13px] font-semibold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
             sidebarTab === 'explorer'
               ? 'border-accent text-accent'
               : 'border-transparent text-text-secondary hover:text-text-primary'
           }`}
         >
-          <Folder className="h-3 w-3" />
+          <Folder className="h-3.5 w-3.5" />
           <span>File Tree</span>
         </button>
         <button
           onClick={() => setSidebarTab('findings')}
-          className={`pb-2 text-[10.5px] font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`pb-2 text-[13px] font-semibold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
             sidebarTab === 'findings'
               ? 'border-accent text-accent'
               : 'border-transparent text-text-secondary hover:text-text-primary'
           }`}
         >
-          <ShieldAlert className="h-3 w-3" />
+          <ShieldAlert className="h-3.5 w-3.5" />
           <span>Findings</span>
         </button>
       </div>
@@ -314,16 +314,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="flex-1 flex flex-col min-h-0">
         {/* Title and Stats Counter */}
         <div className="px-4 py-2.5 border-b border-card-border/50 flex items-center justify-between shrink-0 bg-bg-secondary/10">
-          <h3 className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+          <h3 className="text-[13px] font-bold uppercase tracking-wider text-text-secondary">
             {sidebarTab === 'explorer' ? 'File Structure' : 'Project Issues'}
           </h3>
-          <span className="text-[10px] font-mono font-bold text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
+          <span className="text-[11px] font-mono font-bold text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
             {searchedAndFilteredFindings.length} / {findings.length}
           </span>
         </div>
  
         {/* Dynamic Tab Panel Content */}
-        <div className="flex-1 overflow-y-auto p-3 scrollbar-thin">
+        <div className={`flex-1 overflow-y-auto scrollbar-thin ${sidebarTab === 'explorer' ? 'py-2 px-1' : 'p-3'}`}>
           {findings.length === 0 ? (
             <div className="text-xs text-text-tertiary text-center py-6">No data indexed</div>
           ) : searchedAndFilteredFindings.length === 0 ? (
@@ -363,20 +363,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             : 'bg-info shadow-[0_0_8px_rgba(59,130,246,0.5)]'
                         }`}
                       />
-                      <span className="text-[10px] font-mono font-bold truncate flex-1 leading-none text-text-primary">
+                      <span className="text-[13px] font-mono font-semibold truncate flex-1 leading-none text-text-primary">
                         {f.rule_id.split('.').pop() || f.rule_id}
                       </span>
                       {isApplied && (
-                        <span className="text-[8px] px-1 bg-success/15 border border-success/30 text-success rounded font-semibold font-sans uppercase">
+                        <span className="text-[11px] px-1.5 py-0.5 bg-success/15 border border-success/30 text-success rounded font-bold font-sans uppercase">
                           applied
                         </span>
                       )}
                     </div>
-                    <div className="text-[9px] font-mono text-text-tertiary flex items-center justify-between">
+                    <div className="text-[13px] font-mono text-text-tertiary flex items-center justify-between">
                       <span className="truncate pr-2 font-medium">{f.file.split(/[\\/]/).pop()}</span>
                       <span className="shrink-0">Line {f.line}</span>
                     </div>
-                    <p className="text-[10px] text-text-secondary leading-normal line-clamp-2 select-none font-sans mt-0.5">
+                    <p className="text-[13px] text-text-secondary leading-relaxed line-clamp-2 select-none font-sans mt-0.5">
                       {f.message}
                     </p>
                   </div>

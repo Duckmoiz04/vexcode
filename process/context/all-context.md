@@ -173,6 +173,13 @@ DATN2/
 - Fast execution running locally.
 - Configuration section to connect and authenticate with various AI platforms and routers.
 
+## Reference Projects
+
+- **GitNexus**:
+  - Absolute Path: `D:\GitNexus`
+  - Web UI Path: `D:\GitNexus\gitnexus-web`
+  - Purpose: Reference project and model template. Access this directory to inspect implementation details, compare patterns, and study its web interface when requested.
+
 ## Environment and Configuration
 
 **Config files:**

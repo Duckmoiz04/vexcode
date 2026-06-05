@@ -460,7 +460,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                       <div key={idx} className="w-full flex flex-col">
                         <div
                           ref={isTarget ? activeLineRef : undefined}
-                          className={`group flex items-start w-full py-0.5 px-2 -mx-2 transition-colors ${
+                          className={`group flex items-start w-full py-1 px-2 -mx-2 transition-colors ${
                             isTarget
                               ? 'bg-danger/15 border-l-3 border-danger font-semibold text-text-primary'
                               : isOtherFinding
@@ -556,7 +556,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                       return (
                         <div
                           key={i}
-                          className={`w-full py-0.5 px-1 ${
+                          className={`w-full py-1 px-1 ${
                             isTarget 
                               ? 'bg-danger/10 border-l-2 border-danger text-danger' 
                               : 'text-text-secondary/80'
@@ -586,7 +586,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                       return (
                         <div
                           key={i}
-                          className={`w-full py-0.5 px-1 ${
+                          className={`w-full py-1 px-1 ${
                             isRem 
                               ? 'bg-success/10 border-l-2 border-success text-success' 
                               : 'text-text-secondary/80'

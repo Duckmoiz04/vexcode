@@ -5,7 +5,7 @@ import { OverviewDashboard } from './components/OverviewDashboard';
 import { CodeInspector } from './components/CodeInspector';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { Onboarding } from './components/Onboarding';
-import { Search, X, CheckSquare, Square, RotateCcw, AlertOctagon, AlertTriangle, Info, Shield, Bug, Wrench, Layout, Clock, CheckCircle2, Terminal } from 'lucide-react';
+import { Search, X, RotateCcw, AlertOctagon, AlertTriangle, Info, Shield, Bug, Wrench, Layout, Clock, CheckCircle2, Terminal, ChevronDown, Filter } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [currentProject, setCurrentProject] = useState<string | null>(null);
@@ -24,6 +24,17 @@ export const App: React.FC = () => {
   const [filterCategories, setFilterCategories] = useState<string[]>([]);
   const [filterStatuses, setFilterStatuses] = useState<string[]>([]);
   const [filterLanguages, setFilterLanguages] = useState<string[]>([]);
+
+  const [expandedFilters, setExpandedFilters] = useState<Record<string, boolean>>({
+    severity: true,
+    category: true,
+    status: true,
+    language: true,
+  });
+
+  const toggleFilterSection = (section: string) => {
+    setExpandedFilters(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   // Classification helper for findings (lifted from Sidebar)
   const classifyFinding = (finding: any) => {
@@ -733,20 +744,18 @@ export const App: React.FC = () => {
                     selectedFindingIndex === null ? (
                       /* 1. All Issues List (No finding selected) */
                       <div className="flex-1 flex overflow-hidden min-h-0 bg-bg-secondary animate-slide-left">
-                        {/* Left Column: Search & Filters (width: 80 / 320px) */}
-                        <div className="w-80 min-w-80 flex flex-col h-full overflow-hidden p-4 pr-2 gap-4 shrink-0 select-none bg-bg-secondary">
-                          {/* Floating Card Wrapper for filters */}
-                          <div className="flex-1 bg-[#161622] border border-card-border/40 rounded-2xl p-5 flex flex-col gap-5 overflow-hidden shadow-xl">
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-col gap-1">
-                              <h3 className="text-xs font-extrabold text-text-primary uppercase tracking-wider">
-                                Search & Filters
+                        {/* Left Column: Search & Filters */}
+                        <div className="flex flex-col h-full overflow-hidden p-4 pr-2 gap-4 shrink-0 select-none bg-bg-secondary">
+                          {/* Floating Card Wrapper for filters (width: 68 / 272px) */}
+                          <div className="w-68 min-w-68 flex-1 bg-[#161622] border border-card-border/40 rounded-2xl pt-5 pb-5 pl-5 pr-0 flex flex-col gap-3 overflow-hidden shadow-xl">
+                          <div className="flex items-center justify-between pr-5 pb-3 border-b border-text-tertiary/30">
+                            <div className="flex items-center gap-2">
+                              <Filter className="h-4 w-4 text-text-primary" />
+                              <h3 className="text-sm font-extrabold text-text-primary uppercase tracking-wider">
+                                Filters
                               </h3>
-                              <span className="text-[9px] text-text-tertiary">
-                                Narrow down findings scope
-                              </span>
                             </div>
-                            {(searchQuery || filterSeverities.length > 0 || filterCategories.length > 0 || filterStatuses.length > 0 || filterLanguages.length > 0) && (
+                            <div className={`transition-opacity duration-150 ${(searchQuery || filterSeverities.length > 0 || filterCategories.length > 0 || filterStatuses.length > 0 || filterLanguages.length > 0) ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                               <button
                                 onClick={() => {
                                   setSearchQuery('');
@@ -755,206 +764,259 @@ export const App: React.FC = () => {
                                   setFilterStatuses([]);
                                   setFilterLanguages([]);
                                 }}
-                                className="flex items-center gap-1 text-[9.5px] font-extrabold text-accent hover:text-accent-hover transition-colors cursor-pointer bg-accent/10 border border-accent/25 rounded-lg px-2.5 py-1.5 shadow-sm hover:scale-95 duration-100"
+                                className="flex items-center gap-1 text-xs font-bold text-accent-hover hover:text-accent-hover transition-colors cursor-pointer bg-accent/20 border border-accent/45 rounded-lg px-2.5 py-1.5 shadow-sm hover:bg-accent/30 hover:border-accent/60 duration-100"
                               >
                                 <RotateCcw className="h-3 w-3" />
                                 <span>Clear All</span>
                               </button>
-                            )}
-                          </div>
-
-                          {/* Keyword Search Input */}
-                          <div className="relative">
-                            <input
-                              type="text"
-                              value={searchQuery}
-                              onChange={(e) => setSearchQuery(e.target.value)}
-                              placeholder="Search rule ID, message, path..."
-                              autoComplete="off"
-                              name="searchQuery"
-                              className="w-full bg-bg-primary border border-card-border/60 rounded-xl pl-9 pr-9 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium"
-                            />
-                            <Search className="absolute left-3 top-3 h-4 w-4 text-text-tertiary animate-none" />
-                            {searchQuery && (
-                              <button
-                                type="button"
-                                onClick={() => setSearchQuery('')}
-                                className="absolute right-3 top-2.5 text-text-tertiary hover:text-text-primary cursor-pointer"
-                              >
-                                <X className="h-3.5 w-3.5" />
-                              </button>
-                            )}
+                            </div>
                           </div>
 
                           {/* Filter Option Checklist stacked vertically inside scrollable container */}
-                          <div className="flex-1 overflow-y-auto scrollbar-thin space-y-5 pr-1 pb-4">
+                          <div className="flex-1 overflow-y-auto scrollbar-thin space-y-3 pr-5 pb-4">
                             {/* Severity Filter */}
-                            <div className="space-y-2 border border-card-border/40 bg-bg-primary/20 p-3.5 rounded-xl">
-                              <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Severity</label>
-                              <div className="flex flex-col gap-1.5">
-                                {[
-                                  { id: 'error', label: 'Error', key: 'error', icon: <AlertOctagon className="h-3.5 w-3.5 text-error shrink-0" /> },
-                                  { id: 'warning', label: 'Warning', key: 'warning', icon: <AlertTriangle className="h-3.5 w-3.5 text-warning shrink-0" /> },
-                                  { id: 'info', label: 'Info', key: 'info', icon: <Info className="h-3.5 w-3.5 text-info shrink-0" /> }
-                                ].map(opt => {
-                                  const isActive = filterSeverities.includes(opt.id);
-                                  const count = filterCounts.severity[opt.key as keyof typeof filterCounts.severity] || 0;
-                                  return (
-                                    <div
-                                      key={opt.id}
-                                      onClick={() => {
-                                        setFilterSeverities(prev =>
-                                          prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
-                                        );
-                                      }}
-                                      className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all select-none ${
-                                        isActive
-                                          ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
-                                          : 'border-card-border/30 bg-bg-primary/20 text-text-secondary hover:border-card-border hover:bg-bg-primary/55'
-                                      }`}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        {isActive ? (
-                                          <CheckSquare className="h-3.5 w-3.5 text-accent shrink-0" />
-                                        ) : (
-                                          <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-                                        )}
+                            <div className="pb-[14px] border-b border-text-tertiary/30">
+                              <div
+                                className="flex items-center justify-between py-1.5 select-none"
+                              >
+                                <div
+                                  onClick={() => toggleFilterSection('severity')}
+                                  className="flex items-center gap-1.5 cursor-pointer group flex-1"
+                                >
+                                  <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform duration-150 ${expandedFilters.severity ? '' : '-rotate-90'}`} />
+                                  <label className="text-xs text-text-tertiary uppercase font-bold tracking-wider group-hover:text-text-primary transition-colors cursor-pointer">Severity</label>
+                                </div>
+                                {filterSeverities.length > 0 && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setFilterSeverities([]);
+                                    }}
+                                    className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
+                                    title="Clear Severity Filters"
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                              {expandedFilters.severity && (
+                                <div className="flex flex-col gap-1.5 mt-2 animate-fade-in">
+                                  {[
+                                    { id: 'error', label: 'Error', key: 'error', icon: <AlertOctagon className="h-4 w-4 text-error shrink-0" /> },
+                                    { id: 'warning', label: 'Warning', key: 'warning', icon: <AlertTriangle className="h-4 w-4 text-warning shrink-0" /> },
+                                    { id: 'info', label: 'Info', key: 'info', icon: <Info className="h-4 w-4 text-info shrink-0" /> }
+                                  ].map(opt => {
+                                    const isActive = filterSeverities.includes(opt.id);
+                                    const count = filterCounts.severity[opt.key as keyof typeof filterCounts.severity] || 0;
+                                    return (
+                                      <div
+                                        key={opt.id}
+                                        onClick={() => {
+                                          setFilterSeverities(prev =>
+                                            prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
+                                          );
+                                        }}
+                                        className={`flex items-center justify-between py-1.5 px-2.5 rounded-sm border text-sm font-semibold cursor-pointer transition-all select-none ${
+                                          isActive
+                                            ? 'border-accent/50 bg-accent/12 text-text-primary'
+                                            : 'border-card-border/30 bg-transparent text-text-secondary hover:border-card-border/60 hover:bg-bg-primary/30 hover:text-text-primary'
+                                        }`}
+                                      >
+                                      <div className="flex items-center gap-2.5">
                                         {opt.icon}
-                                        <span className="font-sans text-[11px] font-bold">{opt.label}</span>
+                                        <span className="font-sans text-sm font-medium">{opt.label}</span>
                                       </div>
-                                      <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                                      <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
                                         {count}
                                       </span>
                                     </div>
                                   );
                                 })}
-                              </div>
+                                </div>
+                              )}
                             </div>
 
                             {/* Category Filter */}
-                            <div className="space-y-2 border border-card-border/40 bg-bg-primary/20 p-3.5 rounded-xl">
-                              <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Category</label>
-                              <div className="flex flex-col gap-1.5">
-                                {[
-                                  { id: 'security', label: 'Security', key: 'security', icon: <Shield className="h-3.5 w-3.5 text-error shrink-0" /> },
-                                  { id: 'quality', label: 'Quality', key: 'quality', icon: <Bug className="h-3.5 w-3.5 text-warning shrink-0" /> },
-                                  { id: 'maintainability', label: 'Maintainability', key: 'maintainability', icon: <Wrench className="h-3.5 w-3.5 text-success shrink-0" /> },
-                                  { id: 'architecture', label: 'Architecture', key: 'architecture', icon: <Layout className="h-3.5 w-3.5 text-info shrink-0" /> }
-                                ].map(opt => {
-                                  const isActive = filterCategories.includes(opt.id);
-                                  const count = filterCounts.category[opt.key as keyof typeof filterCounts.category] || 0;
-                                  return (
-                                    <div
-                                      key={opt.id}
-                                      onClick={() => {
-                                        setFilterCategories(prev =>
-                                          prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
-                                        );
-                                      }}
-                                      className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all select-none ${
-                                        isActive
-                                          ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
-                                          : 'border-card-border/30 bg-bg-primary/20 text-text-secondary hover:border-card-border hover:bg-bg-primary/55'
-                                      }`}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        {isActive ? (
-                                          <CheckSquare className="h-3.5 w-3.5 text-accent shrink-0" />
-                                        ) : (
-                                          <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-                                        )}
+                            <div className="pb-[14px] border-b border-text-tertiary/30 pt-[2px]">
+                              <div
+                                className="flex items-center justify-between py-1.5 select-none"
+                              >
+                                <div
+                                  onClick={() => toggleFilterSection('category')}
+                                  className="flex items-center gap-1.5 cursor-pointer group flex-1"
+                                >
+                                  <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform duration-150 ${expandedFilters.category ? '' : '-rotate-90'}`} />
+                                  <label className="text-xs text-text-tertiary uppercase font-bold tracking-wider group-hover:text-text-primary transition-colors cursor-pointer">Category</label>
+                                </div>
+                                {filterCategories.length > 0 && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setFilterCategories([]);
+                                    }}
+                                    className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
+                                    title="Clear Category Filters"
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                              {expandedFilters.category && (
+                                <div className="flex flex-col gap-1.5 mt-2 animate-fade-in">
+                                  {[
+                                    { id: 'security', label: 'Security', key: 'security', icon: <Shield className="h-4 w-4 text-error shrink-0" /> },
+                                    { id: 'quality', label: 'Quality', key: 'quality', icon: <Bug className="h-4 w-4 text-warning shrink-0" /> },
+                                    { id: 'maintainability', label: 'Maintainability', key: 'maintainability', icon: <Wrench className="h-4 w-4 text-success shrink-0" /> },
+                                    { id: 'architecture', label: 'Architecture', key: 'architecture', icon: <Layout className="h-4 w-4 text-info shrink-0" /> }
+                                  ].map(opt => {
+                                    const isActive = filterCategories.includes(opt.id);
+                                    const count = filterCounts.category[opt.key as keyof typeof filterCounts.category] || 0;
+                                    return (
+                                      <div
+                                        key={opt.id}
+                                        onClick={() => {
+                                          setFilterCategories(prev =>
+                                            prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
+                                          );
+                                        }}
+                                        className={`flex items-center justify-between py-1.5 px-2.5 rounded-sm border text-sm font-semibold cursor-pointer transition-all select-none ${
+                                          isActive
+                                            ? 'border-accent/50 bg-accent/12 text-text-primary'
+                                            : 'border-card-border/30 bg-transparent text-text-secondary hover:border-card-border/60 hover:bg-bg-primary/30 hover:text-text-primary'
+                                        }`}
+                                      >
+                                      <div className="flex items-center gap-2.5">
                                         {opt.icon}
-                                        <span className="font-sans text-[11px] font-bold">{opt.label}</span>
+                                        <span className="font-sans text-sm font-medium">{opt.label}</span>
                                       </div>
-                                      <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                                      <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
                                         {count}
                                       </span>
                                     </div>
                                   );
                                 })}
-                              </div>
+                                </div>
+                              )}
                             </div>
 
                             {/* Status Filter */}
-                            <div className="space-y-2 border border-card-border/40 bg-bg-primary/20 p-3.5 rounded-xl">
-                              <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Fix Status</label>
-                              <div className="flex flex-col gap-1.5">
-                                {[
-                                  { id: 'pending', label: 'Pending', key: 'pending', icon: <Clock className="h-3.5 w-3.5 text-text-secondary shrink-0" /> },
-                                  { id: 'applied', label: 'Applied', key: 'applied', icon: <CheckCircle2 className="h-3.5 w-3.5 text-success shrink-0" /> }
-                                ].map(opt => {
-                                  const isActive = filterStatuses.includes(opt.id);
-                                  const count = filterCounts.status[opt.key as keyof typeof filterCounts.status] || 0;
-                                  return (
-                                    <div
-                                      key={opt.id}
-                                      onClick={() => {
-                                        setFilterStatuses(prev =>
-                                          prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
-                                        );
-                                      }}
-                                      className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all select-none ${
-                                        isActive
-                                          ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
-                                          : 'border-card-border/30 bg-bg-primary/20 text-text-secondary hover:border-card-border hover:bg-bg-primary/55'
-                                      }`}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        {isActive ? (
-                                          <CheckSquare className="h-3.5 w-3.5 text-accent shrink-0" />
-                                        ) : (
-                                          <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-                                        )}
+                            <div className="pb-[14px] border-b border-text-tertiary/30 pt-[2px]">
+                              <div
+                                className="flex items-center justify-between py-1.5 select-none"
+                              >
+                                <div
+                                  onClick={() => toggleFilterSection('status')}
+                                  className="flex items-center gap-1.5 cursor-pointer group flex-1"
+                                >
+                                  <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform duration-150 ${expandedFilters.status ? '' : '-rotate-90'}`} />
+                                  <label className="text-xs text-text-tertiary uppercase font-bold tracking-wider group-hover:text-text-primary transition-colors cursor-pointer">Fix Status</label>
+                                </div>
+                                {filterStatuses.length > 0 && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setFilterStatuses([]);
+                                    }}
+                                    className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
+                                    title="Clear Status Filters"
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                              {expandedFilters.status && (
+                                <div className="flex flex-col gap-1.5 mt-2 animate-fade-in">
+                                  {[
+                                    { id: 'pending', label: 'Pending', key: 'pending', icon: <Clock className="h-4 w-4 text-text-secondary shrink-0" /> },
+                                    { id: 'applied', label: 'Applied', key: 'applied', icon: <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> }
+                                  ].map(opt => {
+                                    const isActive = filterStatuses.includes(opt.id);
+                                    const count = filterCounts.status[opt.key as keyof typeof filterCounts.status] || 0;
+                                    return (
+                                      <div
+                                        key={opt.id}
+                                        onClick={() => {
+                                          setFilterStatuses(prev =>
+                                            prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
+                                          );
+                                        }}
+                                        className={`flex items-center justify-between py-1.5 px-2.5 rounded-sm border text-sm font-semibold cursor-pointer transition-all select-none ${
+                                          isActive
+                                            ? 'border-accent/50 bg-accent/12 text-text-primary'
+                                            : 'border-card-border/30 bg-transparent text-text-secondary hover:border-card-border/60 hover:bg-bg-primary/30 hover:text-text-primary'
+                                        }`}
+                                      >
+                                      <div className="flex items-center gap-2.5">
                                         {opt.icon}
-                                        <span className="font-sans text-[11px] font-bold">{opt.label}</span>
+                                        <span className="font-sans text-sm font-medium">{opt.label}</span>
                                       </div>
-                                      <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                                      <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
                                         {count}
                                       </span>
                                     </div>
                                   );
                                 })}
-                              </div>
+                                </div>
+                              )}
                             </div>
 
                             {/* Language Filter */}
                             {availableLanguages.length > 0 && (
-                              <div className="space-y-2 border border-card-border/40 bg-bg-primary/20 p-3.5 rounded-xl">
-                                <label className="text-[10px] text-text-tertiary uppercase font-extrabold tracking-wider block">Language</label>
-                                <div className="flex flex-col gap-1.5">
-                                  {availableLanguages.map(lang => {
-                                    const isActive = filterLanguages.includes(lang);
-                                    const count = filterCounts.language[lang] || 0;
-                                    return (
-                                      <div
-                                        key={lang}
-                                        onClick={() => {
-                                          setFilterLanguages(prev =>
-                                            prev.includes(lang) ? prev.filter(x => x !== lang) : [...prev, lang]
-                                          );
-                                        }}
-                                        className={`flex items-center justify-between p-2.5 rounded-lg border text-xs font-semibold cursor-pointer transition-all select-none ${
+                              <div className="pt-[2px]">
+                                <div
+                                  className="flex items-center justify-between py-1.5 select-none"
+                                >
+                                  <div
+                                    onClick={() => toggleFilterSection('language')}
+                                    className="flex items-center gap-1.5 cursor-pointer group flex-1"
+                                  >
+                                    <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform duration-150 ${expandedFilters.language ? '' : '-rotate-90'}`} />
+                                    <label className="text-xs text-text-tertiary uppercase font-bold tracking-wider group-hover:text-text-primary transition-colors cursor-pointer">Language</label>
+                                  </div>
+                                  {filterLanguages.length > 0 && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setFilterLanguages([]);
+                                      }}
+                                      className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
+                                      title="Clear Language Filters"
+                                    >
+                                      <X className="h-3.5 w-3.5" />
+                                    </button>
+                                  )}
+                                </div>
+                                {expandedFilters.language && (
+                                  <div className="flex flex-col gap-1.5 mt-2 animate-fade-in">
+                                    {availableLanguages.map(lang => {
+                                      const isActive = filterLanguages.includes(lang);
+                                      const count = filterCounts.language[lang] || 0;
+                                      return (
+                                        <div
+                                          key={lang}
+                                          onClick={() => {
+                                            setFilterLanguages(prev =>
+                                              prev.includes(lang) ? prev.filter(x => x !== lang) : [...prev, lang]
+                                            );
+                                          }}
+                                          className={`flex items-center justify-between py-1.5 px-2.5 rounded-sm border text-sm font-semibold cursor-pointer transition-all select-none ${
                                           isActive
-                                            ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
-                                            : 'border-card-border/30 bg-bg-primary/20 text-text-secondary hover:border-card-border hover:bg-bg-primary/55'
-                                        }`}
-                                      >
-                                        <div className="flex items-center gap-2">
-                                          {isActive ? (
-                                            <CheckSquare className="h-3.5 w-3.5 text-accent shrink-0" />
-                                          ) : (
-                                            <Square className="h-3.5 w-3.5 text-text-tertiary shrink-0" />
-                                          )}
-                                          <Terminal className="h-3.5 w-3.5 text-text-secondary shrink-0" />
-                                          <span className="font-sans text-[11px] font-bold">{lang}</span>
+                                            ? 'border-accent/50 bg-accent/12 text-text-primary'
+                                            : 'border-card-border/30 bg-transparent text-text-secondary hover:border-card-border/60 hover:bg-bg-primary/30 hover:text-text-primary'
+                                          }`}
+                                        >
+                                        <div className="flex items-center gap-2.5">
+                                          <Terminal className="h-4 w-4 text-text-secondary shrink-0" />
+                                          <span className="font-sans text-sm font-medium">{lang}</span>
                                         </div>
-                                        <span className="text-[9.5px] font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                                        <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
                                           {count}
                                         </span>
                                       </div>
-                                    );
-                                  })}
-                                </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -963,7 +1025,7 @@ export const App: React.FC = () => {
 
                         {/* Right Column: List of Findings */}
                         <div className="flex-1 flex flex-col min-h-0 bg-bg-secondary p-4 pl-2 overflow-y-auto scrollbar-thin">
-                          <div className="flex items-center justify-between pb-4 border-b border-card-border mb-6">
+                          <div className="flex items-center justify-between pb-4 border-b border-text-tertiary/30 mb-5">
                             <div className="flex items-center gap-3">
                               <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
                                 PROJECT FINDINGS
@@ -971,6 +1033,31 @@ export const App: React.FC = () => {
                               <span className="px-2.5 py-0.5 bg-accent text-white rounded-full text-[10px] font-bold shadow-sm font-sans">
                                 {searchedAndFilteredFindings.length} finding(s) match filters
                               </span>
+                            </div>
+                          </div>
+
+                          {/* Keyword Search Input */}
+                          <div className="mb-6 max-w-5xl">
+                            <div className="relative">
+                              <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                placeholder="Search findings by rule ID, description message, or file path..."
+                                autoComplete="off"
+                                name="searchQuery"
+                                className="w-full bg-[#161622] border border-card-border/60 rounded-xl pl-10 pr-10 py-3 text-sm text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium shadow-inner"
+                              />
+                              <Search className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-text-tertiary" />
+                              {searchQuery && (
+                                <button
+                                  type="button"
+                                  onClick={() => setSearchQuery('')}
+                                  className="absolute right-3.5 top-3.5 text-text-tertiary hover:text-text-primary cursor-pointer transition-colors"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              )}
                             </div>
                           </div>
 

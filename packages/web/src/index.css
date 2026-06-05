@@ -30,6 +30,8 @@
   --radius-md: 10px;
   --radius-lg: 14px;
   
+  --spacing-68: 17rem;
+  
   /* Animations */
   --animate-slide-up: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --animate-slide-in: slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
