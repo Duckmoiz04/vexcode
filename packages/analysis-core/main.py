@@ -269,8 +269,16 @@ def main() -> None:
             
         # Run AI Naming Quality Audit
         print("Auditing code naming quality...", file=sys.stderr)
-        # Audit files with findings or first 5 files of the source files list
-        files_to_audit = list(set([os.path.join(args.target, f.get("file")) for f in findings if f.get("file")] + source_files[:5]))
+        # Exclude framework/tool directories from naming audit — focus on user project code only
+        NAMING_AUDIT_SKIP_DIRS = {".agents", ".claude", ".codex", "process", ".venv", "node_modules", "__pycache__"}
+        def is_user_code(path: str) -> bool:
+            rel = os.path.relpath(path, args.target)
+            parts = rel.replace("\\", "/").split("/")
+            return not any(p in NAMING_AUDIT_SKIP_DIRS for p in parts)
+
+        finding_files = [os.path.join(args.target, f.get("file")) for f in findings if f.get("file")]
+        all_audit_candidates = list(set(finding_files + source_files[:5]))
+        files_to_audit = [p for p in all_audit_candidates if is_user_code(p)]
         naming_findings, naming_resolutions = run_naming_audit(files_to_audit, args.target, use_mock=args.mock_ai)
         
         # Merge naming findings into main findings list

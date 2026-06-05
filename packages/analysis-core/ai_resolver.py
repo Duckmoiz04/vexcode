@@ -74,8 +74,9 @@ MOCK_AI_RESOLUTIONS = {
     }
 }
 
-MAX_CODE_CHARS = 3000  # Max characters of file/code content sent to AI per request
+MAX_CODE_CHARS = 3000         # Max characters of file/code content sent to AI per request
 MAX_NAMING_AUDIT_FILES = 10  # Max files to audit per analysis run
+MAX_RESOLVE_FINDINGS = 20    # Max unique rules sent to AI in one resolve_findings call
 
 def safe_json_parse(text: str) -> Any:
     """
@@ -180,10 +181,12 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     # Make real HTTP request to the selected completions endpoint
     print(f"Querying AI completions endpoint ({base_url}) using model '{model}'...", file=sys.stderr)
     
-    # Extract unique rules and findings to keep payload clean
+    # Extract unique rules and cap at MAX_RESOLVE_FINDINGS to avoid oversized payloads
     unique_findings = []
     seen_rules = set()
     for f in findings:
+        if len(unique_findings) >= MAX_RESOLVE_FINDINGS:
+            break
         r_id = f.get("rule_id")
         if r_id not in seen_rules:
             seen_rules.add(r_id)
@@ -194,8 +197,19 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
                 "message": f.get("message")
             }
             if "ast_context" in f:
-                item["ast_context"] = f["ast_context"]
+                ast_ctx = f["ast_context"]
+                # Strip source_code and limit list fields to reduce payload size
+                item["ast_context"] = {
+                    "symbol_name": ast_ctx.get("symbol_name"),
+                    "kind": ast_ctx.get("kind"),
+                    "callers": ast_ctx.get("callers", [])[:3],
+                    "blast_radius": ast_ctx.get("blast_radius", [])[:3],
+                    "impact": ast_ctx.get("impact", {})
+                }
             unique_findings.append(item)
+
+    if len(seen_rules) > MAX_RESOLVE_FINDINGS:
+        print(f"Capped AI resolution to {MAX_RESOLVE_FINDINGS} unique rules (out of {len(seen_rules)} total).", file=sys.stderr)
 
     if not unique_findings:
         return {}
