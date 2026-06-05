@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import re
 import requests
 from dotenv import load_dotenv
 from typing import Dict, Any, List, Tuple
@@ -71,6 +72,48 @@ MOCK_AI_RESOLUTIONS = {
         "remediation_code": "def process_user_data(user_input):"
     }
 }
+
+MAX_CODE_CHARS = 3000  # Max characters of file/code content sent to AI per request
+MAX_NAMING_AUDIT_FILES = 10  # Max files to audit per analysis run
+
+def safe_json_parse(text: str) -> Any:
+    """
+    Robustly parse JSON from AI response text.
+    Handles: markdown fences, extra trailing data, multiple concatenated objects.
+    Returns parsed Python object or raises ValueError.
+    """
+    # Strip markdown code fences
+    text = text.strip()
+    if text.startswith("```"):
+        lines = text.splitlines()
+        lines = lines[1:]  # remove opening fence
+        if lines and lines[-1].strip().startswith("```"):
+            lines = lines[:-1]  # remove closing fence
+        text = "\n".join(lines).strip()
+
+    # Try straightforward parse first
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    # Try extracting the first JSON array [...]
+    match = re.search(r'(\[.*?\])', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+
+    # Try extracting the first JSON object {...}
+    match = re.search(r'(\{.*?\})', text, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group(1))
+        except json.JSONDecodeError:
+            pass
+
+    raise ValueError(f"Cannot parse JSON from AI response: {text[:200]}")
 
 def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     """
@@ -218,17 +261,7 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
         
         response_data = response.json()
         content = response_data["choices"][0]["message"]["content"].strip()
-        
-        # Strip markdown code blocks if the model returned them
-        if content.startswith("```"):
-            lines = content.splitlines()
-            if lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines[-1].startswith("```"):
-                lines = lines[:-1]
-            content = "\n".join(lines).strip()
-            
-        resolutions = json.loads(content)
+        resolutions = safe_json_parse(content)
         return resolutions
         
     except Exception as e:
@@ -283,9 +316,13 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                 break
         return findings, resolutions
 
-    # Real AI execution
+    # Real AI execution — cap number of files to avoid overloading the router
+    if len(files_to_audit) > MAX_NAMING_AUDIT_FILES:
+        print(f"Limiting naming audit to {MAX_NAMING_AUDIT_FILES} files (out of {len(files_to_audit)} candidates).", file=sys.stderr)
+        files_to_audit = files_to_audit[:MAX_NAMING_AUDIT_FILES]
+
     print(f"Querying AI completions for naming audit on {len(files_to_audit)} files...", file=sys.stderr)
-    
+
     for f_path in files_to_audit:
         if not os.path.exists(f_path):
             continue
@@ -316,6 +353,10 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                 "If no naming issues are found, return an empty array []. Just return raw JSON, no markdown formatting."
             )
             
+            # Truncate large files to avoid token/payload limits causing 502 errors
+            if len(code_content) > MAX_CODE_CHARS:
+                code_content = code_content[:MAX_CODE_CHARS] + "\n# ... (truncated)"
+
             user_prompt = f"File: {rel_path}\n\nCode Content:\n{code_content}"
             
             headers = {
@@ -338,15 +379,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
             response.raise_for_status()
             
             content = response.json()["choices"][0]["message"]["content"].strip()
-            if content.startswith("```"):
-                lines = content.splitlines()
-                if lines[0].startswith("```"):
-                    lines = lines[1:]
-                if lines[-1].startswith("```"):
-                    lines = lines[:-1]
-                content = "\n".join(lines).strip()
-                
-            issues = json.loads(content)
+            issues = safe_json_parse(content)
             
             if isinstance(issues, list):
                 for idx, issue in enumerate(issues):
