@@ -481,7 +481,7 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-bg-primary select-none">
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-bg-primary">
       {/* Toast alert notifications */}
       {toast && (
         <div
