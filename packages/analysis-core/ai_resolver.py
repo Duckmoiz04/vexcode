@@ -79,7 +79,9 @@ MAX_NAMING_AUDIT_FILES = 10  # Max files to audit per analysis run
 def safe_json_parse(text: str) -> Any:
     """
     Robustly parse JSON from AI response text.
-    Handles: markdown fences, extra trailing data, multiple concatenated objects.
+    Handles: markdown fences, extra trailing data after valid JSON.
+    Uses raw_decode to stop at the end of the first valid JSON value
+    and silently discard any trailing garbage.
     Returns parsed Python object or raises ValueError.
     """
     # Strip markdown code fences
@@ -91,27 +93,19 @@ def safe_json_parse(text: str) -> Any:
             lines = lines[:-1]  # remove closing fence
         text = "\n".join(lines).strip()
 
-    # Try straightforward parse first
-    try:
-        return json.loads(text)
-    except json.JSONDecodeError:
-        pass
-
-    # Try extracting the first JSON array [...]
-    match = re.search(r'(\[.*?\])', text, re.DOTALL)
-    if match:
-        try:
-            return json.loads(match.group(1))
-        except json.JSONDecodeError:
-            pass
-
-    # Try extracting the first JSON object {...}
-    match = re.search(r'(\{.*?\})', text, re.DOTALL)
-    if match:
-        try:
-            return json.loads(match.group(1))
-        except json.JSONDecodeError:
-            pass
+    # raw_decode parses the first valid JSON value and ignores trailing text
+    # This is the correct fix for "Extra data" errors.
+    decoder = json.JSONDecoder()
+    text = text.strip()
+    # Find first '[' or '{' to skip any leading non-JSON text
+    for start_char in ('[', '{'):
+        idx = text.find(start_char)
+        if idx != -1:
+            try:
+                obj, _ = decoder.raw_decode(text, idx)
+                return obj
+            except json.JSONDecodeError:
+                pass
 
     raise ValueError(f"Cannot parse JSON from AI response: {text[:200]}")
 
@@ -375,7 +369,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
             }
             
             url = f"{base_url.rstrip('/')}/chat/completions"
-            response = requests.post(url, headers=headers, json=payload, timeout=30)
+            response = requests.post(url, headers=headers, json=payload, timeout=60)
             response.raise_for_status()
             
             content = response.json()["choices"][0]["message"]["content"].strip()
