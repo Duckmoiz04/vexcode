@@ -748,7 +748,7 @@ export const App: React.FC = () => {
                         <div className="flex flex-col h-full overflow-hidden p-4 pr-2 gap-4 shrink-0 select-none bg-bg-secondary">
                           {/* Floating Card Wrapper for filters (width: 68 / 272px) */}
                           <div className="w-68 min-w-68 flex-1 bg-[#161622] border border-card-border/40 rounded-2xl pt-5 pb-5 pl-5 pr-0 flex flex-col gap-3 overflow-hidden shadow-xl">
-                          <div className="flex items-center justify-between pr-5 pb-3 border-b border-text-tertiary/30">
+                          <div className="flex items-center justify-between pr-5 pb-3 border-b border-text-tertiary/30 h-8 box-content">
                             <div className="flex items-center gap-2">
                               <Filter className="h-4 w-4 text-text-primary" />
                               <h3 className="text-sm font-extrabold text-text-primary uppercase tracking-wider">
@@ -795,7 +795,7 @@ export const App: React.FC = () => {
                                     className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
                                     title="Clear Severity Filters"
                                   >
-                                    <X className="h-3.5 w-3.5" />
+                                    <X className="h-4 w-4" />
                                   </button>
                                 )}
                               </div>
@@ -857,7 +857,7 @@ export const App: React.FC = () => {
                                     className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
                                     title="Clear Category Filters"
                                   >
-                                    <X className="h-3.5 w-3.5" />
+                                    <X className="h-4 w-4" />
                                   </button>
                                 )}
                               </div>
@@ -920,7 +920,7 @@ export const App: React.FC = () => {
                                     className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
                                     title="Clear Status Filters"
                                   >
-                                    <X className="h-3.5 w-3.5" />
+                                    <X className="h-4 w-4" />
                                   </button>
                                 )}
                               </div>
@@ -982,7 +982,7 @@ export const App: React.FC = () => {
                                       className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
                                       title="Clear Language Filters"
                                     >
-                                      <X className="h-3.5 w-3.5" />
+                                      <X className="h-4 w-4" />
                                     </button>
                                   )}
                                 </div>
