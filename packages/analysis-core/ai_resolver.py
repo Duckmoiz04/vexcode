@@ -110,6 +110,40 @@ def safe_json_parse(text: str) -> Any:
 
     raise ValueError(f"Cannot parse JSON from AI response: {text[:200]}")
 
+def parse_api_response(text: str) -> Dict[str, Any]:
+    """
+    Parse a 9router/OpenAI-format HTTP response body.
+    Always searches for '{' first since API responses are always JSON objects.
+    Handles trailing garbage after the JSON object.
+    """
+    text = text.strip()
+    decoder = json.JSONDecoder()
+    idx = text.find('{')
+    if idx != -1:
+        try:
+            obj, _ = decoder.raw_decode(text, idx)
+            return obj
+        except json.JSONDecodeError:
+            pass
+    raise ValueError(f"Cannot parse API response body: {text[:200]}")
+
+NAMING_AUDIT_SLEEP = 3.0      # Seconds between naming audit requests to avoid 429
+NAMING_AUDIT_MAX_RETRIES = 2  # Max retries on 429
+
+def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> requests.Response:
+    """
+    POST with exponential-backoff retry on 429 Too Many Requests.
+    """
+    for attempt in range(NAMING_AUDIT_MAX_RETRIES + 1):
+        response = requests.post(url, headers=headers, json=payload, timeout=timeout)
+        if response.status_code == 429 and attempt < NAMING_AUDIT_MAX_RETRIES:
+            wait = 5.0 * (2 ** attempt)  # 5s, 10s
+            print(f"429 Too Many Requests — retrying in {wait:.0f}s (attempt {attempt + 1}/{NAMING_AUDIT_MAX_RETRIES})...", file=sys.stderr)
+            time.sleep(wait)
+            continue
+        return response
+    return response  # return last response after exhausting retries
+
 def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     """
     Sends findings to the AI completions API to get AI remediation recommendations.
@@ -251,12 +285,12 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     
     try:
         url = f"{base_url.rstrip('/')}/chat/completions"
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        response = requests.post(url, headers=headers, json=payload, timeout=60)
         response.raise_for_status()
-        
-        # Use safe_json_parse on raw response text because 9router may return
+
+        # Use parse_api_response on raw response text because 9router may return
         # trailing garbage after the JSON body, causing response.json() to fail.
-        response_data = safe_json_parse(response.text)
+        response_data = parse_api_response(response.text)
         content = response_data["choices"][0]["message"]["content"].strip()
         resolutions = safe_json_parse(content)
         return resolutions
@@ -372,12 +406,12 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
             }
             
             url = f"{base_url.rstrip('/')}/chat/completions"
-            response = requests.post(url, headers=headers, json=payload, timeout=60)
+            response = post_with_retry(url, headers, payload, timeout=60)
             response.raise_for_status()
 
-            # Use safe_json_parse on raw response text to handle 9router trailing
+            # Use parse_api_response on raw response text to handle 9router trailing
             # garbage that causes response.json() to raise "Extra data" errors.
-            response_data = safe_json_parse(response.text)
+            response_data = parse_api_response(response.text)
             content = response_data["choices"][0]["message"]["content"].strip()
             issues = safe_json_parse(content)
             
@@ -409,7 +443,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
             print(f"Error auditing naming for {f_path}: {e}", file=sys.stderr)
 
         # Throttle requests to avoid 429 Too Many Requests from 9router
-        time.sleep(1.5)
+        time.sleep(NAMING_AUDIT_SLEEP)
             
     return findings, resolutions
 
