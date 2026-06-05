@@ -306,10 +306,8 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
 
       {/* Main Body: Content on left, collapsible Chat Drawer on right */}
       <div className="flex-1 flex overflow-hidden min-h-0 relative">
-        {/* Left Column: Scrollable Workspace with transition padding to clear the chat drawer */}
-        <div className={`flex-1 overflow-y-auto p-6 space-y-5 scrollbar-thin transition-all duration-300 ${
-          isChatOpen ? 'lg:pr-[404px]' : ''
-        }`}>
+        {/* Left Column: Scrollable Workspace */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-5 scrollbar-thin min-w-0">
           {/* File Metadata */}
           <div className="flex flex-wrap gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
             <div className="flex flex-col gap-1">
@@ -543,9 +541,9 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 )}
               </pre>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                 {/* Original Panel */}
-                <div className="border border-card-border/60 rounded-lg overflow-hidden bg-bg-primary/30 flex flex-col">
+                <div className="border border-card-border/60 rounded-lg overflow-hidden bg-bg-primary/30 flex flex-col min-w-0">
                   <div className="bg-bg-tertiary/60 px-3 py-1.5 text-[10px] font-semibold text-text-secondary border-b border-card-border/60 uppercase">
                     Original (Line {finding.line})
                   </div>
@@ -573,7 +571,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 </div>
 
                 {/* Remediation Panel */}
-                <div className="border border-card-border/60 rounded-lg overflow-hidden bg-bg-primary/30 flex flex-col">
+                <div className="border border-card-border/60 rounded-lg overflow-hidden bg-bg-primary/30 flex flex-col min-w-0">
                   <div className="bg-bg-tertiary/60 px-3 py-1.5 text-[10px] font-semibold text-text-secondary border-b border-card-border/60 uppercase">
                     Remediation
                   </div>
@@ -620,9 +618,9 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
           )}
         </div>
 
-        {/* Right Column: Collapsible AI Chat drawer/sidebar overlay */}
-        <div className={`absolute top-0 right-0 z-20 border-l border-card-border bg-bg-tertiary/85 backdrop-blur-lg h-full w-[380px] flex flex-col shadow-2xl transition-transform duration-300 ease-in-out ${
-          isChatOpen ? 'translate-x-0' : 'translate-x-full'
+        {/* Right Column: Collapsible AI Chat drawer/sidebar */}
+        <div className={`border-l border-card-border bg-[#161622] h-full flex flex-col shadow-2xl transition-all duration-300 ease-in-out shrink-0 overflow-hidden ${
+          isChatOpen ? 'w-[380px] opacity-100' : 'w-0 opacity-0 border-l-0'
         }`}>
           {/* Chat Header */}
           <div className="px-4.5 py-3.5 border-b border-card-border/60 flex items-center justify-between bg-bg-tertiary/20 shrink-0">
