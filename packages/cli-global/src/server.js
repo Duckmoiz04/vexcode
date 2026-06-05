@@ -754,7 +754,17 @@ app.post('/api/chat', async (req, res) => {
         const responseText = await response.text();
 
         try {
-          responseData = JSON.parse(responseText);
+          let cleanText = responseText.trim();
+          // Remove streaming DONE signal if present
+          if (cleanText.includes('data: [DONE]')) {
+            cleanText = cleanText.replace(/data:\s*\[DONE\]/g, '').trim();
+          }
+          // Remove leading 'data:' prefix if present
+          if (cleanText.startsWith('data:')) {
+            cleanText = cleanText.replace(/^data:\s*/, '').trim();
+          }
+
+          responseData = JSON.parse(cleanText);
           const content = responseData.choices?.[0]?.message?.content || '';
           res.json({ success: true, response: content });
         } catch (parseError) {

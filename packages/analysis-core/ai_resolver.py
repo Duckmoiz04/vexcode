@@ -13,7 +13,45 @@ if os.path.exists(dotenv_path):
 else:
     load_dotenv()
 
-# Load env variables
+# Centralized helper to resolve AI configuration dynamically based on active provider
+def get_ai_config() -> Tuple[str, str, str, bool]:
+    # Reload env dynamically to be absolutely fresh
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    dotenv_path = os.path.join(current_dir, '.env')
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path, override=True)
+        
+    ai_provider = os.getenv("AI_PROVIDER", "9router").lower()
+    
+    if ai_provider == "9router":
+        api_key = os.getenv("NINEROUTER_API_KEY") or os.getenv("9ROUTER_API_KEY") or ""
+        base_url = os.getenv("NINEROUTER_BASE_URL") or os.getenv("9ROUTER_BASE_URL") or "http://localhost:20128/v1"
+        model = os.getenv("NINEROUTER_MODEL") or os.getenv("9ROUTER_MODEL") or "openai/gpt-4o-mini"
+        # 9router does not require an API key by default (can run locally)
+        return api_key, base_url, model, False
+    elif ai_provider == "openai":
+        api_key = os.getenv("OPENAI_API_KEY") or ""
+        base_url = os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1"
+        model = os.getenv("OPENAI_MODEL") or "gpt-4o-mini"
+        return api_key, base_url, model, True
+    elif ai_provider == "google":
+        api_key = os.getenv("GOOGLE_API_KEY") or ""
+        base_url = os.getenv("GOOGLE_BASE_URL") or "https://generativelanguage.googleapis.com"
+        model = os.getenv("GOOGLE_MODEL") or "gemini-1.5-flash"
+        return api_key, base_url, model, True
+    elif ai_provider == "anthropic":
+        api_key = os.getenv("ANTHROPIC_API_KEY") or ""
+        base_url = os.getenv("ANTHROPIC_BASE_URL") or "https://api.anthropic.com"
+        model = os.getenv("ANTHROPIC_MODEL") or "claude-3-haiku-20240307"
+        return api_key, base_url, model, True
+        
+    # Default fallback
+    api_key = os.getenv("NINEROUTER_API_KEY") or ""
+    base_url = os.getenv("NINEROUTER_BASE_URL") or "http://localhost:20128/v1"
+    model = os.getenv("NINEROUTER_MODEL") or "openai/gpt-4o-mini"
+    return api_key, base_url, model, False
+
+# Backwards compatibility globals
 NINEROUTER_API_KEY = os.getenv("NINEROUTER_API_KEY")
 NINEROUTER_BASE_URL = os.getenv("NINEROUTER_BASE_URL", "http://localhost:20128/v1")
 NINEROUTER_MODEL = os.getenv("NINEROUTER_MODEL", "openai/gpt-4o-mini")
@@ -36,23 +74,21 @@ MOCK_AI_RESOLUTIONS = {
 
 def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     """
-    Sends findings to the 9router API to get AI remediation recommendations.
-    If use_mock is True, or if NINEROUTER_API_KEY is not set or the request fails,
+    Sends findings to the AI completions API to get AI remediation recommendations.
+    If use_mock is True, or if required keys are missing or request fails,
     returns standard mock resolutions.
-    
-    Args:
-        findings: List of security findings, or a dictionary containing a 'findings' key.
-        use_mock: If True, forces the use of mock resolutions.
-        
-    Returns:
-        A dictionary mapping rule_ids to their AI suggestions and remediation code.
     """
     if isinstance(findings, dict):
         findings = findings.get("findings", [])
         
-    if use_mock or not NINEROUTER_API_KEY:
-        if not NINEROUTER_API_KEY and not use_mock:
-            print("NINEROUTER_API_KEY not found in environment. Falling back to mock resolutions.", file=sys.stderr)
+    api_key, base_url, model, requires_key = get_ai_config()
+    
+    # Require key fallback check
+    fallback_due_to_key = requires_key and not api_key
+    
+    if use_mock or fallback_due_to_key:
+        if fallback_due_to_key and not use_mock:
+            print("API key is required but not found in environment. Falling back to mock resolutions.", file=sys.stderr)
         else:
             print("Using mock AI resolutions as requested.", file=sys.stderr)
             
@@ -69,8 +105,8 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
                 }
         return resolutions
 
-    # Make real HTTP request to 9router
-    print(f"Querying 9router completions endpoint ({NINEROUTER_BASE_URL}) using model '{NINEROUTER_MODEL}'...", file=sys.stderr)
+    # Make real HTTP request to the selected completions endpoint
+    print(f"Querying AI completions endpoint ({base_url}) using model '{model}'...", file=sys.stderr)
     
     # Extract unique rules and findings to keep payload clean
     unique_findings = []
@@ -161,12 +197,13 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     user_prompt = "Findings to resolve:\n\n" + "\n---\n\n".join(user_prompt_parts)
     
     headers = {
-        "Authorization": f"Bearer {NINEROUTER_API_KEY}",
         "Content-Type": "application/json"
     }
+    if api_key:
+        headers["Authorization"] = f"Bearer {api_key}"
     
     payload = {
-        "model": NINEROUTER_MODEL,
+        "model": model,
         "messages": [
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
@@ -175,7 +212,7 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     }
     
     try:
-        url = f"{NINEROUTER_BASE_URL.rstrip('/')}/chat/completions"
+        url = f"{base_url.rstrip('/')}/chat/completions"
         response = requests.post(url, headers=headers, json=payload, timeout=30)
         response.raise_for_status()
         
@@ -195,7 +232,7 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
         return resolutions
         
     except Exception as e:
-        print(f"Error querying 9router API: {e}", file=sys.stderr)
+        print(f"Error querying AI API: {e}", file=sys.stderr)
         print("Falling back to mock resolutions.", file=sys.stderr)
         
         resolutions = {}
@@ -221,9 +258,12 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
     if not files_to_audit:
         return findings, resolutions
         
-    if use_mock or not NINEROUTER_API_KEY:
-        if not NINEROUTER_API_KEY and not use_mock:
-            print("NINEROUTER_API_KEY not found. Using mock naming audit.", file=sys.stderr)
+    api_key, base_url, model, requires_key = get_ai_config()
+    fallback_due_to_key = requires_key and not api_key
+
+    if use_mock or fallback_due_to_key:
+        if fallback_due_to_key and not use_mock:
+            print("API key is required but not found. Using mock naming audit.", file=sys.stderr)
         
         # Look for mock target example.py
         for f_path in files_to_audit:
@@ -243,8 +283,8 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                 break
         return findings, resolutions
 
-    # Real AI execution via 9router
-    print(f"Querying 9router for naming audit on {len(files_to_audit)} files...", file=sys.stderr)
+    # Real AI execution
+    print(f"Querying AI completions for naming audit on {len(files_to_audit)} files...", file=sys.stderr)
     
     for f_path in files_to_audit:
         if not os.path.exists(f_path):
@@ -279,12 +319,13 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
             user_prompt = f"File: {rel_path}\n\nCode Content:\n{code_content}"
             
             headers = {
-                "Authorization": f"Bearer {NINEROUTER_API_KEY}",
                 "Content-Type": "application/json"
             }
+            if api_key:
+                headers["Authorization"] = f"Bearer {api_key}"
             
             payload = {
-                "model": NINEROUTER_MODEL,
+                "model": model,
                 "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_prompt}
@@ -292,7 +333,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                 "temperature": 0.1
             }
             
-            url = f"{NINEROUTER_BASE_URL.rstrip('/')}/chat/completions"
+            url = f"{base_url.rstrip('/')}/chat/completions"
             response = requests.post(url, headers=headers, json=payload, timeout=30)
             response.raise_for_status()
             
