@@ -4,7 +4,9 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSy
 import { resolve, dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
+import { exec } from 'node:child_process';
 import { runPythonAnalysis, cancelActiveScan } from './bridge.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -442,6 +444,50 @@ app.get('/api/report', (req, res) => {
     content._project = latestReport.project;
 
     res.json(content);
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// POST /api/open-in-ide
+app.post('/api/open-in-ide', (req, res) => {
+  try {
+    const { filePath, line } = req.body;
+    if (!filePath) {
+      return res.status(400).json({ success: false, error: 'Missing required parameter: filePath.' });
+    }
+
+    const resolvedPath = resolve(filePath);
+    if (!isPathSafe(resolvedPath)) {
+      return res.status(400).json({ success: false, error: 'File path is outside the workspace directory.' });
+    }
+
+    const lineSuffix = line !== undefined ? `:${line}` : '';
+    const config = readEnvConfig();
+    const ideCommand = config.IDE_COMMAND || 'code'; // e.g., 'code' or 'cursor'
+
+    const cmd = `"${ideCommand}" --goto "${resolvedPath}${lineSuffix}"`;
+    console.log(`Running open IDE command: ${cmd}`);
+
+    exec(cmd, (err) => {
+      if (err) {
+        // Fallback: if 'code' failed, try 'cursor'
+        if (ideCommand === 'code') {
+          const fallbackCmd = `cursor --goto "${resolvedPath}${lineSuffix}"`;
+          console.log(`VS Code failed, trying Cursor fallback: ${fallbackCmd}`);
+          exec(fallbackCmd, (fallbackErr) => {
+            if (fallbackErr) {
+              return res.status(500).json({ success: false, error: `Failed to open in IDE (tried code and cursor): ${err.message}` });
+            }
+            res.json({ success: true, message: 'Opened in IDE (Cursor fallback)' });
+          });
+        } else {
+          return res.status(500).json({ success: false, error: `Failed to open in IDE: ${err.message}` });
+        }
+      } else {
+        res.json({ success: true, message: 'Opened in IDE' });
+      }
+    });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }

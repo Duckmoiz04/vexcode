@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShieldAlert, Info, HelpCircle, CornerDownLeft, Check, Play, Send, X } from 'lucide-react';
+import { ShieldAlert, Info, HelpCircle, CornerDownLeft, Check, Play, Send, X, ExternalLink } from 'lucide-react';
 
 
 interface CodeInspectorProps {
@@ -249,6 +249,28 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
     setIsApplying(false);
   };
 
+  const handleOpenInIDE = async () => {
+    try {
+      const response = await fetch('/api/open-in-ide', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filePath: finding.file,
+          line: finding.line,
+        }),
+      });
+      const data = await response.json();
+      if (!data.success) {
+        console.error('Failed to open in IDE:', data.error);
+        alert(data.error || 'Failed to open in IDE');
+      }
+    } catch (err: any) {
+      console.error('Error opening in IDE:', err);
+      alert(`Error opening in IDE: ${err.message}`);
+    }
+  };
+
+
   const severity = (finding.severity || '').toLowerCase();
 
   return (
@@ -281,6 +303,14 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
           <h3 className="text-sm font-bold text-text-primary font-mono truncate max-w-md lg:max-w-xl">{finding.rule_id}</h3>
         </div>
         <div className="flex items-center gap-2.5">
+          <button
+            onClick={handleOpenInIDE}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-card-border/60 bg-bg-tertiary/40 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60 text-xs font-semibold transition-all cursor-pointer"
+            title="Open file in IDE (VS Code / Cursor)"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            <span>Open in IDE</span>
+          </button>
           <button
             onClick={() => setIsChatOpen(!isChatOpen)}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
