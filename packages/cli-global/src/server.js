@@ -755,13 +755,12 @@ app.post('/api/chat', async (req, res) => {
 
         try {
           let cleanText = responseText.trim();
-          // Remove streaming DONE signal if present
-          if (cleanText.includes('data: [DONE]')) {
-            cleanText = cleanText.replace(/data:\s*\[DONE\]/g, '').trim();
-          }
-          // Remove leading 'data:' prefix if present
-          if (cleanText.startsWith('data:')) {
-            cleanText = cleanText.replace(/^data:\s*/, '').trim();
+          
+          // Bulletproof extraction: find the first '{' and the last '}'
+          const firstBrace = cleanText.indexOf('{');
+          const lastBrace = cleanText.lastIndexOf('}');
+          if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+            cleanText = cleanText.slice(firstBrace, lastBrace + 1);
           }
 
           responseData = JSON.parse(cleanText);
