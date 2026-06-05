@@ -52,6 +52,34 @@ export const Header: React.FC<HeaderProps> = ({
       .replace(/-/g, (m: string, i: number) => (i > 10 ? ':' : i > 7 ? '-' : ' '));
   };
 
+  const formatRelativeTime = (timestamp: string | null) => {
+    if (!timestamp) return '';
+    try {
+      const now = new Date();
+      const date = new Date(timestamp);
+      const diffMs = now.getTime() - date.getTime();
+      
+      if (isNaN(diffMs)) return '';
+
+      const diffSecs = Math.floor(diffMs / 1000);
+      const diffMins = Math.floor(diffSecs / 60);
+      const diffHours = Math.floor(diffMins / 60);
+      const diffDays = Math.floor(diffHours / 24);
+
+      if (diffSecs < 60) {
+        return 'vừa xong';
+      } else if (diffMins < 60) {
+        return `${diffMins} phút trước`;
+      } else if (diffHours < 24) {
+        return `${diffHours} giờ trước`;
+      } else {
+        return `${diffDays} ngày trước`;
+      }
+    } catch {
+      return '';
+    }
+  };
+
   return (
     <header className="flex items-center justify-between px-6 py-3 bg-[#161622] border-b border-card-border z-40">
       {/* Left side: Logo & Project selector */}
@@ -154,14 +182,21 @@ export const Header: React.FC<HeaderProps> = ({
                                 onSelectReportId(r.id);
                                 setIsVersionOpen(false);
                               }}
-                              className={`flex w-full items-center gap-3 px-3 py-2 rounded-lg text-left transition-all ${
+                              className={`flex w-full items-center justify-between px-3 py-2 rounded-lg text-left transition-all ${
                                 r.id === currentReportId
                                   ? 'bg-accent/10 border-l-2 border-accent text-text-primary'
                                   : 'hover:bg-bg-secondary text-text-secondary hover:text-text-primary'
                               }`}
                             >
-                              <span className="flex-1 truncate font-mono text-xs">{formatReportId(r.id)}</span>
-                              <span className="text-[10px] text-text-tertiary font-sans shrink-0">{r.findings} findings</span>
+                              <div className="flex flex-col min-w-0">
+                                <span className="truncate font-mono text-xs">{formatReportId(r.id)}</span>
+                                {r.timestamp && (
+                                  <span className="text-[9.5px] text-text-tertiary mt-0.5">
+                                    {formatRelativeTime(r.timestamp)}
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-[10px] text-text-tertiary font-sans shrink-0 ml-3">{r.findings} findings</span>
                             </button>
                           ))
                         )}
