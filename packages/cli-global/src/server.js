@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync, unlinkSync } from 'node:fs';
 import { resolve, dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
@@ -19,6 +19,14 @@ const publicDir = resolve(__dirname, 'public');
 
 // Centralized report storage: ~/.ai-code-review/reports/
 const reportsBaseDir = join(homedir(), '.ai-code-review', 'reports');
+
+// Centralized backup storage: ~/.ai-code-review/backups/
+const backupsBaseDir = join(homedir(), '.ai-code-review', 'backups');
+
+// Helper: get backup file path for a given source file path
+function getBackupFilePath(filePath) {
+  return join(backupsBaseDir, encodeURIComponent(filePath) + '.bak');
+}
 
 // Helper: get project name from path (last folder name)
 function getProjectName(targetPath) {
@@ -512,6 +520,15 @@ app.post('/api/apply', (req, res) => {
     }
 
     const fileContent = readFileSync(resolvedPath, 'utf8');
+
+    // Create backup directory and save current content
+    try {
+      mkdirSync(backupsBaseDir, { recursive: true });
+      writeFileSync(getBackupFilePath(resolvedPath), fileContent, 'utf8');
+    } catch (err) {
+      console.error('Failed to create backup:', err);
+    }
+
     const lines = fileContent.split(/\r?\n/);
     const targetLines = targetContent.split(/\r?\n/);
 
@@ -568,6 +585,44 @@ app.post('/api/apply', (req, res) => {
     res.json({
       success: true,
       message: 'Vulnerability resolution applied successfully.'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// POST /api/rollback
+app.post('/api/rollback', (req, res) => {
+  try {
+    const { filePath } = req.body;
+
+    if (!filePath) {
+      return res.status(400).json({ success: false, error: 'Missing required parameter: filePath.' });
+    }
+
+    const resolvedPath = resolve(filePath);
+    if (!isPathSafe(resolvedPath)) {
+      return res.status(400).json({ success: false, error: 'File path is outside the workspace directory.' });
+    }
+
+    const backupPath = getBackupFilePath(resolvedPath);
+    if (!existsSync(backupPath)) {
+      return res.status(404).json({ success: false, error: `No backup found for file: ${filePath}` });
+    }
+
+    const backupContent = readFileSync(backupPath, 'utf8');
+    writeFileSync(resolvedPath, backupContent, 'utf8');
+
+    // Clean up backup file
+    try {
+      unlinkSync(backupPath);
+    } catch (err) {
+      console.error('Error deleting backup file:', err);
+    }
+
+    res.json({
+      success: true,
+      message: 'Vulnerability resolution rolled back successfully.'
     });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
