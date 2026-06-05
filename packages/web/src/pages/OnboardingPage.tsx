@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { ChevronRight, FolderPlus } from 'lucide-react';
 
-interface OnboardingProps {
+interface OnboardingPageProps {
   projects: any[];
   onSelectProject: (name: string) => void;
   onStartScan: (targetPath: string, mockScan: boolean, mockAi: boolean) => void;
 }
 
-export const Onboarding: React.FC<OnboardingProps> = ({
+export const OnboardingPage: React.FC<OnboardingPageProps> = ({
   projects,
   onSelectProject,
   onStartScan,
@@ -64,7 +64,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({
                   className="flex items-center justify-between p-4 rounded-xl bg-bg-primary/30 border border-card-border hover:border-text-secondary hover:bg-bg-primary/70 cursor-pointer transition-all group"
                 >
                   <div className="flex flex-col gap-1 min-w-0 pr-4">
-                    <span className="font-mono font-bold text-text-primary text-xs truncate">{p.name}</span>
+                     <span className="font-mono font-bold text-text-primary text-xs truncate">{p.name}</span>
                     <span className="text-[10px] text-text-tertiary">
                       {p.reportCount} scan(s) • Last scan: {timestamp}
                     </span>
@@ -133,3 +133,5 @@ export const Onboarding: React.FC<OnboardingProps> = ({
     </div>
   );
 };
+
+export default OnboardingPage;

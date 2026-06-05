@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { AlertTriangle, ShieldCheck, Cpu, Layout, Info } from 'lucide-react';
 
-interface OverviewDashboardProps {
+interface DashboardPageProps {
   report: any;
   currentProject: string | null;
   findings: any[];
@@ -9,7 +9,7 @@ interface OverviewDashboardProps {
   onSelectFindingIndex: (index: number | null) => void;
 }
 
-export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
+export const DashboardPage: React.FC<DashboardPageProps> = ({
   report,
   currentProject,
   findings,
@@ -496,3 +496,5 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
     </div>
   );
 };
+
+export default DashboardPage;
