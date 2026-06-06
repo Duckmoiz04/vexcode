@@ -1,5 +1,121 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShieldAlert, Info, HelpCircle, CornerDownLeft, Check, Play, Send, X, ExternalLink } from 'lucide-react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { HelpCircle, Check, Send, X, ExternalLink } from 'lucide-react';
+
+// Map file extension to Prism language identifier
+const getPrismLanguage = (filePath: string | null | undefined): string => {
+  if (!filePath) return 'text';
+  const ext = filePath.split('.').pop()?.toLowerCase() || '';
+  switch (ext) {
+    case 'py': return 'python';
+    case 'js':
+    case 'mjs': return 'javascript';
+    case 'jsx': return 'jsx';
+    case 'ts': return 'typescript';
+    case 'tsx': return 'tsx';
+    case 'sh':
+    case 'bash': return 'bash';
+    case 'css': return 'css';
+    case 'scss':
+    case 'sass': return 'scss';
+    case 'less': return 'less';
+    case 'html':
+    case 'htm':
+    case 'xml': return 'markup';
+    case 'json': return 'json';
+    case 'md':
+    case 'markdown': return 'markdown';
+    case 'yml':
+    case 'yaml': return 'yaml';
+    case 'java': return 'java';
+    case 'c': return 'c';
+    case 'h': return 'c';
+    case 'cpp':
+    case 'cxx':
+    case 'cc': return 'cpp';
+    case 'hpp': return 'cpp';
+    case 'cs': return 'csharp';
+    case 'go': return 'go';
+    case 'rs': return 'rust';
+    case 'rb': return 'ruby';
+    case 'php': return 'php';
+    case 'sql': return 'sql';
+    case 'kt':
+    case 'kts': return 'kotlin';
+    case 'swift': return 'swift';
+    case 'vue': return 'markup';
+    default: return 'text';
+  }
+};
+
+// Custom dark theme that matches the app's palette
+const customSyntaxTheme: Record<string, React.CSSProperties> = {
+  ...vscDarkPlus,
+  'pre[class*="language-"]': {
+    ...(vscDarkPlus['pre[class*="language-"]'] as Record<string, React.CSSProperties>),
+    background: 'transparent',
+    margin: 0,
+    padding: 0,
+    fontSize: '10.5px',
+    lineHeight: '1.6',
+    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+  },
+  'code[class*="language-"]': {
+    ...(vscDarkPlus['code[class*="language-"]'] as Record<string, React.CSSProperties>),
+    background: 'transparent',
+    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+    display: 'block',
+  },
+};
+
+// Render a single gutter cell (line number + finding button).
+// Defined at module scope so all gutter rows share the same shape.
+const renderGutterLine = (
+  lineNum: number,
+  fileFindings: any[],
+  onSelectFindingIndex?: (index: number | null) => void,
+  allFindings: any[] = []
+) => {
+  const findingsOnLine = fileFindings.filter((f: any) => f.line === lineNum);
+  const hasFinding = findingsOnLine.length > 0;
+  let lineSeverity: 'error' | 'warning' | 'info' = 'info';
+  if (hasFinding) {
+    const severities = findingsOnLine.map((f: any) => (f.severity || '').toLowerCase());
+    if (severities.includes('error')) lineSeverity = 'error';
+    else if (severities.includes('warning')) lineSeverity = 'warning';
+  }
+  return (
+    <div
+      className="gutter-cell flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 hover:text-text-tertiary text-[10.5px] transition-colors"
+      style={{ minWidth: '3.5em', minHeight: '1.6em' }}
+    >
+      {hasFinding && (
+        <button
+          onClick={() => {
+            if (onSelectFindingIndex && findingsOnLine[0]) {
+              const originalIndex = allFindings.indexOf(findingsOnLine[0]);
+              if (originalIndex !== -1) {
+                onSelectFindingIndex(originalIndex);
+              }
+            }
+          }}
+          title={`Line ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
+          className={`h-3.5 w-3.5 rounded-full flex items-center justify-center text-[8.5px] font-extrabold cursor-pointer border mr-1 ${
+            lineSeverity === 'error'
+              ? 'bg-danger/20 border-danger/60 text-danger hover:bg-danger/40'
+              : lineSeverity === 'warning'
+              ? 'bg-warning/20 border-warning/60 text-warning hover:bg-warning/40'
+              : 'bg-info/20 border-info/60 text-info hover:bg-info/40'
+          }`}
+        >
+          •
+        </button>
+      )}
+      <span className="font-medium tabular-nums">{lineNum}</span>
+    </div>
+  );
+};
 
 
 interface CodeInspectorProps {
@@ -386,7 +502,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             </p>
           </div>
 
-          {/* Code Viewer Panel (Full Code with Inline IDE-style Diff) */}
+          {/* Code Viewer Panel (Full Code with Inline IDE-style Diff + Syntax Highlight) */}
           <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3 flex flex-col">
             <div className="flex items-center justify-between border-b border-card-border/40 pb-2">
               <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
@@ -413,139 +529,165 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
 
             <div
               ref={codeContainerRef}
-              className="p-3 overflow-auto text-[10.5px] font-mono leading-relaxed max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-black/95 border border-card-border/40 rounded-xl relative flex flex-col shadow-inner"
+              className="overflow-auto text-[10.5px] font-mono leading-relaxed max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-bg-primary border border-card-border/40 rounded-xl shadow-inner"
             >
               {fileContent ? (
                 (() => {
-                  const remediationLines = resolution?.remediation_code
-                    ? resolution.remediation_code.split(/\r?\n/)
-                    : [];
-
-                  // Compute target line's leading indentation so we can align the
-                  // AI's snippet to the same column as the buggy line.
                   const allFileLines = fileContent.split(/\r?\n/);
                   const targetLineContent = allFileLines[finding.line - 1] || '';
                   const targetIndent = (targetLineContent.match(/^(\s*)/) || ['', ''])[0];
+
+                  const remediationLines = resolution?.remediation_code
+                    ? resolution.remediation_code.split(/\r?\n/)
+                    : [];
                   const adjustedRemediationLines = remediationLines.map((line: string) => {
                     if (line.length === 0) return line;
-                    // If line already starts with the target indent, leave it alone
-                    // (e.g. AI preserved deeper indentation for sub-statements).
                     if (targetIndent && !line.startsWith(targetIndent)) {
                       return targetIndent + line;
                     }
                     return line;
                   });
 
-                  return allFileLines.map((line, idx) => {
-                    const lineNum = idx + 1;
-                    const isTarget = lineNum === finding.line;
+                  const prismLanguage = getPrismLanguage(finding.file);
+                  const isDeletion = resolution?.remediation_code !== undefined &&
+                    (!resolution.remediation_code || resolution.remediation_code.trim() === '');
 
-                    // Filter findings on this line
-                    const findingsOnLine = fileFindings.filter((f: any) => f.line === lineNum);
-                    const hasFinding = findingsOnLine.length > 0;
-                    const isOtherFinding = hasFinding && !isTarget;
+                  // Render remediation as a separate block, only when there is a
+                  // resolution. We split the file into pre/target/post chunks so
+                  // the remediation block can be inserted directly after the
+                  // target line and stay aligned with it.
+                  const showRemediation = resolution?.remediation_code !== undefined;
+                  const preLines = allFileLines.slice(0, finding.line - 1);
+                  const targetLine = allFileLines[finding.line - 1] || '';
+                  const postLines = allFileLines.slice(finding.line);
 
-                    // Determine severity for class names and indicator colors
-                    let lineSeverity = 'info';
-                    if (hasFinding) {
-                      const severities = findingsOnLine.map((f: any) => (f.severity || '').toLowerCase());
-                      if (severities.includes('error')) lineSeverity = 'error';
-                      else if (severities.includes('warning')) lineSeverity = 'warning';
-                    }
-
+                  const renderChunk = (lines: string[], offsetLineNum: number) => {
+                    const text = lines.join('\n');
+                    if (!text) return null;
                     return (
-                      <div key={idx} className="w-full flex flex-col">
-                        <div
-                          ref={isTarget ? activeLineRef : undefined}
-                          className={`group flex items-start w-full py-1 px-2 -mx-2 transition-colors ${
-                            isTarget
-                              ? 'bg-danger/15 border-l-3 border-danger font-semibold text-text-primary'
-                              : isOtherFinding
-                              ? 'bg-warning/5 border-l-3 border-warning/30 hover:bg-warning/10 text-text-secondary'
-                              : 'hover:bg-bg-tertiary/20 text-text-secondary/80'
-                          }`}
-                        >
-                          {/* Line Number / Indicator Gutter */}
-                          <div className="flex items-center justify-end shrink-0 select-none pr-5 mr-5 font-semibold text-text-tertiary/40 group-hover:text-text-tertiary text-[10.5px]" style={{ minWidth: '3.5em' }}>
-                            {hasFinding && (
-                              <button
-                                onClick={() => {
-                                  if (onSelectFindingIndex && findingsOnLine[0]) {
-                                    const originalIndex = allFindings.indexOf(findingsOnLine[0]);
-                                    if (originalIndex !== -1) {
-                                      onSelectFindingIndex(originalIndex);
-                                    }
-                                  }
-                                }}
-                                title={`Line ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
-                                className={`h-3.5 w-3.5 rounded-full flex items-center justify-center text-[8.5px] font-extrabold cursor-pointer border mr-1 ${
-                                  lineSeverity === 'error'
-                                    ? 'bg-danger/20 border-danger/60 text-danger hover:bg-danger/40'
-                                    : lineSeverity === 'warning'
-                                    ? 'bg-warning/20 border-warning/60 text-warning hover:bg-warning/40'
-                                    : 'bg-info/20 border-info/60 text-info hover:bg-info/40'
-                                }`}
-                              >
-                                {isTarget ? '!' : '•'}
-                              </button>
-                            )}
-                            <span className="font-medium tabular-nums">{lineNum}</span>
-                          </div>
+                      <SyntaxHighlighter
+                        key={`chunk-${offsetLineNum}`}
+                        language={prismLanguage}
+                        style={customSyntaxTheme as any}
+                        showLineNumbers={false}
+                        wrapLines={true}
+                        lineProps={(lineNumber) => {
+                          const actualLine = lineNumber + offsetLineNum - 1;
+                          const isChunkTarget = actualLine === finding.line;
+                          const findingsOnLine = fileFindings.filter((f: any) => f.line === actualLine);
+                          const hasFinding = findingsOnLine.length > 0;
+                          let lineSeverity: 'error' | 'warning' | 'info' = 'info';
+                          if (hasFinding) {
+                            const severities = findingsOnLine.map((f: any) => (f.severity || '').toLowerCase());
+                            if (severities.includes('error')) lineSeverity = 'error';
+                            else if (severities.includes('warning')) lineSeverity = 'warning';
+                          }
+                          const isOtherFinding = hasFinding && !isChunkTarget;
+                          return {
+                            id: `line-${actualLine}`,
+                            className: [
+                              isChunkTarget ? 'code-line code-line--target' : '',
+                              isOtherFinding ? 'code-line code-line--finding' : '',
+                              hasFinding ? `code-line--${lineSeverity}` : '',
+                            ].filter(Boolean).join(' '),
+                            style: {
+                              display: 'block',
+                              minHeight: '1.6em',
+                              padding: '0 12px 0 0',
+                            },
+                          };
+                        }}
+                      >
+                        {text + '\n'}
+                      </SyntaxHighlighter>
+                    );
+                  };
 
-                          {/* Code Content */}
-                          <div className="flex-1 whitespace-pre select-text">
-                            {line || ' '}
-                          </div>
+                  return (
+                    <div className="flex flex-col py-3">
+                      {/* Pre-target lines */}
+                      <div className="flex">
+                        <div className="gutter-col shrink-0">
+                          {preLines.map((_, idx) => {
+                            const lineNum = idx + 1;
+                            return renderGutterLine(lineNum, fileFindings, onSelectFindingIndex, allFindings);
+                          })}
                         </div>
+                        <div className="code-col flex-1 min-w-0">
+                          {renderChunk(preLines, 1)}
+                        </div>
+                      </div>
 
-                        {/* IDE-style diff: suggested fix lines right below the target line */}
-                        {isTarget && resolution?.remediation_code !== undefined && (
-                          (() => {
-                            const isDeletion = !resolution.remediation_code || resolution.remediation_code.trim() === '';
-                            const validLines = isDeletion ? [] : adjustedRemediationLines;
-                            return (
-                              <div className="w-full flex flex-col my-1 -mx-2">
-                                {isDeletion ? (
-                                  /* Deletion: show a single strikethrough "line removed" indicator */
-                                  <div className="group flex items-center w-full py-1.5 px-2 bg-text-tertiary/10 border-l-3 border-text-tertiary hover:bg-text-tertiary/15 transition-colors text-text-tertiary">
-                                    <div className="flex items-center justify-end shrink-0 select-none pr-5 mr-5 text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
-                                      <span className="font-medium">{lineNum}</span>
-                                      <span className="font-extrabold ml-0.5">−</span>
-                                    </div>
-                                    <div className="flex-1 select-none italic line-through decoration-text-tertiary/60 text-[10.5px]">
-                                      ── line removed ──
-                                    </div>
+                      {/* Target line + remediation */}
+                      <div className="flex" ref={finding.line === 1 ? undefined : activeLineRef as any}>
+                        <div className="gutter-col shrink-0">
+                          {renderGutterLine(finding.line, fileFindings, onSelectFindingIndex, allFindings)}
+                        </div>
+                        <div className="code-col flex-1 min-w-0">
+                          {renderChunk([targetLine], finding.line)}
+                        </div>
+                      </div>
+
+                      {/* Remediation block, if any */}
+                      {showRemediation && !isDeletion && (
+                        <div className="remediation-row">
+                          {adjustedRemediationLines.map((remLine: string, remIdx: number) => (
+                            <div
+                              key={`rem-${remIdx}`}
+                              className="flex remediation-line"
+                            >
+                              <div className="gutter-col shrink-0">
+                                {remIdx === 0 ? (
+                                  <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
+                                    <span className="font-medium">{finding.line}</span>
+                                    <span className="font-extrabold ml-0.5 text-success">+</span>
                                   </div>
                                 ) : (
-                                  /* Add / Replace: show each remediation line with + prefix */
-                                  validLines.map((remLine: string, remIdx: number) => (
-                                    <div
-                                      key={`rem-${remIdx}`}
-                                      className="group flex items-start w-full py-1 px-2 bg-success/10 border-l-3 border-success hover:bg-success/15 transition-colors text-success"
-                                    >
-                                      <div className="flex items-center justify-end shrink-0 select-none pr-5 mr-5 text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
-                                        {remIdx === 0 ? (
-                                          <>
-                                            <span className="font-medium">{lineNum}</span>
-                                            <span className="font-extrabold ml-0.5 text-success">+</span>
-                                          </>
-                                        ) : (
-                                          <span className="font-medium invisible">·</span>
-                                        )}
-                                      </div>
-                                      <div className="flex-1 whitespace-pre select-text text-text-primary font-medium">
-                                        {remLine || ' '}
-                                      </div>
-                                    </div>
-                                  ))
+                                  <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
+                                    <span className="font-medium invisible">·</span>
+                                  </div>
                                 )}
                               </div>
-                            );
-                          })()
-                        )}
-                      </div>
-                    );
-                  });
+                              <div className="code-col flex-1 min-w-0 remediation-text whitespace-pre text-text-primary font-medium pl-1 pr-3">
+                                {remLine || ' '}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {showRemediation && isDeletion && (
+                        <div className="remediation-row">
+                          <div className="flex remediation-line">
+                            <div className="gutter-col shrink-0">
+                              <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
+                                <span className="font-medium">{finding.line}</span>
+                                <span className="font-extrabold ml-0.5">−</span>
+                              </div>
+                            </div>
+                            <div className="code-col flex-1 min-w-0 remediation-text select-none italic line-through decoration-text-tertiary/60 text-[10.5px] pl-1 pr-3">
+                              ── line removed ──
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Post-target lines */}
+                      {postLines.length > 0 && (
+                        <div className="flex">
+                          <div className="gutter-col shrink-0">
+                            {postLines.map((_, idx) => {
+                              const lineNum = finding.line + 1 + idx;
+                              return renderGutterLine(lineNum, fileFindings, onSelectFindingIndex, allFindings);
+                            })}
+                          </div>
+                          <div className="code-col flex-1 min-w-0">
+                            {renderChunk(postLines, finding.line + 1)}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
                 })()
               ) : (
                 <div className="text-center py-8 text-text-tertiary italic">Loading file content...</div>

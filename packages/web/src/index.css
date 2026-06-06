@@ -148,3 +148,41 @@ body {
   backdrop-filter: blur(12px);
   border: 1px solid var(--color-card-border);
 }
+
+/* Code line backgrounds for the syntax-highlighted code viewer.
+   These target the className we attach via lineProps in CodeInspector. */
+.code-line--target {
+  background-color: hsla(350, 85%, 55%, 0.15);
+  border-left: 3px solid hsl(350, 85%, 55%);
+  padding-left: 9px !important;
+  font-weight: 600;
+}
+.code-line--finding {
+  background-color: hsla(35, 90%, 55%, 0.05);
+  border-left: 3px solid hsla(35, 90%, 55%, 0.3);
+  padding-left: 9px !important;
+}
+.code-line--finding:hover {
+  background-color: hsla(35, 90%, 55%, 0.1);
+}
+.code-line--error {
+  border-left-color: hsl(350, 85%, 55%) !important;
+}
+.code-line--warning {
+  border-left-color: hsl(35, 90%, 55%) !important;
+}
+.code-line--info {
+  border-left-color: hsl(220, 100%, 50%) !important;
+}
+
+/* Remediation row styling for inline diff blocks */
+.remediation-row {
+  background-color: hsla(145, 80%, 45%, 0.1);
+  border-left: 3px solid hsl(145, 80%, 45%);
+}
+.remediation-row:hover {
+  background-color: hsla(145, 80%, 45%, 0.15);
+}
+.remediation-line {
+  border-left: 3px solid hsl(145, 80%, 45%);
+}

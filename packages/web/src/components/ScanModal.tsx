@@ -155,7 +155,7 @@ export const ScanModal: React.FC<ScanModalProps> = ({
             </span>
             <span className="text-[8px] font-mono text-text-tertiary">Real-time SSE Stream</span>
           </div>
-          <div className="font-mono text-[10px] text-left text-success bg-black/95 border border-card-border/60 p-3.5 rounded-xl h-24 overflow-y-auto scrollbar-thin select-text flex flex-col gap-1 shadow-inner">
+          <div className="font-mono text-[10px] text-left text-success bg-bg-primary border border-card-border/60 p-3.5 rounded-xl h-24 overflow-y-auto scrollbar-thin select-text flex flex-col gap-1 shadow-inner">
             {scanLogs.map((log, lIdx) => (
               <div key={lIdx} className={`truncate ${lIdx === scanLogs.length - 1 ? 'text-cyan-400 font-semibold' : 'opacity-60'}`}>
                 <span className="text-text-tertiary select-none mr-2">&gt;</span>
