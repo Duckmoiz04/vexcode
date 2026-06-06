@@ -450,8 +450,8 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                           }`}
                         >
                           {/* Line Number / Indicator Gutter */}
-                          <div className="flex items-center justify-end w-12 shrink-0 select-none text-right pr-3 font-semibold border-r border-card-border/20 mr-3">
-                            {hasFinding ? (
+                          <div className="flex items-center justify-end w-12 shrink-0 select-none text-right pr-3 font-semibold border-r border-card-border/20 mr-3 gap-1.5">
+                            {hasFinding && (
                               <button
                                 onClick={() => {
                                   if (onSelectFindingIndex && findingsOnLine[0]) {
@@ -472,11 +472,10 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                               >
                                 {isTarget ? '!' : '•'}
                               </button>
-                            ) : (
-                              <span className="text-text-tertiary/40 group-hover:text-text-tertiary text-[10px] font-medium pr-1">
-                                {lineNum}
-                              </span>
                             )}
+                            <span className="text-text-tertiary/40 group-hover:text-text-tertiary text-[10px] font-medium pr-1">
+                              {lineNum}
+                            </span>
                           </div>
 
                           {/* Code Content */}
@@ -492,21 +491,6 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                             const validLines = isDeletion ? [] : remediationLines;
                             return (
                               <div className="w-full flex flex-col my-1 -mx-2">
-                                {/* Divider/Hunk header */}
-                                <div className={`flex items-center gap-2 py-1.5 px-2 border-l-3 text-[9px] font-bold uppercase tracking-wider ${
-                                  isDeletion
-                                    ? 'bg-text-tertiary/10 border-text-tertiary text-text-tertiary'
-                                    : 'bg-accent/8 border-accent text-accent'
-                                }`}>
-                                  <span className="font-mono">@@</span>
-                                  <span>{isDeletion ? 'AI Suggested Deletion' : 'AI Suggested Fix'}</span>
-                                  {!isDeletion && (
-                                    <span className="text-text-tertiary/60 normal-case font-normal italic ml-1">
-                                      ({validLines.length} line{validLines.length > 1 ? 's' : ''})
-                                    </span>
-                                  )}
-                                </div>
-
                                 {isDeletion ? (
                                   /* Deletion: show a single strikethrough "line removed" indicator */
                                   <div className="group flex items-center w-full py-1.5 px-2 bg-text-tertiary/10 border-l-3 border-text-tertiary hover:bg-text-tertiary/15 transition-colors text-text-tertiary">
