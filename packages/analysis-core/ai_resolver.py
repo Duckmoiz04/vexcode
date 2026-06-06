@@ -224,10 +224,16 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     print(f"Querying AI completions endpoint ({base_url}) using model '{model}'...", file=sys.stderr)
 
     system_prompt = (
-        "You are an expert security engineer. Given ONE security finding, provide a concise fix.\n"
-        "Respond ONLY with raw JSON (no markdown) in exactly this shape:\n"
-        "{\"<rule_id>\": {\"suggestion\": \"one-sentence fix explanation\", "
-        "\"remediation_code\": \"code snippet showing the fix\"}}"
+        "You are an expert security engineer. Given ONE security finding, output a fix.\n"
+        "Rules for remediation_code:\n"
+        "- ONLY the fixed line(s) of code, nothing else\n"
+        "- NO surrounding context, NO function body, NO file content\n"
+        "- NO 'Before:'/'After:' comments, NO explanatory comments\n"
+        "- A clean, standalone snippet that directly replaces the vulnerable pattern\n"
+        "- Example for a RegExp issue: const safeRegex = /hardcoded_pattern/;\n"
+        "Respond ONLY with raw JSON (no markdown fences) in this exact shape:\n"
+        "{\"<rule_id>\": {\"suggestion\": \"one sentence: what to change and why\", "
+        "\"remediation_code\": \"ONLY the fixed replacement code\"}}"
     )
 
     resolutions: Dict[str, Any] = {}
@@ -344,13 +350,17 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                 "You are an expert software architect. Analyze the provided source code and review "
                 "the naming quality of classes, functions, and key variables. Identify any obscure, "
                 "too generic (like x, a, temp, data, obj, process), or misleading names.\n"
+                "Rules for remediation_code:\n"
+                "- ONLY the renamed line of code, nothing else\n"
+                "- NO surrounding context, NO function body\n"
+                "- NO 'Before:'/'After:' comments\n"
                 "Your response MUST be a valid JSON array of objects matching this schema:\n"
                 "[\n"
                 "  {\n"
                 "    \"line\": 12,\n"
                 "    \"code_text\": \"const temp = req.body;\",\n"
                 "    \"message\": \"Variable 'temp' is too generic.\",\n"
-                "    \"suggestion\": \"Rename 'temp' to 'requestPayload' to describe the data structure.\",\n"
+                "    \"suggestion\": \"Rename 'temp' to 'requestPayload' to describe the data.\",\n"
                 "    \"remediation_code\": \"const requestPayload = req.body;\"\n"
                 "  }\n"
                 "]\n"
