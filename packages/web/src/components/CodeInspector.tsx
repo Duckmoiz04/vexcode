@@ -57,8 +57,8 @@ const customSyntaxTheme: Record<string, React.CSSProperties> = {
     background: 'transparent',
     margin: 0,
     padding: 0,
-    fontSize: '10.5px',
-    lineHeight: '1.6',
+    fontSize: '12px',
+    lineHeight: '1.5',
     fontFamily: '"JetBrains Mono", "Fira Code", monospace',
   },
   'code[class*="language-"]': {
@@ -87,8 +87,8 @@ const renderGutterLine = (
   }
   return (
     <div
-      className="gutter-cell flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 hover:text-text-tertiary text-[10.5px] transition-colors"
-      style={{ minWidth: '3.5em', minHeight: '1.6em' }}
+      className="gutter-cell flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 hover:text-text-tertiary text-xs leading-[1.5] transition-colors"
+      style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}
     >
       {hasFinding && (
         <button
@@ -529,7 +529,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
 
             <div
               ref={codeContainerRef}
-              className="overflow-auto text-[10.5px] font-mono leading-relaxed max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-bg-primary border border-card-border/40 rounded-xl shadow-inner"
+              className="overflow-auto text-xs font-mono leading-[1.5] max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-bg-primary border border-card-border/40 rounded-xl shadow-inner"
             >
               {fileContent ? (
                 (() => {
@@ -592,7 +592,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                             ].filter(Boolean).join(' '),
                             style: {
                               display: 'block',
-                              minHeight: '1.6em',
+                              minHeight: '1.5em',
                               padding: '0 12px 0 0',
                             },
                           };
@@ -638,17 +638,17 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                             >
                               <div className="gutter-col shrink-0">
                                 {remIdx === 0 ? (
-                                  <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
+                                  <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-xs leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
                                     <span className="font-medium">{finding.line}</span>
                                     <span className="font-extrabold ml-0.5 text-success">+</span>
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
+                                  <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-xs leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
                                     <span className="font-medium invisible">·</span>
                                   </div>
                                 )}
                               </div>
-                              <div className="code-col flex-1 min-w-0 remediation-text whitespace-pre text-text-primary font-medium pl-1 pr-3">
+                              <div className="code-col flex-1 min-w-0 remediation-text whitespace-pre text-text-primary font-medium pl-1 pr-3 text-xs leading-[1.5]">
                                 {remLine || ' '}
                               </div>
                             </div>
@@ -660,12 +660,12 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         <div className="remediation-row">
                           <div className="flex remediation-line">
                             <div className="gutter-col shrink-0">
-                              <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
+                              <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-xs leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
                                 <span className="font-medium">{finding.line}</span>
                                 <span className="font-extrabold ml-0.5">−</span>
                               </div>
                             </div>
-                            <div className="code-col flex-1 min-w-0 remediation-text select-none italic line-through decoration-text-tertiary/60 text-[10.5px] pl-1 pr-3">
+                            <div className="code-col flex-1 min-w-0 remediation-text select-none italic line-through decoration-text-tertiary/60 text-xs leading-[1.5] pl-1 pr-3">
                               ── line removed ──
                             </div>
                           </div>

@@ -157,14 +157,6 @@ body {
   padding-left: 9px !important;
   font-weight: 600;
 }
-.code-line--finding {
-  background-color: hsla(35, 90%, 55%, 0.05);
-  border-left: 3px solid hsla(35, 90%, 55%, 0.3);
-  padding-left: 9px !important;
-}
-.code-line--finding:hover {
-  background-color: hsla(35, 90%, 55%, 0.1);
-}
 .code-line--error {
   border-left-color: hsl(350, 85%, 55%) !important;
 }
