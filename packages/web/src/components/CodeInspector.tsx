@@ -34,11 +34,8 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   onSelectFindingIndex,
 }) => {
   const [fileContent, setFileContent] = useState<string>('');
-  const [diffOriginal, setDiffOriginal] = useState<string[]>([]);
-  const [diffRemediation, setDiffRemediation] = useState<string[]>([]);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInput, setChatInput] = useState('');
-  const [viewMode, setViewMode] = useState<'full' | 'diff'>('full');
   const codeContainerRef = useRef<HTMLDivElement>(null);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
@@ -68,63 +65,30 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
     return abs;
   };
 
-  // Fetch File Content & Compute Diff
+  // Fetch File Content
   useEffect(() => {
-    const fetchFileAndDiff = async () => {
+    const fetchFile = async () => {
       try {
         const response = await fetch(`/api/file-content?path=${encodeURIComponent(finding.file)}`);
         const data = await response.json();
         if (data.success) {
           setFileContent(data.content);
-          
-          const lines = data.content.split(/\r?\n/);
-          const targetLine = finding.line - 1;
-          const contextLines = 5;
-          const start = Math.max(0, targetLine - contextLines);
-          const end = Math.min(lines.length, targetLine + contextLines + 1);
-
-          // Original lines
-          const orig: string[] = [];
-          for (let i = start; i < end; i++) {
-            orig.push(lines[i] || '');
-          }
-          setDiffOriginal(orig);
-
-          // Remediation lines
-          const rem: string[] = [];
-          if (resolution?.remediation_code) {
-            const remediationLines = resolution.remediation_code.split(/\r?\n/);
-            for (let i = start; i < end; i++) {
-              if (i === targetLine) {
-                remediationLines.forEach((line: string) => rem.push(line));
-              } else {
-                rem.push(lines[i] || '');
-              }
-            }
-            setDiffRemediation(rem);
-          } else {
-            setDiffRemediation([]);
-          }
         } else {
           setFileContent('');
-          setDiffOriginal([]);
-          setDiffRemediation([]);
         }
       } catch (err) {
         console.error(err);
         setFileContent('');
-        setDiffOriginal([]);
-        setDiffRemediation([]);
       }
     };
 
-    fetchFileAndDiff();
+    fetchFile();
     setChatMessages([]); // Reset chat for new finding
   }, [finding, resolution]);
 
   // Auto-scroll to active finding line
   useEffect(() => {
-    if (viewMode === 'full' && fileContent) {
+    if (fileContent) {
       const timer = setTimeout(() => {
         if (activeLineRef.current) {
           activeLineRef.current.scrollIntoView({
@@ -422,53 +386,49 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             </p>
           </div>
 
-          {/* Code Viewer Panel (Full Code or Split Diff) */}
+          {/* Code Viewer Panel (Full Code with Inline IDE-style Diff) */}
           <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3 flex flex-col">
             <div className="flex items-center justify-between border-b border-card-border/40 pb-2">
               <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
-                {viewMode === 'full' ? 'Full Code View' : 'Code Diff View'}
+                Full Code View
               </span>
-              {resolution?.remediation_code && (
-                <div className="flex bg-bg-primary/80 border border-card-border/80 rounded-md p-0.5 shadow-inner">
-                  <button
-                    onClick={() => setViewMode('full')}
-                    className={`px-2.5 py-1 text-[9px] font-bold rounded-sm transition-all cursor-pointer ${
-                      viewMode === 'full'
-                        ? 'bg-accent text-white shadow-sm'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    Full Code View
-                  </button>
-                  <button
-                    onClick={() => setViewMode('diff')}
-                    className={`px-2.5 py-1 text-[9px] font-bold rounded-sm transition-all cursor-pointer ${
-                      viewMode === 'diff'
-                        ? 'bg-accent text-white shadow-sm'
-                        : 'text-text-secondary hover:text-text-primary'
-                    }`}
-                  >
-                    Remediation Diff
-                  </button>
-                </div>
+              {resolution?.remediation_code !== undefined && (
+                <span className="text-[9px] text-text-tertiary uppercase tracking-wider font-semibold flex items-center gap-1.5">
+                  <span className="text-danger font-bold">-</span>
+                  <span>Original</span>
+                  {resolution.remediation_code.trim() === '' ? (
+                    <>
+                      <span className="text-text-tertiary font-bold">−</span>
+                      <span>Removed</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-success font-bold">+</span>
+                      <span>AI Suggestion</span>
+                    </>
+                  )}
+                </span>
               )}
             </div>
 
-            {viewMode === 'full' ? (
-              <div
-                ref={codeContainerRef}
-                className="p-3 overflow-auto text-[10.5px] font-mono leading-relaxed max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-black/95 border border-card-border/40 rounded-xl relative flex flex-col shadow-inner"
-              >
-                {fileContent ? (
-                  fileContent.split(/\r?\n/).map((line, idx) => {
+            <div
+              ref={codeContainerRef}
+              className="p-3 overflow-auto text-[10.5px] font-mono leading-relaxed max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-black/95 border border-card-border/40 rounded-xl relative flex flex-col shadow-inner"
+            >
+              {fileContent ? (
+                (() => {
+                  const remediationLines = resolution?.remediation_code
+                    ? resolution.remediation_code.split(/\r?\n/)
+                    : [];
+                  return fileContent.split(/\r?\n/).map((line, idx) => {
                     const lineNum = idx + 1;
                     const isTarget = lineNum === finding.line;
-                    
+
                     // Filter findings on this line
                     const findingsOnLine = fileFindings.filter((f: any) => f.line === lineNum);
                     const hasFinding = findingsOnLine.length > 0;
                     const isOtherFinding = hasFinding && !isTarget;
-                    
+
                     // Determine severity for class names and indicator colors
                     let lineSeverity = 'info';
                     if (hasFinding) {
@@ -525,105 +485,72 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                           </div>
                         </div>
 
-                        {/* Inline Expandable Error Card under target line */}
-                        {isTarget && (
-                          <div className="my-2 ml-14 p-4.5 bg-danger/10 border border-danger/25 rounded-xl text-xs leading-relaxed font-sans text-text-primary flex flex-col gap-2.5 shadow-md select-text relative glass">
-                            <div className="flex items-center justify-between">
-                              <span className="font-mono font-bold text-[9px] text-danger uppercase tracking-wider flex items-center gap-1.5">
-                                <span className="h-1.5 w-1.5 rounded-full bg-danger animate-pulse" />
-                                FINDING (Line {lineNum})
-                              </span>
-                              <span className={`text-[8.5px] px-2 py-0.5 rounded-full font-bold border uppercase tracking-wider ${
-                                severity === 'error'
-                                  ? 'bg-error/15 border-error/35 text-error shadow-[0_0_8px_rgba(239,68,68,0.1)]'
-                                  : severity === 'warning'
-                                  ? 'bg-warning/15 border-warning/35 text-warning shadow-[0_0_8px_rgba(245,158,11,0.1)]'
-                                  : 'bg-info/15 border-info/35 text-info shadow-[0_0_8px_rgba(59,130,246,0.1)]'
-                              }`}>
-                                {finding.severity}
-                              </span>
-                            </div>
-                            <div className="text-[11px] text-text-secondary select-text font-medium leading-relaxed">
-                              {finding.message}
-                            </div>
-                            {resolution?.suggestion && (
-                              <div className="text-[10px] text-text-tertiary border-t border-card-border/30 pt-2.5 flex items-start gap-1.5 select-text font-normal italic">
-                                <span className="shrink-0 text-amber-400 font-sans">💡</span>
-                                <div className="flex-1">
-                                  <strong>Remediation advice:</strong> {resolution.suggestion}
+                        {/* IDE-style diff: suggested fix lines right below the target line */}
+                        {isTarget && resolution?.remediation_code !== undefined && (
+                          (() => {
+                            const isDeletion = !resolution.remediation_code || resolution.remediation_code.trim() === '';
+                            const validLines = isDeletion ? [] : remediationLines;
+                            return (
+                              <div className="w-full flex flex-col my-1 -mx-2">
+                                {/* Divider/Hunk header */}
+                                <div className={`flex items-center gap-2 py-1.5 px-2 border-l-3 text-[9px] font-bold uppercase tracking-wider ${
+                                  isDeletion
+                                    ? 'bg-text-tertiary/10 border-text-tertiary text-text-tertiary'
+                                    : 'bg-accent/8 border-accent text-accent'
+                                }`}>
+                                  <span className="font-mono">@@</span>
+                                  <span>{isDeletion ? 'AI Suggested Deletion' : 'AI Suggested Fix'}</span>
+                                  {!isDeletion && (
+                                    <span className="text-text-tertiary/60 normal-case font-normal italic ml-1">
+                                      ({validLines.length} line{validLines.length > 1 ? 's' : ''})
+                                    </span>
+                                  )}
                                 </div>
+
+                                {isDeletion ? (
+                                  /* Deletion: show a single strikethrough "line removed" indicator */
+                                  <div className="group flex items-center w-full py-1.5 px-2 bg-text-tertiary/10 border-l-3 border-text-tertiary hover:bg-text-tertiary/15 transition-colors text-text-tertiary">
+                                    <div className="flex items-center justify-end w-4 shrink-0 select-none text-right pr-1 font-extrabold text-text-tertiary text-[11px]">
+                                      −
+                                    </div>
+                                    <div className="flex items-center justify-end w-8 shrink-0 select-none text-right pr-2 font-semibold border-r border-card-border/20 mr-2 text-text-tertiary/40 text-[10px]">
+                                      {lineNum}
+                                    </div>
+                                    <div className="flex-1 pl-1 select-none italic line-through decoration-text-tertiary/60 text-[10.5px]">
+                                      ── line removed ──
+                                    </div>
+                                  </div>
+                                ) : (
+                                  /* Add / Replace: show each remediation line with + prefix */
+                                  validLines.map((remLine: string, remIdx: number) => (
+                                    <div
+                                      key={`rem-${remIdx}`}
+                                      className="group flex items-start w-full py-1 px-2 bg-success/10 border-l-3 border-success hover:bg-success/15 transition-colors text-success"
+                                    >
+                                      <div className="flex items-center justify-end w-4 shrink-0 select-none text-right pr-1 font-extrabold text-success text-[11px]">
+                                        +
+                                      </div>
+                                      <div className="flex items-center justify-end w-8 shrink-0 select-none text-right pr-2 font-semibold border-r border-card-border/20 mr-2 text-text-tertiary/40 text-[10px]">
+                                        {remIdx === 0 ? lineNum : ''}
+                                      </div>
+                                      <div className="flex-1 whitespace-pre pl-1 select-text text-text-primary font-medium">
+                                        {remLine || ' '}
+                                      </div>
+                                    </div>
+                                  ))
+                                )}
                               </div>
-                            )}
-                          </div>
+                            );
+                          })()
                         )}
                       </div>
                     );
-                  })
-                ) : (
-                  <div className="text-center py-8 text-text-tertiary italic">Loading file content...</div>
-                )}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
-                {/* Original Panel */}
-                <div className="border border-card-border/60 rounded-lg overflow-hidden bg-bg-primary/30 flex flex-col min-w-0">
-                  <div className="bg-bg-tertiary/60 px-3 py-1.5 text-[10px] font-semibold text-text-secondary border-b border-card-border/60 uppercase">
-                    Original (Line {finding.line})
-                  </div>
-                  <div className="p-3 overflow-x-auto text-[10px] font-mono leading-normal flex-1 flex flex-col max-h-64 scrollbar-thin">
-                    {diffOriginal.map((line, i) => {
-                      const lineNum = finding.line - 5 + i;
-                      const isTarget = lineNum === finding.line;
-                      return (
-                        <div
-                          key={i}
-                          className={`w-full py-1 px-1 ${
-                            isTarget 
-                              ? 'bg-danger/10 border-l-2 border-danger text-danger' 
-                              : 'text-text-secondary/80'
-                          }`}
-                        >
-                          <span className="inline-block w-8 shrink-0 text-text-tertiary/60 select-none text-right pr-2">
-                            {lineNum > 0 ? lineNum : ''}
-                          </span>
-                          <span>{line}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Remediation Panel */}
-                <div className="border border-card-border/60 rounded-lg overflow-hidden bg-bg-primary/30 flex flex-col min-w-0">
-                  <div className="bg-bg-tertiary/60 px-3 py-1.5 text-[10px] font-semibold text-text-secondary border-b border-card-border/60 uppercase">
-                    Remediation
-                  </div>
-                  <div className="p-3 overflow-x-auto text-[10px] font-mono leading-normal flex-1 flex flex-col max-h-64 scrollbar-thin">
-                    {diffRemediation.map((line, i) => {
-                      const targetLine = finding.line - 1;
-                      const contextLines = 5;
-                      const start = Math.max(0, targetLine - contextLines);
-                      const isRem = i >= contextLines && i < diffRemediation.length - (diffOriginal.length - 1 - contextLines);
-                      return (
-                        <div
-                          key={i}
-                          className={`w-full py-1 px-1 ${
-                            isRem 
-                              ? 'bg-success/10 border-l-2 border-success text-success' 
-                              : 'text-text-secondary/80'
-                          }`}
-                        >
-                          <span className="inline-block w-8 shrink-0 text-text-tertiary/60 select-none text-right pr-2">
-                            {start + i + 1 > 0 ? start + i + 1 : ''}
-                          </span>
-                          <span>{line}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
+                  });
+                })()
+              ) : (
+                <div className="text-center py-8 text-text-tertiary italic">Loading file content...</div>
+              )}
+            </div>
           </div>
 
           {/* Action Button */}
