@@ -179,152 +179,110 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
                 }
         return resolutions
 
-    # Make real HTTP request to the selected completions endpoint
-    print(f"Querying AI completions endpoint ({base_url}) using model '{model}'...", file=sys.stderr)
-    
-    # Extract unique rules and cap at MAX_RESOLVE_FINDINGS to avoid oversized payloads
-    unique_findings = []
-    seen_rules = set()
-    for f in findings:
-        if len(unique_findings) >= MAX_RESOLVE_FINDINGS:
-            break
-        r_id = f.get("rule_id")
-        if r_id not in seen_rules:
-            seen_rules.add(r_id)
-            item = {
-                "rule_id": r_id,
-                "file": f.get("file"),
-                "line": f.get("line"),
-                "message": f.get("message")
-            }
-            if "ast_context" in f:
-                ast_ctx = f["ast_context"]
-                # Strip source_code and limit list fields to reduce payload size
-                item["ast_context"] = {
-                    "symbol_name": ast_ctx.get("symbol_name"),
-                    "kind": ast_ctx.get("kind"),
-                    "callers": ast_ctx.get("callers", [])[:3],
-                    "blast_radius": ast_ctx.get("blast_radius", [])[:3],
-                    "impact": ast_ctx.get("impact", {})
-                }
-            unique_findings.append(item)
-
-    if len(seen_rules) > MAX_RESOLVE_FINDINGS:
-        print(f"Capped AI resolution to {MAX_RESOLVE_FINDINGS} unique rules (out of {len(seen_rules)} total).", file=sys.stderr)
-
-    if not unique_findings:
-        return {}
-
-    system_prompt = (
-        "You are an expert security engineer. You will receive a list of security findings, "
-        "enriched with AST context including enclosing symbols, source code, direct caller chains, "
-        "and upstream blast radius (impact analysis).\n"
-        "For each unique rule_id, provide a suggestion on how to fix it and the remediation code to resolve it. "
-        "Ensure your recommendations are highly context-aware: review the symbol's implementation details, "
-        "caller chains, and blast radius to prevent regressions, type mismatches, or security side effects in callers.\n"
-        "Your response MUST be a valid JSON object matching this schema:\n"
-        "{\n"
-        "  \"<rule_id>\": {\n"
-        "    \"suggestion\": \"Detailed explanation of the fix.\",\n"
-        "    \"remediation_code\": \"Python/JavaScript code demonstrating the fix.\"\n"
-        "  }\n"
-        "}\n"
-        "Do not include any markdown formatting (like ```json) in your response. Just output raw valid JSON."
-    )
-    
-    user_prompt_parts = []
-    for item in unique_findings:
-        rule_id = item["rule_id"]
-        file_path = item["file"]
-        line = item["line"]
-        message = item["message"]
-        
-        part = (
-            f"Rule ID: {rule_id}\n"
-            f"Vulnerability Message: {message}\n"
-        )
-        
-        ast_ctx = item.get("ast_context")
-        if ast_ctx:
-            callers_list = []
-            for caller in ast_ctx.get("callers", []):
-                callers_list.append(f"- {caller.get('name')} ({caller.get('relation')} in {caller.get('filePath')})")
-            callers_str = "\n".join(callers_list) if callers_list else "None detected"
-            
-            impact_summary_list = []
-            impact_data = ast_ctx.get("impact", {})
-            if impact_data:
-                risk = impact_data.get("risk", "UNKNOWN")
-                impacted_count = impact_data.get("impactedCount", 0)
-                impact_summary_list.append(f"Risk level: {risk}")
-                impact_summary_list.append(f"Impacted nodes count: {impacted_count}")
-                
-            for br in ast_ctx.get("blast_radius", []):
-                impact_summary_list.append(f"- Depth {br.get('depth')}: {br.get('name')} ({br.get('relation')} in {br.get('filePath')})")
-            impact_summary_str = "\n".join(impact_summary_list) if impact_summary_list else "None detected"
-            
-            part += (
-                f"Affected Symbol: {ast_ctx.get('symbol_name')} ({ast_ctx.get('kind')})\n"
-                f"File: {file_path} (Line {line})\n"
-                f"Symbol Source Code:\n"
-                f"{ast_ctx.get('source_code')}\n\n"
-                f"Direct Callers:\n"
-                f"{callers_str}\n\n"
-                f"Blast Radius / Upstream Impact:\n"
-                f"{impact_summary_str}\n"
-            )
-        else:
-            part += (
-                f"File: {file_path} (Line {line})\n"
-                f"AST Context: Not available\n"
-            )
-            
-        user_prompt_parts.append(part)
-        
-    user_prompt = "Findings to resolve:\n\n" + "\n---\n\n".join(user_prompt_parts)
-    
+    # Per-rule sequential approach: send ONE rule per request.
+    # Batch requests with 5+ rules generate huge responses that timeout (60s+).
+    # One rule per request = small payload, ~512 token response, completes in ~5-10s.
     headers = {
         "Content-Type": "application/json"
     }
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
-    
-    payload = {
-        "model": model,
-        "messages": [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ],
-        "temperature": 0.1
-    }
-    
-    try:
-        url = f"{base_url.rstrip('/')}/chat/completions"
-        response = post_with_retry(url, headers, payload, timeout=60)
-        response.raise_for_status()
+    url = f"{base_url.rstrip('/')}/chat/completions"
 
-        # Use parse_api_response on raw response text because 9router may return
-        # trailing garbage after the JSON body, causing response.json() to fail.
-        response_data = parse_api_response(response.text)
-        content = response_data["choices"][0]["message"]["content"].strip()
-        resolutions = safe_json_parse(content)
-        return resolutions
-        
-    except Exception as e:
-        print(f"Error querying AI API: {e}", file=sys.stderr)
-        print("Falling back to mock resolutions.", file=sys.stderr)
-        
-        resolutions = {}
-        for finding in findings:
-            rule_id = finding.get("rule_id")
-            if rule_id in MOCK_AI_RESOLUTIONS:
-                resolutions[rule_id] = MOCK_AI_RESOLUTIONS[rule_id]
-            else:
-                resolutions[rule_id] = {
+    # Collect unique rules capped at MAX_RESOLVE_FINDINGS
+    seen_rules: set = set()
+    unique_findings = []
+    for f in findings:
+        if len(unique_findings) >= MAX_RESOLVE_FINDINGS:
+            break
+        r_id = f.get("rule_id")
+        if r_id and r_id not in seen_rules:
+            seen_rules.add(r_id)
+            item: Dict[str, Any] = {
+                "rule_id": r_id,
+                "file": f.get("file", "unknown"),
+                "line": f.get("line", "?"),
+                "message": f.get("message", "")
+            }
+            if "ast_context" in f:
+                ast_ctx = f["ast_context"]
+                item["ast_context"] = {
+                    "symbol_name": ast_ctx.get("symbol_name"),
+                    "kind": ast_ctx.get("kind"),
+                    "callers": ast_ctx.get("callers", [])[:3],
+                    "impact": ast_ctx.get("impact", {})
+                }
+            unique_findings.append(item)
+
+    total = len(seen_rules)
+    if total > MAX_RESOLVE_FINDINGS:
+        print(f"Capped AI resolution to {MAX_RESOLVE_FINDINGS} unique rules (out of {total} total).", file=sys.stderr)
+
+    if not unique_findings:
+        return {}
+
+    print(f"Querying AI completions endpoint ({base_url}) using model '{model}'...", file=sys.stderr)
+
+    system_prompt = (
+        "You are an expert security engineer. Given ONE security finding, provide a concise fix.\n"
+        "Respond ONLY with raw JSON (no markdown) in exactly this shape:\n"
+        "{\"<rule_id>\": {\"suggestion\": \"one-sentence fix explanation\", "
+        "\"remediation_code\": \"code snippet showing the fix\"}}"
+    )
+
+    resolutions: Dict[str, Any] = {}
+
+    for idx, item in enumerate(unique_findings):
+        rule_id = item["rule_id"]
+        user_prompt = (
+            f"Rule ID: {rule_id}\n"
+            f"File: {item['file']} (Line {item['line']})\n"
+            f"Message: {item['message']}\n"
+        )
+        ast_ctx = item.get("ast_context")
+        if ast_ctx:
+            callers = ", ".join(c.get("name", "?") for c in ast_ctx.get("callers", [])) or "none"
+            impact = ast_ctx.get("impact", {})
+            user_prompt += (
+                f"Symbol: {ast_ctx.get('symbol_name')} ({ast_ctx.get('kind')})\n"
+                f"Callers: {callers}\n"
+                f"Risk: {impact.get('risk', 'UNKNOWN')}, "
+                f"Impacted: {impact.get('impactedCount', 0)}\n"
+            )
+
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            "temperature": 0.1,
+            "max_tokens": 512
+        }
+
+        try:
+            response = post_with_retry(url, headers, payload, timeout=30)
+            response.raise_for_status()
+            response_data = parse_api_response(response.text)
+            content = response_data["choices"][0]["message"]["content"].strip()
+            result = safe_json_parse(content)
+            if isinstance(result, dict):
+                resolutions.update(result)
+            print(f"  [{idx+1}/{len(unique_findings)}] Resolved: {rule_id}", file=sys.stderr)
+        except Exception as e:
+            print(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}", file=sys.stderr)
+            resolutions[rule_id] = (
+                MOCK_AI_RESOLUTIONS.get(rule_id) or {
                     "suggestion": f"Vulnerability fix suggestion for {rule_id}.",
                     "remediation_code": f"# Remediation code for {rule_id}"
                 }
-        return resolutions
+            )
+
+        # Sleep between rules to avoid rate limiting
+        if idx < len(unique_findings) - 1:
+            time.sleep(NAMING_AUDIT_SLEEP)
+
+    return resolutions
 
 def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool = False) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """

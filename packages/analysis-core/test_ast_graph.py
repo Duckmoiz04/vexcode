@@ -186,12 +186,12 @@ class TestASTGraph(unittest.TestCase):
         messages = json_data.get('messages', [])
         user_message = next(msg['content'] for msg in messages if msg['role'] == 'user')
         
-        # Verify presence of AST details (source_code is stripped to reduce payload size)
-        self.assertIn("Affected Symbol: run_dangerous_code (Function)", user_message)
+        # Verify presence of AST details in the new compact per-rule prompt format
+        self.assertIn("Symbol: run_dangerous_code (Function)", user_message)
         self.assertIn("File: example.py (Line 12)", user_message)
-        self.assertIn("Direct Callers:", user_message)
-        self.assertIn("main.py", user_message)
-        self.assertIn("Blast Radius / Upstream Impact:", user_message)
+        self.assertIn("Callers:", user_message)
+        self.assertIn("process_request", user_message)
+        self.assertIn("Risk:", user_message)
 
 if __name__ == '__main__':
     unittest.main()
