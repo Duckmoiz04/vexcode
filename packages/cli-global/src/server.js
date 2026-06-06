@@ -5,7 +5,7 @@ import { resolve, dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { exec } from 'node:child_process';
-import { runPythonAnalysis, cancelActiveScan } from './bridge.js';
+import { runPythonAnalysis, cancelActiveScan, runPythonReResolve } from './bridge.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -285,6 +285,33 @@ app.post('/api/scan', async (req, res) => {
       message: 'Scan execution complete',
       report: reportContent,
       reportPath: reportPath
+    });
+  } catch (error) {
+    const statusCode = error.cancelled ? 400 : 500;
+    res.status(statusCode).json({ success: false, error: error.message });
+  }
+});
+
+// POST /api/re-resolve
+app.post('/api/re-resolve', async (req, res) => {
+  try {
+    const { reportPath, mockAi } = req.body;
+
+    if (!reportPath || !existsSync(reportPath)) {
+      return res.status(400).json({ success: false, error: 'Valid reportPath is required.' });
+    }
+
+    await runPythonReResolve(reportPath, !!mockAi);
+
+    const reportContent = JSON.parse(readFileSync(reportPath, 'utf8'));
+    reportContent._id = basename(reportPath).replace('.json', '');
+    reportContent._project = basename(dirname(reportPath));
+    reportContent._savedAt = reportPath;
+
+    res.json({
+      success: true,
+      message: 'Re-resolve complete',
+      report: reportContent
     });
   } catch (error) {
     const statusCode = error.cancelled ? 400 : 500;

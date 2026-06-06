@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Folder, Settings, Search } from 'lucide-react';
+import { ChevronDown, Folder, Settings, Search, Wand2 } from 'lucide-react';
 
 interface HeaderProps {
   projectName: string | null;
@@ -7,6 +7,7 @@ interface HeaderProps {
   onSelectProject: (name: string | null) => void;
   onOpenSettings: () => void;
   onStartScan: (fastScan: boolean) => void;
+  onReResolve?: () => void;
   reports: any[];
   currentReportId: string | null;
   onSelectReportId: (id: string) => void;
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectProject,
   onOpenSettings,
   onStartScan,
+  onReResolve,
   reports,
   currentReportId,
   onSelectReportId,
@@ -270,6 +272,21 @@ export const Header: React.FC<HeaderProps> = ({
                     <span className="text-[9px] text-text-tertiary">Only scan changed files</span>
                   </div>
                 </button>
+                {onReResolve && currentReportId && (
+                  <button
+                    onClick={() => {
+                      onReResolve();
+                      setIsScanOpen(false);
+                    }}
+                    className="flex w-full items-center gap-2.5 px-3 py-2 rounded-lg text-left text-xs hover:bg-bg-secondary text-text-secondary hover:text-text-primary transition-all"
+                  >
+                    <Wand2 className="h-3.5 w-3.5 text-warning shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="font-semibold">Re-ask AI</span>
+                      <span className="text-[9px] text-text-tertiary">Resolve existing findings</span>
+                    </div>
+                  </button>
+                )}
               </div>
             </div>
           )}

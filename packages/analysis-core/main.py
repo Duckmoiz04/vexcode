@@ -90,9 +90,39 @@ def main() -> None:
         action="store_true",
         help="Runs an incremental scan on modified and untracked files in the Git working directory."
     )
-    
+    parser.add_argument(
+        "--re-resolve",
+        type=str,
+        default=None,
+        metavar="REPORT_PATH",
+        help="Re-run AI resolution on an existing report without re-scanning. Updates ai_resolutions in-place."
+    )
+
     args = parser.parse_args()
-    
+
+    # --- Re-resolve mode: skip scanning, just re-run AI on existing findings ---
+    if args.re_resolve:
+        report_path = args.re_resolve
+        if not os.path.exists(report_path):
+            print(f"Error: Report not found: {report_path}", file=sys.stderr)
+            sys.exit(1)
+        print(f"Re-resolving AI findings from existing report: {report_path}", file=sys.stderr)
+        with open(report_path, "r", encoding="utf-8") as f:
+            existing_report = json.load(f)
+        findings = existing_report.get("findings", [])
+        if not findings:
+            print("No findings in report. Nothing to resolve.", file=sys.stderr)
+            sys.exit(0)
+        print(f"Found {len(findings)} finding(s). Running AI resolution...", file=sys.stderr)
+        resolutions = resolve_findings(findings, use_mock=args.mock_ai)
+        existing_report["ai_resolutions"] = resolutions
+        existing_report["re_resolved_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        with open(report_path, "w", encoding="utf-8") as f:
+            json.dump(existing_report, f, indent=2, ensure_ascii=False)
+        print(f"AI resolutions updated in: {report_path}", file=sys.stderr)
+        sys.exit(0)
+
+
     print(f"Starting analysis on target: {args.target}", file=sys.stderr)
     
     try:
