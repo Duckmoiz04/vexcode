@@ -414,6 +414,7 @@ app.get('/api/report/:project/:id', (req, res) => {
     const reportContent = JSON.parse(readFileSync(reportPath, 'utf8'));
     reportContent._id = reportId;
     reportContent._project = projectName;
+    reportContent._savedAt = reportPath;
 
     res.json(reportContent);
   } catch (error) {
