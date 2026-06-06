@@ -420,7 +420,23 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                   const remediationLines = resolution?.remediation_code
                     ? resolution.remediation_code.split(/\r?\n/)
                     : [];
-                  return fileContent.split(/\r?\n/).map((line, idx) => {
+
+                  // Compute target line's leading indentation so we can align the
+                  // AI's snippet to the same column as the buggy line.
+                  const allFileLines = fileContent.split(/\r?\n/);
+                  const targetLineContent = allFileLines[finding.line - 1] || '';
+                  const targetIndent = (targetLineContent.match(/^(\s*)/) || ['', ''])[0];
+                  const adjustedRemediationLines = remediationLines.map((line: string) => {
+                    if (line.length === 0) return line;
+                    // If line already starts with the target indent, leave it alone
+                    // (e.g. AI preserved deeper indentation for sub-statements).
+                    if (targetIndent && !line.startsWith(targetIndent)) {
+                      return targetIndent + line;
+                    }
+                    return line;
+                  });
+
+                  return allFileLines.map((line, idx) => {
                     const lineNum = idx + 1;
                     const isTarget = lineNum === finding.line;
 
@@ -488,17 +504,17 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         {isTarget && resolution?.remediation_code !== undefined && (
                           (() => {
                             const isDeletion = !resolution.remediation_code || resolution.remediation_code.trim() === '';
-                            const validLines = isDeletion ? [] : remediationLines;
+                            const validLines = isDeletion ? [] : adjustedRemediationLines;
                             return (
                               <div className="w-full flex flex-col my-1 -mx-2">
                                 {isDeletion ? (
                                   /* Deletion: show a single strikethrough "line removed" indicator */
                                   <div className="group flex items-center w-full py-1.5 px-2 bg-text-tertiary/10 border-l-3 border-text-tertiary hover:bg-text-tertiary/15 transition-colors text-text-tertiary">
+                                    <div className="flex items-center justify-end w-12 shrink-0 select-none text-right pr-3 font-semibold border-r border-card-border/20 mr-3 text-text-tertiary/40 text-[10px]">
+                                      {lineNum}
+                                    </div>
                                     <div className="flex items-center justify-end w-4 shrink-0 select-none text-right pr-1 font-extrabold text-text-tertiary text-[11px]">
                                       −
-                                    </div>
-                                    <div className="flex items-center justify-end w-8 shrink-0 select-none text-right pr-2 font-semibold border-r border-card-border/20 mr-2 text-text-tertiary/40 text-[10px]">
-                                      {lineNum}
                                     </div>
                                     <div className="flex-1 pl-1 select-none italic line-through decoration-text-tertiary/60 text-[10.5px]">
                                       ── line removed ──
@@ -511,11 +527,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                                       key={`rem-${remIdx}`}
                                       className="group flex items-start w-full py-1 px-2 bg-success/10 border-l-3 border-success hover:bg-success/15 transition-colors text-success"
                                     >
+                                      <div className="flex items-center justify-end w-12 shrink-0 select-none text-right pr-3 font-semibold border-r border-card-border/20 mr-3 text-text-tertiary/40 text-[10px]">
+                                        {remIdx === 0 ? lineNum : ''}
+                                      </div>
                                       <div className="flex items-center justify-end w-4 shrink-0 select-none text-right pr-1 font-extrabold text-success text-[11px]">
                                         +
-                                      </div>
-                                      <div className="flex items-center justify-end w-8 shrink-0 select-none text-right pr-2 font-semibold border-r border-card-border/20 mr-2 text-text-tertiary/40 text-[10px]">
-                                        {remIdx === 0 ? lineNum : ''}
                                       </div>
                                       <div className="flex-1 whitespace-pre pl-1 select-text text-text-primary font-medium">
                                         {remLine || ' '}
