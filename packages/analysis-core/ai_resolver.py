@@ -75,8 +75,8 @@ MOCK_AI_RESOLUTIONS = {
 }
 
 MAX_CODE_CHARS = 3000         # Max characters of file/code content sent to AI per request
-MAX_NAMING_AUDIT_FILES = 10  # Max files to audit per analysis run
-MAX_RESOLVE_FINDINGS = 10    # Max unique rules sent to AI in one resolve_findings call
+MAX_NAMING_AUDIT_FILES = 3   # Max files to audit per analysis run
+MAX_RESOLVE_FINDINGS = 5     # Max unique rules sent to AI in one resolve_findings call
 
 def safe_json_parse(text: str) -> Any:
     """
@@ -128,17 +128,18 @@ def parse_api_response(text: str) -> Dict[str, Any]:
             pass
     raise ValueError(f"Cannot parse API response body: {text[:200]}")
 
-NAMING_AUDIT_SLEEP = 3.0      # Seconds between naming audit requests to avoid 429
+NAMING_AUDIT_SLEEP = 8.0      # Seconds between naming audit requests to avoid 429
 NAMING_AUDIT_MAX_RETRIES = 2  # Max retries on 429
 
 def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> requests.Response:
     """
     POST with exponential-backoff retry on 429 Too Many Requests.
+    Base wait is 15s (covers typical 30-60s rate limit windows).
     """
     for attempt in range(NAMING_AUDIT_MAX_RETRIES + 1):
         response = requests.post(url, headers=headers, json=payload, timeout=timeout)
         if response.status_code == 429 and attempt < NAMING_AUDIT_MAX_RETRIES:
-            wait = 5.0 * (2 ** attempt)  # 5s, 10s
+            wait = 15.0 * (2 ** attempt)  # 15s, 30s
             print(f"429 Too Many Requests — retrying in {wait:.0f}s (attempt {attempt + 1}/{NAMING_AUDIT_MAX_RETRIES})...", file=sys.stderr)
             time.sleep(wait)
             continue
