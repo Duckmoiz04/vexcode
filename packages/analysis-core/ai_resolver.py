@@ -231,8 +231,9 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
         "- NO 'Before:'/'After:' comments, NO explanatory comments\n"
         "- A clean, standalone snippet that directly replaces the vulnerable pattern\n"
         "- Example for a RegExp issue: const safeRegex = /hardcoded_pattern/;\n"
+        "IMPORTANT: Use the 'Rule ID alias' value (e.g., r0) as the JSON key, NOT the full rule name.\n"
         "Respond ONLY with raw JSON (no markdown fences) in this exact shape:\n"
-        "{\"<rule_id>\": {\"suggestion\": \"one sentence: what to change and why\", "
+        "{\"<alias>\": {\"suggestion\": \"one sentence: what to change and why\", "
         "\"remediation_code\": \"ONLY the fixed replacement code\"}}"
     )
 
@@ -240,8 +241,13 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
 
     for idx, item in enumerate(unique_findings):
         rule_id = item["rule_id"]
+        # Use a short alias (r0, r1, ...) so the model doesn't truncate the JSON key
+        # when the rule_id is very long (e.g., 75+ chars like detect-non-literal-regexp...)
+        alias = f"r{idx}"
+
         user_prompt = (
-            f"Rule ID: {rule_id}\n"
+            f"Rule ID alias: {alias}\n"
+            f"Full Rule: {rule_id}\n"
             f"File: {item['file']} (Line {item['line']})\n"
             f"Message: {item['message']}\n"
         )
@@ -273,7 +279,10 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
             content = response_data["choices"][0]["message"]["content"].strip()
             result = safe_json_parse(content)
             if isinstance(result, dict):
-                resolutions.update(result)
+                # Remap alias key back to the real rule_id
+                for key, value in result.items():
+                    real_key = rule_id if key == alias else key
+                    resolutions[real_key] = value
             print(f"  [{idx+1}/{len(unique_findings)}] Resolved: {rule_id}", file=sys.stderr)
         except Exception as e:
             print(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}", file=sys.stderr)
