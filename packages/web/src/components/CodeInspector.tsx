@@ -466,7 +466,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                           }`}
                         >
                           {/* Line Number / Indicator Gutter */}
-                          <div className="flex items-center justify-end w-12 shrink-0 select-none text-right pr-3 font-semibold border-r border-card-border/20 mr-3 gap-1.5">
+                          <div className="flex items-center justify-end shrink-0 select-none pr-5 mr-5 font-semibold text-text-tertiary/40 group-hover:text-text-tertiary text-[10.5px]" style={{ minWidth: '3.5em' }}>
                             {hasFinding && (
                               <button
                                 onClick={() => {
@@ -478,7 +478,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                                   }
                                 }}
                                 title={`Line ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
-                                className={`h-4 w-4 rounded-full flex items-center justify-center text-[9px] font-extrabold cursor-pointer border ${
+                                className={`h-3.5 w-3.5 rounded-full flex items-center justify-center text-[8.5px] font-extrabold cursor-pointer border mr-1 ${
                                   lineSeverity === 'error'
                                     ? 'bg-danger/20 border-danger/60 text-danger hover:bg-danger/40'
                                     : lineSeverity === 'warning'
@@ -489,13 +489,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                                 {isTarget ? '!' : '•'}
                               </button>
                             )}
-                            <span className="text-text-tertiary/40 group-hover:text-text-tertiary text-[10px] font-medium pr-1">
-                              {lineNum}
-                            </span>
+                            <span className="font-medium tabular-nums">{lineNum}</span>
                           </div>
 
                           {/* Code Content */}
-                          <div className="flex-1 whitespace-pre pl-1 select-text">
+                          <div className="flex-1 whitespace-pre select-text">
                             {line || ' '}
                           </div>
                         </div>
@@ -510,13 +508,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                                 {isDeletion ? (
                                   /* Deletion: show a single strikethrough "line removed" indicator */
                                   <div className="group flex items-center w-full py-1.5 px-2 bg-text-tertiary/10 border-l-3 border-text-tertiary hover:bg-text-tertiary/15 transition-colors text-text-tertiary">
-                                    <div className="flex items-center justify-end w-12 shrink-0 select-none text-right pr-3 font-semibold border-r border-card-border/20 mr-3 text-text-tertiary/40 text-[10px]">
-                                      {lineNum}
+                                    <div className="flex items-center justify-end shrink-0 select-none pr-5 mr-5 text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
+                                      <span className="font-medium">{lineNum}</span>
+                                      <span className="font-extrabold ml-0.5">−</span>
                                     </div>
-                                    <div className="flex items-center justify-end w-4 shrink-0 select-none text-right pr-1 font-extrabold text-text-tertiary text-[11px]">
-                                      −
-                                    </div>
-                                    <div className="flex-1 pl-1 select-none italic line-through decoration-text-tertiary/60 text-[10.5px]">
+                                    <div className="flex-1 select-none italic line-through decoration-text-tertiary/60 text-[10.5px]">
                                       ── line removed ──
                                     </div>
                                   </div>
@@ -527,13 +523,17 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                                       key={`rem-${remIdx}`}
                                       className="group flex items-start w-full py-1 px-2 bg-success/10 border-l-3 border-success hover:bg-success/15 transition-colors text-success"
                                     >
-                                      <div className="flex items-center justify-end w-12 shrink-0 select-none text-right pr-3 font-semibold border-r border-card-border/20 mr-3 text-text-tertiary/40 text-[10px]">
-                                        {remIdx === 0 ? lineNum : ''}
+                                      <div className="flex items-center justify-end shrink-0 select-none pr-5 mr-5 text-text-tertiary/40 text-[10.5px] tabular-nums" style={{ minWidth: '3.5em' }}>
+                                        {remIdx === 0 ? (
+                                          <>
+                                            <span className="font-medium">{lineNum}</span>
+                                            <span className="font-extrabold ml-0.5 text-success">+</span>
+                                          </>
+                                        ) : (
+                                          <span className="font-medium invisible">·</span>
+                                        )}
                                       </div>
-                                      <div className="flex items-center justify-end w-4 shrink-0 select-none text-right pr-1 font-extrabold text-success text-[11px]">
-                                        +
-                                      </div>
-                                      <div className="flex-1 whitespace-pre pl-1 select-text text-text-primary font-medium">
+                                      <div className="flex-1 whitespace-pre select-text text-text-primary font-medium">
                                         {remLine || ' '}
                                       </div>
                                     </div>
