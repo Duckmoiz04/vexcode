@@ -134,7 +134,8 @@ DATN2/
     skills/           -- Specialized skills (vc-setup, vc-update, etc.)
   .codex/             -- Codex IDE configurations and parity definitions
   packages/
-    cli-global/       -- Global Node.js CLI tool entrypoint and Web UI server
+    cli-global/       -- Global Node.js CLI tool entrypoint and Express server
+    web/              -- React 19 + Tailwind v4 frontend (build output → cli-global/src/public/)
   process/            -- The RIPER-5 process directory
     context/          -- Durable repository knowledge (all-context, tests, planning)
     development-protocols/ -- Developer guidelines and workflow protocols
@@ -154,8 +155,8 @@ DATN2/
 - **Static Security Scanner:** Semgrep (static security checks)
 - **Knowledge Graph:** GitNexus (AST Knowledge Graph generator)
 - **AI Model Proxy/Router:** 9router (multi-model proxy for processing findings)
-- **Frontend UI:** Fast, lightweight, local Web UI with premium look-and-feel (custom CSS, HTML/JS, glassmorphism)
-- **CLI & Local Server:** Node.js (command orchestration, local server, and file-apply endpoint)
+- **Frontend UI:** React 19 + Tailwind v4 + TypeScript 5 (built with Vite 6, served by Express)
+- **CLI & Local Server:** Node.js ESM (command orchestration, Express server, and file-apply endpoint)
 - **Analysis Engine:** Python Core (runs AST knowledge graph build, Semgrep integration, and AI logic)
 
 ## Key Patterns and Conventions
@@ -194,7 +195,27 @@ DATN2/
 
 ## Scan Metadata
 
-- Generated: 2026-05-31T10:23:00Z
-- HEAD: a1db22308b3715380202ff621297d645be99cc2f
+- Generated: 2026-06-06T17:20:00Z
+- HEAD: 8d7025ab60c589152fc47ee88fb7e81a476c93ab
 - Mode: refresh
-- Package manager: none
+- Package manager: npm (workspaces: packages/cli-global, packages/web)
+
+## Current Project Status (2026-06-06)
+
+### ✅ Hoàn thành (6/6 phase)
+- **Phase 1-5**: AI Code Review core — CLI, Express server, Python analysis engine, AST enrichment, AI resolver, Web UI, E2E hardening
+- **Phase 6**: React 19 + Tailwind v4 migration — split-workspace `packages/web/`, Vite 6 build → `cli-global/src/public/`
+
+### Tiến độ hiện tại
+- Tất cả 6 phase **✅ VERIFIED**
+- Build web: **pass** (1589 modules, 2.95s)
+- Backend tests: **23/23 pass**
+- Không có active plan nào đang triển khai
+- Dự án đang ở trạng thái **hoàn thiện, chờ feature mới hoặc cải tiến**
+
+### Cấu trúc packages hiện tại
+| Package | Vai trò | Tech |
+|---|---|---|
+| `packages/cli-global/` | CLI binary + Express server | Node.js ESM, Express 4, Vitest |
+| `packages/web/` | React frontend UI | React 19, Tailwind v4, Vite 6, TypeScript 5 |
+| `packages/analysis-core/` | Python analysis engine | Python 3.12, Semgrep, GitNexus, 9router AI |

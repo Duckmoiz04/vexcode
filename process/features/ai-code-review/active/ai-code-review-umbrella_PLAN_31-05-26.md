@@ -83,6 +83,7 @@ For the overall AI Code Review program:
 | **Phase 3** | AST Graph & AI Resolving | GitNexus AST integration & AI Prompt Context Construction | ✅ VERIFIED |
 | **Phase 4** | Web UI Dashboard | HTML/JS local glassmorphic dashboard UI | ✅ VERIFIED |
 | **Phase 5** | Integration & Hardening | CLI wrapper command mapping & E2E verification | ✅ VERIFIED |
+| **Phase 6** | React + Tailwind v4 Migration | Split UI into `packages/web`, migrate to React 19, Tailwind v4, TypeScript | ✅ VERIFIED |
 
 ### Phase 1: Foundation Setup (Status: ✅ VERIFIED)
 - **Objective**: Establish separate development environments for Node.js CLI and Python Analysis Core.
@@ -112,6 +113,11 @@ For the overall AI Code Review program:
 - **Done**: Enhanced CLI subcommand parsing, implemented cross-platform browser auto-opening upon starting serve/ui, added E2E integration test suite, and fixed Vitest timeout issues for Windows subprocess compatibility.
 - **Archived Plan**: [completed_phase-05-hardening_PLAN_31-05-26.md](file:///d:/DATN2/process/features/ai-code-review/completed/completed_phase-05-hardening_PLAN_31-05-26.md)
 - **Report Path**: `process/features/ai-code-review/reports/phase-05-hardening_REPORT.md`
+
+### Phase 6: React + Tailwind v4 Migration (Status: ✅ VERIFIED)
+- **Objective**: Tách UI sang React 19 + Tailwind v4, split-workspace với `packages/web/`, build output vào `packages/cli-global/src/public/`.
+- **Done**: Tạo `packages/web/` với React 19, Tailwind v4, Vite 6, TypeScript 5. Port toàn bộ components (Header, Sidebar, CodeInspector, FindingsList, SettingsDrawer, FilterPanel, ScanModal, DashboardPage, IssuesPage, OnboardingPage). Build + test 23/23 pass.
+- **Archived Plan**: [completed_react-migration_PLAN_04-06-26.md](file:///d:/DATN2/process/general-plans/completed/completed_react-migration_PLAN_04-06-26.md)
 
 ---
 

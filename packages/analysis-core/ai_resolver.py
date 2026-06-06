@@ -78,6 +78,12 @@ MAX_CODE_CHARS = 3000         # Max characters of file/code content sent to AI p
 MAX_NAMING_AUDIT_FILES = 3   # Max files to audit per analysis run
 MAX_RESOLVE_FINDINGS = 5     # Max unique rules sent to AI in one resolve_findings call
 
+def get_int_env(name: str, default: int) -> int:
+    try:
+        return int(os.getenv(name, str(default)))
+    except (TypeError, ValueError):
+        return default
+
 def safe_json_parse(text: str) -> Any:
     """
     Robustly parse JSON from AI response text.
@@ -128,23 +134,47 @@ def parse_api_response(text: str) -> Dict[str, Any]:
             pass
     raise ValueError(f"Cannot parse API response body: {text[:200]}")
 
-NAMING_AUDIT_SLEEP = 8.0      # Seconds between naming audit requests to avoid 429
-NAMING_AUDIT_MAX_RETRIES = 2  # Max retries on 429
+NAMING_AUDIT_SLEEP = float(os.getenv("AI_REQUEST_COOLDOWN_SECONDS", "8.0"))
+AI_MAX_RETRIES = get_int_env("AI_MAX_RETRIES", 2)
+AI_RETRY_BASE_WAIT_SECONDS = float(os.getenv("AI_RETRY_BASE_WAIT_SECONDS", "15.0"))
+AI_RESOLVE_TIMEOUT_SECONDS = get_int_env("AI_RESOLVE_TIMEOUT_SECONDS", 90)
+AI_NAMING_TIMEOUT_SECONDS = get_int_env("AI_NAMING_TIMEOUT_SECONDS", 90)
+AI_RESOLVE_MAX_TOKENS = get_int_env("AI_RESOLVE_MAX_TOKENS", get_int_env("AI_MAX_TOKENS", 512))
 
 def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> requests.Response:
     """
-    POST with exponential-backoff retry on 429 Too Many Requests.
-    Base wait is 15s (covers typical 30-60s rate limit windows).
+    POST with exponential-backoff retry on rate limits and slow local routers.
+    Local 9router/model backends can accept the request and then exceed the
+    read timeout, so timeout/connectivity errors need the same bounded retry
+    treatment as 429 responses.
     """
-    for attempt in range(NAMING_AUDIT_MAX_RETRIES + 1):
-        response = requests.post(url, headers=headers, json=payload, timeout=timeout)
-        if response.status_code == 429 and attempt < NAMING_AUDIT_MAX_RETRIES:
-            wait = 15.0 * (2 ** attempt)  # 15s, 30s
-            print(f"429 Too Many Requests — retrying in {wait:.0f}s (attempt {attempt + 1}/{NAMING_AUDIT_MAX_RETRIES})...", file=sys.stderr)
+    last_error = None
+    for attempt in range(AI_MAX_RETRIES + 1):
+        try:
+            response = requests.post(url, headers=headers, json=payload, timeout=timeout)
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+            last_error = exc
+            if attempt < AI_MAX_RETRIES:
+                wait = AI_RETRY_BASE_WAIT_SECONDS * (2 ** attempt)
+                print(
+                    f"AI request failed ({exc.__class__.__name__}) — retrying in {wait:.0f}s "
+                    f"(attempt {attempt + 1}/{AI_MAX_RETRIES})...",
+                    file=sys.stderr
+                )
+                time.sleep(wait)
+                continue
+            raise
+
+        if response.status_code == 429 and attempt < AI_MAX_RETRIES:
+            wait = AI_RETRY_BASE_WAIT_SECONDS * (2 ** attempt)
+            print(f"429 Too Many Requests — retrying in {wait:.0f}s (attempt {attempt + 1}/{AI_MAX_RETRIES})...", file=sys.stderr)
             time.sleep(wait)
             continue
         return response
-    return response  # return last response after exhausting retries
+
+    if last_error:
+        raise last_error
+    return response
 
 def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     """
@@ -269,11 +299,11 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
                 {"role": "user", "content": user_prompt}
             ],
             "temperature": 0.1,
-            "max_tokens": 512
+            "max_tokens": AI_RESOLVE_MAX_TOKENS
         }
 
         try:
-            response = post_with_retry(url, headers, payload, timeout=30)
+            response = post_with_retry(url, headers, payload, timeout=AI_RESOLVE_TIMEOUT_SECONDS)
             response.raise_for_status()
             response_data = parse_api_response(response.text)
             content = response_data["choices"][0]["message"]["content"].strip()
@@ -288,7 +318,7 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
             print(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}", file=sys.stderr)
             resolutions[rule_id] = (
                 MOCK_AI_RESOLUTIONS.get(rule_id) or {
-                    "suggestion": f"Vulnerability fix suggestion for {rule_id}.",
+                    "suggestion": f"AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection or choose a faster model.",
                     "remediation_code": f"# Remediation code for {rule_id}"
                 }
             )
@@ -398,7 +428,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
             }
             
             url = f"{base_url.rstrip('/')}/chat/completions"
-            response = post_with_retry(url, headers, payload, timeout=60)
+            response = post_with_retry(url, headers, payload, timeout=AI_NAMING_TIMEOUT_SECONDS)
             response.raise_for_status()
 
             # Use parse_api_response on raw response text to handle 9router trailing

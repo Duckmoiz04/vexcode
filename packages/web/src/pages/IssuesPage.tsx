@@ -1,4 +1,5 @@
 import React from 'react';
+import { Loader2, Wand2 } from 'lucide-react';
 import { FilterPanel } from '../components/FilterPanel';
 import { FindingsList } from '../components/FindingsList';
 import { CodeInspector } from '../components/CodeInspector';
@@ -29,6 +30,8 @@ interface IssuesPageProps {
   searchedAndFilteredFindings: any[];
   config: any;
   onApplyFix: (finding: any, remediationCode: string) => Promise<boolean>;
+  onReResolve: () => Promise<void>;
+  isReResolving: boolean;
   onSelectFindingIndex: (index: number | null) => void;
 }
 
@@ -53,6 +56,8 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
   searchedAndFilteredFindings,
   config,
   onApplyFix,
+  onReResolve,
+  isReResolving,
   onSelectFindingIndex,
 }) => {
   if (!currentReport || !currentReport.findings) return null;
@@ -77,16 +82,42 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
         />
 
         {/* Right Column: List of Findings */}
-        <FindingsList
-          searchedAndFilteredFindings={searchedAndFilteredFindings}
-          currentReport={currentReport}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          onSelectFinding={(file, index) => {
-            setSelectedFilePath(file);
-            setSelectedFindingIndex(index);
-          }}
-        />
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="shrink-0 flex items-center justify-between gap-4 px-4 py-3 bg-bg-secondary border-b border-card-border/55">
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-text-primary">
+                Code & Issues
+              </h2>
+              <p className="mt-1 text-[11px] text-text-tertiary truncate">
+                Re-run AI suggestions for this saved scan without scanning the project again.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={onReResolve}
+              disabled={isReResolving || !currentReport._savedAt || currentReport.findings.length === 0}
+              className="flex h-9 shrink-0 items-center gap-2 rounded-lg border border-warning/35 bg-warning/12 px-3 text-xs font-semibold text-warning transition-all hover:border-warning/60 hover:bg-warning/20 disabled:cursor-not-allowed disabled:opacity-50"
+              title="Ask AI to regenerate suggestions for the existing report"
+            >
+              {isReResolving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Wand2 className="h-4 w-4" />
+              )}
+              <span>{isReResolving ? 'Asking AI...' : 'Ask AI Again'}</span>
+            </button>
+          </div>
+          <FindingsList
+            searchedAndFilteredFindings={searchedAndFilteredFindings}
+            currentReport={currentReport}
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            onSelectFinding={(file, index) => {
+              setSelectedFilePath(file);
+              setSelectedFindingIndex(index);
+            }}
+          />
+        </div>
       </div>
     );
   }

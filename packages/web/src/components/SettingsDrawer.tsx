@@ -63,6 +63,10 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   const [modelsList, setModelsList] = useState<any[]>([]);
   const [temperature, setTemperature] = useState(0.1);
   const [maxTokens, setMaxTokens] = useState(4096);
+  const [resolveTimeout, setResolveTimeout] = useState(90);
+  const [namingTimeout, setNamingTimeout] = useState(90);
+  const [maxRetries, setMaxRetries] = useState(2);
+  const [requestCooldown, setRequestCooldown] = useState(8);
   const [semgrepRules, setSemgrepRules] = useState('');
   
   const [testStatus, setTestStatus] = useState<{ text: string; type: 'success' | 'error' | 'loading' | 'idle' }>({
@@ -89,7 +93,11 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
 
     setTemperature(parseFloat(initialConfig.AI_TEMPERATURE) || 0.1);
     setMaxTokens(parseInt(initialConfig.AI_MAX_TOKENS) || 4096);
-    setSemgrepRules(initialConfig.SEMKREP_RULES_PATH || '');
+    setResolveTimeout(parseInt(initialConfig.AI_RESOLVE_TIMEOUT_SECONDS) || 90);
+    setNamingTimeout(parseInt(initialConfig.AI_NAMING_TIMEOUT_SECONDS) || 90);
+    setMaxRetries(parseInt(initialConfig.AI_MAX_RETRIES) || 2);
+    setRequestCooldown(parseFloat(initialConfig.AI_REQUEST_COOLDOWN_SECONDS) || 8);
+    setSemgrepRules(initialConfig.SEMGREP_RULES_PATH || '');
     setTestStatus({ text: '', type: 'idle' });
   }, [initialConfig, isOpen]);
 
@@ -172,6 +180,10 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       AI_PROVIDER: provider,
       AI_TEMPERATURE: temperature.toString(),
       AI_MAX_TOKENS: maxTokens.toString(),
+      AI_RESOLVE_TIMEOUT_SECONDS: resolveTimeout.toString(),
+      AI_NAMING_TIMEOUT_SECONDS: namingTimeout.toString(),
+      AI_MAX_RETRIES: maxRetries.toString(),
+      AI_REQUEST_COOLDOWN_SECONDS: requestCooldown.toString(),
     };
 
     config[`${provider.toUpperCase()}_API_KEY`] = apiKey;
@@ -358,6 +370,57 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                       step="256"
                       className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
                     />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Resolve Timeout</label>
+                    <input
+                      type="number"
+                      value={resolveTimeout}
+                      onChange={(e) => setResolveTimeout(parseInt(e.target.value))}
+                      min="15"
+                      max="600"
+                      step="15"
+                      className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                    />
+                    <span className="text-[8px] text-text-tertiary block mt-0.5">Seconds per finding</span>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Naming Timeout</label>
+                    <input
+                      type="number"
+                      value={namingTimeout}
+                      onChange={(e) => setNamingTimeout(parseInt(e.target.value))}
+                      min="15"
+                      max="600"
+                      step="15"
+                      className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                    />
+                    <span className="text-[8px] text-text-tertiary block mt-0.5">Seconds per audit file</span>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Max Retries</label>
+                    <input
+                      type="number"
+                      value={maxRetries}
+                      onChange={(e) => setMaxRetries(parseInt(e.target.value))}
+                      min="0"
+                      max="5"
+                      step="1"
+                      className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Cooldown</label>
+                    <input
+                      type="number"
+                      value={requestCooldown}
+                      onChange={(e) => setRequestCooldown(parseFloat(e.target.value))}
+                      min="0"
+                      max="120"
+                      step="1"
+                      className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                    />
+                    <span className="text-[8px] text-text-tertiary block mt-0.5">Seconds between AI calls</span>
                   </div>
                 </div>
               </div>

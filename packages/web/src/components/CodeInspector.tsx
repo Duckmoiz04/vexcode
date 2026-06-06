@@ -38,28 +38,21 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const [diffRemediation, setDiffRemediation] = useState<string[]>([]);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInput, setChatInput] = useState('');
+  const [viewMode, setViewMode] = useState<'full' | 'diff'>('full');
+  const codeContainerRef = useRef<HTMLDivElement>(null);
   const [isChatLoading, setIsChatLoading] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // New state & refs for Full File Viewer & Auto-scrolling
-  const [viewMode, setViewMode] = useState<'full' | 'diff'>('full');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const activeLineRef = useRef<HTMLDivElement>(null);
-  const codeContainerRef = useRef<HTMLPreElement>(null);
 
   const resolution = aiResolutions?.[finding.rule_id];
 
   const fileFindings = allFindings.filter(
     (f: any) => f.file.replace(/\\/g, '/') === finding.file.replace(/\\/g, '/')
   );
-
-  // Keep viewMode as 'full' if there's no remediation code for the selected finding
-  useEffect(() => {
-    if (!resolution?.remediation_code) {
-      setViewMode('full');
-    }
-  }, [finding, resolution]);
 
   // Helper to strip path prefix
   const getRelativePath = (absolutePath: string) => {
@@ -143,7 +136,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
       }, 150);
       return () => clearTimeout(timer);
     }
-  }, [finding, fileContent, viewMode]);
+  }, [finding, fileContent]);
 
   // Scroll chat to bottom
   useEffect(() => {
@@ -462,7 +455,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             </div>
 
             {viewMode === 'full' ? (
-              <pre
+              <div
                 ref={codeContainerRef}
                 className="p-3 overflow-auto text-[10.5px] font-mono leading-relaxed max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-black/95 border border-card-border/40 rounded-xl relative flex flex-col shadow-inner"
               >
@@ -569,7 +562,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 ) : (
                   <div className="text-center py-8 text-text-tertiary italic">Loading file content...</div>
                 )}
-              </pre>
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 min-w-0">
                 {/* Original Panel */}
@@ -577,7 +570,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                   <div className="bg-bg-tertiary/60 px-3 py-1.5 text-[10px] font-semibold text-text-secondary border-b border-card-border/60 uppercase">
                     Original (Line {finding.line})
                   </div>
-                  <pre className="p-3 overflow-x-auto text-[10px] font-mono leading-normal flex-1 flex flex-col max-h-64 scrollbar-thin">
+                  <div className="p-3 overflow-x-auto text-[10px] font-mono leading-normal flex-1 flex flex-col max-h-64 scrollbar-thin">
                     {diffOriginal.map((line, i) => {
                       const lineNum = finding.line - 5 + i;
                       const isTarget = lineNum === finding.line;
@@ -597,7 +590,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         </div>
                       );
                     })}
-                  </pre>
+                  </div>
                 </div>
 
                 {/* Remediation Panel */}
@@ -605,7 +598,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                   <div className="bg-bg-tertiary/60 px-3 py-1.5 text-[10px] font-semibold text-text-secondary border-b border-card-border/60 uppercase">
                     Remediation
                   </div>
-                  <pre className="p-3 overflow-x-auto text-[10px] font-mono leading-normal flex-1 flex flex-col max-h-64 scrollbar-thin">
+                  <div className="p-3 overflow-x-auto text-[10px] font-mono leading-normal flex-1 flex flex-col max-h-64 scrollbar-thin">
                     {diffRemediation.map((line, i) => {
                       const targetLine = finding.line - 1;
                       const contextLines = 5;
@@ -627,7 +620,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         </div>
                       );
                     })}
-                  </pre>
+                  </div>
                 </div>
               </div>
             )}

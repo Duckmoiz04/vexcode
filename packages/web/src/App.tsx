@@ -184,6 +184,7 @@ export const App: React.FC = () => {
 
   // Scanning status
   const [isScanning, setIsScanning] = useState(false);
+  const [isReResolving, setIsReResolving] = useState(false);
   const [scanStatus, setScanStatus] = useState('Initializing scan...');
   const eventSourceRef = useRef<EventSource | null>(null);
 
@@ -460,6 +461,45 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleReResolve = async () => {
+    if (!currentReport?._savedAt) {
+      showToast('Current report file path is missing. Reload the report and try again.', 'error');
+      return;
+    }
+    if (!currentReport.findings || currentReport.findings.length === 0) {
+      showToast('No findings found in the current report.', 'error');
+      return;
+    }
+
+    setIsReResolving(true);
+    showToast('Asking AI to review existing findings...');
+
+    try {
+      const response = await fetch('/api/re-resolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reportPath: currentReport._savedAt,
+          mockAi: false,
+        }),
+      });
+      const data = await response.json();
+
+      if (data.success && data.report) {
+        setCurrentReport(data.report);
+        setSelectedFindingIndex(null);
+        await loadHistory(data.report._project || currentProject, false);
+        showToast('AI suggestions updated for this report.');
+      } else {
+        showToast(data.error || 'AI re-analysis failed', 'error');
+      }
+    } catch (err: any) {
+      showToast(`AI re-analysis failed: ${err.message}`, 'error');
+    } finally {
+      setIsReResolving(false);
+    }
+  };
+
   // Triggers selection logic from Overview Dashboard: Top Affected File Selection
   const handleSelectFilePath = (path: string | null) => {
     setSelectedFilePath(path);
@@ -511,6 +551,7 @@ export const App: React.FC = () => {
         onSelectProject={handleSelectProject}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onStartScan={(fastScan) => handleStartScan('', false, false, fastScan)}
+        onReResolve={handleReResolve}
         reports={reports}
         currentReportId={currentReportId}
         onSelectReportId={setCurrentReportId}
@@ -606,6 +647,8 @@ export const App: React.FC = () => {
                     searchedAndFilteredFindings={searchedAndFilteredFindings}
                     config={config}
                     onApplyFix={handleApplyFix}
+                    onReResolve={handleReResolve}
+                    isReResolving={isReResolving}
                     onSelectFindingIndex={handleSelectFindingIndex}
                   />
                 )}

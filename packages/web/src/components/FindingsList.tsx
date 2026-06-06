@@ -129,18 +129,31 @@ export const FindingsList: React.FC<FindingsListProps> = ({
                     }`}>
                       {cat === 'security' ? '🛡️ Security' : cat === 'maintainability' ? '⚙️ Maintainability' : cat === 'architecture' ? '🏗️ Architecture' : '🐞 Quality'}
                     </span>
-                    <span className="text-[10px] text-text-tertiary font-mono font-semibold">
-                      {f.file.split(/[\\/]/).pop()}:{f.line}
-                    </span>
+                    {(() => {
+                      const getDisplayPath = (filePath: string, targetPath?: string) => {
+                        if (!targetPath) return filePath.split(/[\\/]/).pop() || filePath;
+                        const abs = filePath.replace(/\\/g, '/');
+                        const target = targetPath.replace(/\\/g, '/');
+                        if (abs.startsWith(target)) {
+                          let rel = abs.slice(target.length);
+                          if (rel.startsWith('/')) rel = rel.slice(1);
+                          return rel || '.';
+                        }
+                        return abs;
+                      };
+                      const displayPath = getDisplayPath(f.file, currentReport?.target_path);
+                      return (
+                        <span className="text-[10px] text-text-tertiary font-mono font-semibold" title={f.file}>
+                          {displayPath}:{f.line}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <p className="text-xs text-text-secondary select-text font-normal leading-relaxed line-clamp-2">
                     {f.message}
                   </p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0 self-end md:self-center font-mono text-xs">
-                  <span className="text-[10px] text-text-tertiary bg-bg-secondary px-2.5 py-0.5 rounded border border-card-border/40 truncate max-w-xs hidden lg:inline-block">
-                    {f.file.replace(/\\/g, '/').replace(currentReport.target_path?.replace(/\\/g, '/') || '', '').replace(/^\//, '')}
-                  </span>
                   <span className={`text-[10px] px-2.5 py-0.5 rounded border font-semibold font-sans ${
                     isApplied
                       ? 'bg-success/15 border-success/35 text-success'
