@@ -57,7 +57,7 @@ const customSyntaxTheme: Record<string, React.CSSProperties> = {
     background: 'transparent',
     margin: 0,
     padding: 0,
-    fontSize: '12px',
+    fontSize: '13px',
     lineHeight: '1.5',
     fontFamily: '"JetBrains Mono", "Fira Code", monospace',
   },
@@ -65,6 +65,8 @@ const customSyntaxTheme: Record<string, React.CSSProperties> = {
     ...(vscDarkPlus['code[class*="language-"]'] as Record<string, React.CSSProperties>),
     background: 'transparent',
     fontFamily: '"JetBrains Mono", "Fira Code", monospace',
+    fontSize: '13px',
+    lineHeight: '1.5',
     display: 'block',
   },
 };
@@ -75,7 +77,8 @@ const renderGutterLine = (
   lineNum: number,
   fileFindings: any[],
   onSelectFindingIndex?: (index: number | null) => void,
-  allFindings: any[] = []
+  allFindings: any[] = [],
+  isTarget?: boolean
 ) => {
   const findingsOnLine = fileFindings.filter((f: any) => f.line === lineNum);
   const hasFinding = findingsOnLine.length > 0;
@@ -87,31 +90,35 @@ const renderGutterLine = (
   }
   return (
     <div
-      className="gutter-cell flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 hover:text-text-tertiary text-xs leading-[1.5] transition-colors"
+      className={`gutter-cell flex items-start pr-10 font-semibold text-text-secondary/80 hover:text-text-tertiary text-[13px] leading-[1.5] transition-colors${isTarget ? ' gutter-cell--target' : ''}`}
       style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}
     >
-      {hasFinding && (
-        <button
-          onClick={() => {
-            if (onSelectFindingIndex && findingsOnLine[0]) {
-              const originalIndex = allFindings.indexOf(findingsOnLine[0]);
-              if (originalIndex !== -1) {
-                onSelectFindingIndex(originalIndex);
+      <div className="flex-shrink-0 w-3.5 mr-1 flex items-start justify-center">
+        {isTarget ? (
+          <span className="font-bold text-[13px] text-danger">−</span>
+        ) : hasFinding ? (
+          <button
+            onClick={() => {
+              if (onSelectFindingIndex && findingsOnLine[0]) {
+                const originalIndex = allFindings.indexOf(findingsOnLine[0]);
+                if (originalIndex !== -1) {
+                  onSelectFindingIndex(originalIndex);
+                }
               }
-            }
-          }}
-          title={`Line ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
-          className={`h-3.5 w-3.5 rounded-full flex items-center justify-center text-[8.5px] font-extrabold cursor-pointer border mr-1 ${
-            lineSeverity === 'error'
-              ? 'bg-danger/20 border-danger/60 text-danger hover:bg-danger/40'
-              : lineSeverity === 'warning'
-              ? 'bg-warning/20 border-warning/60 text-warning hover:bg-warning/40'
-              : 'bg-info/20 border-info/60 text-info hover:bg-info/40'
-          }`}
-        >
-          •
-        </button>
-      )}
+            }}
+            title={`Line ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
+            className={`h-3.5 w-3.5 rounded-full flex items-center justify-center text-[8.5px] font-extrabold cursor-pointer border ${
+              lineSeverity === 'error'
+                ? 'bg-danger/20 border-danger/60 text-danger hover:bg-danger/40'
+                : lineSeverity === 'warning'
+                ? 'bg-warning/20 border-warning/60 text-warning hover:bg-warning/40'
+                : 'bg-info/20 border-info/60 text-info hover:bg-info/40'
+            }`}
+          >
+            •
+          </button>
+        ) : null}
+      </div>
       <span className="font-medium tabular-nums">{lineNum}</span>
     </div>
   );
@@ -508,28 +515,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
               <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
                 Full Code View
               </span>
-              {resolution?.remediation_code !== undefined && (
-                <span className="text-[9px] text-text-tertiary uppercase tracking-wider font-semibold flex items-center gap-1.5">
-                  <span className="text-danger font-bold">-</span>
-                  <span>Original</span>
-                  {resolution.remediation_code.trim() === '' ? (
-                    <>
-                      <span className="text-text-tertiary font-bold">−</span>
-                      <span>Removed</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-success font-bold">+</span>
-                      <span>AI Suggestion</span>
-                    </>
-                  )}
-                </span>
-              )}
             </div>
 
             <div
               ref={codeContainerRef}
-              className="overflow-auto text-xs font-mono leading-[1.5] max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-bg-primary border border-card-border/40 rounded-xl shadow-inner"
+              className="overflow-auto font-mono leading-[1.5] max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-bg-primary border border-card-border/40 rounded-xl shadow-inner"
             >
               {fileContent ? (
                 (() => {
@@ -564,6 +554,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                   const renderChunk = (lines: string[], offsetLineNum: number) => {
                     const text = lines.join('\n');
                     if (!text) return null;
+                    let lineIdx = 0;
                     return (
                       <SyntaxHighlighter
                         key={`chunk-${offsetLineNum}`}
@@ -571,25 +562,13 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         style={customSyntaxTheme as any}
                         showLineNumbers={false}
                         wrapLines={true}
-                        lineProps={(lineNumber) => {
-                          const actualLine = lineNumber + offsetLineNum - 1;
+                        lineProps={() => {
+                          const actualLine = offsetLineNum + lineIdx;
+                          lineIdx++;
                           const isChunkTarget = actualLine === finding.line;
-                          const findingsOnLine = fileFindings.filter((f: any) => f.line === actualLine);
-                          const hasFinding = findingsOnLine.length > 0;
-                          let lineSeverity: 'error' | 'warning' | 'info' = 'info';
-                          if (hasFinding) {
-                            const severities = findingsOnLine.map((f: any) => (f.severity || '').toLowerCase());
-                            if (severities.includes('error')) lineSeverity = 'error';
-                            else if (severities.includes('warning')) lineSeverity = 'warning';
-                          }
-                          const isOtherFinding = hasFinding && !isChunkTarget;
                           return {
                             id: `line-${actualLine}`,
-                            className: [
-                              isChunkTarget ? 'code-line code-line--target' : '',
-                              isOtherFinding ? 'code-line code-line--finding' : '',
-                              hasFinding ? `code-line--${lineSeverity}` : '',
-                            ].filter(Boolean).join(' '),
+                            className: isChunkTarget ? 'code-line code-line--target' : '',
                             style: {
                               display: 'block',
                               minHeight: '1.5em',
@@ -598,7 +577,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                           };
                         }}
                       >
-                        {text + '\n'}
+                        {text}
                       </SyntaxHighlighter>
                     );
                   };
@@ -621,7 +600,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                       {/* Target line + remediation */}
                       <div className="flex" ref={finding.line === 1 ? undefined : activeLineRef as any}>
                         <div className="gutter-col shrink-0">
-                          {renderGutterLine(finding.line, fileFindings, onSelectFindingIndex, allFindings)}
+                          {renderGutterLine(finding.line, fileFindings, onSelectFindingIndex, allFindings, true)}
                         </div>
                         <div className="code-col flex-1 min-w-0">
                           {renderChunk([targetLine], finding.line)}
@@ -637,18 +616,13 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                               className="flex remediation-line"
                             >
                               <div className="gutter-col shrink-0">
-                                {remIdx === 0 ? (
-                                  <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-xs leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
-                                    <span className="font-medium">{finding.line}</span>
-                                    <span className="font-extrabold ml-0.5 text-success">+</span>
-                                  </div>
-                                ) : (
-                                  <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-xs leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
-                                    <span className="font-medium invisible">·</span>
-                                  </div>
-                                )}
+                                <div className="flex items-start pr-10 font-semibold text-text-tertiary/70 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
+                                  <div className="flex-shrink-0 w-3.5 mr-1" />
+                                  <span className={`font-medium ${remIdx !== 0 ? 'invisible' : ''}`}>{finding.line}</span>
+                                  <span className={`font-normal text-[13px] ml-2 text-success ${remIdx !== 0 ? 'invisible' : ''}`}>+</span>
+                                </div>
                               </div>
-                              <div className="code-col flex-1 min-w-0 remediation-text whitespace-pre text-text-primary font-medium pl-1 pr-3 text-xs leading-[1.5]">
+                              <div className="code-col flex-1 min-w-0 remediation-text whitespace-pre text-text-primary pl-1 pr-3 text-[13px] leading-[1.5]">
                                 {remLine || ' '}
                               </div>
                             </div>
@@ -660,12 +634,13 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         <div className="remediation-row">
                           <div className="flex remediation-line">
                             <div className="gutter-col shrink-0">
-                              <div className="flex items-center justify-end pr-5 mr-5 font-semibold text-text-tertiary/40 text-xs leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
+                              <div className="flex items-start pr-10 font-semibold text-text-tertiary/70 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
+                                <div className="flex-shrink-0 w-3.5 mr-1" />
                                 <span className="font-medium">{finding.line}</span>
-                                <span className="font-extrabold ml-0.5">−</span>
+                                <span className="font-normal text-[13px] ml-2">−</span>
                               </div>
                             </div>
-                            <div className="code-col flex-1 min-w-0 remediation-text select-none italic line-through decoration-text-tertiary/60 text-xs leading-[1.5] pl-1 pr-3">
+                            <div className="code-col flex-1 min-w-0 remediation-text select-none italic line-through decoration-text-tertiary/60 text-[13px] leading-[1.5] pl-1 pr-3">
                               ── line removed ──
                             </div>
                           </div>
@@ -678,7 +653,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                           <div className="gutter-col shrink-0">
                             {postLines.map((_, idx) => {
                               const lineNum = finding.line + 1 + idx;
-                              return renderGutterLine(lineNum, fileFindings, onSelectFindingIndex, allFindings);
+                            return renderGutterLine(lineNum, fileFindings, onSelectFindingIndex, allFindings, lineNum === finding.line);
                             })}
                           </div>
                           <div className="code-col flex-1 min-w-0">

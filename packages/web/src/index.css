@@ -153,9 +153,12 @@ body {
    These target the className we attach via lineProps in CodeInspector. */
 .code-line--target {
   background-color: hsla(350, 85%, 55%, 0.15);
-  border-left: 3px solid hsl(350, 85%, 55%);
-  padding-left: 9px !important;
   font-weight: 600;
+}
+.gutter-cell--target {
+  background-color: hsla(350, 85%, 55%, 0.15);
+  border-left: 3px solid hsl(350, 85%, 55%);
+  border-radius: 6px 0 0 6px;
 }
 .code-line--error {
   border-left-color: hsl(350, 85%, 55%) !important;
@@ -170,11 +173,10 @@ body {
 /* Remediation row styling for inline diff blocks */
 .remediation-row {
   background-color: hsla(145, 80%, 45%, 0.1);
-  border-left: 3px solid hsl(145, 80%, 45%);
 }
 .remediation-row:hover {
   background-color: hsla(145, 80%, 45%, 0.15);
 }
 .remediation-line {
-  border-left: 3px solid hsl(145, 80%, 45%);
+  /* no border — gutter placeholder keeps visual consistent */
 }
