@@ -139,7 +139,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     setApiKey(key);
     const baseUrl = initialConfig?.[`${prov.toUpperCase()}_BASE_URL`] || PROVIDERS[prov]?.defaultBaseUrl || '';
     setApiBaseUrl(baseUrl);
-    const savedModel = initialConfig?.[`${prov.toUpperCase()}_MODEL`] || PROVIDERS[prov]?.models[0]?.id || '';
+    const savedModel = initialConfig?.[`${prov.toUpperCase()}_MODEL`] || '';
     setSelectedModel(savedModel);
   };
 
@@ -189,12 +189,6 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     config[`${provider.toUpperCase()}_API_KEY`] = apiKey;
     config[`${provider.toUpperCase()}_BASE_URL`] = apiBaseUrl;
     config[`${provider.toUpperCase()}_MODEL`] = selectedModel;
-
-    if (provider === '9router') {
-      config.NINEROUTER_API_KEY = apiKey;
-      config.NINEROUTER_BASE_URL = apiBaseUrl;
-      config.NINEROUTER_MODEL = selectedModel;
-    }
 
     if (semgrepRules) {
       config.SEMGREP_RULES_PATH = semgrepRules;
@@ -281,11 +275,11 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                 type="text"
                 value={apiBaseUrl}
                 onChange={(e) => setApiBaseUrl(e.target.value)}
-                placeholder="Enter Base URL"
+                placeholder={PROVIDERS[provider]?.defaultBaseUrl || 'Enter Base URL'}
                 className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary"
               />
               <span className="text-[9px] text-text-tertiary block mt-1">
-                Default: {PROVIDERS[provider]?.defaultBaseUrl}
+                Example: {PROVIDERS[provider]?.defaultBaseUrl || ''}
               </span>
             </div>
 

@@ -128,12 +128,10 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
         finding={currentReport.findings[selectedFindingIndex]}
         aiResolutions={currentReport.ai_resolutions || {}}
         targetPath={currentReport.target_path || null}
-        selectedProvider={config?.AI_PROVIDER || 'openai'}
-        apiKey={config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_API_KEY`] || ''}
-        apiBaseUrl={
-          config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_BASE_URL`] || ''
-        }
-        aiModel={config?.[`${(config?.AI_PROVIDER || 'openai').toUpperCase()}_MODEL`] || ''}
+        selectedProvider={config?.AI_PROVIDER || ''}
+        apiKey={config?.AI_PROVIDER ? (config[`${config.AI_PROVIDER.toUpperCase()}_API_KEY`] || '') : ''}
+        apiBaseUrl={config?.AI_PROVIDER ? (config[`${config.AI_PROVIDER.toUpperCase()}_BASE_URL`] || '') : ''}
+        aiModel={config?.AI_PROVIDER ? (config[`${config.AI_PROVIDER.toUpperCase()}_MODEL`] || '') : ''}
         aiTemperature={parseFloat(config?.AI_TEMPERATURE) || 0.1}
         aiMaxTokens={parseInt(config?.AI_MAX_TOKENS) || 4096}
         onApplyFix={onApplyFix}

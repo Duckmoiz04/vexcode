@@ -727,16 +727,24 @@ app.post('/api/chat', async (req, res) => {
       return res.status(400).json({ success: false, error: 'Missing required parameter: messages' });
     }
 
-    // API key is optional for 9router (runs locally)
+    if (!provider) {
+      return res.status(400).json({ success: false, error: 'Missing required parameter: provider. Configure AI in Settings.' });
+    }
+    if (!baseUrl) {
+      return res.status(400).json({ success: false, error: 'Missing required parameter: baseUrl. Configure AI in Settings.' });
+    }
+    if (!model) {
+      return res.status(400).json({ success: false, error: 'Missing required parameter: model. Configure AI in Settings.' });
+    }
     if (!apiKey && provider !== '9router') {
-      return res.status(400).json({ success: false, error: 'Missing API key' });
+      return res.status(400).json({ success: false, error: 'Missing required parameter: apiKey. Configure AI in Settings.' });
     }
 
     // Build the chat request based on provider
-    const chatBaseUrl = (baseUrl || 'https://api.openai.com/v1').replace(/\/$/, '');
-    const chatModel = model || 'gpt-4o-mini';
-    const chatTemp = temperature || 0.7;
-    const chatMaxTokens = maxTokens || 2048;
+    const chatBaseUrl = baseUrl.replace(/\/$/, '');
+    const chatModel = model;
+    const chatTemp = temperature ?? 0.7;
+    const chatMaxTokens = maxTokens ?? 2048;
 
     // Prepare headers based on provider
     const headers = { 'Content-Type': 'application/json' };

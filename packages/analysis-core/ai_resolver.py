@@ -15,48 +15,63 @@ if os.path.exists(dotenv_path):
 else:
     load_dotenv()
 
-# Centralized helper to resolve AI configuration dynamically based on active provider
+def _reload_env_file() -> None:
+    """Reload .env values into os.environ, but only override with non-empty values.
+
+    - Lets unit tests inject values via @patch.dict(os.environ, ...) survive a reload.
+    - Lets users edit the .env file at runtime and have the next call pick up the change.
+    - Empty values in .env are treated as "clear" but are not propagated, so missing
+      settings fall back to whatever the caller already provided via os.environ.
+    """
+    if not os.path.exists(dotenv_path):
+        return
+    try:
+        with open(dotenv_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, _, val = line.partition("=")
+                key = key.strip()
+                val = val.strip()
+                if val:
+                    os.environ[key] = val
+    except OSError:
+        pass
+
+
+# Centralized helper to resolve AI configuration dynamically based on active provider.
+# Returns (api_key, base_url, model, requires_key). Empty strings mean "not configured".
+# The caller is responsible for falling back to mock resolutions or showing a clear
+# "configure me in Settings" error when any required value is missing.
 def get_ai_config() -> Tuple[str, str, str, bool]:
-    # Reload env dynamically to be absolutely fresh
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    dotenv_path = os.path.join(current_dir, '.env')
-    if os.path.exists(dotenv_path):
-        load_dotenv(dotenv_path, override=True)
-        
-    ai_provider = os.getenv("AI_PROVIDER", "9router").lower()
-    
+    _reload_env_file()
+
+    ai_provider = (os.getenv("AI_PROVIDER") or "").lower()
+
     if ai_provider == "9router":
-        api_key = os.getenv("NINEROUTER_API_KEY") or os.getenv("9ROUTER_API_KEY") or ""
-        base_url = os.getenv("NINEROUTER_BASE_URL") or os.getenv("9ROUTER_BASE_URL") or "http://localhost:20128/v1"
-        model = os.getenv("NINEROUTER_MODEL") or os.getenv("9ROUTER_MODEL") or "openai/gpt-4o-mini"
+        api_key = os.getenv("9ROUTER_API_KEY") or ""
+        base_url = os.getenv("9ROUTER_BASE_URL") or ""
+        model = os.getenv("9ROUTER_MODEL") or ""
         # 9router does not require an API key by default (can run locally)
         return api_key, base_url, model, False
     elif ai_provider == "openai":
         api_key = os.getenv("OPENAI_API_KEY") or ""
-        base_url = os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1"
-        model = os.getenv("OPENAI_MODEL") or "gpt-4o-mini"
+        base_url = os.getenv("OPENAI_BASE_URL") or ""
+        model = os.getenv("OPENAI_MODEL") or ""
         return api_key, base_url, model, True
     elif ai_provider == "google":
         api_key = os.getenv("GOOGLE_API_KEY") or ""
-        base_url = os.getenv("GOOGLE_BASE_URL") or "https://generativelanguage.googleapis.com"
-        model = os.getenv("GOOGLE_MODEL") or "gemini-1.5-flash"
+        base_url = os.getenv("GOOGLE_BASE_URL") or ""
+        model = os.getenv("GOOGLE_MODEL") or ""
         return api_key, base_url, model, True
     elif ai_provider == "anthropic":
         api_key = os.getenv("ANTHROPIC_API_KEY") or ""
-        base_url = os.getenv("ANTHROPIC_BASE_URL") or "https://api.anthropic.com"
-        model = os.getenv("ANTHROPIC_MODEL") or "claude-3-haiku-20240307"
+        base_url = os.getenv("ANTHROPIC_BASE_URL") or ""
+        model = os.getenv("ANTHROPIC_MODEL") or ""
         return api_key, base_url, model, True
-        
-    # Default fallback
-    api_key = os.getenv("NINEROUTER_API_KEY") or ""
-    base_url = os.getenv("NINEROUTER_BASE_URL") or "http://localhost:20128/v1"
-    model = os.getenv("NINEROUTER_MODEL") or "openai/gpt-4o-mini"
-    return api_key, base_url, model, False
 
-# Backwards compatibility globals
-NINEROUTER_API_KEY = os.getenv("NINEROUTER_API_KEY")
-NINEROUTER_BASE_URL = os.getenv("NINEROUTER_BASE_URL", "http://localhost:20128/v1")
-NINEROUTER_MODEL = os.getenv("NINEROUTER_MODEL", "openai/gpt-4o-mini")
+    return "", "", "", False
 
 # Standard mock AI resolutions map
 MOCK_AI_RESOLUTIONS = {
@@ -77,6 +92,31 @@ MOCK_AI_RESOLUTIONS = {
 MAX_CODE_CHARS = 3000         # Max characters of file/code content sent to AI per request
 MAX_NAMING_AUDIT_FILES = 3   # Max files to audit per analysis run
 MAX_RESOLVE_FINDINGS = 5     # Max unique rules sent to AI in one resolve_findings call
+
+# Comment markers per language. The AI sometimes returns a comment-only "remediation"
+# like "# Remediation code for path-traversal" — we strip those to keep the
+# frontend from rendering them as real + additions.
+_COMMENT_PREFIXES = ("#", "//", "/*", "*", "--", ";")
+
+
+def sanitize_remediation_code(code: str) -> str:
+    """Return the remediation code with placeholder-only / comment-only text stripped.
+
+    If every non-empty line is a comment, the AI did not produce an actual fix.
+    In that case we return an empty string so the frontend treats this as a
+    deletion / false-positive instead of a real code addition.
+    """
+    if not code:
+        return ""
+    lines = [line.rstrip() for line in code.splitlines()]
+    non_empty = [line for line in lines if line.strip()]
+    if not non_empty:
+        return ""
+    stripped = [line.strip() for line in non_empty]
+    if all(line.startswith(_COMMENT_PREFIXES) for line in stripped):
+        return ""
+    return code.strip("\n")
+
 
 def get_int_env(name: str, default: int) -> int:
     try:
@@ -223,13 +263,20 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
         findings = findings.get("findings", [])
         
     api_key, base_url, model, requires_key = get_ai_config()
-    
-    # Require key fallback check
+
+    # Fall back to mock resolutions when the user has not configured the AI yet.
     fallback_due_to_key = requires_key and not api_key
-    
-    if use_mock or fallback_due_to_key:
-        if fallback_due_to_key and not use_mock:
-            print("API key is required but not found in environment. Falling back to mock resolutions.", file=sys.stderr)
+    fallback_due_to_config = not base_url or not model
+    fallback_due_to_missing_provider = not os.getenv("AI_PROVIDER")
+
+    if use_mock or fallback_due_to_key or fallback_due_to_config or fallback_due_to_missing_provider:
+        if not use_mock:
+            if fallback_due_to_missing_provider:
+                print("AI provider is not configured. Set AI_PROVIDER (and provider keys) via the Settings drawer, or pass --mock-ai. Falling back to mock resolutions.", file=sys.stderr)
+            elif fallback_due_to_key:
+                print("API key is required but not found in environment. Falling back to mock resolutions.", file=sys.stderr)
+            else:
+                print(f"AI config is incomplete (base_url='{base_url}', model='{model}'). Falling back to mock resolutions.", file=sys.stderr)
         else:
             print("Using mock AI resolutions as requested.", file=sys.stderr)
             
@@ -314,6 +361,9 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
         "- ONLY the fixed line(s) of code, nothing else\n"
         "- NO surrounding context, NO function body, NO file content\n"
         "- NO 'Before:'/'After:' comments, NO explanatory comments\n"
+        "- NEVER return a comment-only string such as '# Remediation code for X' or '// TODO fix'. "
+        "If you cannot produce a concrete code fix, return an empty string for remediation_code "
+        "and prefix the suggestion with 'False positive:'.\n"
         "- A clean, standalone snippet that directly replaces the vulnerable pattern\n"
         "- Example for a RegExp issue: const safeRegex = /hardcoded_pattern/;\n"
         "If the finding is a FALSE POSITIVE, set suggestion to 'False positive: <explain why>' "
@@ -376,16 +426,25 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                 # Remap alias key back to the real rule_id
                 for key, value in result.items():
                     real_key = rule_id if key == alias else key
-                    resolutions[real_key] = value
+                    if isinstance(value, dict):
+                        suggestion = (value.get("suggestion") or "").strip()
+                        remediation = (value.get("remediation_code") or "").strip()
+                        remediation = sanitize_remediation_code(remediation)
+                        if not remediation and suggestion and not suggestion.lower().startswith("false positive"):
+                            suggestion = f"False positive: {suggestion}"
+                        resolutions[real_key] = {
+                            "suggestion": suggestion,
+                            "remediation_code": remediation,
+                        }
+                    else:
+                        resolutions[real_key] = value
             print(f"  [{idx+1}/{len(unique_findings)}] Resolved: {rule_id}", file=sys.stderr)
         except Exception as e:
             print(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}", file=sys.stderr)
-            resolutions[rule_id] = (
-                MOCK_AI_RESOLUTIONS.get(rule_id) or {
-                    "suggestion": f"AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection or choose a faster model.",
-                    "remediation_code": f"# Remediation code for {rule_id}"
-                }
-            )
+            resolutions[rule_id] = {
+                "suggestion": f"False positive: AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection, or pick a faster model.",
+                "remediation_code": "",
+            }
 
         # Sleep between rules to avoid rate limiting
         if idx < len(unique_findings) - 1:
@@ -406,10 +465,12 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
         
     api_key, base_url, model, requires_key = get_ai_config()
     fallback_due_to_key = requires_key and not api_key
+    fallback_due_to_config = not base_url or not model
+    fallback_due_to_missing_provider = not os.getenv("AI_PROVIDER")
 
-    if use_mock or fallback_due_to_key:
-        if fallback_due_to_key and not use_mock:
-            print("API key is required but not found. Using mock naming audit.", file=sys.stderr)
+    if use_mock or fallback_due_to_key or fallback_due_to_config or fallback_due_to_missing_provider:
+        if not use_mock:
+            print("AI config is incomplete. Using mock naming audit.", file=sys.stderr)
         
         # Look for mock target example.py
         for f_path in files_to_audit:

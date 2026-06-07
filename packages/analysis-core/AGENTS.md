@@ -50,7 +50,7 @@ python -m unittest test_ast_graph.py
 - **stderr for UI**: all user-facing messages → `sys.stderr`; stdout → JSON only
 - **Type hints**: old-style (`typing.Dict`, `typing.Optional`, not `dict | None`)
 - **No logging module**: `print(..., file=sys.stderr)` instead of `logging`
-- **Env**: `.env` loaded from package dir via `python-dotenv`; keys: `NINEROUTER_API_KEY`, `NINEROUTER_BASE_URL`, `NINEROUTER_MODEL`
+- **Env**: `.env` loaded from package dir via `python-dotenv`; keys: `9ROUTER_API_KEY`, `9ROUTER_BASE_URL`, `9ROUTER_MODEL`
 
 ## Anti-Patterns
 

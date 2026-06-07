@@ -10,7 +10,8 @@ const getPrismLanguage = (filePath: string | null | undefined): string => {
   switch (ext) {
     case 'py': return 'python';
     case 'js':
-    case 'mjs': return 'javascript';
+    case 'mjs':
+    case 'cjs': return 'javascript';
     case 'jsx': return 'jsx';
     case 'ts': return 'typescript';
     case 'tsx': return 'tsx';
@@ -307,9 +308,10 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
       if (data.success && data.response) {
         setChatMessages((prev) => [...prev, { role: 'assistant', content: data.response }]);
       } else {
+        const reason = data.error || 'Sorry, I encountered an error. Please check your AI settings and try again.';
         setChatMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: 'Sorry, I encountered an error. Please check your AI settings and try again.' },
+          { role: 'assistant', content: reason },
         ]);
       }
     } catch (err: any) {
@@ -619,7 +621,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                               className="flex remediation-line"
                             >
                               <div className="gutter-col shrink-0">
-                                <div className="flex items-start pr-10 font-semibold text-text-tertiary/70 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
+                                <div className="flex items-start pr-10 font-semibold text-text-secondary/80 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
                                   <div className="flex-shrink-0 w-3.5 mr-1" />
                                   <span className={`font-medium ${remIdx !== 0 ? 'invisible' : ''}`}>{finding.line}</span>
                                   <span className={`font-normal text-[13px] ml-2 text-success ${remIdx !== 0 ? 'invisible' : ''}`}>+</span>
@@ -637,7 +639,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         <div className="remediation-row">
                           <div className="flex remediation-line">
                             <div className="gutter-col shrink-0">
-                              <div className="flex items-start pr-10 font-semibold text-text-tertiary/70 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
+                              <div className="flex items-start pr-10 font-semibold text-text-secondary/80 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
                                 <div className="flex-shrink-0 w-3.5 mr-1" />
                                 <span className="font-medium">{finding.line}</span>
                                 <span className="font-normal text-[13px] ml-2 text-accent">✓</span>
@@ -654,7 +656,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                         <div className="remediation-row">
                           <div className="flex remediation-line">
                             <div className="gutter-col shrink-0">
-                              <div className="flex items-start pr-10 font-semibold text-text-tertiary/70 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
+                              <div className="flex items-start pr-10 font-semibold text-text-secondary/80 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
                                 <div className="flex-shrink-0 w-3.5 mr-1" />
                                 <span className="font-medium">{finding.line}</span>
                                 <span className="font-normal text-[13px] ml-2">−</span>

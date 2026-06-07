@@ -153,7 +153,6 @@ body {
    These target the className we attach via lineProps in CodeInspector. */
 .code-line--target {
   background-color: hsla(350, 85%, 55%, 0.15);
-  font-weight: 600;
 }
 .gutter-cell--target {
   background-color: hsla(350, 85%, 55%, 0.15);
