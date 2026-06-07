@@ -539,8 +539,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                   });
 
                   const prismLanguage = getPrismLanguage(finding.file);
-                  const isDeletion = resolution?.remediation_code !== undefined &&
+                  const isEmptyRemediation = resolution?.remediation_code !== undefined &&
                     (!resolution.remediation_code || resolution.remediation_code.trim() === '');
+                  const isFalsePositive = isEmptyRemediation &&
+                    resolution?.suggestion?.toLowerCase().startsWith('false positive');
+                  const isDeletion = isEmptyRemediation && !isFalsePositive;
 
                   // Render remediation as a separate block, only when there is a
                   // resolution. We split the file into pre/target/post chunks so
@@ -608,7 +611,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                       </div>
 
                       {/* Remediation block, if any */}
-                      {showRemediation && !isDeletion && (
+                      {showRemediation && !isDeletion && !isFalsePositive && (
                         <div className="remediation-row">
                           {adjustedRemediationLines.map((remLine: string, remIdx: number) => (
                             <div
@@ -627,6 +630,23 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                               </div>
                             </div>
                           ))}
+                        </div>
+                      )}
+
+                      {showRemediation && isFalsePositive && (
+                        <div className="remediation-row">
+                          <div className="flex remediation-line">
+                            <div className="gutter-col shrink-0">
+                              <div className="flex items-start pr-10 font-semibold text-text-tertiary/70 text-[13px] leading-[1.5] tabular-nums" style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}>
+                                <div className="flex-shrink-0 w-3.5 mr-1" />
+                                <span className="font-medium">{finding.line}</span>
+                                <span className="font-normal text-[13px] ml-2 text-accent">✓</span>
+                              </div>
+                            </div>
+                            <div className="code-col flex-1 min-w-0 remediation-text text-[13px] leading-[1.5] pl-1 pr-3 text-text-secondary">
+                              {resolution?.suggestion || 'False positive'}
+                            </div>
+                          </div>
                         </div>
                       )}
 

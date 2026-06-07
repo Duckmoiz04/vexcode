@@ -5,7 +5,7 @@ import re
 import time
 import requests
 from dotenv import load_dotenv
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Optional
 
 # Try loading from the current package directory first, then fallback to CWD
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -83,6 +83,18 @@ def get_int_env(name: str, default: int) -> int:
         return int(os.getenv(name, str(default)))
     except (TypeError, ValueError):
         return default
+
+def decode_response_text(response: Any) -> str:
+    """Decode HTTP response body as UTF-8, fixing mojibake from wrong charset headers.
+    9router returns Content-Type: text/event-stream; charset=iso-8859-1
+    causing requests to mangle UTF-8 chars (e.g., em dash → â\x80\x94).
+    """
+    raw = response.content
+    try:
+        return raw.decode("utf-8")
+    except UnicodeDecodeError:
+        return raw.decode("latin-1")
+
 
 def safe_json_parse(text: str) -> Any:
     """
@@ -176,7 +188,32 @@ def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> req
         raise last_error
     return response
 
-def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
+
+def read_surrounding_code(target_path: str, file_path: str, line_num: int, context_lines: int = 5) -> str:
+    """Read context lines around a finding from the source file.
+    Returns annotated lines with >>>> marking the target line."""
+    full_path = os.path.join(target_path, file_path)
+    if not os.path.exists(full_path):
+        return ""
+    try:
+        with open(full_path, "r", encoding="utf-8") as f:
+            all_lines = f.readlines()
+    except Exception:
+        return ""
+
+    start = max(0, line_num - 1 - context_lines)
+    end = min(len(all_lines), line_num + context_lines)
+
+    result = []
+    for i in range(start, end):
+        if i == line_num - 1:
+            result.append(f">>>> {all_lines[i]}")
+        else:
+            result.append(f"     {all_lines[i]}")
+    return "".join(result)
+
+
+def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optional[str] = None) -> Dict[str, Any]:
     """
     Sends findings to the AI completions API to get AI remediation recommendations.
     If use_mock is True, or if required keys are missing or request fails,
@@ -242,6 +279,16 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
                     "callers": ast_ctx.get("callers", [])[:3],
                     "impact": ast_ctx.get("impact", {})
                 }
+            item["code_text"] = f.get("code_text", "")
+            if target_path:
+                try:
+                    line_num = int(item["line"])
+                except (ValueError, TypeError):
+                    line_num = 0
+                if line_num > 0:
+                    surrounding = read_surrounding_code(target_path, item["file"], line_num)
+                    if surrounding:
+                        item["surrounding_code"] = surrounding
             unique_findings.append(item)
 
     total = len(seen_rules)
@@ -254,13 +301,23 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
     print(f"Querying AI completions endpoint ({base_url}) using model '{model}'...", file=sys.stderr)
 
     system_prompt = (
-        "You are an expert security engineer. Given ONE security finding, output a fix.\n"
+        "You are an expert security engineer reviewing code. Follow these two steps:\n"
+        "1. VERIFY: Determine if the reported finding is a real vulnerability or a false positive. "
+        "Look at the surrounding code — is the dangerous pattern actually reachable with "
+        "attacker-controlled input? Is there existing sanitization?\n"
+        "2. EVALUATE & FIX: If it is a real issue, produce a fix that accounts for:\n"
+        "  - Security: attack vector, input validation, principle of least privilege\n"
+        "  - Correctness: the fix preserves intended behavior\n"
+        "  - Side effects: the fix does not break callers or other components\n"
+        "  - Best practices: idiomatic patterns for the language and framework\n"
         "Rules for remediation_code:\n"
         "- ONLY the fixed line(s) of code, nothing else\n"
         "- NO surrounding context, NO function body, NO file content\n"
         "- NO 'Before:'/'After:' comments, NO explanatory comments\n"
         "- A clean, standalone snippet that directly replaces the vulnerable pattern\n"
         "- Example for a RegExp issue: const safeRegex = /hardcoded_pattern/;\n"
+        "If the finding is a FALSE POSITIVE, set suggestion to 'False positive: <explain why>' "
+        "and remediation_code to an empty string.\n"
         "IMPORTANT: Use the 'Rule ID alias' value (e.g., r0) as the JSON key, NOT the full rule name.\n"
         "Respond ONLY with raw JSON (no markdown fences) in this exact shape:\n"
         "{\"<alias>\": {\"suggestion\": \"one sentence: what to change and why\", "
@@ -279,8 +336,15 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
             f"Rule ID alias: {alias}\n"
             f"Full Rule: {rule_id}\n"
             f"File: {item['file']} (Line {item['line']})\n"
+            f"Code: {item.get('code_text', 'N/A')}\n"
             f"Message: {item['message']}\n"
         )
+        surrounding = item.get("surrounding_code")
+        if surrounding:
+            user_prompt += (
+                f"Surrounding code (target line marked with >>>>):\n"
+                f"{surrounding}\n"
+            )
         ast_ctx = item.get("ast_context")
         if ast_ctx:
             callers = ", ".join(c.get("name", "?") for c in ast_ctx.get("callers", [])) or "none"
@@ -305,7 +369,7 @@ def resolve_findings(findings: Any, use_mock: bool = False) -> Dict[str, Any]:
         try:
             response = post_with_retry(url, headers, payload, timeout=AI_RESOLVE_TIMEOUT_SECONDS)
             response.raise_for_status()
-            response_data = parse_api_response(response.text)
+            response_data = parse_api_response(decode_response_text(response))
             content = response_data["choices"][0]["message"]["content"].strip()
             result = safe_json_parse(content)
             if isinstance(result, dict):
@@ -433,7 +497,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
 
             # Use parse_api_response on raw response text to handle 9router trailing
             # garbage that causes response.json() to raise "Extra data" errors.
-            response_data = parse_api_response(response.text)
+            response_data = parse_api_response(decode_response_text(response))
             content = response_data["choices"][0]["message"]["content"].strip()
             issues = safe_json_parse(content)
             

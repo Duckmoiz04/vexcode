@@ -771,7 +771,8 @@ app.post('/api/chat', async (req, res) => {
           body: JSON.stringify(payload)
         });
 
-        const responseText = await response.text();
+        const responseBuffer = await response.arrayBuffer();
+        const responseText = new TextDecoder('utf-8').decode(responseBuffer);
         try {
           responseData = JSON.parse(responseText);
           const contentBlocks = responseData.content || [];
@@ -806,7 +807,8 @@ app.post('/api/chat', async (req, res) => {
           body: JSON.stringify(payload)
         });
 
-        const responseText = await response.text();
+        const responseBuffer = await response.arrayBuffer();
+        const responseText = new TextDecoder('utf-8').decode(responseBuffer);
         try {
           responseData = JSON.parse(responseText);
           const candidates = responseData.candidates || [];
@@ -833,8 +835,9 @@ app.post('/api/chat', async (req, res) => {
           body: JSON.stringify(payload)
         });
 
-        // Get response text first, then try to parse as JSON
-        const responseText = await response.text();
+        // Get response bytes and decode as UTF-8 (9router sends wrong charset header)
+        const responseBuffer = await response.arrayBuffer();
+        const responseText = new TextDecoder('utf-8').decode(responseBuffer);
 
         try {
           let cleanText = responseText.trim();

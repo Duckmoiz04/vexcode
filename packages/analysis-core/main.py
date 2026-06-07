@@ -114,7 +114,10 @@ def main() -> None:
             print("No findings in report. Nothing to resolve.", file=sys.stderr)
             sys.exit(0)
         print(f"Found {len(findings)} finding(s). Running AI resolution...", file=sys.stderr)
-        resolutions = resolve_findings(findings, use_mock=args.mock_ai)
+        resolutions = resolve_findings(
+            findings, use_mock=args.mock_ai,
+            target_path=existing_report.get("target_path")
+        )
         existing_report["ai_resolutions"] = resolutions
         existing_report["re_resolved_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         with open(report_path, "w", encoding="utf-8") as f:
@@ -323,7 +326,10 @@ def main() -> None:
                 print("Cooling down 15s before AI resolution to avoid rate limiting...", file=sys.stderr)
                 time.sleep(15)
             print("Resolving findings with AI...", file=sys.stderr)
-            resolutions = resolve_findings(findings, use_mock=args.mock_ai)
+            resolutions = resolve_findings(
+                findings, use_mock=args.mock_ai,
+                target_path=args.target
+            )
             # Merge naming resolutions
             resolutions.update(naming_resolutions)
         else:
