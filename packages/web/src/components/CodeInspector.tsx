@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { HelpCircle, Check, Send, X, ExternalLink } from 'lucide-react';
+import type { Finding, Metrics, CallerInfo, BlastRadiusItem, AiResolution } from '../types';
 
 // Map file extension to Prism language identifier
 const getPrismLanguage = (filePath: string | null | undefined): string => {
@@ -76,16 +77,16 @@ const customSyntaxTheme: Record<string, React.CSSProperties> = {
 // Defined at module scope so all gutter rows share the same shape.
 const renderGutterLine = (
   lineNum: number,
-  fileFindings: any[],
+  fileFindings: Finding[],
   onSelectFindingIndex?: (index: number | null) => void,
-  allFindings: any[] = [],
+  allFindings: Finding[] = [],
   isTarget?: boolean
 ) => {
-  const findingsOnLine = fileFindings.filter((f: any) => f.line === lineNum);
+  const findingsOnLine = fileFindings.filter((f: Finding) => f.line === lineNum);
   const hasFinding = findingsOnLine.length > 0;
   let lineSeverity: 'error' | 'warning' | 'info' = 'info';
   if (hasFinding) {
-    const severities = findingsOnLine.map((f: any) => (f.severity || '').toLowerCase());
+    const severities = findingsOnLine.map((f: Finding) => (f.severity || '').toLowerCase());
     if (severities.includes('error')) lineSeverity = 'error';
     else if (severities.includes('warning')) lineSeverity = 'warning';
   }
@@ -127,8 +128,8 @@ const renderGutterLine = (
 
 
 interface CodeInspectorProps {
-  finding: any;
-  aiResolutions: Record<string, any>;
+  finding: Finding;
+  aiResolutions: Record<string, AiResolution>;
   targetPath: string | null;
   selectedProvider: string;
   apiKey: string;
@@ -136,9 +137,9 @@ interface CodeInspectorProps {
   aiModel: string;
   aiTemperature: number;
   aiMaxTokens: number;
-  onApplyFix: (finding: any, remediationCode: string) => Promise<boolean>;
-  metrics?: any;
-  allFindings?: any[];
+  onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
+  metrics?: Metrics;
+  allFindings?: Finding[];
   onSelectFindingIndex?: (index: number | null) => void;
 }
 
@@ -172,7 +173,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const resolution = aiResolutions?.[finding.rule_id];
 
   const fileFindings = allFindings.filter(
-    (f: any) => f.file.replace(/\\/g, '/') === finding.file.replace(/\\/g, '/')
+    (f: Finding) => f.file.replace(/\\/g, '/') === finding.file.replace(/\\/g, '/')
   );
 
   // Helper to strip path prefix
@@ -248,11 +249,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
         context += `- Source Code:\n\`\`\`\n${ast.source_code}\`\`\`\n`;
       }
       if (ast.callers && ast.callers.length > 0) {
-        context += `- Callers: ${ast.callers.map((c: any) => `${c.name} in ${c.filePath}`).join(', ')}\n`;
+        context += `- Callers: ${ast.callers.map((c: CallerInfo) => `${c.name} in ${c.filePath}`).join(', ')}\n`;
       }
       if (ast.blast_radius && ast.blast_radius.length > 0) {
         context += `- Blast Radius: ${ast.blast_radius.length} affected symbol(s)\n`;
-        ast.blast_radius.forEach((br: any) => {
+        ast.blast_radius.forEach((br: BlastRadiusItem) => {
           context += `  - ${br.name} (${br.relation} in ${br.filePath}, depth ${br.depth})\n`;
         });
       }
@@ -314,10 +315,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
           { role: 'assistant', content: reason },
         ]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch AI response';
       setChatMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: `Error: ${err.message || 'Failed to fetch AI response'}` },
+        { role: 'assistant', content: `Error: ${message}` },
       ]);
     } finally {
       setIsChatLoading(false);
@@ -346,9 +348,10 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
         console.error('Failed to open in IDE:', data.error);
         alert(data.error || 'Failed to open in IDE');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
       console.error('Error opening in IDE:', err);
-      alert(`Error opening in IDE: ${err.message}`);
+      alert(`Error opening in IDE: ${message}`);
     }
   };
 
@@ -482,7 +485,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 <div className="text-xs">
                   <span className="text-[9px] text-text-tertiary uppercase block mb-1">Callers</span>
                   <div className="flex flex-wrap gap-1.5">
-                    {finding.ast_context.callers.map((c: any, i: number) => (
+                    {finding.ast_context.callers.map((c: CallerInfo, i: number) => (
                       <span key={i} className="px-2 py-0.5 rounded bg-bg-primary/50 text-[10px] font-mono text-text-secondary border border-card-border/40">
                         {c.name}
                       </span>
@@ -564,7 +567,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                       <SyntaxHighlighter
                         key={`chunk-${offsetLineNum}`}
                         language={prismLanguage}
-                        style={customSyntaxTheme as any}
+                        style={customSyntaxTheme}
                         showLineNumbers={false}
                         wrapLines={true}
                         lineProps={() => {
@@ -603,7 +606,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                       </div>
 
                       {/* Target line + remediation */}
-                      <div className="flex" ref={finding.line === 1 ? undefined : activeLineRef as any}>
+                      <div className="flex" ref={finding.line === 1 ? undefined : activeLineRef}>
                         <div className="gutter-col shrink-0">
                           {renderGutterLine(finding.line, fileFindings, onSelectFindingIndex, allFindings, true)}
                         </div>
@@ -719,6 +722,8 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             </div>
             <button
               onClick={() => setIsChatOpen(false)}
+              aria-label="Close AI chat"
+              title="Close AI chat"
               className="p-1 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-secondary/60 transition-colors cursor-pointer"
             >
               <X className="h-4 w-4" />
@@ -765,7 +770,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
 
           {/* Input Form */}
           <div className="p-3.5 border-t border-card-border/65 bg-bg-primary/25 flex gap-2 shrink-0">
+            <label htmlFor="ai-chat-input" className="sr-only">
+              Ask AI about {finding.rule_id}
+            </label>
             <input
+              id="ai-chat-input"
               type="text"
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
@@ -774,11 +783,14 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
               }}
               disabled={isChatLoading}
               placeholder={`Ask about ${finding.rule_id}...`}
+              aria-label={`Ask AI about ${finding.rule_id}`}
               className="flex-1 bg-bg-tertiary text-text-primary border border-card-border/80 rounded-xl px-3.5 py-2.5 text-xs outline-none focus:border-accent disabled:opacity-50 transition-all placeholder:text-text-tertiary/60 shadow-inner"
             />
             <button
               onClick={handleSendChat}
               disabled={isChatLoading || !chatInput.trim()}
+              aria-label="Send chat message"
+              title="Send chat message"
               className="flex h-9.5 w-9.5 shrink-0 items-center justify-center rounded-xl bg-accent text-white hover:bg-accent-hover disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-accent cursor-pointer transition-all shadow-md"
             >
               <Send className="h-4 w-4" />

@@ -22,7 +22,7 @@ def is_gitnexus_available() -> bool:
             shell=shell
         )
         return result.returncode == 0
-    except Exception:
+    except subprocess.CalledProcessError:
         return False
 
 def get_repo_info_for_path(target_path: str) -> Tuple[Optional[str], Optional[str]]:

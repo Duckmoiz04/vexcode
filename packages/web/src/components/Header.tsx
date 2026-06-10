@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronDown, Folder, Settings, Search, Wand2 } from 'lucide-react';
+import type { Project, ReportListItem } from '../types';
 
 interface HeaderProps {
   projectName: string | null;
-  projects: any[];
+  projects: Project[];
   onSelectProject: (name: string | null) => void;
   onOpenSettings: () => void;
   onStartScan: (fastScan: boolean) => void;
   onReResolve?: () => void;
-  reports: any[];
+  reports: ReportListItem[];
   currentReportId: string | null;
   onSelectReportId: (id: string) => void;
 }

@@ -6,14 +6,15 @@ import { ScanModal } from './components/ScanModal';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { IssuesPage } from './pages/IssuesPage';
+import type { Finding, Report, Config, Project, ReportListItem } from './types';
 
 
 export const App: React.FC = () => {
   const [currentProject, setCurrentProject] = useState<string | null>(null);
-  const [projects, setProjects] = useState<any[]>([]);
-  const [reports, setReports] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [reports, setReports] = useState<ReportListItem[]>([]);
   const [currentReportId, setCurrentReportId] = useState<string | null>(null);
-  const [currentReport, setCurrentReport] = useState<any | null>(null);
+  const [currentReport, setCurrentReport] = useState<Report | null>(null);
   const [selectedFindingIndex, setSelectedFindingIndex] = useState<number | null>(null);
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
 
@@ -38,7 +39,7 @@ export const App: React.FC = () => {
   };
 
   // Classification helper for findings (lifted from Sidebar)
-  const classifyFinding = (finding: any) => {
+  const classifyFinding = (finding: Finding) => {
     const ruleId = (finding.rule_id || '').toLowerCase();
     
     // 1. Security
@@ -92,7 +93,7 @@ export const App: React.FC = () => {
   const availableLanguages = useMemo(() => {
     const rawFindings = currentReport?.findings || [];
     const langs = new Set<string>();
-    rawFindings.forEach((f: any) => {
+    rawFindings.forEach((f: Finding) => {
       langs.add(getFileLanguage(f.file));
     });
     return Array.from(langs).sort();
@@ -108,7 +109,7 @@ export const App: React.FC = () => {
       language: {} as Record<string, number>
     };
 
-    raw.forEach((f: any) => {
+    raw.forEach((f: Finding) => {
       const sev = (f.severity || '').toLowerCase();
       if (sev in counts.severity) {
         counts.severity[sev as keyof typeof counts.severity]++;
@@ -132,7 +133,7 @@ export const App: React.FC = () => {
   // Searched & Filtered findings list
   const searchedAndFilteredFindings = useMemo(() => {
     const rawFindings = currentReport?.findings || [];
-    return rawFindings.filter((finding: any) => {
+    return rawFindings.filter((finding: Finding) => {
       // 1. Search filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
@@ -180,7 +181,7 @@ export const App: React.FC = () => {
 
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [config, setConfig] = useState<any>(null);
+  const [config, setConfig] = useState<Config | null>(null);
 
   // Scanning status
   const [isScanning, setIsScanning] = useState(false);
@@ -201,7 +202,7 @@ export const App: React.FC = () => {
 
   // Scan timer effect
   useEffect(() => {
-    let timer: any = null;
+    let timer: ReturnType<typeof setInterval> | null = null;
     if (isScanning) {
       setElapsedTime(0);
       timer = setInterval(() => {
@@ -327,7 +328,7 @@ export const App: React.FC = () => {
       await fetch('/api/scan/cancel', { method: 'POST' });
       setIsScanning(false);
       showToast('Scan cancelled by user', 'error');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to cancel scan:', err);
     }
   };
@@ -388,7 +389,7 @@ export const App: React.FC = () => {
           setIsScanning(false);
           showToast(data.error || 'Scan execution failed', 'error');
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Error parsing SSE event:', err);
       }
     };
@@ -403,7 +404,7 @@ export const App: React.FC = () => {
     };
   };
 
-  const handleSaveConfig = async (newConfig: any) => {
+  const handleSaveConfig = async (newConfig: Config) => {
     try {
       const response = await fetch('/api/config', {
         method: 'POST',
@@ -418,12 +419,13 @@ export const App: React.FC = () => {
       } else {
         showToast(data.error || 'Failed to save configuration', 'error');
       }
-    } catch (err: any) {
-      showToast(`Save config failed: ${err.message}`, 'error');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      showToast(`Save config failed: ${message}`, 'error');
     }
   };
 
-  const handleApplyFix = async (finding: any, remediationCode: string) => {
+  const handleApplyFix = async (finding: Finding, remediationCode: string) => {
     try {
       const response = await fetch('/api/apply', {
         method: 'POST',
@@ -442,7 +444,7 @@ export const App: React.FC = () => {
         showToast('Fix applied successfully!');
         // Update local report data to show applied state
         if (currentReport && currentReport.findings) {
-          const updatedFindings = currentReport.findings.map((f: any) => {
+          const updatedFindings = currentReport.findings.map((f: Finding) => {
             if (f.file === finding.file && f.line === finding.line && f.rule_id === finding.rule_id) {
               return { ...f, _applied: true };
             }
@@ -455,8 +457,9 @@ export const App: React.FC = () => {
         showToast(data.error || 'Failed to apply resolution fix', 'error');
         return false;
       }
-    } catch (err: any) {
-      showToast(`Apply fix failed: ${err.message}`, 'error');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      showToast(`Apply fix failed: ${message}`, 'error');
       return false;
     }
   };
@@ -493,8 +496,9 @@ export const App: React.FC = () => {
       } else {
         showToast(data.error || 'AI re-analysis failed', 'error');
       }
-    } catch (err: any) {
-      showToast(`AI re-analysis failed: ${err.message}`, 'error');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      showToast(`AI re-analysis failed: ${message}`, 'error');
     } finally {
       setIsReResolving(false);
     }
@@ -505,7 +509,7 @@ export const App: React.FC = () => {
     setSelectedFilePath(path);
     // Find first finding belonging to this file, auto-select it in Inspector
     if (path && currentReport && currentReport.findings) {
-      const firstIndex = currentReport.findings.findIndex((f: any) => f.file === path);
+      const firstIndex = currentReport.findings.findIndex((f: Finding) => f.file === path);
       if (firstIndex !== -1) {
         setSelectedFindingIndex(firstIndex);
         setActiveTab('issues');

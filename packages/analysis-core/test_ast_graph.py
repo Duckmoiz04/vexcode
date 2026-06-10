@@ -153,18 +153,27 @@ class TestASTGraph(unittest.TestCase):
         # We test that resolve_findings formats user prompt with the detailed AST context
         mock_response = MagicMock()
         mock_response.status_code = 200
+        ai_content = json.dumps({
+            "python.lang.security.audit.dangerous-exec": {
+                "suggestion": "suggestion here",
+                "remediation_code": "remediation code here"
+            }
+        })
         mock_response.json.return_value = {
             "choices": [{
                 "message": {
-                    "content": json.dumps({
-                        "python.lang.security.audit.dangerous-exec": {
-                            "suggestion": "suggestion here",
-                            "remediation_code": "remediation code here"
-                        }
-                    })
+                    "content": ai_content
                 }
             }]
         }
+        # decode_response_text uses response.content (raw bytes), not response.json()
+        mock_response.content = json.dumps({
+            "choices": [{
+                "message": {
+                    "content": ai_content
+                }
+            }]
+        }).encode("utf-8")
         mock_post.return_value = mock_response
 
         findings = [

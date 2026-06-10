@@ -1,15 +1,16 @@
 import React from 'react';
 import { Search, X } from 'lucide-react';
+import type { Finding, Report } from '../types';
 
 interface FindingsListProps {
-  searchedAndFilteredFindings: any[];
-  currentReport: any;
+  searchedAndFilteredFindings: Finding[];
+  currentReport: Report;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   onSelectFinding: (filePath: string, originalIndex: number) => void;
 }
 
-const classifyFinding = (finding: any) => {
+const classifyFinding = (finding: Finding) => {
   const ruleId = (finding.rule_id || '').toLowerCase();
   
   const securityKeywords = [
@@ -90,7 +91,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 max-w-5xl">
-          {searchedAndFilteredFindings.map((f: any) => {
+          {searchedAndFilteredFindings.map((f: Finding) => {
             const originalIndex = currentReport.findings.indexOf(f);
             const severity = (f.severity || '').toLowerCase();
             const cat = classifyFinding(f);

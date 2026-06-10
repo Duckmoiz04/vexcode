@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { X, Play, Check } from 'lucide-react';
+import type { Config } from '../types';
 
 interface SettingsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (config: any) => Promise<void>;
-  initialConfig: any;
+  onSave: (config: Config) => Promise<void>;
+  initialConfig: Config | null;
 }
 
 const PROVIDERS: Record<string, any> = {
@@ -91,13 +92,13 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     const model = initialConfig[`${currentProvider.toUpperCase()}_MODEL`] || '';
     setSelectedModel(model);
 
-    setTemperature(parseFloat(initialConfig.AI_TEMPERATURE) || 0.1);
-    setMaxTokens(parseInt(initialConfig.AI_MAX_TOKENS) || 4096);
-    setResolveTimeout(parseInt(initialConfig.AI_RESOLVE_TIMEOUT_SECONDS) || 90);
-    setNamingTimeout(parseInt(initialConfig.AI_NAMING_TIMEOUT_SECONDS) || 90);
-    setMaxRetries(parseInt(initialConfig.AI_MAX_RETRIES) || 2);
-    setRequestCooldown(parseFloat(initialConfig.AI_REQUEST_COOLDOWN_SECONDS) || 8);
-    setSemgrepRules(initialConfig.SEMGREP_RULES_PATH || '');
+    setTemperature(parseFloat(initialConfig?.AI_TEMPERATURE ?? '0.1') || 0.1);
+    setMaxTokens(parseInt(initialConfig?.AI_MAX_TOKENS ?? '4096') || 4096);
+    setResolveTimeout(parseInt(initialConfig?.AI_RESOLVE_TIMEOUT_SECONDS ?? '90') || 90);
+    setNamingTimeout(parseInt(initialConfig?.AI_NAMING_TIMEOUT_SECONDS ?? '90') || 90);
+    setMaxRetries(parseInt(initialConfig?.AI_MAX_RETRIES ?? '2') || 2);
+    setRequestCooldown(parseFloat(initialConfig?.AI_REQUEST_COOLDOWN_SECONDS ?? '8') || 8);
+    setSemgrepRules(initialConfig?.SEMGREP_RULES_PATH || '');
     setTestStatus({ text: '', type: 'idle' });
   }, [initialConfig, isOpen]);
 
@@ -115,7 +116,7 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         if (data.success && data.models && data.models.length > 0) {
           setModelsList(data.models);
           // Auto-select first model if currently selected model is empty or not in the fetched list
-          const exists = data.models.some((m: any) => m.id === selectedModel);
+          const exists = data.models.some((m: { id: string }) => m.id === selectedModel);
           if (!exists && data.models.length > 0) {
             setSelectedModel(data.models[0].id);
           }
@@ -170,13 +171,14 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       } else {
         setTestStatus({ text: data.error || 'Connection failed', type: 'error' });
       }
-    } catch (err: any) {
-      setTestStatus({ text: `Error: ${err.message || 'Connection failed'}`, type: 'error' });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Connection failed';
+      setTestStatus({ text: `Error: ${message}`, type: 'error' });
     }
   };
 
   const handleSave = async () => {
-    const config: any = {
+    const config: Config = {
       AI_PROVIDER: provider,
       AI_TEMPERATURE: temperature.toString(),
       AI_MAX_TOKENS: maxTokens.toString(),
@@ -186,9 +188,15 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
       AI_REQUEST_COOLDOWN_SECONDS: requestCooldown.toString(),
     };
 
-    config[`${provider.toUpperCase()}_API_KEY`] = apiKey;
-    config[`${provider.toUpperCase()}_BASE_URL`] = apiBaseUrl;
-    config[`${provider.toUpperCase()}_MODEL`] = selectedModel;
+    if (provider === '9router') {
+      config.NINEROUTER_API_KEY = apiKey;
+      config.NINEROUTER_BASE_URL = apiBaseUrl;
+      config.NINEROUTER_MODEL = selectedModel;
+    } else {
+      config[`${provider.toUpperCase()}_API_KEY`] = apiKey;
+      config[`${provider.toUpperCase()}_BASE_URL`] = apiBaseUrl;
+      config[`${provider.toUpperCase()}_MODEL`] = selectedModel;
+    }
 
     if (semgrepRules) {
       config.SEMGREP_RULES_PATH = semgrepRules;
@@ -218,6 +226,8 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
           <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Settings</h3>
           <button
             onClick={onClose}
+            aria-label="Close settings"
+            title="Close settings"
             className="flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary/55 transition-all cursor-pointer"
           >
             <X className="h-4 w-4" />
@@ -257,8 +267,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
 
             {/* API Key */}
             <div className="space-y-1">
-              <label className="text-xs text-text-secondary font-medium">API Key</label>
+              <label htmlFor="settings-api-key" className="text-xs text-text-secondary font-medium">API Key</label>
               <input
+                id="settings-api-key"
                 type="password"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
@@ -270,8 +281,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
 
             {/* Base URL */}
             <div className="space-y-1">
-              <label className="text-xs text-text-secondary font-medium">Base URL</label>
+              <label htmlFor="settings-base-url" className="text-xs text-text-secondary font-medium">Base URL</label>
               <input
+                id="settings-base-url"
                 type="text"
                 value={apiBaseUrl}
                 onChange={(e) => setApiBaseUrl(e.target.value)}
@@ -311,9 +323,10 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
 
           {/* Model selection */}
           <div className="space-y-2">
-            <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">AI Model</h4>
+            <label htmlFor="settings-model" className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider block">AI Model</label>
             <div className="relative">
               <select
+                id="settings-model"
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
                 className="w-full bg-bg-primary text-text-primary border border-card-border rounded-lg px-3 py-2 text-xs outline-none cursor-pointer focus:border-accent transition-all appearance-none"
@@ -341,8 +354,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               <div className="space-y-4 pt-3 animate-slide-up">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Temperature</label>
+                    <label htmlFor="settings-temperature" className="text-[10px] text-text-tertiary uppercase font-medium">Temperature</label>
                     <input
+                      id="settings-temperature"
                       type="number"
                       value={temperature}
                       onChange={(e) => setTemperature(parseFloat(e.target.value))}
@@ -354,8 +368,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                     <span className="text-[8px] text-text-tertiary block mt-0.5">0=Precise, 2=Creative</span>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Max Tokens</label>
+                    <label htmlFor="settings-max-tokens" className="text-[10px] text-text-tertiary uppercase font-medium">Max Tokens</label>
                     <input
+                      id="settings-max-tokens"
                       type="number"
                       value={maxTokens}
                       onChange={(e) => setMaxTokens(parseInt(e.target.value))}
@@ -366,8 +381,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Resolve Timeout</label>
+                    <label htmlFor="settings-resolve-timeout" className="text-[10px] text-text-tertiary uppercase font-medium">Resolve Timeout</label>
                     <input
+                      id="settings-resolve-timeout"
                       type="number"
                       value={resolveTimeout}
                       onChange={(e) => setResolveTimeout(parseInt(e.target.value))}
@@ -379,8 +395,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                     <span className="text-[8px] text-text-tertiary block mt-0.5">Seconds per finding</span>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Naming Timeout</label>
+                    <label htmlFor="settings-naming-timeout" className="text-[10px] text-text-tertiary uppercase font-medium">Naming Timeout</label>
                     <input
+                      id="settings-naming-timeout"
                       type="number"
                       value={namingTimeout}
                       onChange={(e) => setNamingTimeout(parseInt(e.target.value))}
@@ -392,8 +409,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                     <span className="text-[8px] text-text-tertiary block mt-0.5">Seconds per audit file</span>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Max Retries</label>
+                    <label htmlFor="settings-max-retries" className="text-[10px] text-text-tertiary uppercase font-medium">Max Retries</label>
                     <input
+                      id="settings-max-retries"
                       type="number"
                       value={maxRetries}
                       onChange={(e) => setMaxRetries(parseInt(e.target.value))}
@@ -404,8 +422,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] text-text-tertiary uppercase font-medium">Cooldown</label>
+                    <label htmlFor="settings-cooldown" className="text-[10px] text-text-tertiary uppercase font-medium">Cooldown</label>
                     <input
+                      id="settings-cooldown"
                       type="number"
                       value={requestCooldown}
                       onChange={(e) => setRequestCooldown(parseFloat(e.target.value))}
@@ -425,8 +444,9 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
           <div className="space-y-2 border-t border-card-border/50 pt-4">
             <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Semgrep</h4>
             <div className="space-y-1">
-              <label className="text-xs text-text-secondary font-medium">Rules Path</label>
+              <label htmlFor="settings-semgrep-rules" className="text-xs text-text-secondary font-medium">Rules Path</label>
               <input
+                id="settings-semgrep-rules"
                 type="text"
                 value={semgrepRules}
                 onChange={(e) => setSemgrepRules(e.target.value)}

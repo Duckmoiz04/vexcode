@@ -8,6 +8,7 @@ import { exec } from 'node:child_process';
 
 import { startServer } from '../src/server.js';
 import { runPythonAnalysis } from '../src/bridge.js';
+import { getProjectName, getProjectReportDir, getReportFilename } from '../src/utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,24 +22,6 @@ try {
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
   version = packageJson.version || version;
 } catch {}
-
-// Helper: get project name from path
-function getProjectName(targetPath) {
-  const name = basename(targetPath);
-  return name.replace(/[^a-zA-Z0-9_-]/g, '_');
-}
-
-// Helper: get project report directory
-function getProjectReportDir(projectName) {
-  return join(reportsBaseDir, projectName);
-}
-
-// Helper: generate report filename from timestamp
-function getReportFilename() {
-  const now = new Date();
-  const ts = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  return `report_${ts}.json`;
-}
 
 const COMMANDS = ['scan', 'serve', 'ui', 'help'];
 

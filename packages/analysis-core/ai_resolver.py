@@ -50,9 +50,9 @@ def get_ai_config() -> Tuple[str, str, str, bool]:
     ai_provider = (os.getenv("AI_PROVIDER") or "").lower()
 
     if ai_provider == "9router":
-        api_key = os.getenv("9ROUTER_API_KEY") or ""
-        base_url = os.getenv("9ROUTER_BASE_URL") or ""
-        model = os.getenv("9ROUTER_MODEL") or ""
+        api_key = os.getenv("NINEROUTER_API_KEY") or ""
+        base_url = os.getenv("NINEROUTER_BASE_URL") or ""
+        model = os.getenv("NINEROUTER_MODEL") or ""
         # 9router does not require an API key by default (can run locally)
         return api_key, base_url, model, False
     elif ai_provider == "openai":
@@ -89,9 +89,17 @@ MOCK_AI_RESOLUTIONS = {
     }
 }
 
-MAX_CODE_CHARS = 3000         # Max characters of file/code content sent to AI per request
-MAX_NAMING_AUDIT_FILES = 3   # Max files to audit per analysis run
-MAX_RESOLVE_FINDINGS = 5     # Max unique rules sent to AI in one resolve_findings call
+from constants import (
+    MAX_CODE_CHARS,
+    MAX_NAMING_AUDIT_FILES,
+    MAX_RESOLVE_FINDINGS,
+    AI_RESOLVE_MAX_TOKENS,
+    NAMING_AUDIT_SLEEP,
+    AI_MAX_RETRIES,
+    AI_RETRY_BASE_WAIT_SECONDS,
+    AI_RESOLVE_TIMEOUT_SECONDS,
+    AI_NAMING_TIMEOUT_SECONDS,
+)
 
 # Comment markers per language. The AI sometimes returns a comment-only "remediation"
 # like "# Remediation code for path-traversal" — we strip those to keep the
@@ -117,12 +125,6 @@ def sanitize_remediation_code(code: str) -> str:
         return ""
     return code.strip("\n")
 
-
-def get_int_env(name: str, default: int) -> int:
-    try:
-        return int(os.getenv(name, str(default)))
-    except (TypeError, ValueError):
-        return default
 
 def decode_response_text(response: Any) -> str:
     """Decode HTTP response body as UTF-8, fixing mojibake from wrong charset headers.
@@ -186,13 +188,6 @@ def parse_api_response(text: str) -> Dict[str, Any]:
             pass
     raise ValueError(f"Cannot parse API response body: {text[:200]}")
 
-NAMING_AUDIT_SLEEP = float(os.getenv("AI_REQUEST_COOLDOWN_SECONDS", "8.0"))
-AI_MAX_RETRIES = get_int_env("AI_MAX_RETRIES", 2)
-AI_RETRY_BASE_WAIT_SECONDS = float(os.getenv("AI_RETRY_BASE_WAIT_SECONDS", "15.0"))
-AI_RESOLVE_TIMEOUT_SECONDS = get_int_env("AI_RESOLVE_TIMEOUT_SECONDS", 90)
-AI_NAMING_TIMEOUT_SECONDS = get_int_env("AI_NAMING_TIMEOUT_SECONDS", 90)
-AI_RESOLVE_MAX_TOKENS = get_int_env("AI_RESOLVE_MAX_TOKENS", get_int_env("AI_MAX_TOKENS", 512))
-
 def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> requests.Response:
     """
     POST with exponential-backoff retry on rate limits and slow local routers.
@@ -238,7 +233,7 @@ def read_surrounding_code(target_path: str, file_path: str, line_num: int, conte
     try:
         with open(full_path, "r", encoding="utf-8") as f:
             all_lines = f.readlines()
-    except Exception:
+    except (OSError, IOError):
         return ""
 
     start = max(0, line_num - 1 - context_lines)
@@ -439,7 +434,7 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                     else:
                         resolutions[real_key] = value
             print(f"  [{idx+1}/{len(unique_findings)}] Resolved: {rule_id}", file=sys.stderr)
-        except Exception as e:
+        except (requests.RequestException, json.JSONDecodeError) as e:
             print(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}", file=sys.stderr)
             resolutions[rule_id] = {
                 "suggestion": f"False positive: AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection, or pick a faster model.",
@@ -586,7 +581,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                         "remediation_code": rem
                     }
                     
-        except Exception as e:
+        except requests.RequestException as e:
             print(f"Error auditing naming for {f_path}: {e}", file=sys.stderr)
 
         # Throttle requests to avoid 429 Too Many Requests from 9router

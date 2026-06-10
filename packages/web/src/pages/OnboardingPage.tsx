@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { ChevronRight, FolderPlus } from 'lucide-react';
+import type { Project } from '../types';
 
 interface OnboardingPageProps {
-  projects: any[];
+  projects: Project[];
   onSelectProject: (name: string) => void;
   onStartScan: (targetPath: string, mockScan: boolean, mockAi: boolean) => void;
 }
@@ -24,7 +25,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({
     setIsScanning(false);
   };
 
-  const formatTime = (timestamp: any) => {
+  const formatTime = (timestamp: string | null | undefined) => {
     if (!timestamp) return 'Unknown';
     const date = new Date(timestamp);
     return date.toLocaleString();

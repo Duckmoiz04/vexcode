@@ -1,10 +1,11 @@
 import React, { useMemo } from 'react';
 import { AlertTriangle, ShieldCheck, Cpu, Layout, Info } from 'lucide-react';
+import type { Finding, Report, BlastRadiusItem } from '../types';
 
 interface DashboardPageProps {
-  report: any;
+  report: Report | null;
   currentProject: string | null;
-  findings: any[];
+  findings: Finding[];
   onSelectFilePath: (path: string | null) => void;
   onSelectFindingIndex: (index: number | null) => void;
 }
@@ -31,7 +32,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
     return abs;
   };
 
-  const classifyFinding = (finding: any) => {
+  const classifyFinding = (finding: Finding) => {
     const ruleId = (finding.rule_id || '').toLowerCase();
     
     // 1. Security
@@ -471,7 +472,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
             ) : (
               stats.topSymbols.map((sym) => {
                 const affectedDetails = sym.blastRadius.length > 0
-                  ? `Blast: ${sym.blastRadius.slice(0, 2).map((br: any) => br.name).join(', ')}${sym.blastRadius.length > 2 ? '...' : ''}`
+                  ? `Blast: ${sym.blastRadius.slice(0, 2).map((br: BlastRadiusItem) => br.name).join(', ')}${sym.blastRadius.length > 2 ? '...' : ''}`
                   : 'No affected symbols';
                 return (
                   <div

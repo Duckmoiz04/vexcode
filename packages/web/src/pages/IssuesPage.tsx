@@ -3,9 +3,10 @@ import { Loader2, Wand2 } from 'lucide-react';
 import { FilterPanel } from '../components/FilterPanel';
 import { FindingsList } from '../components/FindingsList';
 import { CodeInspector } from '../components/CodeInspector';
+import type { Finding, Report, Config } from '../types';
 
 interface IssuesPageProps {
-  currentReport: any;
+  currentReport: Report | null;
   selectedFindingIndex: number | null;
   setSelectedFindingIndex: (idx: number | null) => void;
   selectedFilePath: string | null;
@@ -27,9 +28,9 @@ interface IssuesPageProps {
     language: Record<string, number>;
   };
   availableLanguages: string[];
-  searchedAndFilteredFindings: any[];
-  config: any;
-  onApplyFix: (finding: any, remediationCode: string) => Promise<boolean>;
+  searchedAndFilteredFindings: Finding[];
+  config: Config | null;
+  onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
   onReResolve: () => Promise<void>;
   isReResolving: boolean;
   onSelectFindingIndex: (index: number | null) => void;
@@ -132,8 +133,8 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
         apiKey={config?.AI_PROVIDER ? (config[`${config.AI_PROVIDER.toUpperCase()}_API_KEY`] || '') : ''}
         apiBaseUrl={config?.AI_PROVIDER ? (config[`${config.AI_PROVIDER.toUpperCase()}_BASE_URL`] || '') : ''}
         aiModel={config?.AI_PROVIDER ? (config[`${config.AI_PROVIDER.toUpperCase()}_MODEL`] || '') : ''}
-        aiTemperature={parseFloat(config?.AI_TEMPERATURE) || 0.1}
-        aiMaxTokens={parseInt(config?.AI_MAX_TOKENS) || 4096}
+        aiTemperature={parseFloat(config?.AI_TEMPERATURE ?? '0.1') || 0.1}
+        aiMaxTokens={parseInt(config?.AI_MAX_TOKENS ?? '4096') || 4096}
         onApplyFix={onApplyFix}
         metrics={currentReport.metrics}
         allFindings={currentReport.findings}

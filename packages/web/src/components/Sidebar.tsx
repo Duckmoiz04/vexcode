@@ -1,9 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { ChevronDown, Folder, File, ShieldAlert, X, Search } from 'lucide-react';
+import type { Finding } from '../types';
 
 interface SidebarProps {
   projectName: string | null;
-  findings: any[];
+  findings: Finding[];
   selectedFilePath: string | null;
   onSelectFilePath: (path: string | null) => void;
   targetPath: string | null;
@@ -94,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   // Classification helper for findings
-  const classifyFinding = (finding: any) => {
+  const classifyFinding = (finding: Finding) => {
     const ruleId = (finding.rule_id || '').toLowerCase();
     
     // 1. Security
@@ -332,7 +333,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             renderTreeNode(fileTree)
           ) : (
             <div className="space-y-2">
-              {searchedAndFilteredFindings.map((f: any) => {
+              {searchedAndFilteredFindings.map((f: Finding) => {
                 const originalIndex = findings.indexOf(f);
                 const isActive = originalIndex === selectedFindingIndex;
                 const severity = (f.severity || '').toLowerCase();

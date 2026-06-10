@@ -1,37 +1,230 @@
-import { describe, it, expect } from 'vitest';
-import { runPythonAnalysis, getPythonPath } from '../bridge.js';
-import { existsSync, unlinkSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { EventEmitter } from 'node:events';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+function createMockChild() {
+  const child = new EventEmitter();
+  child.stdout = new EventEmitter();
+  child.stderr = new EventEmitter();
+  child.kill = vi.fn();
+  child.pid = 99999;
+  return child;
+}
 
-process.env.TEST_SKIP_GITNEXUS = 'true';
+describe('bridge.js unit tests (mock subprocess)', () => {
+  let bridge;
+  let mockSpawn;
+  let mockExistsSync;
 
-describe('Python Process Bridge', () => {
-  it('should resolve python path', () => {
-    const pythonPath = getPythonPath();
-    expect(pythonPath).toBeTypeOf('string');
-    expect(existsSync(pythonPath)).toBe(true);
+  beforeEach(async () => {
+    vi.resetModules();
+
+    mockSpawn = vi.fn();
+    mockExistsSync = vi.fn().mockReturnValue(true);
+
+    vi.doMock('node:child_process', () => ({
+      spawn: mockSpawn
+    }));
+
+    vi.doMock('node:fs', async (importOriginal) => {
+      const actual = await importOriginal();
+      return {
+        ...actual,
+        existsSync: mockExistsSync
+      };
+    });
+
+    bridge = await import('../bridge.js');
   });
 
-  it('should execute python analysis process successfully', async () => {
-    const reportPath = join(__dirname, 'test_report.json');
-    
-    // Clean up if it exists from previous runs
-    if (existsSync(reportPath)) {
-      unlinkSync(reportPath);
-    }
+  describe('getPythonPath()', () => {
+    it('should return a string path ending with python executable', () => {
+      const pythonPath = bridge.getPythonPath();
+      expect(pythonPath).toBeTypeOf('string');
+      expect(pythonPath).toMatch(/python(\.exe)?$/);
+    });
 
-    // Run python core with mocks enabled so it doesn't try to call real semgrep/9router APIs
-    await runPythonAnalysis(__dirname, reportPath, true, true);
+    it('should resolve to a path under analysis-core/.venv', () => {
+      const pythonPath = bridge.getPythonPath();
+      expect(pythonPath).toMatch(/analysis-core[/\\]\.venv[/\\]/);
+    });
+  });
 
-    expect(existsSync(reportPath)).toBe(true);
+  describe('runPythonAnalysis()', () => {
+    it('should resolve with stdout and stderr on exit code 0', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
 
-    // Clean up
-    if (existsSync(reportPath)) {
-      unlinkSync(reportPath);
-    }
-  }, 20000);
+      const promise = bridge.runPythonAnalysis('/fake/target', '/fake/report.json', true, true);
+
+      child.stdout.emit('data', Buffer.from('{"findings":'));
+      child.stdout.emit('data', Buffer.from('[{"id":1}]}'));
+
+      setImmediate(() => child.emit('close', 0));
+
+      const result = await promise;
+      expect(result).toEqual({
+        stdout: '{"findings":[{"id":1}]}',
+        stderr: ''
+      });
+      expect(mockSpawn).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reject on non-zero exit code', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+
+      const promise = bridge.runPythonAnalysis('/fake/target', '/fake/report.json', false, false);
+
+      child.stderr.emit('data', Buffer.from('Error: something went wrong'));
+      setImmediate(() => child.emit('close', 1));
+
+      await expect(promise).rejects.toThrow('Python process exited with code 1');
+      await expect(promise).rejects.toThrow('something went wrong');
+    });
+
+    it('should reject when Python venv is not found', async () => {
+      mockExistsSync.mockReturnValue(false);
+
+      await expect(
+        bridge.runPythonAnalysis('/fake/target', '/fake/report.json')
+      ).rejects.toThrow('Python interpreter not found');
+      expect(mockSpawn).not.toHaveBeenCalled();
+    });
+
+    it('should call onProgress callback with stdout lines', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+      const onProgress = vi.fn();
+
+      const promise = bridge.runPythonAnalysis(
+        '/fake/target', '/fake/report.json', true, true, false, onProgress
+      );
+
+      child.stdout.emit('data', Buffer.from('line1\nline2\n'));
+      setImmediate(() => child.emit('close', 0));
+
+      await promise;
+      expect(onProgress).toHaveBeenCalledWith({ type: 'stdout', line: 'line1' });
+      expect(onProgress).toHaveBeenCalledWith({ type: 'stdout', line: 'line2' });
+    });
+
+    it('should call onProgress callback with stderr lines', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+      const onProgress = vi.fn();
+
+      const promise = bridge.runPythonAnalysis(
+        '/fake/target', '/fake/report.json', true, true, false, onProgress
+      );
+
+      child.stderr.emit('data', Buffer.from('warning: deprecated\n'));
+      setImmediate(() => child.emit('close', 0));
+
+      await promise;
+      expect(onProgress).toHaveBeenCalledWith({ type: 'stderr', line: 'warning: deprecated' });
+    });
+
+    it('should pass --fast flag when fastScan is true', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+
+      const promise = bridge.runPythonAnalysis(
+        '/fake/target', '/fake/report.json', false, false, true
+      );
+      setImmediate(() => child.emit('close', 0));
+      await promise;
+
+      const args = mockSpawn.mock.calls[0][1];
+      expect(args).toContain('--fast');
+    });
+
+    it('should reject on spawn error event', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+
+      const promise = bridge.runPythonAnalysis('/fake/target', '/fake/report.json', true, true);
+
+      setImmediate(() => child.emit('error', new Error('ENOENT')));
+
+      await expect(promise).rejects.toThrow('ENOENT');
+    });
+  });
+
+  describe('cancelActiveScan()', () => {
+    it('should kill the active process and return true', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+
+      const promise = bridge.runPythonAnalysis('/fake/target', '/fake/report.json', true, true);
+
+      const result = bridge.cancelActiveScan();
+      expect(result).toBe(true);
+      expect(child.kill).toHaveBeenCalledTimes(1);
+
+      setImmediate(() => child.emit('close', 0));
+      await expect(promise).rejects.toMatchObject({
+        message: 'Scan cancelled by user',
+        cancelled: true
+      });
+    });
+
+    it('should return false when no active scan', () => {
+      const result = bridge.cancelActiveScan();
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('runPythonReResolve()', () => {
+    it('should resolve with stdout and stderr on exit code 0', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+
+      const promise = bridge.runPythonReResolve('/fake/report.json', true);
+
+      child.stdout.emit('data', Buffer.from('Re-resolve complete'));
+      setImmediate(() => child.emit('close', 0));
+
+      const result = await promise;
+      expect(result).toEqual({
+        stdout: 'Re-resolve complete',
+        stderr: ''
+      });
+      const args = mockSpawn.mock.calls[0][1];
+      expect(args).toContain('--re-resolve');
+    });
+
+    it('should reject when Python venv is not found', async () => {
+      mockExistsSync.mockReturnValue(false);
+
+      await expect(
+        bridge.runPythonReResolve('/fake/report.json')
+      ).rejects.toThrow('Python interpreter not found');
+    });
+
+    it('should reject on non-zero exit code', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+
+      const promise = bridge.runPythonReResolve('/fake/report.json', false);
+
+      child.stderr.emit('data', Buffer.from('Re-resolve failed'));
+      setImmediate(() => child.emit('close', 2));
+
+      await expect(promise).rejects.toThrow('Python process exited with code 2');
+    });
+
+    it('should call onProgress callback during re-resolve', async () => {
+      const child = createMockChild();
+      mockSpawn.mockReturnValue(child);
+      const onProgress = vi.fn();
+
+      const promise = bridge.runPythonReResolve('/fake/report.json', true, onProgress);
+
+      child.stdout.emit('data', Buffer.from('processing...\n'));
+      setImmediate(() => child.emit('close', 0));
+
+      await promise;
+      expect(onProgress).toHaveBeenCalledWith({ type: 'stdout', line: 'processing...' });
+    });
+  });
 });
