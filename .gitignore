@@ -3,3 +3,12 @@ node_modules/
 .gemini/
 .shadowed/
 *.log
+
+# Tool artifacts
+.omo/
+.codegraph/
+.playwright-mcp/
+.understand-anything/
+
+# Test artifacts
+packages/analysis-core/test_ai_output.json
