@@ -4,7 +4,10 @@ import subprocess
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List, Tuple
 
+from logger import get_logger
 from scanner import run_scan
+
+logger = get_logger(__name__)
 
 
 def get_git_state(target_dir: str) -> Optional[Dict[str, Any]]:
@@ -56,13 +59,13 @@ def _detect_fast_scan_files(target: str, use_mock: bool) -> Optional[List[str]]:
     """
     if use_mock:
         target_files = [os.path.join(target, "example.py")]
-        print(f"[Mock] Fast Scan: Pretending 'example.py' is modified.", file=sys.stderr)
+        logger.info(f"[Mock] Fast Scan: Pretending 'example.py' is modified.")
         return target_files
 
-    print("Fast Scan requested. Detecting changed files...", file=sys.stderr)
+    logger.info("Fast Scan requested. Detecting changed files...")
     git_state = get_git_state(target)
     if not git_state:
-        print("No Git repository detected. Falling back to Full Scan...", file=sys.stderr)
+        logger.info("No Git repository detected. Falling back to Full Scan...")
         return None
 
     shell = (sys.platform == 'win32')
@@ -75,7 +78,7 @@ def _detect_fast_scan_files(target: str, use_mock: bool) -> Optional[List[str]]:
         shell=shell
     )
     if res.returncode != 0:
-        print("Git status failed. Falling back to Full Scan...", file=sys.stderr)
+        logger.info("Git status failed. Falling back to Full Scan...")
         return None
 
     changed_files = []
@@ -91,10 +94,10 @@ def _detect_fast_scan_files(target: str, use_mock: bool) -> Optional[List[str]]:
                 changed_files.append(abs_file)
 
     if not changed_files:
-        print("No changes detected in Git repository. Codebase is clean.", file=sys.stderr)
+        logger.info("No changes detected in Git repository. Codebase is clean.")
         return []
 
-    print(f"Detected {len(changed_files)} changed file(s) in Git.", file=sys.stderr)
+    logger.info(f"Detected {len(changed_files)} changed file(s) in Git.")
     return changed_files
 
 

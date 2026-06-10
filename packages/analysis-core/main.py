@@ -4,7 +4,10 @@ import sys
 import os
 from datetime import datetime, timezone
 
+from logger import get_logger
 from ai_resolver import resolve_findings
+
+logger = get_logger(__name__)
 
 
 def main() -> None:
@@ -28,16 +31,16 @@ def main() -> None:
     if args.re_resolve:
         report_path = args.re_resolve
         if not os.path.exists(report_path):
-            print(f"Error: Report not found: {report_path}", file=sys.stderr)
+            logger.error(f"Error: Report not found: {report_path}")
             sys.exit(1)
-        print(f"Re-resolving AI findings from existing report: {report_path}", file=sys.stderr)
+        logger.info(f"Re-resolving AI findings from existing report: {report_path}")
         with open(report_path, "r", encoding="utf-8") as f:
             existing_report = json.load(f)
         findings = existing_report.get("findings", [])
         if not findings:
-            print("No findings in report. Nothing to resolve.", file=sys.stderr)
+            logger.info("No findings in report. Nothing to resolve.")
             sys.exit(0)
-        print(f"Found {len(findings)} finding(s). Running AI resolution...", file=sys.stderr)
+        logger.info(f"Found {len(findings)} finding(s). Running AI resolution...")
         resolutions = resolve_findings(
             findings, use_mock=args.mock_ai,
             target_path=existing_report.get("target_path")
@@ -46,10 +49,10 @@ def main() -> None:
         existing_report["re_resolved_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         with open(report_path, "w", encoding="utf-8") as f:
             json.dump(existing_report, f, indent=2, ensure_ascii=False)
-        print(f"AI resolutions updated in: {report_path}", file=sys.stderr)
+        logger.info(f"AI resolutions updated in: {report_path}")
         sys.exit(0)
 
-    print(f"Starting analysis on target: {args.target}", file=sys.stderr)
+    logger.info(f"Starting analysis on target: {args.target}")
 
     try:
         # Lazy imports: only load pipeline modules when scan path is taken
@@ -61,7 +64,7 @@ def main() -> None:
         # 1. Scan
         scan_results, target_files = run_scan_phase(args.target, args.mock_scan, args.fast)
         findings = scan_results.get("findings", [])
-        print(f"Scan complete. Found {len(findings)} finding(s).", file=sys.stderr)
+        logger.info(f"Scan complete. Found {len(findings)} finding(s).")
 
         # 2. Enrich
         findings = enrich_findings(findings, args.target, args.mock_scan)
@@ -75,11 +78,11 @@ def main() -> None:
         report = assemble_report(scan_results, findings, resolutions, args.target, metrics)
         write_report(report, args.output)
 
-        print("Analysis engine executed successfully.", file=sys.stderr)
+        logger.info("Analysis engine executed successfully.")
         sys.exit(0)
 
     except (OSError, IOError) as e:
-        print(f"Error during analysis execution: {e}", file=sys.stderr)
+        logger.error(f"Error during analysis execution: {e}")
         sys.exit(1)
 
 

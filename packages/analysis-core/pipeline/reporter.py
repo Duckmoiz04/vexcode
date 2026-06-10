@@ -1,9 +1,11 @@
 import json
-import sys
 from datetime import datetime, timezone
 from typing import Dict, Any, List
 
+from logger import get_logger
 from pipeline.scanner import get_git_state
+
+logger = get_logger(__name__)
 
 
 def assemble_report(scan_results: Dict[str, Any], findings: List[dict],
@@ -26,6 +28,6 @@ def assemble_report(scan_results: Dict[str, Any], findings: List[dict],
 
 def write_report(report: Dict[str, Any], output_path: str) -> None:
     """Write the report dict as JSON to output_path."""
-    print(f"Writing report to {output_path}...", file=sys.stderr)
+    logger.info(f"Writing report to {output_path}...")
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)

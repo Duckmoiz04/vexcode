@@ -5,6 +5,10 @@ import sys
 import os
 from typing import Dict, Any, List, Tuple, Optional
 
+from logger import get_logger
+
+logger = get_logger(__name__)
+
 def is_gitnexus_available() -> bool:
     """
     Invokes 'gitnexus --version' to check if the GitNexus CLI is installed
@@ -72,7 +76,7 @@ def get_repo_info_for_path(target_path: str) -> Tuple[Optional[str], Optional[st
                         
         return None, None
     except Exception as e:
-        print(f"Error listing GitNexus repositories: {e}", file=sys.stderr)
+        logger.info(f"Error listing GitNexus repositories: {e}")
         return None, None
 
 def get_repo_name_for_path(target_path: str) -> Optional[str]:
@@ -180,7 +184,7 @@ def resolve_location_to_symbol(repo_name: str, file_path: str, line_number: int)
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, check=False, shell=shell)
         if result.returncode != 0:
-            print(f"Cypher query failed: {result.stderr}", file=sys.stderr)
+            logger.info(f"Cypher query failed: {result.stderr}")
             return None
             
         data = json.loads(result.stdout)
@@ -219,7 +223,7 @@ def resolve_location_to_symbol(repo_name: str, file_path: str, line_number: int)
         sorted_rows = sorted(rows, key=sort_key)
         return sorted_rows[0]
     except Exception as e:
-        print(f"Error in resolve_location_to_symbol: {e}", file=sys.stderr)
+        logger.info(f"Error in resolve_location_to_symbol: {e}")
         return None
 
 def get_symbol_context(repo_name: str, symbol_id: str) -> Dict[str, Any]:
@@ -234,7 +238,7 @@ def get_symbol_context(repo_name: str, symbol_id: str) -> Dict[str, Any]:
             return {}
         return json.loads(result.stdout)
     except Exception as e:
-        print(f"Error getting symbol context: {e}", file=sys.stderr)
+        logger.info(f"Error getting symbol context: {e}")
         return {}
 
 def get_symbol_impact(repo_name: str, symbol_id: str) -> Dict[str, Any]:
@@ -249,7 +253,7 @@ def get_symbol_impact(repo_name: str, symbol_id: str) -> Dict[str, Any]:
             return {}
         return json.loads(result.stdout)
     except Exception as e:
-        print(f"Error getting symbol impact: {e}", file=sys.stderr)
+        logger.info(f"Error getting symbol impact: {e}")
         return {}
 
 MOCK_AST_CONTEXTS = {
@@ -362,12 +366,12 @@ MOCK_AST_CONTEXTS = {
 }
 
 if __name__ == "__main__":
-    print("Running GitNexus environment checks...")
+    logger.info("Running GitNexus environment checks...")
     available = is_gitnexus_available()
-    print(f"GitNexus CLI available: {available}")
+    logger.info(f"GitNexus CLI available: {available}")
     if available:
         target = "."
         repo_name, repo_path = get_repo_info_for_path(target)
-        print(f"Target path: {os.path.abspath(target)}")
-        print(f"Mapped Repository Name: {repo_name}")
-        print(f"Mapped Repository Path: {repo_path}")
+        logger.info(f"Target path: {os.path.abspath(target)}")
+        logger.info(f"Mapped Repository Name: {repo_name}")
+        logger.info(f"Mapped Repository Path: {repo_path}")

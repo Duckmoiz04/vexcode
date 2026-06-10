@@ -1,10 +1,13 @@
 import os
-import sys
 import time
 from typing import Dict, Any, List, Optional, Tuple
 
+from logger import get_logger
 from complexity import analyze_file_complexity
-from ai_resolver import resolve_findings, run_naming_audit
+from ai_resolver import resolve_findings
+from naming_audit import run_naming_audit
+
+logger = get_logger(__name__)
 
 MAX_FILES_FOR_COMPLEXITY = 100
 FAST_SCAN_SLEEP_SECONDS = 15
@@ -42,7 +45,7 @@ def _collect_source_files(target: str, target_files: Optional[List[str]]) -> Lis
 
 def _compute_metrics(target: str, source_files: List[str]) -> Dict[str, Any]:
     """Compute complexity metrics for collected source files."""
-    print("Calculating file complexity metrics with Lizard...", file=sys.stderr)
+    logger.info("Calculating file complexity metrics with Lizard...")
     metrics = {"files": {}}
     for f_path in source_files:
         rel_path = os.path.relpath(f_path, target).replace("\\", "/")
@@ -53,7 +56,7 @@ def _compute_metrics(target: str, source_files: List[str]) -> Dict[str, Any]:
 def _run_naming_audit(findings: List[dict], target: str,
                       source_files: List[str], use_mock: bool) -> Tuple[List[dict], dict]:
     """Run AI naming quality audit and return (naming_findings, naming_resolutions)."""
-    print("Auditing code naming quality...", file=sys.stderr)
+    logger.info("Auditing code naming quality...")
 
     NAMING_AUDIT_SKIP_DIRS = {".agents", ".claude", ".codex", "process",
                                ".venv", "node_modules", "__pycache__"}
@@ -93,15 +96,14 @@ def resolve_phase(findings: List[dict], target: str, use_mock: bool,
     resolutions = {}
     if findings:
         if not use_mock and files_to_audit:
-            print("Cooling down 15s before AI resolution to avoid rate limiting...",
-                  file=sys.stderr)
+            logger.info("Cooling down 15s before AI resolution to avoid rate limiting...")
             time.sleep(FAST_SCAN_SLEEP_SECONDS)
-        print("Resolving findings with AI...", file=sys.stderr)
+        logger.info("Resolving findings with AI...")
         resolutions = resolve_findings(
             findings, use_mock=use_mock, target_path=target
         )
         resolutions.update(naming_resolutions)
     else:
-        print("No findings to resolve.", file=sys.stderr)
+        logger.info("No findings to resolve.")
 
     return findings, resolutions, metrics

@@ -1,6 +1,7 @@
 import sys
 from typing import List
 
+from logger import get_logger
 from ast_graph import (
     is_gitnexus_available,
     get_repo_info_for_path,
@@ -10,6 +11,8 @@ from ast_graph import (
     get_symbol_impact,
     MOCK_AST_CONTEXTS
 )
+
+logger = get_logger(__name__)
 
 
 def enrich_findings(findings: List[dict], target_path: str, use_mock: bool) -> List[dict]:
@@ -27,16 +30,16 @@ def enrich_findings(findings: List[dict], target_path: str, use_mock: bool) -> L
     if gitnexus_ok:
         repo_name, repo_path = get_repo_info_for_path(target_path)
         if repo_name:
-            print(f"GitNexus is available. Target mapped to repo '{repo_name}' "
-                  f"at path '{repo_path}'.", file=sys.stderr)
+            logger.info(f"GitNexus is available. Target mapped to repo '{repo_name}' "
+                  f"at path '{repo_path}'.")
         else:
-            print("GitNexus is available, but target path is not registered/indexed. "
-                  "Skipping AST enrichment.", file=sys.stderr)
+            logger.info("GitNexus is available, but target path is not registered/indexed. "
+                  "Skipping AST enrichment.")
     else:
-        print("GitNexus is not available on this system. Skipping AST enrichment.", file=sys.stderr)
+        logger.info("GitNexus is not available on this system. Skipping AST enrichment.")
 
     if gitnexus_ok and repo_name and repo_path:
-        print("Enriching findings with AST context...", file=sys.stderr)
+        logger.info("Enriching findings with AST context...")
         for finding in findings:
             file_path = finding.get("file")
             line_number = finding.get("line")
@@ -95,8 +98,7 @@ def enrich_findings(findings: List[dict], target_path: str, use_mock: bool) -> L
                         finding["ast_context"] = MOCK_AST_CONTEXTS[key]
 
     elif use_mock:
-        print("GitNexus not available/mapped, but using mock AST context for mock scan.",
-              file=sys.stderr)
+        logger.info("GitNexus not available/mapped, but using mock AST context for mock scan.")
         for finding in findings:
             key = (finding.get("file"), int(finding.get("line", 0)))
             if key in MOCK_AST_CONTEXTS:
