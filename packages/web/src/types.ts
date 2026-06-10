@@ -96,6 +96,16 @@ export interface ReportListItem {
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
+export interface AIProviderContextType {
+  config: Config;
+  selectedProvider: string;
+  apiKey: string;
+  apiBaseUrl: string;
+  aiModel: string;
+  aiTemperature: number;
+  aiMaxTokens: number;
+}
+
 export interface Config {
   AI_PROVIDER?: string;
   AI_TEMPERATURE?: string;
@@ -118,4 +128,109 @@ export interface Config {
   NINEROUTER_MODEL?: string;
   SEMGREP_RULES_PATH?: string;
   [key: string]: string | undefined;
+}
+
+// ─── UI Component Props ───────────────────────────────────────────────────────
+
+/** A single chat message in the AI assistant panel. */
+export interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp?: string;
+}
+
+/** Props for the chat panel component. */
+export interface ChatPanelProps {
+  /** The report context for the chat session. */
+  report?: Report;
+  className?: string;
+  /** Callback when a message is sent. */
+  onSendMessage?: (message: string) => void;
+}
+
+/** Props for the file source viewer component. */
+export interface FileViewerProps {
+  /** The finding whose source code to display. */
+  finding: Finding;
+  className?: string;
+}
+
+/** Props for the apply-fix action button. */
+export interface ApplyFixButtonProps {
+  /** The finding to apply a fix for. */
+  finding: Finding;
+  /** Called after the fix has been applied. */
+  onApplied?: () => void;
+  className?: string;
+  disabled?: boolean;
+}
+
+/** Props for a metrics dashboard statistic card. */
+export interface StatsCardProps {
+  label: string;
+  value: string | number;
+  icon?: string;
+  trend?: 'up' | 'down' | 'neutral';
+  className?: string;
+}
+
+/** Props for a top-files list item showing per-file metrics. */
+export interface TopFileItemProps {
+  filePath: string;
+  metrics: FileMetrics;
+  className?: string;
+}
+
+/** Props for the severity distribution chart. */
+export interface SeverityChartProps {
+  errorCount: number;
+  warningCount: number;
+  infoCount: number;
+  className?: string;
+}
+
+/** Props for a provider configuration form section. */
+export interface ProviderFormSectionProps {
+  /** The provider key (e.g. "OPENAI", "ANTHROPIC"). */
+  providerKey: string;
+  config: Config;
+  /** Called when a config value changes. */
+  onChange: (key: string, value: string) => void;
+  className?: string;
+}
+
+/** Props for a project list item in the dashboard sidebar. */
+export interface ProjectListItemProps {
+  project: Project;
+  /** Whether this project is currently selected. */
+  isActive?: boolean;
+  onClick?: () => void;
+  className?: string;
+}
+
+/** Props for a history (past report) list item. */
+export interface HistoryListItemProps {
+  report: ReportListItem;
+  onClick?: () => void;
+  className?: string;
+}
+
+/** Props for a sidebar navigation item. */
+export interface NavItemProps {
+  label: string;
+  icon?: string;
+  /** Route path to navigate to. */
+  to?: string;
+  isActive?: boolean;
+  onClick?: () => void;
+  className?: string;
+}
+
+/** Props for the scan trigger button. */
+export interface ScanButtonProps {
+  /** Whether a scan is currently running. */
+  isScanning?: boolean;
+  onClick?: () => void;
+  className?: string;
+  disabled?: boolean;
 }
