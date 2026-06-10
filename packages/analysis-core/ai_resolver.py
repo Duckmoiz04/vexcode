@@ -1,77 +1,11 @@
-import os
-import sys
-import json
-import re
-import time
-import requests
-from dotenv import load_dotenv
+import os, json, time, requests
 from typing import Dict, Any, List, Tuple, Optional
 
-# Try loading from the current package directory first, then fallback to CWD
-current_dir = os.path.dirname(os.path.abspath(__file__))
-dotenv_path = os.path.join(current_dir, '.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
-else:
-    load_dotenv()
+from logger import get_logger
+from ai_config import _reload_env_file, get_ai_config  # noqa: F401 — re-exported for backward compat
+from ai_prompts import SYSTEM_PROMPT_RESOLVE
 
-def _reload_env_file() -> None:
-    """Reload .env values into os.environ, but only override with non-empty values.
-
-    - Lets unit tests inject values via @patch.dict(os.environ, ...) survive a reload.
-    - Lets users edit the .env file at runtime and have the next call pick up the change.
-    - Empty values in .env are treated as "clear" but are not propagated, so missing
-      settings fall back to whatever the caller already provided via os.environ.
-    """
-    if not os.path.exists(dotenv_path):
-        return
-    try:
-        with open(dotenv_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                key, _, val = line.partition("=")
-                key = key.strip()
-                val = val.strip()
-                if val:
-                    os.environ[key] = val
-    except OSError:
-        pass
-
-
-# Centralized helper to resolve AI configuration dynamically based on active provider.
-# Returns (api_key, base_url, model, requires_key). Empty strings mean "not configured".
-# The caller is responsible for falling back to mock resolutions or showing a clear
-# "configure me in Settings" error when any required value is missing.
-def get_ai_config() -> Tuple[str, str, str, bool]:
-    _reload_env_file()
-
-    ai_provider = (os.getenv("AI_PROVIDER") or "").lower()
-
-    if ai_provider == "9router":
-        api_key = os.getenv("NINEROUTER_API_KEY") or ""
-        base_url = os.getenv("NINEROUTER_BASE_URL") or ""
-        model = os.getenv("NINEROUTER_MODEL") or ""
-        # 9router does not require an API key by default (can run locally)
-        return api_key, base_url, model, False
-    elif ai_provider == "openai":
-        api_key = os.getenv("OPENAI_API_KEY") or ""
-        base_url = os.getenv("OPENAI_BASE_URL") or ""
-        model = os.getenv("OPENAI_MODEL") or ""
-        return api_key, base_url, model, True
-    elif ai_provider == "google":
-        api_key = os.getenv("GOOGLE_API_KEY") or ""
-        base_url = os.getenv("GOOGLE_BASE_URL") or ""
-        model = os.getenv("GOOGLE_MODEL") or ""
-        return api_key, base_url, model, True
-    elif ai_provider == "anthropic":
-        api_key = os.getenv("ANTHROPIC_API_KEY") or ""
-        base_url = os.getenv("ANTHROPIC_BASE_URL") or ""
-        model = os.getenv("ANTHROPIC_MODEL") or ""
-        return api_key, base_url, model, True
-
-    return "", "", "", False
+logger = get_logger(__name__)
 
 # Standard mock AI resolutions map
 MOCK_AI_RESOLUTIONS = {
@@ -90,30 +24,16 @@ MOCK_AI_RESOLUTIONS = {
 }
 
 from constants import (
-    MAX_CODE_CHARS,
-    MAX_NAMING_AUDIT_FILES,
-    MAX_RESOLVE_FINDINGS,
-    AI_RESOLVE_MAX_TOKENS,
-    NAMING_AUDIT_SLEEP,
-    AI_MAX_RETRIES,
-    AI_RETRY_BASE_WAIT_SECONDS,
-    AI_RESOLVE_TIMEOUT_SECONDS,
-    AI_NAMING_TIMEOUT_SECONDS,
+    MAX_CODE_CHARS, MAX_NAMING_AUDIT_FILES, MAX_RESOLVE_FINDINGS,
+    AI_RESOLVE_MAX_TOKENS, NAMING_AUDIT_SLEEP, AI_MAX_RETRIES,
+    AI_RETRY_BASE_WAIT_SECONDS, AI_RESOLVE_TIMEOUT_SECONDS, AI_NAMING_TIMEOUT_SECONDS,
 )
 
-# Comment markers per language. The AI sometimes returns a comment-only "remediation"
-# like "# Remediation code for path-traversal" — we strip those to keep the
-# frontend from rendering them as real + additions.
+# Strip comment-only "remediation" so frontend doesn't render fake fixes.
 _COMMENT_PREFIXES = ("#", "//", "/*", "*", "--", ";")
 
-
 def sanitize_remediation_code(code: str) -> str:
-    """Return the remediation code with placeholder-only / comment-only text stripped.
-
-    If every non-empty line is a comment, the AI did not produce an actual fix.
-    In that case we return an empty string so the frontend treats this as a
-    deletion / false-positive instead of a real code addition.
-    """
+    """Strip placeholder-only / comment-only text; return empty if all lines are comments."""
     if not code:
         return ""
     lines = [line.rstrip() for line in code.splitlines()]
@@ -125,41 +45,26 @@ def sanitize_remediation_code(code: str) -> str:
         return ""
     return code.strip("\n")
 
-
 def decode_response_text(response: Any) -> str:
-    """Decode HTTP response body as UTF-8, fixing mojibake from wrong charset headers.
-    9router returns Content-Type: text/event-stream; charset=iso-8859-1
-    causing requests to mangle UTF-8 chars (e.g., em dash → â\x80\x94).
-    """
+    """Decode HTTP response body as UTF-8, fixing mojibake from wrong charset headers."""
     raw = response.content
     try:
         return raw.decode("utf-8")
     except UnicodeDecodeError:
         return raw.decode("latin-1")
 
-
 def safe_json_parse(text: str) -> Any:
-    """
-    Robustly parse JSON from AI response text.
-    Handles: markdown fences, extra trailing data after valid JSON.
-    Uses raw_decode to stop at the end of the first valid JSON value
-    and silently discard any trailing garbage.
-    Returns parsed Python object or raises ValueError.
-    """
-    # Strip markdown code fences
+    """Robustly parse JSON from AI response. Handles markdown fences and trailing garbage."""
     text = text.strip()
     if text.startswith("```"):
         lines = text.splitlines()
-        lines = lines[1:]  # remove opening fence
+        lines = lines[1:]
         if lines and lines[-1].strip().startswith("```"):
-            lines = lines[:-1]  # remove closing fence
+            lines = lines[:-1]
         text = "\n".join(lines).strip()
 
-    # raw_decode parses the first valid JSON value and ignores trailing text
-    # This is the correct fix for "Extra data" errors.
     decoder = json.JSONDecoder()
     text = text.strip()
-    # Find first '[' or '{' to skip any leading non-JSON text
     for start_char in ('[', '{'):
         idx = text.find(start_char)
         if idx != -1:
@@ -168,15 +73,10 @@ def safe_json_parse(text: str) -> Any:
                 return obj
             except json.JSONDecodeError:
                 pass
-
     raise ValueError(f"Cannot parse JSON from AI response: {text[:200]}")
 
 def parse_api_response(text: str) -> Dict[str, Any]:
-    """
-    Parse a 9router/OpenAI-format HTTP response body.
-    Always searches for '{' first since API responses are always JSON objects.
-    Handles trailing garbage after the JSON object.
-    """
+    """Parse a 9router/OpenAI-format HTTP response body, searching for '{' first."""
     text = text.strip()
     decoder = json.JSONDecoder()
     idx = text.find('{')
@@ -189,12 +89,7 @@ def parse_api_response(text: str) -> Dict[str, Any]:
     raise ValueError(f"Cannot parse API response body: {text[:200]}")
 
 def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> requests.Response:
-    """
-    POST with exponential-backoff retry on rate limits and slow local routers.
-    Local 9router/model backends can accept the request and then exceed the
-    read timeout, so timeout/connectivity errors need the same bounded retry
-    treatment as 429 responses.
-    """
+    """POST with exponential-backoff retry on rate limits and local router read timeouts."""
     last_error = None
     for attempt in range(AI_MAX_RETRIES + 1):
         try:
@@ -203,30 +98,22 @@ def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> req
             last_error = exc
             if attempt < AI_MAX_RETRIES:
                 wait = AI_RETRY_BASE_WAIT_SECONDS * (2 ** attempt)
-                print(
-                    f"AI request failed ({exc.__class__.__name__}) — retrying in {wait:.0f}s "
-                    f"(attempt {attempt + 1}/{AI_MAX_RETRIES})...",
-                    file=sys.stderr
-                )
+                logger.info(f"AI request failed ({exc.__class__.__name__}) — retrying in {wait:.0f}s (attempt {attempt + 1}/{AI_MAX_RETRIES})...")
                 time.sleep(wait)
                 continue
             raise
-
         if response.status_code == 429 and attempt < AI_MAX_RETRIES:
             wait = AI_RETRY_BASE_WAIT_SECONDS * (2 ** attempt)
-            print(f"429 Too Many Requests — retrying in {wait:.0f}s (attempt {attempt + 1}/{AI_MAX_RETRIES})...", file=sys.stderr)
+            logger.info(f"429 Too Many Requests — retrying in {wait:.0f}s (attempt {attempt + 1}/{AI_MAX_RETRIES})...")
             time.sleep(wait)
             continue
         return response
-
     if last_error:
         raise last_error
     return response
 
-
 def read_surrounding_code(target_path: str, file_path: str, line_num: int, context_lines: int = 5) -> str:
-    """Read context lines around a finding from the source file.
-    Returns annotated lines with >>>> marking the target line."""
+    """Read context lines around a finding from the source file; mark target with >>>>."""
     full_path = os.path.join(target_path, file_path)
     if not os.path.exists(full_path):
         return ""
@@ -235,47 +122,35 @@ def read_surrounding_code(target_path: str, file_path: str, line_num: int, conte
             all_lines = f.readlines()
     except (OSError, IOError):
         return ""
-
     start = max(0, line_num - 1 - context_lines)
     end = min(len(all_lines), line_num + context_lines)
-
     result = []
     for i in range(start, end):
-        if i == line_num - 1:
-            result.append(f">>>> {all_lines[i]}")
-        else:
-            result.append(f"     {all_lines[i]}")
+        result.append(f">>>> {all_lines[i]}" if i == line_num - 1 else f"     {all_lines[i]}")
     return "".join(result)
 
-
 def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optional[str] = None) -> Dict[str, Any]:
-    """
-    Sends findings to the AI completions API to get AI remediation recommendations.
-    If use_mock is True, or if required keys are missing or request fails,
-    returns standard mock resolutions.
-    """
+    """Send findings to AI completions API for remediation. Falls back to mock when AI is unconfigured."""
     if isinstance(findings, dict):
         findings = findings.get("findings", [])
-        
+
     api_key, base_url, model, requires_key = get_ai_config()
 
-    # Fall back to mock resolutions when the user has not configured the AI yet.
-    fallback_due_to_key = requires_key and not api_key
-    fallback_due_to_config = not base_url or not model
-    fallback_due_to_missing_provider = not os.getenv("AI_PROVIDER")
+    missing_provider = not os.getenv("AI_PROVIDER")
+    no_key = requires_key and not api_key
+    no_config = not base_url or not model
 
-    if use_mock or fallback_due_to_key or fallback_due_to_config or fallback_due_to_missing_provider:
+    if use_mock or missing_provider or no_key or no_config:
         if not use_mock:
-            if fallback_due_to_missing_provider:
-                print("AI provider is not configured. Set AI_PROVIDER (and provider keys) via the Settings drawer, or pass --mock-ai. Falling back to mock resolutions.", file=sys.stderr)
-            elif fallback_due_to_key:
-                print("API key is required but not found in environment. Falling back to mock resolutions.", file=sys.stderr)
+            if missing_provider:
+                logger.info("AI provider is not configured. Set AI_PROVIDER (and provider keys) via the Settings drawer, or pass --mock-ai. Falling back to mock resolutions.")
+            elif no_key:
+                logger.info("API key is required but not found in environment. Falling back to mock resolutions.")
             else:
-                print(f"AI config is incomplete (base_url='{base_url}', model='{model}'). Falling back to mock resolutions.", file=sys.stderr)
+                logger.info(f"AI config is incomplete (base_url='{base_url}', model='{model}'). Falling back to mock resolutions.")
         else:
-            print("Using mock AI resolutions as requested.", file=sys.stderr)
-            
-        # Return mock resolutions matched against the rule_ids in the findings
+            logger.info("Using mock AI resolutions as requested.")
+
         resolutions = {}
         for finding in findings:
             rule_id = finding.get("rule_id")
@@ -288,17 +163,12 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                 }
         return resolutions
 
-    # Per-rule sequential approach: send ONE rule per request.
-    # Batch requests with 5+ rules generate huge responses that timeout (60s+).
-    # One rule per request = small payload, ~512 token response, completes in ~5-10s.
-    headers = {
-        "Content-Type": "application/json"
-    }
+    # Per-rule sequential: 1 rule/request avoids huge payloads that timeout (60s+).
+    headers = {"Content-Type": "application/json"}
     if api_key:
         headers["Authorization"] = f"Bearer {api_key}"
     url = f"{base_url.rstrip('/')}/chat/completions"
 
-    # Collect unique rules capped at MAX_RESOLVE_FINDINGS
     seen_rules: set = set()
     unique_findings = []
     for f in findings:
@@ -314,12 +184,12 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                 "message": f.get("message", "")
             }
             if "ast_context" in f:
-                ast_ctx = f["ast_context"]
+                ac = f["ast_context"]
                 item["ast_context"] = {
-                    "symbol_name": ast_ctx.get("symbol_name"),
-                    "kind": ast_ctx.get("kind"),
-                    "callers": ast_ctx.get("callers", [])[:3],
-                    "impact": ast_ctx.get("impact", {})
+                    "symbol_name": ac.get("symbol_name"),
+                    "kind": ac.get("kind"),
+                    "callers": ac.get("callers", [])[:3],
+                    "impact": ac.get("impact", {})
                 }
             item["code_text"] = f.get("code_text", "")
             if target_path:
@@ -333,49 +203,19 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                         item["surrounding_code"] = surrounding
             unique_findings.append(item)
 
-    total = len(seen_rules)
-    if total > MAX_RESOLVE_FINDINGS:
-        print(f"Capped AI resolution to {MAX_RESOLVE_FINDINGS} unique rules (out of {total} total).", file=sys.stderr)
+    if len(seen_rules) > MAX_RESOLVE_FINDINGS:
+        logger.info(f"Capped AI resolution to {MAX_RESOLVE_FINDINGS} unique rules (out of {len(seen_rules)} total).")
 
     if not unique_findings:
         return {}
 
-    print(f"Querying AI completions endpoint ({base_url}) using model '{model}'...", file=sys.stderr)
-
-    system_prompt = (
-        "You are an expert security engineer reviewing code. Follow these two steps:\n"
-        "1. VERIFY: Determine if the reported finding is a real vulnerability or a false positive. "
-        "Look at the surrounding code — is the dangerous pattern actually reachable with "
-        "attacker-controlled input? Is there existing sanitization?\n"
-        "2. EVALUATE & FIX: If it is a real issue, produce a fix that accounts for:\n"
-        "  - Security: attack vector, input validation, principle of least privilege\n"
-        "  - Correctness: the fix preserves intended behavior\n"
-        "  - Side effects: the fix does not break callers or other components\n"
-        "  - Best practices: idiomatic patterns for the language and framework\n"
-        "Rules for remediation_code:\n"
-        "- ONLY the fixed line(s) of code, nothing else\n"
-        "- NO surrounding context, NO function body, NO file content\n"
-        "- NO 'Before:'/'After:' comments, NO explanatory comments\n"
-        "- NEVER return a comment-only string such as '# Remediation code for X' or '// TODO fix'. "
-        "If you cannot produce a concrete code fix, return an empty string for remediation_code "
-        "and prefix the suggestion with 'False positive:'.\n"
-        "- A clean, standalone snippet that directly replaces the vulnerable pattern\n"
-        "- Example for a RegExp issue: const safeRegex = /hardcoded_pattern/;\n"
-        "If the finding is a FALSE POSITIVE, set suggestion to 'False positive: <explain why>' "
-        "and remediation_code to an empty string.\n"
-        "IMPORTANT: Use the 'Rule ID alias' value (e.g., r0) as the JSON key, NOT the full rule name.\n"
-        "Respond ONLY with raw JSON (no markdown fences) in this exact shape:\n"
-        "{\"<alias>\": {\"suggestion\": \"one sentence: what to change and why\", "
-        "\"remediation_code\": \"ONLY the fixed replacement code\"}}"
-    )
+    logger.info(f"Querying AI completions endpoint ({base_url}) using model '{model}'...")
 
     resolutions: Dict[str, Any] = {}
 
     for idx, item in enumerate(unique_findings):
         rule_id = item["rule_id"]
-        # Use a short alias (r0, r1, ...) so the model doesn't truncate the JSON key
-        # when the rule_id is very long (e.g., 75+ chars like detect-non-literal-regexp...)
-        alias = f"r{idx}"
+        alias = f"r{idx}"  # Short alias for long rule_ids
 
         user_prompt = (
             f"Rule ID alias: {alias}\n"
@@ -386,10 +226,7 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
         )
         surrounding = item.get("surrounding_code")
         if surrounding:
-            user_prompt += (
-                f"Surrounding code (target line marked with >>>>):\n"
-                f"{surrounding}\n"
-            )
+            user_prompt += f"Surrounding code (target line marked with >>>>):\n{surrounding}\n"
         ast_ctx = item.get("ast_context")
         if ast_ctx:
             callers = ", ".join(c.get("name", "?") for c in ast_ctx.get("callers", [])) or "none"
@@ -404,7 +241,7 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
         payload = {
             "model": model,
             "messages": [
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": SYSTEM_PROMPT_RESOLVE},
                 {"role": "user", "content": user_prompt}
             ],
             "temperature": 0.1,
@@ -418,7 +255,6 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
             content = response_data["choices"][0]["message"]["content"].strip()
             result = safe_json_parse(content)
             if isinstance(result, dict):
-                # Remap alias key back to the real rule_id
                 for key, value in result.items():
                     real_key = rule_id if key == alias else key
                     if isinstance(value, dict):
@@ -427,172 +263,21 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                         remediation = sanitize_remediation_code(remediation)
                         if not remediation and suggestion and not suggestion.lower().startswith("false positive"):
                             suggestion = f"False positive: {suggestion}"
-                        resolutions[real_key] = {
-                            "suggestion": suggestion,
-                            "remediation_code": remediation,
-                        }
+                        resolutions[real_key] = {"suggestion": suggestion, "remediation_code": remediation}
                     else:
                         resolutions[real_key] = value
-            print(f"  [{idx+1}/{len(unique_findings)}] Resolved: {rule_id}", file=sys.stderr)
+            logger.info(f"  [{idx+1}/{len(unique_findings)}] Resolved: {rule_id}")
         except (requests.RequestException, json.JSONDecodeError) as e:
-            print(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}", file=sys.stderr)
+            logger.info(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}")
             resolutions[rule_id] = {
                 "suggestion": f"False positive: AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection, or pick a faster model.",
                 "remediation_code": "",
             }
 
-        # Sleep between rules to avoid rate limiting
-        if idx < len(unique_findings) - 1:
+        if idx < len(unique_findings) - 1:  # Rate limiting sleep
             time.sleep(NAMING_AUDIT_SLEEP)
 
     return resolutions
 
-def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool = False) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """
-    Scans source files to audit naming quality of variables/functions/classes.
-    Returns a list of naming findings and a dictionary of resolutions.
-    """
-    findings = []
-    resolutions = {}
-    
-    if not files_to_audit:
-        return findings, resolutions
-        
-    api_key, base_url, model, requires_key = get_ai_config()
-    fallback_due_to_key = requires_key and not api_key
-    fallback_due_to_config = not base_url or not model
-    fallback_due_to_missing_provider = not os.getenv("AI_PROVIDER")
-
-    if use_mock or fallback_due_to_key or fallback_due_to_config or fallback_due_to_missing_provider:
-        if not use_mock:
-            print("AI config is incomplete. Using mock naming audit.", file=sys.stderr)
-        
-        # Look for mock target example.py
-        for f_path in files_to_audit:
-            rel_path = os.path.relpath(f_path, target_path).replace("\\", "/")
-            if "example.py" in rel_path:
-                rule_id = "maintainability.naming.obscure"
-                finding = {
-                    "file": rel_path,
-                    "line": 8,
-                    "rule_id": rule_id,
-                    "message": "Tên hàm 'do_it' và tham số 'x' quá chung chung và tối nghĩa. Đề xuất đổi tên để phản ánh rõ chức năng xử lý dữ liệu người dùng.",
-                    "severity": "WARNING",
-                    "code_text": "def do_it(x):"
-                }
-                findings.append(finding)
-                resolutions[rule_id] = MOCK_AI_RESOLUTIONS[rule_id]
-                break
-        return findings, resolutions
-
-    # Real AI execution — cap number of files to avoid overloading the router
-    if len(files_to_audit) > MAX_NAMING_AUDIT_FILES:
-        print(f"Limiting naming audit to {MAX_NAMING_AUDIT_FILES} files (out of {len(files_to_audit)} candidates).", file=sys.stderr)
-        files_to_audit = files_to_audit[:MAX_NAMING_AUDIT_FILES]
-
-    print(f"Querying AI completions for naming audit on {len(files_to_audit)} files...", file=sys.stderr)
-
-    for f_path in files_to_audit:
-        if not os.path.exists(f_path):
-            continue
-            
-        try:
-            with open(f_path, "r", encoding="utf-8") as f:
-                code_content = f.read()
-                
-            if not code_content.strip():
-                continue
-                
-            rel_path = os.path.relpath(f_path, target_path).replace("\\", "/")
-            
-            system_prompt = (
-                "You are an expert software architect. Analyze the provided source code and review "
-                "the naming quality of classes, functions, and key variables. Identify any obscure, "
-                "too generic (like x, a, temp, data, obj, process), or misleading names.\n"
-                "Rules for remediation_code:\n"
-                "- ONLY the renamed line of code, nothing else\n"
-                "- NO surrounding context, NO function body\n"
-                "- NO 'Before:'/'After:' comments\n"
-                "Your response MUST be a valid JSON array of objects matching this schema:\n"
-                "[\n"
-                "  {\n"
-                "    \"line\": 12,\n"
-                "    \"code_text\": \"const temp = req.body;\",\n"
-                "    \"message\": \"Variable 'temp' is too generic.\",\n"
-                "    \"suggestion\": \"Rename 'temp' to 'requestPayload' to describe the data.\",\n"
-                "    \"remediation_code\": \"const requestPayload = req.body;\"\n"
-                "  }\n"
-                "]\n"
-                "If no naming issues are found, return an empty array []. Just return raw JSON, no markdown formatting."
-            )
-            
-            # Truncate large files to avoid token/payload limits causing 502 errors
-            if len(code_content) > MAX_CODE_CHARS:
-                code_content = code_content[:MAX_CODE_CHARS] + "\n# ... (truncated)"
-
-            user_prompt = f"File: {rel_path}\n\nCode Content:\n{code_content}"
-            
-            headers = {
-                "Content-Type": "application/json"
-            }
-            if api_key:
-                headers["Authorization"] = f"Bearer {api_key}"
-            
-            payload = {
-                "model": model,
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
-                "temperature": 0.1
-            }
-            
-            url = f"{base_url.rstrip('/')}/chat/completions"
-            response = post_with_retry(url, headers, payload, timeout=AI_NAMING_TIMEOUT_SECONDS)
-            response.raise_for_status()
-
-            # Use parse_api_response on raw response text to handle 9router trailing
-            # garbage that causes response.json() to raise "Extra data" errors.
-            response_data = parse_api_response(decode_response_text(response))
-            content = response_data["choices"][0]["message"]["content"].strip()
-            issues = safe_json_parse(content)
-            
-            if isinstance(issues, list):
-                for idx, issue in enumerate(issues):
-                    rule_id = f"maintainability.naming.obscure.{rel_path.replace('/', '_').replace('.', '_')}_{idx}"
-                    line_num = issue.get("line")
-                    code_line = issue.get("code_text")
-                    msg = issue.get("message")
-                    sug = issue.get("suggestion")
-                    rem = issue.get("remediation_code")
-                    
-                    finding = {
-                        "file": rel_path,
-                        "line": line_num,
-                        "rule_id": rule_id,
-                        "message": msg,
-                        "severity": "WARNING",
-                        "code_text": code_line
-                    }
-                    findings.append(finding)
-                    
-                    resolutions[rule_id] = {
-                        "suggestion": sug,
-                        "remediation_code": rem
-                    }
-                    
-        except requests.RequestException as e:
-            print(f"Error auditing naming for {f_path}: {e}", file=sys.stderr)
-
-        # Throttle requests to avoid 429 Too Many Requests from 9router
-        time.sleep(NAMING_AUDIT_SLEEP)
-            
-    return findings, resolutions
-
-
 if __name__ == "__main__":
-    # Test script run
-    test_findings = [
-        {"rule_id": "python.lang.security.audit.dangerous-exec", "file": "example.py", "line": 12}
-    ]
-    print(json.dumps(resolve_findings(test_findings, use_mock=True), indent=2))
+    print(json.dumps(resolve_findings([{"rule_id": "python.lang.security.audit.dangerous-exec", "file": "example.py", "line": 12}], use_mock=True), indent=2))

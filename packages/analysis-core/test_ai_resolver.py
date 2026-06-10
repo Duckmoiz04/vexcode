@@ -9,10 +9,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from ai_resolver import (
     safe_json_parse,
     sanitize_remediation_code,
-    get_ai_config,
     resolve_findings,
     post_with_retry,
 )
+from ai_config import get_ai_config
 import requests
 
 
@@ -83,7 +83,7 @@ class TestSanitizeRemediationCode(unittest.TestCase):
 
 class TestGetAiConfig(unittest.TestCase):
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch.dict(os.environ, {}, clear=True)
     def test_no_provider_returns_empty(self, mock_reload):
         api_key, base_url, model, requires_key = get_ai_config()
@@ -92,7 +92,7 @@ class TestGetAiConfig(unittest.TestCase):
         self.assertEqual(model, "")
         self.assertFalse(requires_key)
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch.dict(os.environ, {
         "AI_PROVIDER": "9router",
         "NINEROUTER_API_KEY": "key123",
@@ -106,7 +106,7 @@ class TestGetAiConfig(unittest.TestCase):
         self.assertEqual(model, "test-model")
         self.assertFalse(requires_key)
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch.dict(os.environ, {
         "AI_PROVIDER": "openai",
         "OPENAI_API_KEY": "sk-test",
@@ -120,7 +120,7 @@ class TestGetAiConfig(unittest.TestCase):
         self.assertEqual(model, "gpt-4")
         self.assertTrue(requires_key)
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch.dict(os.environ, {
         "AI_PROVIDER": "google",
         "GOOGLE_API_KEY": "google-key",
@@ -134,7 +134,7 @@ class TestGetAiConfig(unittest.TestCase):
         self.assertEqual(model, "gemini-pro")
         self.assertTrue(requires_key)
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch.dict(os.environ, {
         "AI_PROVIDER": "anthropic",
         "ANTHROPIC_API_KEY": "anthro-key",
@@ -148,7 +148,7 @@ class TestGetAiConfig(unittest.TestCase):
         self.assertEqual(model, "claude-3")
         self.assertTrue(requires_key)
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch.dict(os.environ, {
         "AI_PROVIDER": "unknown_provider",
         "UNKNOWN_API_KEY": "some-key",
@@ -163,7 +163,7 @@ class TestGetAiConfig(unittest.TestCase):
 
 class TestResolveFindings(unittest.TestCase):
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch('ai_resolver.time.sleep')
     @patch('ai_resolver.requests.post')
     @patch.dict(os.environ, {
@@ -207,7 +207,7 @@ class TestResolveFindings(unittest.TestCase):
         )
         self.assertIn("subprocess.run", resolutions["python.lang.security.audit.dangerous-exec"]["remediation_code"])
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch('ai_resolver.time.sleep')
     @patch('ai_resolver.requests.post')
     @patch.dict(os.environ, {
@@ -234,7 +234,7 @@ class TestResolveFindings(unittest.TestCase):
         self.assertIn("False positive", resolutions["python.lang.security.audit.dangerous-exec"]["suggestion"])
         self.assertEqual(resolutions["python.lang.security.audit.dangerous-exec"]["remediation_code"], "")
 
-    @patch('ai_resolver._reload_env_file')
+    @patch('ai_config._reload_env_file')
     @patch.dict(os.environ, {}, clear=True)
     def test_resolve_findings_falls_back_to_mock_when_no_provider(self, mock_reload):
         findings = [
