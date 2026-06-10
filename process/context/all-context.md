@@ -54,8 +54,9 @@ For most substantial tasks:
 ## Current Root Entry Points
 
 | File | Read when |
-|---|---|
+|---|---|---|
 | `process/context/all-context.md` | any substantial planning, research, review, or implementation task |
+| `process/context/architecture-overview.md` | understanding the full system architecture, execution flow, component relationships, or API reference |
 | `process/context/tests/all-tests.md` | testing, verification, debugging test failures, execution planning |
 | `process/context/planning/all-planning.md` | plan-shape calibration, planning examples, SIMPLE vs COMPLEX reference docs |
 | `process/context/uxui/all-uxui.md` | UI styling guidelines, design system rules, or component architecture |
