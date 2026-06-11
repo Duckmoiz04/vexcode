@@ -149,7 +149,7 @@ DATN2/
 
 ## Current Features
 
-- **ai-code-review** (`process/features/ai-code-review/`): Main hybrid Node/Python static code scanner & AI code reviewer.
+- **vexcode** (`process/features/vexcode/`): Main hybrid Node/Python static code scanner & AI code reviewer.
 
 ## Technology Stack
 

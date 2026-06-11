@@ -216,7 +216,7 @@ main.py
   │
   └── PHASE 4 — Reporter
       reporter.py::assemble_report() + write_report()
-      → JSON file → ~/.ai-code-review/reports/{projectName}/
+      → JSON file → ~/.vexcode/reports/{projectName}/
 ```
 
 ### Bước 4: Bridge nhận kết quả
@@ -300,28 +300,28 @@ Không có AI_PROVIDER → "AI provider is not configured..."
 
 ```bash
 # Full scan
-ai-code-review scan --target D:/project
+vexcode scan --target D:/project
 
 # Offline (skip Semgrep + AI API)
-ai-code-review scan --target D:/project --mock-scan --mock-ai
+vexcode scan --target D:/project --mock-scan --mock-ai
 
 # Fast incremental scan (git changed files only)
-ai-code-review scan --target D:/project --fast
+vexcode scan --target D:/project --fast
 
 # Start web server
-ai-code-review serve --port 8080
+vexcode serve --port 8080
 
 # Serve + open browser
-ai-code-review ui
+vexcode ui
 
 # Help
-ai-code-review help
-ai-code-review scan --help
+vexcode help
+vexcode scan --help
 ```
 
 ### Report storage
 
-Tất cả report lưu tại: `~/.ai-code-review/reports/{projectName}/{timestamp}.json`
+Tất cả report lưu tại: `~/.vexcode/reports/{projectName}/{timestamp}.json`
 
 ---
 
