@@ -2,16 +2,25 @@ import os
 import time
 from typing import Dict, Any, List, Optional, Tuple
 
-from logger import get_logger
-from complexity import analyze_file_complexity
-from ai_resolver import resolve_findings
-from naming_audit import run_naming_audit
+from engine.logger import get_logger
+from engine.complexity import analyze_file_complexity
+from engine.ai_resolver import resolve_findings
+from engine.naming_audit import run_naming_audit
+from engine.constants import load_settings
 
 logger = get_logger(__name__)
 
-MAX_FILES_FOR_COMPLEXITY = 100
-FAST_SCAN_SLEEP_SECONDS = 15
-MAX_NAMING_AUDIT_CANDIDATES = 5
+_settings = load_settings()
+
+MAX_FILES_FOR_COMPLEXITY = _settings.get("analysis", {}).get(
+    "max_files_for_complexity", 100
+)
+FAST_SCAN_SLEEP_SECONDS = _settings.get("analysis", {}).get(
+    "fast_scan_sleep_seconds", 15
+)
+MAX_NAMING_AUDIT_CANDIDATES = _settings.get("analysis", {}).get(
+    "max_naming_audit_candidates", 5
+)
 
 
 def _collect_source_files(target: str, target_files: Optional[List[str]]) -> List[str]:

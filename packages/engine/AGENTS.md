@@ -1,21 +1,32 @@
 # packages/engine
 
-**Python 3.12 security analysis engine** — flat script collection, not a pip-installable package.
+**Python 3.12 security analysis engine** — src-layout package installable via `pip install -e .`
 
 ## Modules
 
 | Module | Responsibility |
 |--------|---------------|
-| `main.py` | CLI entry point, argparse orchestrator (3-stage pipeline) |
-| `scanner.py` | Semgrep subprocess wrapper; `run_scan()` with mock fallback |
-| `ast_graph.py` | GitNexus CLI adapter; Cypher queries for symbol resolution, context, impact |
-| `ai_resolver.py` | 9router LLM API client; builds structured prompts with AST context |
-| `test_ast_graph.py` | unittest tests (10 methods, mock-isolated) |
+| `main.py` | Backward-compat CLI shim — delegates to `engine.__main__` |
+| `src/engine/__main__.py` | CLI entry point, argparse orchestrator (3-stage pipeline) |
+| `src/engine/scanner.py` | Semgrep subprocess wrapper; `run_scan()` with mock fallback |
+| `src/engine/complexity.py` | Lizard-based code complexity analysis |
+| `src/engine/ast_graph.py` | GitNexus CLI adapter; Cypher queries for symbol resolution, context, impact |
+| `src/engine/ai_resolver.py` | 9router LLM API client; builds structured prompts with AST context |
+| `src/engine/ai_config.py` | AI provider config loader (9router, OpenAI, Google, Anthropic) |
+| `src/engine/logger.py` | stdout/stderr logging utilities |
+| `src/engine/constants.py` | Shared constants and thresholds |
+| `src/engine/naming_audit.py` | Naming convention audit utilities |
+| `src/engine/ai_prompts.py` | Prompt templates for AI resolution |
+| `src/engine/pipeline/` | Pipeline subpackage (scanner, enricher, resolver, reporter) |
+| `tests/` | pytest test suite (8 modules, mock-isolated) |
 
 ## Pipeline
 
 ```
-main.py → scanner.run_scan() → ast_graph.* enrichment → ai_resolver.resolve_findings() → JSON report
+python -m engine → pipeline/scanner.run_scan_phase()
+                  → pipeline/enricher.enrich_findings()
+                  → pipeline/resolver.resolve_phase()
+                  → pipeline/reporter.assemble_report() → JSON report
 ```
 
 ## How to Run
@@ -23,6 +34,9 @@ main.py → scanner.run_scan() → ast_graph.* enrichment → ai_resolver.resolv
 ```bash
 # Full pipeline
 python main.py --target <dir> --output report.json
+
+# Or via module:
+python -m engine --target <dir> --output report.json
 
 # Offline (skip Semgrep + AI API calls)
 python main.py --target <dir> --mock-scan --mock-ai
@@ -34,16 +48,19 @@ python main.py --target <dir> --fast
 ## How to Test
 
 ```bash
-python -m unittest test_ast_graph.py
+pip install -e .
+pytest
 ```
 
 ## Dependencies
 
-`requests`, `networkx`, `semgrep`, `python-dotenv` — installed via `pip install -r requirements.txt`. External CLI deps: GitNexus, Semgrep binary.
+`requests`, `networkx`, `semgrep`, `python-dotenv` — declared in `pyproject.toml`, installed via `pip install -e .`. External CLI deps: GitNexus, Semgrep binary.
 
 ## Conventions
 
-- **Flat layout**: no `src/`, no `__init__.py`, no `setup.py`/`pyproject.toml`
+- **Src layout**: `src/` package root; imports use `engine.xxx` prefix (e.g. `from engine.scanner import run_scan`)
+- **Tests**: pytest with pytest-mock (`mocker` fixture); conftest.py adds `src/` to `sys.path`
+- **Editable install**: `pip install -e packages/engine` registers the `engine` namespace package
 - **Subprocess calls**: always use `subprocess.run()` with `capture_output=True, text=True, check=False`
 - **Windows compat**: `shell = (sys.platform == 'win32')` before every subprocess call
 - **Graceful fallback**: every external dependency (Semgrep, GitNexus, 9router) has mock fallback
@@ -54,6 +71,5 @@ python -m unittest test_ast_graph.py
 
 ## Anti-Patterns
 
-- **Do not** add `__init__.py` or `pyproject.toml` without explicit request (maintain flat structure)
 - **Never** commit `.env` with real API keys (`.env` in `.gitignore`)
-- **Do not** switch to pytest without discussion (unittest is established convention)
+- **Do not** re-introduce flat-layout patterns — all sources belong under `src/engine/`

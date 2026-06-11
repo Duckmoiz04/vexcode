@@ -3,15 +3,15 @@ import time
 import requests
 from typing import Dict, Any, List, Tuple
 
-from logger import get_logger
-from constants import (
+from engine.logger import get_logger
+from engine.constants import (
     MAX_CODE_CHARS,
     MAX_NAMING_AUDIT_FILES,
     NAMING_AUDIT_SLEEP,
     AI_NAMING_TIMEOUT_SECONDS,
 )
-from ai_config import get_ai_config
-from ai_resolver import (
+from engine.ai_config import get_ai_config
+from engine.ai_resolver import (
     MOCK_AI_RESOLUTIONS,
     post_with_retry,
     parse_api_response,
@@ -80,7 +80,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                 
             rel_path = os.path.relpath(f_path, target_path).replace("\\", "/")
             
-            from ai_prompts import SYSTEM_PROMPT_NAMING_AUDIT
+            from engine.ai_prompts import SYSTEM_PROMPT_NAMING_AUDIT
             
             # Truncate large files to avoid token/payload limits causing 502 errors
             if len(code_content) > MAX_CODE_CHARS:

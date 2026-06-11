@@ -1,0 +1,44 @@
+# VexCode Engine — Centralized Configuration
+#
+# This file contains all non-secret defaults. Secrets (API keys) stay in .env.
+# Environment variables override these values at runtime.
+#
+# See AGENTS.md → Conventions section for the configuration precedence order.
+
+[analysis]
+# Max characters of file/code content sent to AI per request
+max_code_chars = 3000
+# Max files to audit per name-audit pass
+max_naming_audit_files = 3
+# Max unique rules sent to AI in one resolve_findings call
+max_resolve_findings = 5
+# Max source files for complexity analysis (cap to keep CI fast)
+max_files_for_complexity = 100
+# Max files to audit for naming quality per run
+max_naming_audit_candidates = 5
+# Cooldown seconds before AI resolution (avoid rate limits)
+fast_scan_sleep_seconds = 15
+
+[ai_settings]
+resolve_max_tokens = 512
+max_retries = 2
+retry_base_wait_seconds = 15.0
+resolve_timeout_seconds = 90
+naming_timeout_seconds = 90
+request_cooldown_seconds = 8.0
+
+[ai.providers.ninerouter]
+model = ""
+requires_key = false
+
+[ai.providers.openai]
+model = "gpt-4"
+requires_key = true
+
+[ai.providers.google]
+model = "gemini-pro"
+requires_key = true
+
+[ai.providers.anthropic]
+model = "claude-3-haiku"
+requires_key = true

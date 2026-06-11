@@ -2,8 +2,8 @@ import json
 from datetime import datetime, timezone
 from typing import Dict, Any, List
 
-from logger import get_logger
-from pipeline.scanner import get_git_state
+from engine.logger import get_logger
+from engine.pipeline.scanner import get_git_state
 
 logger = get_logger(__name__)
 

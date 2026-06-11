@@ -4,8 +4,8 @@ import subprocess
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List, Tuple
 
-from logger import get_logger
-from scanner import run_scan
+from engine.logger import get_logger
+from engine.scanner import run_scan
 
 logger = get_logger(__name__)
 

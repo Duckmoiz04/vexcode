@@ -1,13 +1,9 @@
 import unittest
-from unittest.mock import patch, MagicMock
-import os
-import sys
 import json
+import os
+from unittest.mock import patch, MagicMock
 
-# Ensure engine dir is on python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
-from ast_graph import (
+from engine.ast_graph import (
     is_gitnexus_available,
     get_repo_name_for_path,
     get_repo_info_for_path,
@@ -18,7 +14,7 @@ from ast_graph import (
     get_relative_repo_path,
     MOCK_AST_CONTEXTS
 )
-from ai_resolver import resolve_findings
+from engine.ai_resolver import resolve_findings
 
 class TestASTGraph(unittest.TestCase):
 
