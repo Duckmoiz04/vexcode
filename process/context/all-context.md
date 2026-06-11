@@ -1,6 +1,6 @@
 # AI Code Review - All Context
 
-Last updated: 2026-05-31
+Last updated: 2026-06-11
 
 This file is the root context entrypoint for the repo.
 
@@ -135,8 +135,9 @@ DATN2/
     skills/           -- Specialized skills (vc-setup, vc-update, etc.)
   .codex/             -- Codex IDE configurations and parity definitions
   packages/
-    cli-global/       -- Global Node.js CLI tool entrypoint and Express server
-    web/              -- React 19 + Tailwind v4 frontend (build output → cli-global/src/public/)
+    cli-global/       -- Node.js ESM CLI binary + Express server (75 tests)
+    web/              -- React 19 + Tailwind v4 + TypeScript 5 frontend (138 tests)
+    analysis-core/    -- Python 3.12 analysis engine (Semgrep, GitNexus, 9router AI)
   process/            -- The RIPER-5 process directory
     context/          -- Durable repository knowledge (all-context, tests, planning)
     development-protocols/ -- Developer guidelines and workflow protocols
@@ -194,29 +195,19 @@ DATN2/
 
 ---
 
-## Scan Metadata
+## Current Project Status (2026-06-11)
 
-- Generated: 2026-06-06T17:20:00Z
-- HEAD: 8d7025ab60c589152fc47ee88fb7e81a476c93ab
-- Mode: refresh
-- Package manager: npm (workspaces: packages/cli-global, packages/web)
+### ✅ Dự án hoàn thiện sau architecture-cleanup
+- 15 commits trên master — toàn bộ kế hoạch "architecture-cleanup" hoàn thành
+- **Kiến trúc modular**: Web monolith (`App.tsx` state center) → Context + hooks + services + 12 component modules
+- **138 web tests** (từ 0 lên 138), 75 CLI tests — tất cả pass
+- Build web: **pass**, TypeScript **0 errors**
+- Python: pre-existing issue thiếu `lizard` trong system Python (đã có trong `.venv`)
+- Không còn active plan — dự án sẵn sàng cho feature mới
 
-## Current Project Status (2026-06-06)
-
-### ✅ Hoàn thành (6/6 phase)
-- **Phase 1-5**: AI Code Review core — CLI, Express server, Python analysis engine, AST enrichment, AI resolver, Web UI, E2E hardening
-- **Phase 6**: React 19 + Tailwind v4 migration — split-workspace `packages/web/`, Vite 6 build → `cli-global/src/public/`
-
-### Tiến độ hiện tại
-- Tất cả 6 phase **✅ VERIFIED**
-- Build web: **pass** (1589 modules, 2.95s)
-- Backend tests: **23/23 pass**
-- Không có active plan nào đang triển khai
-- Dự án đang ở trạng thái **hoàn thiện, chờ feature mới hoặc cải tiến**
-
-### Cấu trúc packages hiện tại
-| Package | Vai trò | Tech |
+### Test Health
+| Package | Tests | Status |
 |---|---|---|
-| `packages/cli-global/` | CLI binary + Express server | Node.js ESM, Express 4, Vitest |
-| `packages/web/` | React frontend UI | React 19, Tailwind v4, Vite 6, TypeScript 5 |
-| `packages/analysis-core/` | Python analysis engine | Python 3.12, Semgrep, GitNexus, 9router AI |
+| Web | 138 (23 files) | ✅ All pass |
+| CLI | 75 (3 files) | ✅ All pass |
+| Python | 6 failures | ⚠️ Pre-existing: `lizard` chưa cài trong test subprocess |

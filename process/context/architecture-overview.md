@@ -60,8 +60,10 @@
 │  │ CLI entry│    scanner ──▶ enricher ──▶ resolver ──▶ reporter  │
 │  └──────────┘                                                     │
 │       :                                                           │
-│  ast_graph.py   ai_resolver.py   constants.py                    │
-│  (GitNexus AST)  (9router AI)    (magic numbers)                 │
+│  ast_graph.py     constants.py   naming_audit.py                 │
+│  (GitNexus AST)  (magic numbers)  (AI naming audit)              │
+│  ai_config.py    ai_prompts.py                                    │
+│  (AI provider cfg) (AI prompt templates)                         │
 │                                                                  │
 │  pipeline/                                                       │
 │  ├── __init__.py    — module doc                                 │
@@ -75,18 +77,27 @@
 │  packages/web/  (React 19 + TypeScript 5 + Vite 6)              │
 │  Build output → cli-global/src/public/                           │
 │                                                                  │
-│  App.tsx (state center)                                          │
-│  ├── Header.tsx          — Navigation, scan button               │
-│  ├── Sidebar.tsx         — Project list + history + categories   │
-│  ├── SettingsDrawer.tsx  — AI provider config                    │
-│  ├── ScanModal.tsx       — 6-step progress overlay (SSE)        │
-│  ├── OnboardingPage.tsx  — Welcome screen                        │
-│  ├── DashboardPage.tsx   — Overview stats + top findings         │
-│  └── IssuesPage.tsx                                              │
-│        ├── FilterPanel   — Search + severity/category/status/    │
-│        │                    language filters                     │
-│        ├── FindingsList  — Scrollable finding list               │
-│        └── CodeInspector — File viewer + AI suggestion + Chat    │
+│  App.tsx  (layout shell)                                         │
+│  └── <AIProvider>  (Context — state hub)                        │
+│        ├── hooks/                                                │
+│        │   ├── useScan.js      — Scan orchestration + progress   │
+│        │   └── useSettings.js  — Settings CRUD từ localStorage   │
+│        ├── services/                                             │
+│        │   ├── api.js          — REST calls đến Express server   │
+│        │   └── bridge.js       — Python subprocess bridge        │
+│        └── components/ (12 sub-directories, mỗi cái có test)     │
+│            ├── Header/         — Navigation, scan button         │
+│            ├── Sidebar/        — Project list + history + cats   │
+│            ├── SettingsDrawer/ — AI provider config              │
+│            ├── DashboardPage/  — Overview stats + top findings   │
+│            ├── CodeInspector/  — File viewer + AI + Chat         │
+│            ├── FindingsTable/  — Findings datatable              │
+│            ├── ScanConfigPanel/— Target + mode config            │
+│            ├── ScanProgress/   — Progress bar + log              │
+│            ├── HistoryPanel/   — Scan history list               │
+│            ├── FilterBar/      — Filter controls                 │
+│            ├── StatsOverview/  — Metrics cards                   │
+│            └── CategoryNav/    — Category navigation tabs        │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -117,20 +128,30 @@
 
 ### 2.2 `packages/web/` — React 19 + TypeScript 5
 
-| File | Trách nhiệm |
-|------|-------------|
-| `App.tsx` | State center: `currentReport`, `findings`, `config`, `projects` |
-| `types.ts` | TypeScript interfaces: `Finding`, `Report`, `Config`, `ScanResult` |
-| `components/Header.tsx` | Navigation header (tabs, scan button) |
-| `components/Sidebar.tsx` | Sidebar: project list, scan history, filter counts |
-| `components/SettingsDrawer.tsx` | Drawer: AI provider configuration |
-| `components/ScanModal.tsx` | Modal overlay: 6-step progress (SSE real-time) |
-| `components/ErrorBoundary.tsx` | React error boundary |
-| `components/CodeInspector.tsx` | Code viewer + AI suggestion + chat |
-| `components/FindingsList.tsx` | Scrollable list of findings |
-| `pages/DashboardPage.tsx` | Overview: severity distribution, top files, metrics |
-| `pages/IssuesPage.tsx` | Split-view: filter panel + findings + code inspector |
-| `pages/OnboardingPage.tsx` | Welcome/getting started |
+| Layer | File | Trách nhiệm |
+|-------|------|-------------|
+| **Root** | `App.tsx` | Layout shell, chỉ render AIProvider + các page |
+| | `main.tsx` | Vite entry point, mount App vào DOM |
+| **Context** | `context/AIProviderContext.jsx` | State hub duy nhất: findings, config, scan state, projects |
+| **Hooks** | `hooks/useScan.js` | Scan orchestration: gọi API, track progress, cancel |
+| | `hooks/useSettings.js` | Settings CRUD: đọc/ghi localStorage + API |
+| **Services** | `services/api.js` | REST calls đến Express server (config, reports, etc.) |
+| | `services/bridge.js` | Python subprocess bridge: spawn, pipe, cancel, re-resolve |
+| **Components** | `components/Header/` | Navigation tabs + scan button |
+| | `components/Sidebar/` | Project list + scan history + filter counts |
+| | `components/SettingsDrawer/` | AI provider configuration drawer |
+| | `components/DashboardPage/` | Overview: severity dist, top files, metrics |
+| | `components/CodeInspector/` | Code viewer + AI suggestion + Chat sidebar |
+| | `components/FindingsTable/` | Findings datatable với sort + pagination |
+| | `components/ScanConfigPanel/` | Scan target path + mode config (fast/full) |
+| | `components/ScanProgress/` | Progress bar + real-time log |
+| | `components/HistoryPanel/` | Scan history list với status badges |
+| | `components/FilterBar/` | Filter controls (severity, category, language, search) |
+| | `components/StatsOverview/` | Metrics cards: total findings, severity counts |
+| | `components/CategoryNav/` | Category navigation tabs |
+| | `components/ErrorBoundary.tsx` | React error boundary |
+| **Types** | `types.ts` | TypeScript interfaces: `Finding`, `Report`, `Config`, `ScanResult` |
+| **Tests** | `__tests__/` | Integration + services + context tests (138 tests, 23 files) |
 
 ### 2.3 `packages/analysis-core/` — Python 3.12
 
@@ -139,7 +160,9 @@
 | `main.py` | CLI entry: argparse, orchestrator (scan/enrich/resolve/report) |
 | `constants.py` | Magic numbers: `MAX_FILES_FOR_COMPLEXITY`, `MAX_RESOLVE_FINDINGS`, ... |
 | `ast_graph.py` | GitNexus CLI adapter: `is_gitnexus_available()`, `get_symbol_context()`, `compute_impact()` |
-| `ai_resolver.py` | 9router LLM API: `get_ai_config()`, `resolve_findings()`, `run_naming_audit()`, `read_surrounding_code()` |
+| `ai_config.py` | AI provider config: đọc/ghi `.env`, fallback nếu thiếu API key |
+| `ai_prompts.py` | AI prompt templates cho resolve_findings + naming_audit |
+| `naming_audit.py` | AI-powered naming audit: phát hiện tên biến/hàm khó hiểu |
 | `pipeline/scanner.py` | Semgrep wrapper + fast-scan git-diff detection |
 | `pipeline/enricher.py` | GitNexus AST enrichment |
 | `pipeline/resolver.py` | Complexity metrics + naming audit + AI resolution orchestration |
@@ -304,25 +327,34 @@ Tất cả report lưu tại: `~/.ai-code-review/reports/{projectName}/{timestam
 
 ## 7. Frontend Components
 
-### State Management (App.tsx)
+### State Management (AIProviderContext)
 
+```jsx
+// context/AIProviderContext.jsx — state hub duy nhất
+┌─ Provider State ─────────────────────────────────────┐
+│  findings: Finding[]          — kết quả scan          │
+│  reports: ReportListItem[]    — danh sách report      │
+│  projects: Project[]          — danh sách project     │
+│  currentReport: Report | null — report đang xem       │
+│  config: Config               — AI provider config    │
+│                                                       │
+│  // Scan state                                        │
+│  isScanning: boolean                                  │
+│  scanStatus: 'idle'|'scanning'|'complete'|'error'    │
+│  scanProgress: { step, total, message }               │
+│  scanLogs: string[]                                   │
+│  elapsedTime: number                                  │
+│                                                       │
+│  // UI state                                          │
+│  activeTab: 'dashboard' | 'issues'                    │
+│  selectedFindingIndex: number | null                  │
+│  selectedFilePath: string | null                      │
+│  isReResolving: boolean                               │
+│  filter*: searchQuery, severities, categories, ...    │
+└──────────────────────────────────────────────────────┘
 ```
-App State
-├── currentProject: string | null
-├── projects: Project[]
-├── reports: ReportListItem[]
-├── currentReportId: string | null
-├── currentReport: Report | null
-├── selectedFindingIndex: number | null
-├── selectedFilePath: string | null
-├── activeTab: 'dashboard' | 'issues'
-├── isScanning, scanStatus, scanLogs, elapsedTime
-├── isReResolving
-└── Filter states
-    ├── searchQuery, filterSeverities, filterCategories
-    ├── filterStatuses, filterLanguages
-    └── expandedFilters
-```
+
+**Luồng dữ liệu:** `AIProviderContext` → `hooks/useScan.js` / `useSettings.js` → `services/api.js` / `bridge.js` → components render. Components chỉ consume context, không gọi API hay quản lý state riêng.
 
 ### Scan Modal (6 bước)
 
@@ -356,23 +388,25 @@ Findings tự động phân loại dựa trên `rule_id`:
 ```
 USER ACTION                    SYSTEM RESPONSE
 ─────────────                  ───────────────
-                               ┌─────────────────────┐
-Open Browser (port 3000) ───▶  │ Express serves       │
-                               │ React SPA (public/)  │
-                               └─────────────────────┘
+                               ┌─────────────────────────────────┐
+Open Browser (port 3000) ───▶  │ Express serves                  │
+                               │ React SPA (public/)             │
+                               │ App → AIProviderContext mounts  │
+                               └─────────────────────────────────┘
                                       │
-Click "Scan" ───────────────────────▶ │ GET /api/scan/stream
-                                      │ Spawn Python process
+Click "Scan" ───────────────────────▶ │ useScan.js calls GET /api/scan/stream
+                                      │ bridge.js spawns Python subprocess
                                       │
                                       ├─▶ main.py
-                                      │     ├── scanner.py  → Semgrep
-                                      │     ├── enricher.py → GitNexus
-                                      │     ├── resolver.py → 9router AI
-                                      │     └── reporter.py → JSON
+                                      │     ├── scanner   → Semgrep
+                                      │     ├── enricher  → GitNexus AST
+                                      │     ├── resolver  → AI resolution
+                                      │     └── reporter  → JSON file
                                       │
-Progress events ◀── SSE stream ──────┤
-                                      │
-Scan complete ◀── type: "complete" ───┤
+Progress events ◀── SSE stream ──────┤ → useScan.js cập nhật context
+                                      │ → ScanProgress re-renders
+Scan complete ◀── type: "complete" ───┤ → context set findings + report
+                                      │ → auto-navigate to tab
                                       │
 Click "Ask AI Again" ──────────────▶  │ POST /api/re-resolve
                                       │ → main.py --re-resolve
@@ -405,9 +439,12 @@ Chat with AI ──────────────────────�
 
 ### Frontend
 
-- State tập trung ở `App.tsx`, truyền xuống component qua props
+- **State tập trung ở `AIProviderContext`** — component không quản lý state riêng, chỉ consume context qua hook
+- **Services layer tách biệt**: `api.js` (REST) + `bridge.js` (Python subprocess) — component không gọi API trực tiếp
+- **Custom hooks đóng gói logic**: `useScan.js` (orchestration + progress) + `useSettings.js` (CRUD)
+- **138 unit tests** phủ context, hooks, services, component rendering, user interaction
 - SSE stream cho real-time progress (không cần polling)
-- Filter state lifted lên App để giữa Dashboard và Issues page đồng bộ
+- Filter state trong context để Dashboard và Issues page đồng bộ
 - Code inspector tự động scroll đến line bị lỗi
 - Chat với AI có context đầy đủ về finding (AST, callers, blast radius)
 

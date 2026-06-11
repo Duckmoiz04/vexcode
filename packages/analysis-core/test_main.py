@@ -23,8 +23,18 @@ class TestMainCLI(unittest.TestCase):
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def _run_main(self, *args):
-        """Run main.py via subprocess and return (returncode, stdout, stderr)."""
-        cmd = [sys.executable, self.main_py] + list(args)
+        """Run main.py via subprocess and return (returncode, stdout, stderr).
+
+        Prefers the .venv Python (has lizard + all deps); falls back to
+        sys.executable when .venv doesn't exist (CI, non-local).
+        """
+        venv_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".venv")
+        if sys.platform == "win32":
+            venv_python = os.path.join(venv_dir, "Scripts", "python.exe")
+        else:
+            venv_python = os.path.join(venv_dir, "bin", "python")
+        python_exe = venv_python if os.path.exists(venv_python) else sys.executable
+        cmd = [python_exe, self.main_py] + list(args)
         result = subprocess.run(
             cmd,
             capture_output=True,
