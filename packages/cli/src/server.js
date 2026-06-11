@@ -22,8 +22,8 @@ const workspaceDir = resolve(__dirname, '../../..');
 const analysisCoreDir = resolve(__dirname, '../../engine');
 const envPath = resolve(analysisCoreDir, '.env');
 const publicDir = resolve(__dirname, 'public');
-const reportsBaseDir = join(homedir(), '.ai-code-review', 'reports');
-const backupsBaseDir = join(homedir(), '.ai-code-review', 'backups');
+const reportsBaseDir = join(homedir(), '.vexcode', 'reports');
+const backupsBaseDir = join(homedir(), '.vexcode', 'backups');
 
 const app = express();
 

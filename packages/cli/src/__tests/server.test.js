@@ -12,8 +12,8 @@ const __dirname = path.dirname(__filename);
 const envPath = path.resolve(__dirname, '../../../engine/.env');
 process.env.TEST_SKIP_GITNEXUS = 'true';
 
-const reportsBaseDir = path.join(os.homedir(), '.ai-code-review', 'reports');
-const backupsBaseDir = path.join(os.homedir(), '.ai-code-review', 'backups');
+const reportsBaseDir = path.join(os.homedir(), '.vexcode', 'reports');
+const backupsBaseDir = path.join(os.homedir(), '.vexcode', 'backups');
 
 let mockCancelled = false;
 
@@ -698,7 +698,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 404 when no reports exist anywhere', async () => {
-      const backupDir = path.join(os.homedir(), '.ai-code-review', `__reports_backup_${Date.now()}__`);
+      const backupDir = path.join(os.homedir(), '.vexcode', `__reports_backup_${Date.now()}__`);
 
       if (fs.existsSync(reportsBaseDir)) {
         fs.renameSync(reportsBaseDir, backupDir);

@@ -13,8 +13,8 @@ import { getProjectName, getProjectReportDir, getReportFilename } from '../src/u
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Centralized report storage: ~/.ai-code-review/reports/
-const reportsBaseDir = join(homedir(), '.ai-code-review', 'reports');
+// Centralized report storage: ~/.vexcode/reports/
+const reportsBaseDir = join(homedir(), '.vexcode', 'reports');
 
 let version = '1.0.0';
 try {
@@ -50,7 +50,7 @@ function printHelp() {
   console.log(`
 AI Code Review CLI v${version}
 
-Usage: ai-code-review [options] [command]
+Usage: vexcode [options] [command]
 
 Options:
   -V, -v, --version              output the version number
@@ -137,7 +137,7 @@ function parseArgsForCommand(command, rawArgs) {
 
 function printScanHelp() {
   console.log(`
-Usage: ai-code-review scan [options]
+Usage: vexcode scan [options]
 
 Scan a project for security vulnerabilities using Semgrep, enriched with
 GitNexus AST context and AI-powered remediation suggestions.
@@ -148,15 +148,15 @@ Options:
       --mock-ai           Use mock AI suggestions (skip 9router API)
 
 Examples:
-  ai-code-review scan --target ./my-project
-  ai-code-review scan -t D:/src/my-app
-  ai-code-review scan --mock-scan --mock-ai
+  vexcode scan --target ./my-project
+  vexcode scan -t D:/src/my-app
+  vexcode scan --mock-scan --mock-ai
 `);
 }
 
 function printServeHelp() {
   console.log(`
-Usage: ai-code-review serve [options]
+Usage: vexcode serve [options]
 
 Start local HTTP server for web UI connection.
 
@@ -164,8 +164,8 @@ Options:
   -p, --port <number>     Port for Express server (default: 3000)
 
 Examples:
-  ai-code-review serve
-  ai-code-review serve --port 8080
+  vexcode serve
+  vexcode serve --port 8080
 `);
 }
 
@@ -273,7 +273,7 @@ if (command === '--ui' || command === '--server' || command === '-s') {
   handleServe(commandArgs);
 } else if (!COMMANDS.includes(command)) {
   console.error(`Error: Unknown command "${command}"`);
-  console.log('Run "ai-code-review help" for usage information.');
+  console.log('Run "vexcode help" for usage information.');
   process.exit(1);
 } else if (command === 'scan') {
   await handleScan(commandArgs);

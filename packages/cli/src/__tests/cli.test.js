@@ -51,7 +51,7 @@ describe('AI Code Review CLI Integration', () => {
   it('should display help for scan command on scan --help', async () => {
     const { code, stdout } = await runCli(['scan', '--help']);
     expect(code).toBe(0);
-    expect(stdout).toContain('Usage: ai-code-review scan');
+    expect(stdout).toContain('Usage: vexcode scan');
     expect(stdout).toContain('--mock-scan');
     expect(stdout).toContain('--mock-ai');
   });
@@ -59,7 +59,7 @@ describe('AI Code Review CLI Integration', () => {
   it('should display help for serve command on serve --help', async () => {
     const { code, stdout } = await runCli(['serve', '--help']);
     expect(code).toBe(0);
-    expect(stdout).toContain('Usage: ai-code-review serve');
+    expect(stdout).toContain('Usage: vexcode serve');
     expect(stdout).toContain('--port');
   });
 

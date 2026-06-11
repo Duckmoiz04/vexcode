@@ -1,6 +1,6 @@
 # packages/cli
 
-**Node.js >= 18.3 ESM CLI tool** — `ai-code-review` binary + Express API server + vanilla JS dashboard.
+**Node.js >= 18.3 ESM CLI tool** — `vexcode` binary + Express API server + vanilla JS dashboard.
 
 ## Architecture
 
@@ -28,7 +28,7 @@ Test files (Vitest): `src/__tests__/{cli,server,bridge}.test.js` + `e2e_verify.j
 ```bash
 npm install       # Install deps
 npm test          # vitest run (3 suites)
-node bin/cli.js   # Run directly (also: ai-code-review via npm link)
+node bin/cli.js   # Run directly (also: vexcode via npm link)
 ```
 
 ## Conventions
@@ -37,7 +37,7 @@ node bin/cli.js   # Run directly (also: ai-code-review via npm link)
 - **No TypeScript**: plain JS, no build step
 - **Path safety**: all file reads must pass `isPathSafe()` (case-insensitive prefix check)
 - **Python bridge**: spawns `engine/.venv/Scripts/python.exe` (Win) or `.venv/bin/python` (Unix)
-- **Reports**: stored at `~/.ai-code-review/reports/{projectName}/`
+- **Reports**: stored at `~/.vexcode/reports/{projectName}/`
 - **AI providers**: multi-provider (OpenAI, Anthropic, Google, 9router); config keys follow `{PROVIDER}_API_KEY`, `{PROVIDER}_BASE_URL`, `{PROVIDER}_MODEL`
 - **Error handling**: try/catch with Express error middleware, structured JSON error responses
 - **Frontend**: vanilla JS (no framework), custom CSS with dark theme

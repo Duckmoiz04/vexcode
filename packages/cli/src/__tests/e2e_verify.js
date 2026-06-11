@@ -105,7 +105,7 @@ async function runVerification() {
   }
 
   // Write report
-  const reportPath = path.resolve(__dirname, '../../../../process/features/ai-code-review/reports/phase-02-bridge-and-server_REPORT.md');
+  const reportPath = path.resolve(__dirname, '../../../../process/features/vexcode/reports/phase-02-bridge-and-server_REPORT.md');
   const reportDir = path.dirname(reportPath);
   if (!fs.existsSync(reportDir)) {
     fs.mkdirSync(reportDir, { recursive: true });

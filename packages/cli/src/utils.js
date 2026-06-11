@@ -1,7 +1,7 @@
 import { join, basename } from 'path';
 import { homedir } from 'node:os';
 
-const reportsBaseDir = join(homedir(), '.ai-code-review', 'reports');
+const reportsBaseDir = join(homedir(), '.vexcode', 'reports');
 
 // Helper: get project name from path
 export function getProjectName(targetPath) {
