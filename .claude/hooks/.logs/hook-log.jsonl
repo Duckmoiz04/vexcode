@@ -701,3 +701,244 @@
 {"ts":"2026-06-11T01:48:35.686Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-11T01:48:43.949Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-11T01:48:44.114Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T01:48:52.571Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T01:48:52.682Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T01:48:53.436Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T01:48:53.590Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:03:19.730Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:03:19.853Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:33.148Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages\""}
+{"ts":"2026-06-11T02:07:33.270Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:40.502Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:40.619Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:48.974Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:49.081Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:49.779Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:49.910Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:57.082Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:57.209Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:58.124Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:58.149Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:58.338Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:07:58.364Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:12:03.380Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:12:03.757Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:08.716Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global/package.json\""}
+{"ts":"2026-06-11T02:20:08.844Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:09.856Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:09.962Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:10.004Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:10.111Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:11.100Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/package.json\""}
+{"ts":"2026-06-11T02:20:11.484Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:11.487Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:11.674Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:24.551Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:24.673Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/package.json\""}
+{"ts":"2026-06-11T02:20:24.783Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:25.395Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":38,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:25.523Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"reminder-injected","dur":16,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:36.962Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global/package.json\""}
+{"ts":"2026-06-11T02:20:37.072Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:37.683Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":25,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:37.807Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:43.623Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:20:43.736Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:20:51.476Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:20:51.761Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:21:04.347Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global\""}
+{"ts":"2026-06-11T02:21:04.464Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:21:05.219Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:21:05.371Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:21:46.822Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global/package.json\""}
+{"ts":"2026-06-11T02:21:46.946Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:21:47.684Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":19,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:21:47.850Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:21:53.862Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global\""}
+{"ts":"2026-06-11T02:21:53.976Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:22:21.763Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:22:21.897Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:22:32.719Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:22:32.826Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:18.905Z","hook":"scout-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:19.045Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:32.123Z","hook":"scout-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:32.246Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:32.783Z","hook":"scout-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:33.545Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:42.016Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:42.131Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:26:48.577Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/analysis-core/pyproject.toml\""}
+{"ts":"2026-06-11T02:26:48.700Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:29:17.504Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:29:17.613Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:29:24.629Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global\""}
+{"ts":"2026-06-11T02:29:24.736Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:29:33.193Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:29:33.303Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:29:43.170Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global\""}
+{"ts":"2026-06-11T02:29:43.290Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:29:50.173Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages\""}
+{"ts":"2026-06-11T02:29:50.306Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:29:59.412Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli\""}
+{"ts":"2026-06-11T02:29:59.680Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:30:17.312Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages\""}
+{"ts":"2026-06-11T02:30:17.809Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:30:40.122Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global\""}
+{"ts":"2026-06-11T02:30:41.341Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":25,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:30:59.921Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global/node_modules\""}
+{"ts":"2026-06-11T02:31:00.128Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:09.011Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global\""}
+{"ts":"2026-06-11T02:31:09.121Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:16.592Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli-global\""}
+{"ts":"2026-06-11T02:31:16.702Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:28.691Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/bridge.js\""}
+{"ts":"2026-06-11T02:31:28.818Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:29.389Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/server.js\""}
+{"ts":"2026-06-11T02:31:29.498Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/__tests/bridge.test.js\""}
+{"ts":"2026-06-11T02:31:30.058Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:30.058Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:30.111Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/__tests/server.test.js\""}
+{"ts":"2026-06-11T02:31:31.105Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:39.290Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/bridge.js\""}
+{"ts":"2026-06-11T02:31:39.417Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:40.026Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/bridge.js\""}
+{"ts":"2026-06-11T02:31:40.486Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:48.208Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/AGENTS.md\""}
+{"ts":"2026-06-11T02:31:48.356Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:51.151Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/context\""}
+{"ts":"2026-06-11T02:31:51.160Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/context\""}
+{"ts":"2026-06-11T02:31:51.439Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:51.485Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":16,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:53.146Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/context\""}
+{"ts":"2026-06-11T02:31:53.172Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:31:55.688Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":21,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:31:55.758Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":18,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:08.916Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/bridge.js\""}
+{"ts":"2026-06-11T02:32:09.147Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":13,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:09.238Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/server.js\""}
+{"ts":"2026-06-11T02:32:11.157Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/__tests/bridge.test.js\""}
+{"ts":"2026-06-11T02:32:11.157Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/__tests/server.test.js\""}
+{"ts":"2026-06-11T02:32:11.307Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/package.json\""}
+{"ts":"2026-06-11T02:32:11.353Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:11.408Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:11.438Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":49,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:11.517Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/package.json\""}
+{"ts":"2026-06-11T02:32:11.532Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:11.538Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:13.695Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/AGENTS.md\""}
+{"ts":"2026-06-11T02:32:14.165Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/AGENTS.md\""}
+{"ts":"2026-06-11T02:32:14.165Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/AGENTS.md\""}
+{"ts":"2026-06-11T02:32:14.172Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":1429,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:14.167Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/context/all-context.md\""}
+{"ts":"2026-06-11T02:32:14.179Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":359,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:14.228Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/context/all-context.md\""}
+{"ts":"2026-06-11T02:32:14.416Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:14.427Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:14.470Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":12,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:14.451Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:16.187Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":1040,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:16.224Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":1067,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:16.190Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/context/tests/all-tests.md\""}
+{"ts":"2026-06-11T02:32:16.187Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":1049,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:16.190Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":516,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:16.187Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":1036,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:16.411Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:16.411Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:16.437Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:20.592Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":3268,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:20.595Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":3270,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:20.596Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":1676,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:20.781Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:21.889Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":539,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:22.053Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:22.053Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:22.078Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:22.107Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":34,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:23.043Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":343,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:23.060Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":329,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:23.045Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":314,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:23.044Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":350,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:23.044Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":338,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:24.505Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":862,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:24.505Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":862,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:31.821Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/context/architecture-overview.md\""}
+{"ts":"2026-06-11T02:32:31.938Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:32.649Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/context/architecture-overview.md\""}
+{"ts":"2026-06-11T02:32:32.801Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:32.832Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":77,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:32.867Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/AGENTS.md\""}
+{"ts":"2026-06-11T02:32:33.546Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/AGENTS.md\""}
+{"ts":"2026-06-11T02:32:33.565Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:33.552Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:33.762Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":77,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:34.218Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":497,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:35.105Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":337,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:35.705Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:35.848Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":74,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:35.851Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:36.004Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:32:49.243Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:32:49.351Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:33:20.928Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:33:21.066Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:34:27.865Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:34:28.009Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:34:55.703Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:34:55.819Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:35:23.079Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:35:23.186Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:35:50.648Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages\""}
+{"ts":"2026-06-11T02:35:50.809Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:35:59.139Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine\""}
+{"ts":"2026-06-11T02:35:59.255Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:35:59.866Z","hook":"scout-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:00.890Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:08.615Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/logger.py\""}
+{"ts":"2026-06-11T02:36:08.741Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:09.446Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/test_main.py\""}
+{"ts":"2026-06-11T02:36:09.622Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":26,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:09.628Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:09.768Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/test_complexity.py\""}
+{"ts":"2026-06-11T02:36:09.792Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:10.373Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/test_ast_graph.py\""}
+{"ts":"2026-06-11T02:36:10.879Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":485,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:10.952Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/test_ai_output.json\""}
+{"ts":"2026-06-11T02:36:11.015Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:11.057Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":29,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:11.869Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:11.878Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:13.160Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":294,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:14.297Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":454,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:22.161Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/test_ast_graph.py\""}
+{"ts":"2026-06-11T02:36:22.479Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/vite.config.ts\""}
+{"ts":"2026-06-11T02:36:22.481Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:23.139Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":480,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:31.295Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/test_ast_graph.py\""}
+{"ts":"2026-06-11T02:36:31.427Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:32.134Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/test_ast_graph.py\""}
+{"ts":"2026-06-11T02:36:32.285Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:32.292Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":41,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:32.394Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/test_ai_output.json\""}
+{"ts":"2026-06-11T02:36:32.974Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:33.036Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/vite.config.ts\""}
+{"ts":"2026-06-11T02:36:33.042Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:34.173Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:34.179Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:34.324Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":78,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:34.801Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:34.815Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:34.947Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":51,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:35.892Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:42.566Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages\""}
+{"ts":"2026-06-11T02:36:42.679Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:36:50.199Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:36:50.337Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:37:00.455Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/package-lock.json\""}
+{"ts":"2026-06-11T02:37:00.616Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:37:10.724Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process\""}
+{"ts":"2026-06-11T02:37:10.885Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:37:20.798Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:37:20.904Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-11T02:37:48.729Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-11T02:37:48.839Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}

@@ -19,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const workspaceDir = resolve(__dirname, '../../..');
-const analysisCoreDir = resolve(__dirname, '../../analysis-core');
+const analysisCoreDir = resolve(__dirname, '../../engine');
 const envPath = resolve(analysisCoreDir, '.env');
 const publicDir = resolve(__dirname, 'public');
 const reportsBaseDir = join(homedir(), '.ai-code-review', 'reports');

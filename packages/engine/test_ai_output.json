@@ -1,0 +1,144 @@
+{
+  "scanner": "semgrep-mock",
+  "timestamp": "2026-06-07T06:47:51.291149Z",
+  "target_path": "../cli/test",
+  "findings": [
+    {
+      "file": "example.py",
+      "line": 12,
+      "rule_id": "python.lang.security.audit.dangerous-exec",
+      "message": "Found use of exec() with user input, which presents a remote code execution vulnerability.",
+      "severity": "ERROR",
+      "code_text": "    exec(user_input)",
+      "ast_context": {
+        "symbol_id": "Function:example.py:run_dangerous_code",
+        "symbol_name": "run_dangerous_code",
+        "kind": "Function",
+        "source_code": "def run_dangerous_code(user_input):\n    exec(user_input)\n",
+        "callers": [
+          {
+            "uid": "Function:main.py:process_request",
+            "name": "process_request",
+            "filePath": "main.py",
+            "relation": "calls"
+          }
+        ],
+        "impact": {
+          "target": {
+            "id": "Function:example.py:run_dangerous_code",
+            "name": "run_dangerous_code",
+            "type": "Function",
+            "filePath": "example.py"
+          },
+          "direction": "upstream",
+          "impactedCount": 1,
+          "risk": "MEDIUM",
+          "summary": {
+            "direct": 1,
+            "processes_affected": 0,
+            "modules_affected": 0
+          },
+          "affected_processes": [],
+          "affected_modules": [],
+          "byDepth": {
+            "1": [
+              {
+                "depth": 1,
+                "id": "Function:main.py:process_request",
+                "name": "process_request",
+                "filePath": "main.py",
+                "relationType": "CALLS",
+                "confidence": 0.95
+              }
+            ]
+          }
+        },
+        "blast_radius": [
+          {
+            "uid": "Function:main.py:process_request",
+            "name": "process_request",
+            "filePath": "main.py",
+            "depth": 1,
+            "relation": "CALLS"
+          }
+        ]
+      }
+    },
+    {
+      "file": "db.py",
+      "line": 45,
+      "rule_id": "python.lang.security.audit.hardcoded-password",
+      "message": "Hardcoded password variable found in connection string.",
+      "severity": "WARNING",
+      "code_text": "        password = \"admin123\"",
+      "ast_context": {
+        "symbol_id": "Method:db.py:DatabaseConnection.connect",
+        "symbol_name": "DatabaseConnection.connect",
+        "kind": "Method",
+        "source_code": "    def connect(self):\n        password = \"admin123\"\n        self.conn = pg.connect(user=\"admin\", password=password)\n",
+        "callers": [
+          {
+            "uid": "Function:db.py:get_user_data",
+            "name": "get_user_data",
+            "filePath": "db.py",
+            "relation": "calls"
+          }
+        ],
+        "impact": {
+          "target": {
+            "id": "Method:db.py:DatabaseConnection.connect",
+            "name": "DatabaseConnection.connect",
+            "type": "Method",
+            "filePath": "db.py"
+          },
+          "direction": "upstream",
+          "impactedCount": 1,
+          "risk": "LOW",
+          "summary": {
+            "direct": 1,
+            "processes_affected": 0,
+            "modules_affected": 0
+          },
+          "affected_processes": [],
+          "affected_modules": [],
+          "byDepth": {
+            "1": [
+              {
+                "depth": 1,
+                "id": "Function:db.py:get_user_data",
+                "name": "get_user_data",
+                "filePath": "db.py",
+                "relationType": "CALLS",
+                "confidence": 0.95
+              }
+            ]
+          }
+        },
+        "blast_radius": [
+          {
+            "uid": "Function:db.py:get_user_data",
+            "name": "get_user_data",
+            "filePath": "db.py",
+            "depth": 1,
+            "relation": "CALLS"
+          }
+        ]
+      }
+    }
+  ],
+  "ai_resolutions": {
+    "python.lang.security.audit.dangerous-exec": {
+      "suggestion": "Remove exec() entirely or replace with safe alternatives like ast.literal_eval() for literals, or subprocess with explicit arguments for shell commands. exec() with user input allows arbitrary code execution.",
+      "remediation_code": "import ast\\nast.literal_eval(user_input)"
+    },
+    "python.lang.security.audit.hardcoded-password": {
+      "suggestion": "Replace hardcoded password with environment variable or secrets manager to avoid credential exposure in source control.",
+      "remediation_code": "password = os.environ.get('DB_PASSWORD') or os.environ.get('DB_PASS')"
+    }
+  },
+  "git_state": null,
+  "metrics": {
+    "files": {}
+  },
+  "re_resolved_at": "2026-06-07T07:10:15.166886Z"
+}

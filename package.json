@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
-    "packages/cli-global",
+    "packages/cli",
     "packages/web"
   ],
   "scripts": {
     "test": "npm run test --workspaces",
-    "test:cli": "npm run test -w packages/cli-global",
+    "test:cli": "npm run test -w packages/cli",
     "test:web": "npm run test -w packages/web",
     "build:web": "npm run build -w packages/web",
     "dev:web": "npm run dev -w packages/web"

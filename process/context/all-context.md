@@ -135,9 +135,9 @@ DATN2/
     skills/           -- Specialized skills (vc-setup, vc-update, etc.)
   .codex/             -- Codex IDE configurations and parity definitions
   packages/
-    cli-global/       -- Node.js ESM CLI binary + Express server (75 tests)
+    cli/       -- Node.js ESM CLI binary + Express server (75 tests)
     web/              -- React 19 + Tailwind v4 + TypeScript 5 frontend (138 tests)
-    analysis-core/    -- Python 3.12 analysis engine (Semgrep, GitNexus, 9router AI)
+    engine/    -- Python 3.12 analysis engine (Semgrep, GitNexus, 9router AI)
   process/            -- The RIPER-5 process directory
     context/          -- Durable repository knowledge (all-context, tests, planning)
     development-protocols/ -- Developer guidelines and workflow protocols

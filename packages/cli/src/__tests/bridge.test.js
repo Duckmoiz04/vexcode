@@ -43,9 +43,9 @@ describe('bridge.js unit tests (mock subprocess)', () => {
       expect(pythonPath).toMatch(/python(\.exe)?$/);
     });
 
-    it('should resolve to a path under analysis-core/.venv', () => {
+    it('should resolve to a path under engine/.venv', () => {
       const pythonPath = bridge.getPythonPath();
-      expect(pythonPath).toMatch(/analysis-core[/\\]\.venv[/\\]/);
+      expect(pythonPath).toMatch(/engine[/\\]\.venv[/\\]/);
     });
   });
 

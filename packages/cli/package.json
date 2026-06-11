@@ -1,5 +1,5 @@
 {
-  "name": "cli-global",
+  "name": "cli",
   "version": "1.0.0",
   "description": "Global command-line interface for DATN2 AI Code Review",
   "type": "module",

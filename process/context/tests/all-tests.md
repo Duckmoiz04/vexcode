@@ -62,8 +62,8 @@ Unless the task clearly needs a different path:
 
 | Package | Runner | Command | Notes |
 |---|---|---|---|
-| `packages/cli-global` | Manual | `node bin/cli.js --help` | Test local options parse |
-| `packages/cli-global` | Manual | `npm link` / `ai-code-review --version` | Test global linking & binary registry |
+| `packages/cli` | Manual | `node bin/cli.js --help` | Test local options parse |
+| `packages/cli` | Manual | `npm link` / `ai-code-review --version` | Test global linking & binary registry |
 
 ## Debugging Quick Reference
 

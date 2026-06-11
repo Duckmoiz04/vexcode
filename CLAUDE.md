@@ -247,7 +247,7 @@ The active system is intentionally split into four layers:
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **DATN2** (1832 symbols, 2486 relationships, 36 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **vexcode** (2235 symbols, 3132 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -270,10 +270,10 @@ This project is indexed by GitNexus as **DATN2** (1832 symbols, 2486 relationshi
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/DATN2/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/DATN2/clusters` | All functional areas |
-| `gitnexus://repo/DATN2/processes` | All execution flows |
-| `gitnexus://repo/DATN2/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/vexcode/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/vexcode/clusters` | All functional areas |
+| `gitnexus://repo/vexcode/processes` | All execution flows |
+| `gitnexus://repo/vexcode/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 

@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const analysisCoreDir = resolve(__dirname, '../../analysis-core');
+const analysisCoreDir = resolve(__dirname, '../../engine');
 
 export function getPythonPath() {
   const isWindows = platform() === 'win32';
@@ -32,7 +32,7 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
     const pythonPath = getPythonPath();
 
     if (!existsSync(pythonPath)) {
-      return rejectPromise(new Error(`Python interpreter not found at ${pythonPath}. Please ensure .venv is set up in packages/analysis-core.`));
+      return rejectPromise(new Error(`Python interpreter not found at ${pythonPath}. Please ensure .venv is set up in packages/engine.`));
     }
 
     const args = [
@@ -158,7 +158,7 @@ export function runPythonReResolve(reportPath, mockAi = false, onProgress = null
     const pythonPath = getPythonPath();
 
     if (!existsSync(pythonPath)) {
-      return rejectPromise(new Error(`Python interpreter not found at ${pythonPath}. Please ensure .venv is set up in packages/analysis-core.`));
+      return rejectPromise(new Error(`Python interpreter not found at ${pythonPath}. Please ensure .venv is set up in packages/engine.`));
     }
 
     const args = [

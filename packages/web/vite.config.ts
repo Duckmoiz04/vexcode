@@ -21,7 +21,7 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: '../cli-global/src/public',
+    outDir: '../cli/src/public',
     emptyOutDir: true,
   },
 });

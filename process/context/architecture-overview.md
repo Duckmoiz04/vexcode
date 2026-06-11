@@ -25,15 +25,15 @@
 
 | Thành phần | Công nghệ | Vai trò |
 |------------|-----------|---------|
-| `packages/cli-global/` | Node.js ESM (Express 4, Vitest) | CLI binary + REST API server + Web UI |
-| `packages/web/` | React 19, Tailwind v4, TypeScript 5, Vite 6 | Frontend dashboard (build → cli-global/public) |
-| `packages/analysis-core/` | Python 3.12 (Semgrep, GitNexus, 9router) | Analysis engine: scan → enrich → resolve → report |
+| `packages/cli/` | Node.js ESM (Express 4, Vitest) | CLI binary + REST API server + Web UI |
+| `packages/web/` | React 19, Tailwind v4, TypeScript 5, Vite 6 | Frontend dashboard (build → cli/public) |
+| `packages/engine/` | Python 3.12 (Semgrep, GitNexus, 9router) | Analysis engine: scan → enrich → resolve → report |
 
 ### Kiến trúc tổng thể
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│  packages/cli-global/  (Node.js ESM)                             │
+│  packages/cli/  (Node.js ESM)                             │
 │  ┌──────────┐   ┌──────────┐   ┌──────────────────────────┐     │
 │  │ bin/cli.js│   │server.js │   │  routes/ (6 files)       │     │
 │  │ CLI entry │──▶│ Express  │──▶│  config/scan/reports/    │     │
@@ -53,7 +53,7 @@
          │
          ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│  packages/analysis-core/  (Python 3.12)                          │
+│  packages/engine/  (Python 3.12)                          │
 │                                                                  │
 │  ┌──────────┐                                                     │
 │  │ main.py  │──▶ pipeline/ (4 modules)                           │
@@ -75,7 +75,7 @@
 
 ┌──────────────────────────────────────────────────────────────────┐
 │  packages/web/  (React 19 + TypeScript 5 + Vite 6)              │
-│  Build output → cli-global/src/public/                           │
+│  Build output → cli/src/public/                           │
 │                                                                  │
 │  App.tsx  (layout shell)                                         │
 │  └── <AIProvider>  (Context — state hub)                        │
@@ -105,7 +105,7 @@
 
 ## 2. Cấu trúc packages
 
-### 2.1 `packages/cli-global/` — Node.js ESM CLI + Express
+### 2.1 `packages/cli/` — Node.js ESM CLI + Express
 
 | Module | Lines | Trách nhiệm |
 |--------|-------|-------------|
@@ -153,7 +153,7 @@
 | **Types** | `types.ts` | TypeScript interfaces: `Finding`, `Report`, `Config`, `ScanResult` |
 | **Tests** | `__tests__/` | Integration + services + context tests (138 tests, 23 files) |
 
-### 2.3 `packages/analysis-core/` — Python 3.12
+### 2.3 `packages/engine/` — Python 3.12
 
 | Module | Trách nhiệm |
 |--------|-------------|
@@ -279,7 +279,7 @@ OPENAI_BASE_URL = "https://api.openai.com/v1"
 OPENAI_MODEL = "gpt-4"
 ```
 
-Config được lưu vào `.env` file trong `packages/analysis-core/`.
+Config được lưu vào `.env` file trong `packages/engine/`.
 
 ### Fallback behavior
 

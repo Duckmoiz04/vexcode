@@ -1,4 +1,4 @@
-# packages/analysis-core
+# packages/engine
 
 **Python 3.12 security analysis engine** — flat script collection, not a pip-installable package.
 

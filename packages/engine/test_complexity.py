@@ -3,7 +3,7 @@ import os
 import sys
 import tempfile
 
-# Ensure analysis-core is on python path
+# Ensure engine is on python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from complexity import get_complexity_level, analyze_file_complexity

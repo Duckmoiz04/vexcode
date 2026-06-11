@@ -4,7 +4,7 @@ import os
 import sys
 import json
 
-# Ensure analysis-core is on python path
+# Ensure engine dir is on python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from ast_graph import (
@@ -79,7 +79,7 @@ class TestASTGraph(unittest.TestCase):
         # Match exact path
         self.assertEqual(get_repo_name_for_path("d:\\DATN2"), "DATN2")
         # Match subpath
-        self.assertEqual(get_repo_name_for_path("d:\\DATN2\\packages\\analysis-core"), "DATN2")
+        self.assertEqual(get_repo_name_for_path("d:\\DATN2\\packages\\engine"), "DATN2")
         # No match
         self.assertIsNone(get_repo_name_for_path("d:\\unregistered"))
 
@@ -139,13 +139,13 @@ class TestASTGraph(unittest.TestCase):
 
     def test_get_relative_repo_path(self):
         # target_path: "d:\DATN2", repo_path: "d:\DATN2"
-        # file_path: "packages/analysis-core/main.py"
-        rel = get_relative_repo_path("packages/analysis-core/main.py", "d:\\DATN2", "d:\\DATN2")
-        self.assertEqual(rel, "packages/analysis-core/main.py")
+        # file_path: "packages/engine/main.py"
+        rel = get_relative_repo_path("packages/engine/main.py", "d:\\DATN2", "d:\\DATN2")
+        self.assertEqual(rel, "packages/engine/main.py")
 
         # Mixed slashes
-        rel2 = get_relative_repo_path("packages\\analysis-core\\main.py", "d:\\DATN2", "d:\\DATN2")
-        self.assertEqual(rel2, "packages/analysis-core/main.py")
+        rel2 = get_relative_repo_path("packages\\engine\\main.py", "d:\\DATN2", "d:\\DATN2")
+        self.assertEqual(rel2, "packages/engine/main.py")
 
     @patch('requests.post')
     @patch.dict(os.environ, {"AI_PROVIDER": "9router", "9ROUTER_API_KEY": "fake_key", "9ROUTER_BASE_URL": "http://localhost:20128/v1", "9ROUTER_MODEL": "test-model"})

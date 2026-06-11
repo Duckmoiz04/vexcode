@@ -1,4 +1,4 @@
-"""Centralized logging configuration for the analysis-core package."""
+"""Centralized logging configuration for the engine package."""
 
 import logging
 import sys

@@ -17,8 +17,8 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli-global/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
-- **Analysis Engine** (`packages/analysis-core/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
 - **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
 
@@ -232,8 +232,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
     hooks/           – Session lifecycle hooks
   .codex/            – Codex mirror of .claude/ agents + hooks
   packages/
-    cli-global/      – Node.js ESM CLI + Express API + Web UI
-    analysis-core/   – Python 3.12 security analysis engine
+    cli/      – Node.js ESM CLI + Express API + Web UI
+    engine/   – Python 3.12 security analysis engine
   process/
     context/         – Durable repo knowledge (all-context.md)
     development-protocols/ – Workflow rules (orchestration, implementation-standards, etc.)
@@ -251,8 +251,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
 | Task | Start Here |
 |------|------------|
 | Agent harness, RIPER-5 modes, skills, hooks | `.claude/agents/`, `.claude/skills/`, `process/development-protocols/` |
-| Python analysis engine | `packages/analysis-core/` ([AGENTS.md](packages/analysis-core/AGENTS.md)) |
-| Node.js CLI + Express + Web UI | `packages/cli-global/` ([AGENTS.md](packages/cli-global/AGENTS.md)) |
+| Python analysis engine | `packages/engine/` ([AGENTS.md](packages/engine/AGENTS.md)) |
+| Node.js CLI + Express + Web UI | `packages/cli/` ([AGENTS.md](packages/cli/AGENTS.md)) |
 | Project context & conventions | `process/context/all-context.md` |
 | Active plans | `process/general-plans/active/`, `process/features/*/active/` |
 | Test docs | `process/context/tests/all-tests.md` |
@@ -262,8 +262,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
 ## Commands
 
 ```bash
-# --- Node.js CLI (packages/cli-global) ---
-cd packages/cli-global
+# --- Node.js CLI (packages/cli) ---
+cd packages/cli
 npm install                # Install deps (Node >= 18.3)
 npm test                   # vitest run (3 test suites)
 
@@ -272,8 +272,8 @@ node bin/cli.js scan --target <dir>          # Full scan
 node bin/cli.js scan --target <dir> --mock-scan --mock-ai  # Offline mode
 node bin/cli.js serve --port 3000            # Express dashboard
 
-# --- Python analysis engine (packages/analysis-core) ---
-cd packages/analysis-core
+# --- Python analysis engine (packages/engine) ---
+cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
 python -m unittest test_ast_graph.py         # Run Python tests
@@ -321,8 +321,8 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli-global/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
-- **Analysis Engine** (`packages/analysis-core/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
 - **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
 
@@ -536,8 +536,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
     hooks/           – Session lifecycle hooks
   .codex/            – Codex mirror of .claude/ agents + hooks
   packages/
-    cli-global/      – Node.js ESM CLI + Express API + Web UI
-    analysis-core/   – Python 3.12 security analysis engine
+    cli/      – Node.js ESM CLI + Express API + Web UI
+    engine/   – Python 3.12 security analysis engine
   process/
     context/         – Durable repo knowledge (all-context.md)
     development-protocols/ – Workflow rules (orchestration, implementation-standards, etc.)
@@ -555,8 +555,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
 | Task | Start Here |
 |------|------------|
 | Agent harness, RIPER-5 modes, skills, hooks | `.claude/agents/`, `.claude/skills/`, `process/development-protocols/` |
-| Python analysis engine | `packages/analysis-core/` ([AGENTS.md](packages/analysis-core/AGENTS.md)) |
-| Node.js CLI + Express + Web UI | `packages/cli-global/` ([AGENTS.md](packages/cli-global/AGENTS.md)) |
+| Python analysis engine | `packages/engine/` ([AGENTS.md](packages/engine/AGENTS.md)) |
+| Node.js CLI + Express + Web UI | `packages/cli/` ([AGENTS.md](packages/cli/AGENTS.md)) |
 | Project context & conventions | `process/context/all-context.md` |
 | Active plans | `process/general-plans/active/`, `process/features/*/active/` |
 | Test docs | `process/context/tests/all-tests.md` |
@@ -566,8 +566,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
 ## Commands
 
 ```bash
-# --- Node.js CLI (packages/cli-global) ---
-cd packages/cli-global
+# --- Node.js CLI (packages/cli) ---
+cd packages/cli
 npm install                # Install deps (Node >= 18.3)
 npm test                   # vitest run (3 test suites)
 
@@ -576,8 +576,8 @@ node bin/cli.js scan --target <dir>          # Full scan
 node bin/cli.js scan --target <dir> --mock-scan --mock-ai  # Offline mode
 node bin/cli.js serve --port 3000            # Express dashboard
 
-# --- Python analysis engine (packages/analysis-core) ---
-cd packages/analysis-core
+# --- Python analysis engine (packages/engine) ---
+cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
 python -m unittest test_ast_graph.py         # Run Python tests
@@ -625,8 +625,8 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli-global/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
-- **Analysis Engine** (`packages/analysis-core/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
 - **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
 
@@ -840,8 +840,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
     hooks/           – Session lifecycle hooks
   .codex/            – Codex mirror of .claude/ agents + hooks
   packages/
-    cli-global/      – Node.js ESM CLI + Express API + Web UI
-    analysis-core/   – Python 3.12 security analysis engine
+    cli/      – Node.js ESM CLI + Express API + Web UI
+    engine/   – Python 3.12 security analysis engine
   process/
     context/         – Durable repo knowledge (all-context.md)
     development-protocols/ – Workflow rules (orchestration, implementation-standards, etc.)
@@ -859,8 +859,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
 | Task | Start Here |
 |------|------------|
 | Agent harness, RIPER-5 modes, skills, hooks | `.claude/agents/`, `.claude/skills/`, `process/development-protocols/` |
-| Python analysis engine | `packages/analysis-core/` ([AGENTS.md](packages/analysis-core/AGENTS.md)) |
-| Node.js CLI + Express + Web UI | `packages/cli-global/` ([AGENTS.md](packages/cli-global/AGENTS.md)) |
+| Python analysis engine | `packages/engine/` ([AGENTS.md](packages/engine/AGENTS.md)) |
+| Node.js CLI + Express + Web UI | `packages/cli/` ([AGENTS.md](packages/cli/AGENTS.md)) |
 | Project context & conventions | `process/context/all-context.md` |
 | Active plans | `process/general-plans/active/`, `process/features/*/active/` |
 | Test docs | `process/context/tests/all-tests.md` |
@@ -870,8 +870,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
 ## Commands
 
 ```bash
-# --- Node.js CLI (packages/cli-global) ---
-cd packages/cli-global
+# --- Node.js CLI (packages/cli) ---
+cd packages/cli
 npm install                # Install deps (Node >= 18.3)
 npm test                   # vitest run (3 test suites)
 
@@ -880,8 +880,8 @@ node bin/cli.js scan --target <dir>          # Full scan
 node bin/cli.js scan --target <dir> --mock-scan --mock-ai  # Offline mode
 node bin/cli.js serve --port 3000            # Express dashboard
 
-# --- Python analysis engine (packages/analysis-core) ---
-cd packages/analysis-core
+# --- Python analysis engine (packages/engine) ---
+cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
 python -m unittest test_ast_graph.py         # Run Python tests
@@ -929,8 +929,8 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli-global/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
-- **Analysis Engine** (`packages/analysis-core/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
 - **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
 
@@ -1144,8 +1144,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
     hooks/           – Session lifecycle hooks
   .codex/            – Codex mirror of .claude/ agents + hooks
   packages/
-    cli-global/      – Node.js ESM CLI + Express API + Web UI
-    analysis-core/   – Python 3.12 security analysis engine
+    cli/      – Node.js ESM CLI + Express API + Web UI
+    engine/   – Python 3.12 security analysis engine
   process/
     context/         – Durable repo knowledge (all-context.md)
     development-protocols/ – Workflow rules (orchestration, implementation-standards, etc.)
@@ -1163,8 +1163,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
 | Task | Start Here |
 |------|------------|
 | Agent harness, RIPER-5 modes, skills, hooks | `.claude/agents/`, `.claude/skills/`, `process/development-protocols/` |
-| Python analysis engine | `packages/analysis-core/` ([AGENTS.md](packages/analysis-core/AGENTS.md)) |
-| Node.js CLI + Express + Web UI | `packages/cli-global/` ([AGENTS.md](packages/cli-global/AGENTS.md)) |
+| Python analysis engine | `packages/engine/` ([AGENTS.md](packages/engine/AGENTS.md)) |
+| Node.js CLI + Express + Web UI | `packages/cli/` ([AGENTS.md](packages/cli/AGENTS.md)) |
 | Project context & conventions | `process/context/all-context.md` |
 | Active plans | `process/general-plans/active/`, `process/features/*/active/` |
 | Test docs | `process/context/tests/all-tests.md` |
@@ -1174,8 +1174,8 @@ Feature list maintenance: The Current features list in `process/context/all-cont
 ## Commands
 
 ```bash
-# --- Node.js CLI (packages/cli-global) ---
-cd packages/cli-global
+# --- Node.js CLI (packages/cli) ---
+cd packages/cli
 npm install                # Install deps (Node >= 18.3)
 npm test                   # vitest run (3 test suites)
 
@@ -1184,8 +1184,8 @@ node bin/cli.js scan --target <dir>          # Full scan
 node bin/cli.js scan --target <dir> --mock-scan --mock-ai  # Offline mode
 node bin/cli.js serve --port 3000            # Express dashboard
 
-# --- Python analysis engine (packages/analysis-core) ---
-cd packages/analysis-core
+# --- Python analysis engine (packages/engine) ---
+cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
 python -m unittest test_ast_graph.py         # Run Python tests
@@ -1218,7 +1218,7 @@ python main.py --target <dir> --mock-scan --mock-ai          # Offline
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **DATN2** (1832 symbols, 2486 relationships, 36 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **vexcode** (2235 symbols, 3132 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -1241,10 +1241,10 @@ This project is indexed by GitNexus as **DATN2** (1832 symbols, 2486 relationshi
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/DATN2/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/DATN2/clusters` | All functional areas |
-| `gitnexus://repo/DATN2/processes` | All execution flows |
-| `gitnexus://repo/DATN2/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/vexcode/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/vexcode/clusters` | All functional areas |
+| `gitnexus://repo/vexcode/processes` | All execution flows |
+| `gitnexus://repo/vexcode/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 

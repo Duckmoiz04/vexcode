@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const envPath = path.resolve(__dirname, '../../../analysis-core/.env');
+const envPath = path.resolve(__dirname, '../../../engine/.env');
 process.env.TEST_SKIP_GITNEXUS = 'true';
 
 const reportsBaseDir = path.join(os.homedir(), '.ai-code-review', 'reports');
