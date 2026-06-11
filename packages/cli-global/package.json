@@ -11,8 +11,8 @@
     "test": "vitest run",
     "lint": "eslint src/ bin/",
     "format:check": "prettier --check src/ bin/",
-    "build:ui": "npm run build --prefix ../web",
-    "dev:ui": "npm run dev --prefix ../web"
+    "build:ui": "cd ../web && npm run build",
+    "dev:ui": "cd ../web && npm run dev"
   },
   "dependencies": {
     "cors": "^2.8.5",
