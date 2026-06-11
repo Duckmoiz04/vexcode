@@ -17,7 +17,7 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`vexcode` command), Express REST server, and vanilla JS dashboard
 - **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
 - **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
@@ -276,7 +276,7 @@ node bin/cli.js serve --port 3000            # Express dashboard
 cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
-python -m unittest test_ast_graph.py         # Run Python tests
+pytest                                 # Run Python tests
 
 python main.py --target <dir> --output report.json           # Full pipeline
 python main.py --target <dir> --mock-scan --mock-ai          # Offline
@@ -321,7 +321,7 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`vexcode` command), Express REST server, and vanilla JS dashboard
 - **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
 - **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
@@ -580,7 +580,7 @@ node bin/cli.js serve --port 3000            # Express dashboard
 cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
-python -m unittest test_ast_graph.py         # Run Python tests
+pytest                                 # Run Python tests
 
 python main.py --target <dir> --output report.json           # Full pipeline
 python main.py --target <dir> --mock-scan --mock-ai          # Offline
@@ -625,7 +625,7 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`vexcode` command), Express REST server, and vanilla JS dashboard
 - **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
 - **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
@@ -884,7 +884,7 @@ node bin/cli.js serve --port 3000            # Express dashboard
 cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
-python -m unittest test_ast_graph.py         # Run Python tests
+pytest                                 # Run Python tests
 
 python main.py --target <dir> --output report.json           # Full pipeline
 python main.py --target <dir> --mock-scan --mock-ai          # Offline
@@ -929,7 +929,7 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`ai-code-review` command), Express REST server, and vanilla JS dashboard
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`vexcode` command), Express REST server, and vanilla JS dashboard
 - **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
 - **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
@@ -1188,7 +1188,7 @@ node bin/cli.js serve --port 3000            # Express dashboard
 cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
-python -m unittest test_ast_graph.py         # Run Python tests
+pytest                                 # Run Python tests
 
 python main.py --target <dir> --output report.json           # Full pipeline
 python main.py --target <dir> --mock-scan --mock-ai          # Offline
@@ -1218,7 +1218,7 @@ python main.py --target <dir> --mock-scan --mock-ai          # Offline
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **vexcode** (2235 symbols, 3132 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **vexcode** (2236 symbols, 3133 relationships, 37 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

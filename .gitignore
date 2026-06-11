@@ -12,3 +12,6 @@ node_modules/
 
 # Test artifacts
 packages/analysis-core/test_ai_output.json
+
+# Python build artifacts
+packages/engine/src/*.egg-info/
