@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Header } from './components/header/Header';
-import { Sidebar } from './components/Sidebar';
+import { Sidebar } from './components/sidebar/Sidebar';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { ScanModal } from './components/ScanModal';
 import { OnboardingPage } from './pages/OnboardingPage';
@@ -23,7 +23,7 @@ export const App: React.FC = () => {
   const {
     isScanning, scanStatus, scanLogs, elapsedTime, isReResolving,
     handleStartScan, handleCancelScan, handleReResolve,
-  } = useScan({ showToast, loadProjects, loadHistory, currentReport, setCurrentReport });
+  } = useScan({ showToast, loadProjects, loadHistory, currentReport, setCurrentReport, onScanComplete: handleSelectProject });
 
   const [selectedFindingIndex, setSelectedFindingIndex] = useState<number | null>(null);
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);

@@ -7,9 +7,10 @@ interface UseScanDeps {
   loadHistory: (project: string, autoSelectLatest?: boolean) => Promise<void>;
   currentReport: Report | null;
   setCurrentReport: (report: Report | null) => void;
+  onScanComplete?: (projectName: string) => void;
 }
 
-export function useScan({ showToast, loadProjects, loadHistory, currentReport, setCurrentReport }: UseScanDeps) {
+export function useScan({ showToast, loadProjects, loadHistory, currentReport, setCurrentReport, onScanComplete }: UseScanDeps) {
   const [isScanning, setIsScanning] = useState(false);
   const [isReResolving, setIsReResolving] = useState(false);
   const [scanStatus, setScanStatus] = useState('Initializing scan...');
@@ -99,6 +100,7 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
           await loadHistory(projName, false);
           setIsScanning(false);
           showToast('Scan completed successfully!');
+          onScanComplete?.(projName);
         } else if (data.type === 'error') {
           setScanLogs((prev) => [...prev, `[ERROR] Scan failed: ${data.error || 'Scan execution failed'}`]);
           eventSource.close();
@@ -119,7 +121,7 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
       setIsScanning(false);
       showToast('Scan connection failed or closed', 'error');
     };
-  }, [showToast, loadProjects, loadHistory]);
+  }, [showToast, loadProjects, loadHistory, onScanComplete]);
 
   const handleReResolve = useCallback(async (report: Report | null) => {
     if (!report?._savedAt) {

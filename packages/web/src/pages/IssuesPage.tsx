@@ -129,7 +129,6 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
         targetPath={currentReport.target_path || null}
         onApplyFix={onApplyFix}
         metrics={currentReport.metrics}
-        allFindings={currentReport.findings}
         onSelectFindingIndex={onSelectFindingIndex}
       />
     </div>

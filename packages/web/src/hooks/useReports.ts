@@ -14,12 +14,19 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
       const data = await res.json();
       if (data.success) {
         setProjects(data.projects || []);
+      } else {
+        console.error('Failed to load projects:', data.error || 'Unknown error');
+        showToast(data.error || 'Error loading projects list', 'error');
       }
     } catch (err) {
       console.error('Failed to load projects:', err);
       showToast('Error loading projects list', 'error');
     }
   }, [showToast]);
+
+  useEffect(() => {
+    loadProjects();
+  }, [loadProjects]);
 
   const loadHistory = useCallback(async (project: string, autoSelectLatest = true) => {
     try {
@@ -32,7 +39,9 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
           setCurrentReportId(reportList[0].id);
         }
       } else {
+        console.error('Failed to load project history:', data.error || 'Unknown error');
         setReports([]);
+        showToast(data.error || 'Error loading project reports history', 'error');
       }
     } catch (err) {
       console.error('Failed to load project history:', err);

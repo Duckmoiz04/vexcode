@@ -15,7 +15,6 @@ interface CodeInspectorProps {
   targetPath: string | null;
   onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
   metrics?: Metrics;
-  allFindings?: Finding[];
   onSelectFindingIndex?: (index: number | null) => void;
 }
 
@@ -47,7 +46,7 @@ async function openInIDE(filePath: string, line: number): Promise<void> {
 }
 
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
-  finding, aiResolutions, targetPath, onApplyFix, metrics, allFindings = [], onSelectFindingIndex,
+  finding, aiResolutions, targetPath, onApplyFix, metrics, onSelectFindingIndex,
 }) => {
   const [isApplying, setIsApplying] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -63,10 +62,6 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const { chatMessages, chatInput, setChatInput, isChatLoading, handleSendChat } = useChat({
     finding, resolution, selectedProvider, apiKey, apiBaseUrl, aiModel, aiTemperature, aiMaxTokens,
   });
-
-  const fileFindings = allFindings.filter(
-    (f: Finding) => f.file.replace(/\\/g, '/') === finding.file.replace(/\\/g, '/')
-  );
 
   const handleApply = async () => {
     if (!resolution?.remediation_code) return;
@@ -155,8 +150,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
 
           <FileViewer
             finding={finding} fileContent={fileContent} isLoading={isFileLoading} error={fileError}
-            resolution={resolution} fileFindings={fileFindings} allFindings={allFindings}
-            onSelectFindingIndex={onSelectFindingIndex} activeLineRef={activeLineRef}
+            resolution={resolution} activeLineRef={activeLineRef}
           />
 
           <ApplyFixButton
