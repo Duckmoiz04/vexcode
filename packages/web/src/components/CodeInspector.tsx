@@ -55,7 +55,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const { selectedProvider, apiKey, apiBaseUrl, aiModel, aiTemperature, aiMaxTokens } = useAIProvider();
 
   const { content: fileContent, isLoading: isFileLoading, error: fileError } = useFileContent(finding.file);
-  useAutoScroll(activeLineRef as React.RefObject<HTMLElement>, finding.line);
+  useAutoScroll(activeLineRef as React.RefObject<HTMLElement>, finding.line, !isFileLoading);
 
   const resolution = aiResolutions?.[finding.rule_id];
 

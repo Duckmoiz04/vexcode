@@ -7,10 +7,10 @@ import { jsonLanguage } from '@codemirror/lang-json';
 import { cssLanguage } from '@codemirror/lang-css';
 import { htmlLanguage } from '@codemirror/lang-html';
 
-// ─── VSCode Dark Theme → tagHighlighter ──────────────────────────────────────
-// Mirrors @uiw/codemirror-theme-vscode's vscodeDarkStyle
+// ─── Vesper Theme → tagHighlighter ───────────────────────────────────────────
+// Mirrors vesperTheme.ts colors for inline highlight consistency
 
-const vscodeHighlighter: Highlighter = tagHighlighter([
+const vesperHighlighter: Highlighter = tagHighlighter([
   { tag: [t.keyword, t.operatorKeyword, t.modifier, t.atom, t.bool, t.standard(t.name), t.standard(t.tagName), t.special(t.brace), t.color, t.constant(t.name), t.special(t.variableName)], class: 'tok-keyword' },
   { tag: [t.controlKeyword, t.moduleKeyword], class: 'tok-control' },
   { tag: [t.name, t.deleted, t.character, t.macroName, t.propertyName, t.variableName, t.labelName, t.definition(t.name)], class: 'tok-definition' },
@@ -75,7 +75,7 @@ export interface Segment {
 
 /**
  * Parse and highlight a code chunk using CodeMirror's lezer parser and the
- * VSCode Dark theme. Returns an array of { text, className } segments.
+ * Vesper theme. Returns an array of { text, className } segments.
  * Falls back to unstyled plain text if no parser is available.
  */
 export function highlightToSegments(code: string, filePath: string | null | undefined): Segment[] {
@@ -91,7 +91,7 @@ export function highlightToSegments(code: string, filePath: string | null | unde
     highlightCode(
       code,
       tree,
-      vscodeHighlighter,
+      vesperHighlighter,
       (text: string, cls: string) => {
         segments.push({ text, className: cls || '' });
       },
@@ -115,21 +115,43 @@ interface CodeHighlightProps {
 
 /**
  * Renders a code string with CodeMirror/lezer syntax highlighting.
- * Uses the VSCode Dark theme colors. This is a drop-in replacement for
+ * Uses the Vesper theme colors. This is a drop-in replacement for
  * react-syntax-highlighter for inline code rendering.
  */
 export const CodeHighlight: React.FC<CodeHighlightProps> = ({ code, filePath }) => {
   const segments = highlightToSegments(code, filePath);
 
   return (
-    <span style={{ fontFamily: 'inherit', fontSize: 'inherit', lineHeight: 'inherit' }}>
-      {segments.map((seg, i) =>
-        seg.className ? (
-          <span key={i} className={seg.className}>{seg.text}</span>
-        ) : (
-          <span key={i}>{seg.text}</span>
-        )
-      )}
-    </span>
+    <>
+      {/* Inline <style> to prevent Tailwind v4 Lightning CSS from tree-shaking these rules */}
+      <style>{`
+.tok-keyword   { color: #A0A0A0; }
+.tok-control   { color: #A0A0A0; }
+.tok-definition { color: #FFF; }
+.tok-heading   { color: #FFC799; font-weight: bold; }
+.tok-type      { color: #FFC799; }
+.tok-func      { color: #FFC799; }
+.tok-number    { color: #FFC799; }
+.tok-operator  { color: #A0A0A0; }
+.tok-regexp    { color: #FFF; }
+.tok-string    { color: #FFF; }
+.tok-angle     { color: #A0A0A0; }
+.tok-strong     { font-weight: bold; }
+.tok-emphasis   { font-style: italic; }
+.tok-strikethrough { text-decoration: line-through; }
+.tok-comment   { color: #A0A0A0; font-style: italic; }
+.tok-link      { color: #A0A0A0; text-decoration: underline; }
+.tok-invalid   { color: #FF0000; }
+`}</style>
+      <span style={{ fontFamily: 'inherit', fontSize: 'inherit', lineHeight: 'inherit', whiteSpace: 'pre' }}>
+        {segments.map((seg, i) =>
+          seg.className ? (
+            <span key={i} className={seg.className}>{seg.text}</span>
+          ) : (
+            <span key={i}>{seg.text}</span>
+          )
+        )}
+      </span>
+    </>
   );
 };

@@ -180,9 +180,9 @@ body {
   /* no border — gutter placeholder keeps visual consistent */
 }
 
-/* ─── CodeMirror Syntax Highlighting (VSCode Dark) ─────────────────────────── */
-/* These classes mirror @uiw/codemirror-theme-vscode's vscodeDarkStyle colors.
-   Applied by src/utils/syntaxHighlight.ts via tagHighlighter. */
+/* ─── CodeMirror Syntax Highlighting (Vesper Dark) ──────────────────────────── */
+/* These classes are defined inline in SyntaxHighlight.tsx via inline <style>.
+   Color values match the Vesper theme. */
 
 .cm-s-vscode-dark {
   display: block;
@@ -192,20 +192,4 @@ body {
   line-height: inherit;
 }
 
-.cm-s-vscode-dark .tok-keyword   { color: #569cd6; }
-.cm-s-vscode-dark .tok-control   { color: #c586c0; }
-.cm-s-vscode-dark .tok-definition { color: #9cdcfe; }
-.cm-s-vscode-dark .tok-heading   { color: #9cdcfe; font-weight: bold; }
-.cm-s-vscode-dark .tok-type      { color: #4ec9b0; }
-.cm-s-vscode-dark .tok-func      { color: #dcdcaa; }
-.cm-s-vscode-dark .tok-number    { color: #b5cea8; }
-.cm-s-vscode-dark .tok-operator  { color: #d4d4d4; }
-.cm-s-vscode-dark .tok-regexp    { color: #d16969; }
-.cm-s-vscode-dark .tok-string    { color: #ce9178; }
-.cm-s-vscode-dark .tok-angle     { color: #808080; }
-.cm-s-vscode-dark .tok-strong     { font-weight: bold; }
-.cm-s-vscode-dark .tok-emphasis   { font-style: italic; }
-.cm-s-vscode-dark .tok-strikethrough { text-decoration: line-through; }
-.cm-s-vscode-dark .tok-comment   { color: #6a9955; }
-.cm-s-vscode-dark .tok-link      { color: #6a9955; text-decoration: underline; }
-.cm-s-vscode-dark .tok-invalid   { color: #ff0000; }
+/* ── Syntax highlighting styles are inlined in CodeHighlight component ── */

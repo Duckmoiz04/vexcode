@@ -1,6 +1,11 @@
-import React, { type RefObject } from 'react';
+import React, { useState, type RefObject } from 'react';
 import type { Finding, AiResolution } from '../../types';
 import { CodeHighlight } from '../../utils/syntaxHighlight.tsx';
+import { CodeMirrorEditor } from './CodeMirrorEditor.tsx';
+import { DiffView } from './DiffView.tsx';
+import { ThemePicker } from './ThemePicker.tsx';
+import { defaultTheme, type ThemeDefinition } from '../../utils/themes.ts';
+import { Pencil, Eye, GitCompareArrows } from 'lucide-react';
 
 // ─── Gutter Line Renderer ────────────────────────────────────────────────────
 
@@ -48,6 +53,36 @@ const renderChunk = (
   );
 };
 
+// ─── Remediation Applier ─────────────────────────────────────────────────────
+
+const applyRemediation = (
+  fileContent: string,
+  finding: Finding,
+  resolution: AiResolution,
+): string | null => {
+  const code = resolution.remediation_code;
+  if (code === undefined || code === null) return null;
+
+  const allFileLines = fileContent.split(/\r?\n/);
+  const targetLine = allFileLines[finding.line - 1] || '';
+  const targetIndent = (targetLine.match(/^(\s*)/) || ['', ''])[0];
+
+  const remediationLines = code
+    .split(/\r?\n/)
+    .map((line: string) => {
+      if (line.length === 0) return line;
+      if (targetIndent && !line.startsWith(targetIndent)) {
+        return targetIndent + line;
+      }
+      return line;
+    });
+
+  const before = allFileLines.slice(0, finding.line - 1);
+  const after = allFileLines.slice(finding.line);
+
+  return [...before, ...remediationLines, ...after].join('\n');
+};
+
 // ─── Props ───────────────────────────────────────────────────────────────────
 
 interface FileViewerProps {
@@ -69,23 +104,86 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   resolution,
   activeLineRef,
 }) => {
+  const [mode, setMode] = useState<'view' | 'diff' | 'edit'>('view');
+  const [currentTheme, setCurrentTheme] = useState<ThemeDefinition>(defaultTheme);
+
+  const hasRemediation = resolution?.remediation_code !== undefined;
+  const isEmptyRemediation = hasRemediation &&
+    (!resolution!.remediation_code || resolution!.remediation_code.trim() === '');
+  const isFalsePositive = isEmptyRemediation &&
+    resolution?.suggestion?.toLowerCase().startsWith('false positive');
+  const canShowDiff = hasRemediation && !isFalsePositive;
+
+  const buttonBase =
+    'flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider transition-all border';
+
+  const btnClass = (btnMode: 'view' | 'diff' | 'edit') =>
+    mode === btnMode
+      ? `${buttonBase} bg-accent/20 text-accent border-accent/40`
+      : `${buttonBase} bg-bg-tertiary/50 text-text-secondary hover:bg-bg-tertiary hover:text-text-primary border-card-border/30`;
+
   return (
     <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3 flex flex-col">
       <div className="flex items-center justify-between border-b border-card-border/40 pb-2">
         <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
-          Full Code View
+          {mode === 'edit' ? 'Edit Mode' : mode === 'diff' ? 'Diff View' : 'Full Code View'}
         </span>
+        <div className="flex items-center gap-3">
+          <ThemePicker current={currentTheme} onChange={setCurrentTheme} />
+          <div className="flex items-center gap-1">
+          <button
+            onClick={() => setMode('view')}
+            className={btnClass('view')}
+            title="View code"
+          >
+            <Eye size={13} /> View
+          </button>
+          {canShowDiff && (
+            <button
+              onClick={() => setMode('diff')}
+              className={btnClass('diff')}
+              title="Diff between original and remediated"
+            >
+              <GitCompareArrows size={13} /> Diff
+            </button>
+          )}
+          <button
+            onClick={() => setMode('edit')}
+            className={btnClass('edit')}
+            title="Edit code"
+          >
+            <Pencil size={13} /> Edit
+          </button>
+        </div>
+        </div>
       </div>
 
       <div
         className="overflow-auto font-mono leading-[1.5] max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-bg-primary border border-card-border/40 rounded-xl shadow-inner"
       >
-        {isLoading ? (
+        {mode === 'diff' ? (() => {
+          const modified = canShowDiff
+            ? applyRemediation(fileContent, finding, resolution!)
+            : null;
+          return modified !== null ? (
+            <DiffView
+              original={fileContent}
+              modified={modified}
+              filePath={finding.file}
+              themeExtension={currentTheme.extension}
+            />
+          ) : (
+            <div className="text-center py-8 text-text-tertiary italic">No diff available.</div>
+          );
+        })() : isLoading ? (
           <div className="text-center py-8 text-text-tertiary italic">Loading file content...</div>
         ) : error ? (
           <div className="text-center py-8 text-danger italic">{error}</div>
-        ) : fileContent ? (
-          (() => {
+        ) : !fileContent ? (
+          <div className="text-center py-8 text-text-tertiary italic">No file content available.</div>
+        ) : mode === 'edit' ? (
+          <CodeMirrorEditor content={fileContent} filePath={finding.file} goToLine={finding.line} themeExtension={currentTheme.extension} />
+        ) : (() => {
             const allFileLines = fileContent.split(/\r?\n/);
             const targetLineContent = allFileLines[finding.line - 1] || '';
             const targetIndent = (targetLineContent.match(/^(\s*)/) || ['', ''])[0];
@@ -122,7 +220,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
                       return renderGutterLine(lineNum);
                     })}
                   </div>
-                  <div className="code-col flex-1 min-w-0">
+                  <div className="code-col flex-1 min-w-0 text-[13px]">
                     {renderChunk(preLines, 1, finding.line, finding.file)}
                   </div>
                 </div>
@@ -132,7 +230,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
                   <div className="gutter-col shrink-0">
                     {renderGutterLine(finding.line, true)}
                   </div>
-                  <div className="code-col flex-1 min-w-0">
+                  <div className="code-col flex-1 min-w-0 text-[13px]">
                     {renderChunk([targetLine], finding.line, finding.line, finding.file)}
                   </div>
                 </div>
@@ -203,7 +301,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
                         return renderGutterLine(lineNum);
                       })}
                     </div>
-                    <div className="code-col flex-1 min-w-0">
+                    <div className="code-col flex-1 min-w-0 text-[13px]">
                       {renderChunk(postLines, finding.line + 1, finding.line, finding.file)}
                     </div>
                   </div>
@@ -211,9 +309,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
               </div>
             );
           })()
-        ) : (
-          <div className="text-center py-8 text-text-tertiary italic">No file content available.</div>
-        )}
+        }
       </div>
     </div>
   );

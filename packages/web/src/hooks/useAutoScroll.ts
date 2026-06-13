@@ -2,9 +2,12 @@ import { useEffect, type RefObject } from 'react';
 
 export function useAutoScroll(
   ref: RefObject<HTMLElement | null>,
-  trigger: number
+  trigger: number,
+  ready: boolean = true,
 ): void {
   useEffect(() => {
+    if (!ready) return;
+
     const timer = setTimeout(() => {
       if (ref.current) {
         ref.current.scrollIntoView({
@@ -16,5 +19,5 @@ export function useAutoScroll(
     }, 150);
 
     return () => clearTimeout(timer);
-  }, [trigger, ref]);
+  }, [trigger, ref, ready]);
 }
