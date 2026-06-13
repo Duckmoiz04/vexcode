@@ -1,503 +1,3 @@
-{"ts":"2026-06-13T03:53:03.625Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:16.535Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:16.658Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:18.453Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:18.613Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:31.989Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:32.123Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:34.094Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:34.125Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:34.278Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:34.279Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:51.175Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:53:51.313Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:03.420Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:03.538Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:17.560Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:17.694Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:37.700Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:37.848Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:49.158Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:49.323Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":14,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:51.775Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:54:51.940Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:04.185Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:04.294Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:15.822Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:15.939Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:27.210Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:27.376Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:39.515Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:39.635Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:55:51.444Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T03:55:51.616Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:03.854Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:04.007Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:06.343Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:06.566Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:30.920Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:31.076Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:43.257Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/CodeInspector.tsx\""}
-{"ts":"2026-06-13T03:56:43.429Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:56.297Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:56:56.450Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:09.923Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:10.034Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:21.622Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:21.747Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:33.254Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:33.383Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:35.202Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:35.366Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:46.102Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-CH_G8muZ.js\""}
-{"ts":"2026-06-13T03:57:46.260Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:59.264Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:57:59.409Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:58:12.259Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:58:12.396Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:58:14.234Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:58:14.392Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:58:32.944Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:58:33.068Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:58:47.276Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"C:/Program Files/nodejs/node_modules/vexcode/src/public/assets/index-CH_G8muZ.js\""}
-{"ts":"2026-06-13T03:58:47.400Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:58:49.352Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"C:/Program Files/nodejs/node_modules/vexcode/src/public/assets\""}
-{"ts":"2026-06-13T03:58:49.494Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:59:02.510Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"C:/Program Files/nodejs/node_modules/vexcode\""}
-{"ts":"2026-06-13T03:59:02.642Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T03:59:04.603Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"C:/Program Files/nodejs/node_modules/vexcode\""}
-{"ts":"2026-06-13T03:59:04.794Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:05:49.758Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/syntaxHighlight.tsx\""}
-{"ts":"2026-06-13T04:05:49.937Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:05.649Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:05.757Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:18.357Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:18.470Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:29.744Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:29.855Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:42.336Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:42.450Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:56.346Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:06:56.472Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:07:09.610Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:07:09.807Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:07:34.467Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:07:34.582Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:08:14.299Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/types.ts\""}
-{"ts":"2026-06-13T04:08:14.445Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:08:14.929Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T04:08:15.892Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:08:39.464Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.test.tsx\""}
-{"ts":"2026-06-13T04:08:39.590Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:08:42.723Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/package.json\""}
-{"ts":"2026-06-13T04:08:42.870Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":18,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:08:53.023Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/package.json\""}
-{"ts":"2026-06-13T04:08:53.212Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:08:55.078Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@lezer/highlight/dist/index.js\""}
-{"ts":"2026-06-13T04:08:55.324Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:06.520Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@lezer/highlight/package.json\""}
-{"ts":"2026-06-13T04:09:06.625Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:08.304Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@lezer/highlight/dist/index.js\""}
-{"ts":"2026-06-13T04:09:08.471Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:19.155Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@lezer/highlight\""}
-{"ts":"2026-06-13T04:09:19.264Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:20.885Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:21.013Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:32.103Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@lezer/highlight/dist/index.js\""}
-{"ts":"2026-06-13T04:09:32.220Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:33.855Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@lezer/highlight/package.json\""}
-{"ts":"2026-06-13T04:09:34.015Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:44.230Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@lezer/highlight/dist/index.js\""}
-{"ts":"2026-06-13T04:09:44.362Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:09:45.875Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@lezer/highlight/dist/index.d.ts\""}
-{"ts":"2026-06-13T04:09:48.505Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":857,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:10:34.726Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:10:34.847Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:10:36.726Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:10:36.872Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:10:49.422Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:10:49.585Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:11:05.602Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:11:05.733Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:11:21.178Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:11:21.399Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:11:39.695Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:11:39.902Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:02.845Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:03.060Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/syntaxHighlight.test.ts\""}
-{"ts":"2026-06-13T04:12:03.290Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:06.318Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":56,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:06.599Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"reminder-injected","dur":16,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:18.569Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":2,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:18.778Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:39.911Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:40.025Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:52.510Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:52.647Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/debug-highlight.ts\""}
-{"ts":"2026-06-13T04:12:52.777Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:54.548Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":186,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:12:54.791Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:13:04.768Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:13:04.900Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:13:58.237Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/syntaxHighlight.tsx\""}
-{"ts":"2026-06-13T04:13:58.402Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:00.404Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":49,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:00.555Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:19.678Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/syntaxHighlight.test.ts\""}
-{"ts":"2026-06-13T04:14:19.852Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:21.797Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":55,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:21.966Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:30.981Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:31.107Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:54.546Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:14:54.674Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:15:15.945Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T04:15:16.062Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:15:17.799Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:15:17.957Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:15:34.213Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:15:34.452Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:15:37.447Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:15:37.709Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:15:52.365Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:15:52.468Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:16:04.253Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:16:04.357Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:16:21.178Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:16:21.298Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:16:34.257Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:16:34.363Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:02.247Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:17:02.357Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:13.789Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:17:13.911Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:26.952Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:17:27.069Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:40.319Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/error.jsx\""}
-{"ts":"2026-06-13T04:17:40.496Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:40.556Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/code-highlight.js\""}
-{"ts":"2026-06-13T04:17:42.091Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:51.212Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:51.378Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:53.261Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":116,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:17:53.442Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:06.830Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:06.904Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:06.964Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:07.051Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:21.462Z","hook":"scout-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:21.596Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:23.061Z","hook":"scout-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:25.972Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":1007,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:35.685Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:35.794Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:44.855Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/syntaxHighlight.tsx\""}
-{"ts":"2026-06-13T04:18:45.024Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:45.085Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T04:18:46.454Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/ErrorBoundary.tsx\""}
-{"ts":"2026-06-13T04:18:46.613Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:18:46.639Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:07.821Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:08.034Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:09.810Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":124,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:09.811Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":102,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:10.029Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:10.030Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:21.800Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/vite.config.ts\""}
-{"ts":"2026-06-13T04:19:21.910Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:24.085Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:24.209Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:33.430Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:33.545Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:35.071Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:35.196Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:47.777Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:47.901Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:49.611Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:19:49.731Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:20:04.886Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:20:05.002Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:20:51.070Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":2,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:20:51.193Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:21:10.851Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:21:10.988Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:21:13.323Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T04:21:13.342Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:21:13.519Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:21:13.547Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:21:31.228Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-yL7PzXdy.js\""}
-{"ts":"2026-06-13T04:21:31.369Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:28:00.132Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:28:00.259Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:28:14.382Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:28:14.485Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:28:33.764Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T04:28:33.915Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:28:51.505Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src\""}
-{"ts":"2026-06-13T04:28:51.771Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:28:54.397Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/pages\""}
-{"ts":"2026-06-13T04:28:56.106Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:29:09.402Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/pages/IssuesPage.tsx\""}
-{"ts":"2026-06-13T04:29:09.526Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:29:19.135Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/CodeInspector.tsx\""}
-{"ts":"2026-06-13T04:29:19.288Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:29:34.527Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:29:34.667Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:29:46.075Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:29:46.211Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:30:01.241Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/types.ts\""}
-{"ts":"2026-06-13T04:30:01.443Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:30:18.592Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/server.js\""}
-{"ts":"2026-06-13T04:30:18.825Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:30:32.977Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/FindingsList.tsx\""}
-{"ts":"2026-06-13T04:30:33.206Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:30:55.833Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:30:56.050Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:31:17.048Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:31:17.166Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:31:27.872Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli\""}
-{"ts":"2026-06-13T04:31:27.976Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:51:52.706Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/index.html\""}
-{"ts":"2026-06-13T04:51:52.939Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:51:55.518Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T04:51:57.560Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:52:24.003Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:52:24.127Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:52:25.844Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:52:25.976Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:52:54.407Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/hooks/useFileContent.ts\""}
-{"ts":"2026-06-13T04:52:54.531Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:53:02.645Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/routes/files.js\""}
-{"ts":"2026-06-13T04:53:02.772Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:53:22.937Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:53:23.050Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:53:54.803Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/package.json\""}
-{"ts":"2026-06-13T04:53:54.946Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:54:35.794Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T04:54:35.935Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T04:54:36.074Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/syntaxHighlight.tsx\""}
-{"ts":"2026-06-13T04:54:37.179Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:49:33.289Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/dist/assets\""}
-{"ts":"2026-06-13T05:49:33.437Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:49:35.681Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/index.html\""}
-{"ts":"2026-06-13T05:49:35.893Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:49:40.228Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/dist/assets\""}
-{"ts":"2026-06-13T05:49:41.654Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:49:58.217Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/dist\""}
-{"ts":"2026-06-13T05:49:58.329Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:50:00.017Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/vite.config.js\""}
-{"ts":"2026-06-13T05:50:00.050Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public\""}
-{"ts":"2026-06-13T05:50:00.178Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:50:00.204Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:50:14.380Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets\""}
-{"ts":"2026-06-13T05:50:14.501Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:50:15.730Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets\""}
-{"ts":"2026-06-13T05:50:18.217Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":768,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:50:29.383Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T05:50:29.493Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:50:45.908Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T05:50:46.110Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:50:46.116Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src\""}
-{"ts":"2026-06-13T05:50:47.754Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:50:47.756Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src\""}
-{"ts":"2026-06-13T05:50:51.953Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":1940,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:51:02.378Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/index.css\""}
-{"ts":"2026-06-13T05:51:02.498Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:51:03.772Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T05:51:06.238Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":789,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:51:24.848Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/index.css\""}
-{"ts":"2026-06-13T05:51:24.998Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:51:37.543Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/index.css\""}
-{"ts":"2026-06-13T05:51:37.672Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:51:39.349Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":71,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:51:39.517Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:51:47.793Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:51:47.914Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:52:06.724Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets\""}
-{"ts":"2026-06-13T05:52:06.844Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:52:17.285Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-CD5Dxxdw.css\""}
-{"ts":"2026-06-13T05:52:17.398Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:52:30.710Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/index.css\""}
-{"ts":"2026-06-13T05:52:30.910Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:52:51.999Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T05:52:52.113Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:53:08.080Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/syntaxHighlight.tsx\""}
-{"ts":"2026-06-13T05:53:08.218Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:53:20.918Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/syntaxHighlight.tsx\""}
-{"ts":"2026-06-13T05:53:21.044Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:53:22.700Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":41,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:53:22.854Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:53:30.700Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:53:30.815Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:53:48.889Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-C4vRsp_F.js\""}
-{"ts":"2026-06-13T05:53:49.017Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:53:59.052Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets\""}
-{"ts":"2026-06-13T05:53:59.154Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:54:12.178Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/index.html\""}
-{"ts":"2026-06-13T05:54:12.323Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:54:26.232Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-bilMG9PE.css\""}
-{"ts":"2026-06-13T05:54:26.343Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:54:36.521Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:54:36.654Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:54:48.965Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public\""}
-{"ts":"2026-06-13T05:54:49.095Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:55:07.239Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/index.css\""}
-{"ts":"2026-06-13T05:55:07.381Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:55:09.149Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":94,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T05:55:09.353Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:07:49.094Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector\""}
-{"ts":"2026-06-13T06:07:49.233Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:07:49.276Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components\""}
-{"ts":"2026-06-13T06:07:51.115Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:11.320Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src\""}
-{"ts":"2026-06-13T06:08:11.444Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:12.804Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src\""}
-{"ts":"2026-06-13T06:08:15.008Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":711,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:26.083Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:08:26.213Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:29.251Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":82,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:29.373Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:36.772Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:08:36.890Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:38.435Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":34,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:38.544Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:45.239Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:08:45.346Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:46.765Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":34,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:46.871Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:55.195Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:08:55.299Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:09:15.126Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-CD5Dxxdw.css\""}
-{"ts":"2026-06-13T06:09:15.288Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:18:48.136Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/package.json\""}
-{"ts":"2026-06-13T06:18:48.280Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:19:05.250Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@codemirror/commands\""}
-{"ts":"2026-06-13T06:19:05.400Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:19:08.423Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@codemirror/language\""}
-{"ts":"2026-06-13T06:19:08.698Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:19:24.655Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules\""}
-{"ts":"2026-06-13T06:19:24.947Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":13,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:19:25.078Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules\""}
-{"ts":"2026-06-13T06:19:27.508Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":197,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:19:42.534Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@codemirror\""}
-{"ts":"2026-06-13T06:19:42.683Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:19:54.079Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@codemirror\""}
-{"ts":"2026-06-13T06:19:54.208Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:20:06.475Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
-{"ts":"2026-06-13T06:20:06.617Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:20:18.799Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@codemirror\""}
-{"ts":"2026-06-13T06:20:18.919Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:20:48.502Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:20:48.622Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:21:18.360Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@uiw/codemirror-theme-vscode/esm/index.js\""}
-{"ts":"2026-06-13T06:21:18.471Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:21:29.110Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/node_modules/@uiw/codemirror-theme-vscode\""}
-{"ts":"2026-06-13T06:21:29.232Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:21:42.439Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@uiw\""}
-{"ts":"2026-06-13T06:21:42.599Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:21:53.889Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@uiw/codemirror-theme-vscode\""}
-{"ts":"2026-06-13T06:21:54.025Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:21:56.067Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@uiw/codemirror-theme-vscode/package.json\""}
-{"ts":"2026-06-13T06:21:56.226Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:22:07.784Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@uiw/codemirror-theme-vscode\""}
-{"ts":"2026-06-13T06:22:07.909Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:22:18.710Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@uiw/codemirror-theme-vscode/esm/index.js\""}
-{"ts":"2026-06-13T06:22:18.876Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:22:18.923Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@uiw/codemirror-theme-vscode/esm/dark.js\""}
-{"ts":"2026-06-13T06:22:20.834Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:22:43.032Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:22:43.179Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/CodeMirrorEditor.tsx\""}
-{"ts":"2026-06-13T06:22:43.294Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:22:45.029Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":30,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:22:45.168Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:11.875Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:23:11.998Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:23.569Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:23:23.684Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:25.435Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":39,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:25.581Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:35.831Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:23:35.961Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:37.748Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":43,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:37.890Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:48.857Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:23:49.027Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:51.131Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":78,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:23:51.307Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:24:01.718Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:24:01.838Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:24:10.898Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:24:11.127Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:24:34.953Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:24:35.096Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:24:40.374Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":46,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:24:40.542Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:24:49.955Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:24:50.132Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:25:13.164Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:25:13.304Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:25:47.360Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:25:47.519Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:25:49.386Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":32,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:25:49.561Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:25:57.888Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:25:58.014Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:26:19.274Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-BmWdcF_k.css\""}
-{"ts":"2026-06-13T06:26:19.399Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:26:32.787Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/index.html\""}
-{"ts":"2026-06-13T06:26:32.952Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:26:45.515Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-Bp18NUa9.js\""}
-{"ts":"2026-06-13T06:26:45.693Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:26:58.086Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets/index-Bp18NUa9.js\""}
-{"ts":"2026-06-13T06:26:58.237Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:27:10.901Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/cli/src/public/assets\""}
-{"ts":"2026-06-13T06:27:11.028Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:37:11.175Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@codemirror/merge\""}
-{"ts":"2026-06-13T06:37:11.462Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":13,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:37:28.409Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@codemirror/merge/dist/index.d.ts\""}
-{"ts":"2026-06-13T06:37:28.549Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:37:28.687Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@codemirror/merge/README.md\""}
-{"ts":"2026-06-13T06:37:30.328Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:38:48.439Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/CodeMirrorEditor.tsx\""}
-{"ts":"2026-06-13T06:38:48.616Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:38:48.714Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:38:50.520Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/node_modules/@codemirror/merge/dist/index.d.ts\""}
-{"ts":"2026-06-13T06:38:50.747Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:38:56.282Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":2961,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:39:18.883Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/CodeMirrorEditor.tsx\""}
-{"ts":"2026-06-13T06:39:19.030Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:39:21.489Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":120,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:39:21.701Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:39:43.523Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:39:43.695Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffView.tsx\""}
-{"ts":"2026-06-13T06:39:43.852Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:39:46.177Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":68,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:39:46.358Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:39:55.765Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:39:55.930Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:07.232Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:40:07.395Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:09.696Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":55,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:09.891Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:20.978Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:40:21.166Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:24.253Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":78,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:24.454Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:39.599Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:40:39.749Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:41.858Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":36,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:42.017Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:52.308Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:40:52.453Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:54.591Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":46,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:40:54.824Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:41:05.157Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
-{"ts":"2026-06-13T06:41:05.286Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:41:34.606Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T06:41:34.724Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T07:12:53.839Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffView.tsx\""}
-{"ts":"2026-06-13T07:12:53.950Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-13T07:13:04.843Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-13T07:13:04.970Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffView.tsx\""}
 {"ts":"2026-06-13T07:13:05.089Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-13T07:13:08.452Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":34,"status":"ok","exit":0,"error":""}
@@ -989,3 +489,125 @@
 {"ts":"2026-06-13T12:55:53.966Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":14,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-13T12:58:05.059Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-13T12:58:05.186Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T12:58:14.383Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T12:58:14.514Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T12:58:23.484Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T12:58:23.602Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T12:58:49.655Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffView.tsx\""}
+{"ts":"2026-06-13T12:58:49.840Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T12:58:50.719Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
+{"ts":"2026-06-13T12:58:50.945Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T12:59:13.578Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src\""}
+{"ts":"2026-06-13T12:59:13.700Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:04:45.783Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:04:45.890Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:04:45.928Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:04:46.023Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:04:56.432Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:04:56.552Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:04.257Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewInline.tsx\""}
+{"ts":"2026-06-13T13:05:04.370Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:04.745Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":16,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:04.890Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:11.165Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewInline.tsx\""}
+{"ts":"2026-06-13T13:05:11.316Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:11.736Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":17,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:11.909Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:20.277Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewInline.tsx\""}
+{"ts":"2026-06-13T13:05:20.441Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:20.790Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/CodeMirrorEditor.tsx\""}
+{"ts":"2026-06-13T13:05:21.012Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:21.017Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/themes.ts\""}
+{"ts":"2026-06-13T13:05:21.312Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:30.291Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
+{"ts":"2026-06-13T13:05:30.416Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:30.743Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":13,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:30.888Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:37.260Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
+{"ts":"2026-06-13T13:05:37.383Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:37.754Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":15,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:37.896Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:45.764Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
+{"ts":"2026-06-13T13:05:45.923Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:46.038Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src\""}
+{"ts":"2026-06-13T13:05:46.201Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:52.800Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:05:52.914Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:06:27.341Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewInline.tsx\""}
+{"ts":"2026-06-13T13:06:27.475Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:06:28.536Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/CodeMirrorEditor.tsx\""}
+{"ts":"2026-06-13T13:06:28.670Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:06:29.733Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/utils/themes.ts\""}
+{"ts":"2026-06-13T13:06:29.852Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:10:42.084Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:10:42.237Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewSplit.tsx\""}
+{"ts":"2026-06-13T13:10:42.377Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:10:42.620Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":12,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:10:42.793Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"reminder-injected","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:12:40.843Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:12:40.979Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:13:15.016Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:13:15.198Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:13:38.698Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:13:38.830Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:15:03.050Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewSplit.tsx\""}
+{"ts":"2026-06-13T13:15:03.160Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:16:18.040Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewSplit.tsx\""}
+{"ts":"2026-06-13T13:16:18.154Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:17:35.834Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
+{"ts":"2026-06-13T13:17:35.978Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:17:37.012Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewInline.tsx\""}
+{"ts":"2026-06-13T13:17:37.136Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:17:39.163Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/DiffViewSplit.tsx\""}
+{"ts":"2026-06-13T13:17:39.306Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:26:59.063Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":2,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:26:59.204Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
+{"ts":"2026-06-13T13:26:59.339Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:26:59.593Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:26:59.727Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"reminder-injected","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:28:46.500Z","hook":"scout-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:28:46.629Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:29:04.288Z","hook":"scout-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:29:04.394Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:29:39.253Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.test.tsx\""}
+{"ts":"2026-06-13T13:29:39.424Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:31:48.270Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
+{"ts":"2026-06-13T13:31:48.393Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:34:04.976Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:34:05.138Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:35:04.126Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":0,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:35:04.239Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:37:44.743Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/code-inspector/FileViewer.tsx\""}
+{"ts":"2026-06-13T13:37:44.900Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:37:52.021Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:37:52.143Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:37:59.556Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:37:59.678Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:16.955Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:17.112Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:27.308Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:27.478Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:35.260Z","hook":"scout-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:35.500Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:35.633Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-13T13:38:35.874Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:42.966Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:38:43.127Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:39:25.140Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:39:25.270Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:39:32.283Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:39:32.406Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:42:55.062Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:42:55.265Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:42:56.176Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-13T13:42:56.402Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:43:03.261Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-13T13:43:03.373Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:44:13.388Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:44:13.541Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:44:13.618Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2\""}
+{"ts":"2026-06-13T13:44:13.897Z","hook":"privacy-block","event":"PreToolUse","tool":"Glob","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:44:21.707Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/notes/implementation-roadmap.md\""}
+{"ts":"2026-06-13T13:44:21.880Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:50:46.509Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-13T13:50:46.625Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
