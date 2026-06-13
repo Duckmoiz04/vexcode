@@ -174,30 +174,30 @@ describe('bridge.js unit tests (mock subprocess)', () => {
     });
   });
 
-  describe('runPythonReResolve()', () => {
+  describe('runRefreshAi()', () => {
     it('should resolve with stdout and stderr on exit code 0', async () => {
       const child = createMockChild();
       mockSpawn.mockReturnValue(child);
 
-      const promise = bridge.runPythonReResolve('/fake/report.json', true);
+      const promise = bridge.runRefreshAi('/fake/report.json', true);
 
-      child.stdout.emit('data', Buffer.from('Re-resolve complete'));
+      child.stdout.emit('data', Buffer.from('Refresh AI complete'));
       setImmediate(() => child.emit('close', 0));
 
       const result = await promise;
       expect(result).toEqual({
-        stdout: 'Re-resolve complete',
+        stdout: 'Refresh AI complete',
         stderr: ''
       });
       const args = mockSpawn.mock.calls[0][1];
-      expect(args).toContain('--re-resolve');
+      expect(args).toContain('--refresh-ai');
     });
 
     it('should reject when Python venv is not found', async () => {
       mockExistsSync.mockReturnValue(false);
 
       await expect(
-        bridge.runPythonReResolve('/fake/report.json')
+        bridge.runRefreshAi('/fake/report.json')
       ).rejects.toThrow('Python interpreter not found');
     });
 
@@ -205,20 +205,20 @@ describe('bridge.js unit tests (mock subprocess)', () => {
       const child = createMockChild();
       mockSpawn.mockReturnValue(child);
 
-      const promise = bridge.runPythonReResolve('/fake/report.json', false);
+      const promise = bridge.runRefreshAi('/fake/report.json', false);
 
-      child.stderr.emit('data', Buffer.from('Re-resolve failed'));
+      child.stderr.emit('data', Buffer.from('Refresh AI failed'));
       setImmediate(() => child.emit('close', 2));
 
       await expect(promise).rejects.toThrow('Python process exited with code 2');
     });
 
-    it('should call onProgress callback during re-resolve', async () => {
+    it('should call onProgress callback during refresh AI', async () => {
       const child = createMockChild();
       mockSpawn.mockReturnValue(child);
       const onProgress = vi.fn();
 
-      const promise = bridge.runPythonReResolve('/fake/report.json', true, onProgress);
+      const promise = bridge.runRefreshAi('/fake/report.json', true, onProgress);
 
       child.stdout.emit('data', Buffer.from('processing...\n'));
       setImmediate(() => child.emit('close', 0));

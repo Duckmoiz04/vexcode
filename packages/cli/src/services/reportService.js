@@ -1,6 +1,6 @@
 import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
-import { getProjectReportDir } from '../utils.js';
+import { getProjectReportDir, getLatestReportPath } from '../utils.js';
 
 /**
  * List all projects with their reports.
@@ -112,6 +112,23 @@ export function getLatestReportContent(reportsBaseDir) {
     return { success: false, error: 'No reports found.' };
   }
 
+  // Fast path: try .latest pointer first
+  const latestPath = getLatestReportPath();
+  if (latestPath) {
+    for (const project of readdirSync(reportsBaseDir)) {
+      const projectDir = join(reportsBaseDir, project);
+      if (!statSync(projectDir).isDirectory()) continue;
+      if (latestPath.startsWith(projectDir + '\\') || latestPath.startsWith(projectDir + '/')) {
+        const id = basename(latestPath).replace('.json', '');
+        const content = JSON.parse(readFileSync(latestPath, 'utf8'));
+        content._id = id;
+        content._project = project;
+        return { success: true, report: content };
+      }
+    }
+  }
+
+  // Fallback: scan all project directories by mtime
   const projects = readdirSync(reportsBaseDir);
   if (projects.length === 0) {
     return { success: false, error: 'No reports found.' };

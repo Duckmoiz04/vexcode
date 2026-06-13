@@ -1,6 +1,6 @@
 import { readFileSync, mkdirSync } from 'node:fs';
 import { resolve, join } from 'node:path';
-import { getProjectName, getProjectReportDir, getReportFilename } from '../utils.js';
+import { getProjectName, getProjectReportDir, getReportFilename, updateLatestReportPath } from '../utils.js';
 
 export function registerScanRoutes(app, deps) {
   const { isPathSafe, workspaceDir, runPythonAnalysis, cancelActiveScan } = deps;
@@ -45,6 +45,9 @@ export function registerScanRoutes(app, deps) {
         }
       );
 
+      // Track latest report path
+      updateLatestReportPath(reportPath);
+
       const reportContent = JSON.parse(readFileSync(reportPath, 'utf8'));
       reportContent._id = reportFilename.replace('.json', '');
       reportContent._project = projectName;
@@ -79,6 +82,8 @@ export function registerScanRoutes(app, deps) {
       const reportPath = join(projectDir, reportFilename);
 
       await runPythonAnalysis(finalTarget, reportPath, !!mockScan, !!mockAi, !!fastScan);
+
+      updateLatestReportPath(reportPath);
 
       const reportContent = JSON.parse(readFileSync(reportPath, 'utf8'));
       reportContent._id = reportFilename.replace('.json', '');

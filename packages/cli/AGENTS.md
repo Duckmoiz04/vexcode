@@ -13,7 +13,7 @@ CLI (bin/cli.js) → Bridge (bridge.js) → Python engine subprocess
 
 | Module | Lines | Responsibility |
 |--------|-------|----------------|
-| `bin/cli.js` | 299 | CLI entry; commands: `scan`, `serve`/`ui`, `help` |
+| `bin/cli.js` | 299 | CLI entry; commands: `analyze`, `serve`/`ui`, `help` |
 | `src/server.js` | 604 | Express server; 10+ endpoints (config, scan, reports, apply, chat) |
 | `src/bridge.js` | 148 | Python process spawner; JSON stdin/stdout bridge |
 | `src/index.js` | 4 | Library placeholder (`greet()` export) |

@@ -27,7 +27,7 @@ vi.mock('../bridge.js', () => ({
     }
     const fs = require('node:fs');
     fs.writeFileSync(reportOutputPath, JSON.stringify({
-      scanner: 'semgrep',
+      scanner: 'opengrep',
       target_path: targetPath,
       timestamp: new Date().toISOString(),
       findings: []
@@ -38,7 +38,7 @@ vi.mock('../bridge.js', () => ({
     mockCancelled = true;
     return true;
   }),
-  runPythonReResolve: vi.fn().mockImplementation((reportPath, mockAi) => {
+  runRefreshAi: vi.fn().mockImplementation((reportPath, mockAi) => {
     const fs = require('node:fs');
     const existing = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
     existing.reResolved = true;
@@ -486,7 +486,7 @@ describe('Express REST Server API', () => {
 
     beforeAll(() => {
       fs.writeFileSync(tempReportPath, JSON.stringify({
-        scanner: 'semgrep',
+        scanner: 'opengrep',
         findings: [{ id: 1, title: 'Test finding' }]
       }), 'utf8');
     });
@@ -507,7 +507,7 @@ describe('Express REST Server API', () => {
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
-      expect(res.body.message).toBe('Re-resolve complete');
+      expect(res.body.message).toBe('Refresh AI complete');
       expect(res.body.report).toBeDefined();
       expect(res.body.report.reResolved).toBe(true);
     });

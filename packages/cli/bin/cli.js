@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
-import { readFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, mkdirSync, existsSync, statSync } from 'node:fs';
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve, basename } from 'path';
 import { homedir } from 'node:os';
@@ -8,7 +8,7 @@ import { exec } from 'node:child_process';
 
 import { startServer } from '../src/server.js';
 import { runPythonAnalysis } from '../src/bridge.js';
-import { getProjectName, getProjectReportDir, getReportFilename } from '../src/utils.js';
+import { getProjectName, getProjectReportDir, getReportFilename, updateLatestReportPath } from '../src/utils.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -23,14 +23,14 @@ try {
   version = packageJson.version || version;
 } catch {}
 
-const COMMANDS = ['scan', 'serve', 'ui', 'help'];
+const COMMANDS = ['analyze', 'serve', 'ui', 'help'];
 
 const globalOptions = {
   version: { type: 'boolean', short: 'V' },
   help:    { type: 'boolean', short: 'h' },
 };
 
-const scanOptions = {
+const analyzeOptions = {
   help:        { type: 'boolean', short: 'h' },
   target:      { type: 'string', short: 't' },
   'mock-scan': { type: 'boolean' },
@@ -57,7 +57,7 @@ Options:
   -h, --help                      display help for command
 
 Commands:
-  scan [options]                  Scan a project for vulnerabilities
+  analyze [options]                Analyze a project for vulnerabilities
   serve [options]                 Start local HTTP server for web UI connection
   ui [options]                    Start local HTTP server and open dashboard
   help                            Display help for command
@@ -130,27 +130,27 @@ function printReport(report) {
 }
 
 function parseArgsForCommand(command, rawArgs) {
-  const optionDefs = (command === 'serve' || command === 'ui') ? serveOptions : scanOptions;
+   const optionDefs = (command === 'serve' || command === 'ui') ? serveOptions : analyzeOptions;
   const { values } = parseArgs({ options: optionDefs, allowPositionals: true, args: rawArgs });
   return values;
 }
 
-function printScanHelp() {
+function printAnalyzeHelp() {
   console.log(`
-Usage: vexcode scan [options]
+Usage: vexcode analyze [options]
 
-Scan a project for security vulnerabilities using Semgrep, enriched with
+Analyze a project for security vulnerabilities using Semgrep, enriched with
 GitNexus AST context and AI-powered remediation suggestions.
 
 Options:
-  -t, --target <path>     Target directory to scan (default: current dir)
+  -t, --target <path>     Target directory to analyze (default: current dir)
       --mock-scan         Use mock scan findings (skip Semgrep)
       --mock-ai           Use mock AI suggestions (skip 9router API)
 
 Examples:
-  vexcode scan --target ./my-project
-  vexcode scan -t D:/src/my-app
-  vexcode scan --mock-scan --mock-ai
+  vexcode analyze --target ./my-project
+  vexcode analyze -t D:/src/my-app
+  vexcode analyze --mock-scan --mock-ai
 `);
 }
 
@@ -169,17 +169,28 @@ Examples:
 `);
 }
 
-async function handleScan(rawArgs) {
-  const values = parseArgsForCommand('scan', rawArgs);
+async function handleAnalyze(rawArgs) {
+  const values = parseArgsForCommand('analyze', rawArgs);
 
   if (values.help) {
-    printScanHelp();
+    printAnalyzeHelp();
     process.exit(0);
   }
 
   const targetPath = resolve(values.target || '.');
   const mockScan = !!values['mock-scan'];
   const mockAi = !!values['mock-ai'];
+
+  // Pre-flight validation: fail fast before spawning Python
+  try {
+    if (!statSync(targetPath).isDirectory()) {
+      console.error(`\x1b[31mError:\x1b[0m --target expects a directory, but '${targetPath}' is not a directory.`);
+      process.exit(1);
+    }
+  } catch {
+    console.error(`\x1b[31mError:\x1b[0m Target path does not exist: ${targetPath}`);
+    process.exit(1);
+  }
 
   // Generate report path in centralized storage
   const projectName = getProjectName(targetPath);
@@ -196,6 +207,9 @@ async function handleScan(rawArgs) {
 
   try {
     await runPythonAnalysis(targetPath, outputPath, mockScan, mockAi);
+
+    // Track latest report path
+    updateLatestReportPath(outputPath);
 
     // Read the saved report
     const reportContent = JSON.parse(readFileSync(outputPath, 'utf8'));
@@ -275,8 +289,8 @@ if (command === '--ui' || command === '--server' || command === '-s') {
   console.error(`Error: Unknown command "${command}"`);
   console.log('Run "vexcode help" for usage information.');
   process.exit(1);
-} else if (command === 'scan') {
-  await handleScan(commandArgs);
+} else if (command === 'analyze') {
+  await handleAnalyze(commandArgs);
 } else if (command === 'serve' || command === 'ui') {
   handleServe(commandArgs);
 }

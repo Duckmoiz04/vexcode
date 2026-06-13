@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { mkdirSync } from 'node:fs';
 
-import { runPythonAnalysis, cancelActiveScan, runPythonReResolve } from './bridge.js';
+import { runPythonAnalysis, cancelActiveScan, runRefreshAi } from './bridge.js';
 import { isPathSafe, readEnvConfig, writeEnvConfig } from './services/fileService.js';
 
 import { registerConfigRoutes } from './routes/config.js';
@@ -43,7 +43,7 @@ const deps = {
   writeEnvConfig,
   runPythonAnalysis,
   cancelActiveScan,
-  runPythonReResolve,
+  runRefreshAi,
 };
 
 registerConfigRoutes(app, deps);

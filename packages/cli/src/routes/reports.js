@@ -3,7 +3,7 @@ import { resolve, basename, dirname } from 'node:path';
 import { listProjects, listProjectReports, getReportContent, getLatestReportContent } from '../services/reportService.js';
 
 export function registerReportRoutes(app, deps) {
-  const { isPathSafe, workspaceDir, reportsBaseDir, runPythonReResolve } = deps;
+  const { isPathSafe, workspaceDir, reportsBaseDir, runRefreshAi } = deps;
 
   app.get('/api/reports', (req, res) => {
     try {
@@ -74,7 +74,7 @@ export function registerReportRoutes(app, deps) {
         return res.status(400).json({ success: false, error: 'Valid reportPath is required.' });
       }
 
-      await runPythonReResolve(reportPath, !!mockAi);
+      await runRefreshAi(reportPath, !!mockAi);
 
       const reportContent = JSON.parse(readFileSync(reportPath, 'utf8'));
       reportContent._id = basename(reportPath).replace('.json', '');
@@ -83,7 +83,7 @@ export function registerReportRoutes(app, deps) {
 
       res.json({
         success: true,
-        message: 'Re-resolve complete',
+        message: 'Refresh AI complete',
         report: reportContent
       });
     } catch (error) {

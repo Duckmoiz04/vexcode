@@ -44,14 +44,14 @@ describe('AI Code Review CLI Integration', () => {
     expect(code).toBe(0);
     expect(stdout).toContain('AI Code Review CLI');
     expect(stdout).toContain('Commands:');
-    expect(stdout).toContain('scan');
+    expect(stdout).toContain('analyze');
     expect(stdout).toContain('serve');
   });
 
-  it('should display help for scan command on scan --help', async () => {
-    const { code, stdout } = await runCli(['scan', '--help']);
+  it('should display help for analyze command on analyze --help', async () => {
+    const { code, stdout } = await runCli(['analyze', '--help']);
     expect(code).toBe(0);
-    expect(stdout).toContain('Usage: vexcode scan');
+    expect(stdout).toContain('Usage: vexcode analyze');
     expect(stdout).toContain('--mock-scan');
     expect(stdout).toContain('--mock-ai');
   });
@@ -63,10 +63,10 @@ describe('AI Code Review CLI Integration', () => {
     expect(stdout).toContain('--port');
   });
 
-  it('should execute mock scan and output summary to stdout', async () => {
+  it('should execute mock analyze and output summary to stdout', async () => {
     const targetPath = path.resolve(__dirname, '../..');
     const { code, stdout } = await runCli([
-      'scan',
+      'analyze',
       '--target', `"${targetPath}"`,
       '--mock-scan',
       '--mock-ai'

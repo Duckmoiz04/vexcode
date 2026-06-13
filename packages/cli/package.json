@@ -1,5 +1,5 @@
 {
-  "name": "cli",
+  "name": "vexcode",
   "version": "1.0.0",
   "description": "Global command-line interface for DATN2 AI Code Review",
   "type": "module",
@@ -12,7 +12,9 @@
     "lint": "eslint src/ bin/",
     "format:check": "prettier --check src/ bin/",
     "build:ui": "cd ../web && npm run build",
-    "dev:ui": "cd ../web && npm run dev"
+    "dev:ui": "cd ../web && npm run dev",
+    "postinstall": "node scripts/install-opengrep.js",
+    "install:opengrep": "node scripts/install-opengrep.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

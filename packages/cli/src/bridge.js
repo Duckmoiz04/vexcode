@@ -148,12 +148,12 @@ export async function runScanAndReadReport(targetPath, reportOutputPath, mockSca
 }
 
 /**
- * Run the Python Analysis Core subprocess in re-resolve mode.
- * @param {string} reportPath - The path to the existing report to re-resolve.
+ * Run the Python Analysis Core subprocess in refresh-ai mode.
+ * @param {string} reportPath - The path to the existing report to re-run AI on.
  * @param {boolean} [mockAi=false] - Use mock AI suggestions.
  * @returns {Promise<{stdout: string, stderr: string}>}
  */
-export function runPythonReResolve(reportPath, mockAi = false, onProgress = null) {
+export function runRefreshAi(reportPath, mockAi = false, onProgress = null) {
   return new Promise((resolvePromise, rejectPromise) => {
     const pythonPath = getPythonPath();
 
@@ -163,14 +163,14 @@ export function runPythonReResolve(reportPath, mockAi = false, onProgress = null
 
     const args = [
       'main.py',
-      '--re-resolve', reportPath
+      '--refresh-ai', reportPath
     ];
 
     if (mockAi) {
       args.push('--mock-ai');
     }
 
-    console.log(`Spawning Python process for re-resolve: ${pythonPath} ${args.join(' ')}`);
+    console.log(`Spawning Python process for refresh-ai: ${pythonPath} ${args.join(' ')}`);
 
     const child = spawn(pythonPath, args, {
       cwd: analysisCoreDir,
