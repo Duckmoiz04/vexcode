@@ -82,11 +82,11 @@ class TestMainCLI:
         _assert_valid_report(report)
         assert "fast" in report["scanner"].lower()
 
-    def test_re_resolve_mock(self, tmp_path):
-        """Re-resolve mode updates ai_resolutions on an existing report."""
+    def test_refresh_ai_mock(self, tmp_path):
+        """Refresh AI mode updates ai_resolutions on an existing report."""
         initial_report_path = tmp_path / "initial_report.json"
         initial_report = {
-            "scanner": "semgrep",
+            "scanner": "opengrep",
             "timestamp": "2026-06-09T00:00:00Z",
             "target_path": ENGINE_DIR,
             "findings": [
@@ -105,8 +105,8 @@ class TestMainCLI:
         with open(initial_report_path, "w", encoding="utf-8") as f:
             json.dump(initial_report, f)
 
-        rc, stdout, stderr = _run_main("--re-resolve", str(initial_report_path), "--mock-ai")
-        assert rc == 0, f"main.py --re-resolve exited with {rc}. stderr: {stderr}"
+        rc, stdout, stderr = _run_main("--refresh-ai", str(initial_report_path), "--mock-ai")
+        assert rc == 0, f"main.py --refresh-ai exited with {rc}. stderr: {stderr}"
 
         with open(initial_report_path, "r", encoding="utf-8") as f:
             updated_report = json.load(f)
@@ -116,17 +116,17 @@ class TestMainCLI:
             "ai_resolutions should be populated after re-resolve"
         assert "re_resolved_at" in updated_report
 
-    def test_re_resolve_missing_file(self, tmp_path):
-        """Re-resolve with non-existent report exits with code 1."""
+    def test_refresh_ai_missing_file(self, tmp_path):
+        """Refresh AI with non-existent report exits with code 1."""
         missing_path = tmp_path / "nonexistent.json"
-        rc, stdout, stderr = _run_main("--re-resolve", str(missing_path), "--mock-ai")
+        rc, stdout, stderr = _run_main("--refresh-ai", str(missing_path), "--mock-ai")
         assert rc == 1, f"Expected exit code 1 for missing file, got {rc}"
 
-    def test_re_resolve_empty_findings(self, tmp_path):
-        """Re-resolve with report containing no findings exits with code 0."""
+    def test_refresh_ai_empty_findings(self, tmp_path):
+        """Refresh AI with report containing no findings exits with code 0."""
         empty_report_path = tmp_path / "empty_report.json"
         empty_report = {
-            "scanner": "semgrep",
+            "scanner": "opengrep",
             "timestamp": "2026-06-09T00:00:00Z",
             "target_path": ENGINE_DIR,
             "findings": [],
@@ -136,5 +136,5 @@ class TestMainCLI:
         }
         with open(empty_report_path, "w", encoding="utf-8") as f:
             json.dump(empty_report, f)
-        rc, stdout, stderr = _run_main("--re-resolve", str(empty_report_path), "--mock-ai")
+        rc, stdout, stderr = _run_main("--refresh-ai", str(empty_report_path), "--mock-ai")
         assert rc == 0, f"Expected exit code 0 for empty findings, got {rc}"

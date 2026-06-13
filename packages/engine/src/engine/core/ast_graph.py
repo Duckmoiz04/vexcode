@@ -5,7 +5,7 @@ import sys
 import os
 from typing import Dict, Any, List, Tuple, Optional
 
-from engine.logger import get_logger
+from engine.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

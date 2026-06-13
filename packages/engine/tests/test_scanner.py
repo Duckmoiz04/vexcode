@@ -1,6 +1,6 @@
 """Tests for scanner.py — run_scan() with mock mode."""
 
-from engine.scanner import run_scan, MOCK_FINDINGS
+from engine.core.scanner import run_scan, MOCK_FINDINGS
 
 
 class TestScanner:
@@ -15,7 +15,7 @@ class TestScanner:
 
     def test_run_scan_mock_scanner_field(self):
         result = run_scan("/fake/target", use_mock=True)
-        assert result["scanner"] == "semgrep-mock"
+        assert result["scanner"] == "opengrep-mock"
 
     def test_run_scan_mock_target_path_preserved(self):
         result = run_scan("/fake/target", use_mock=True)

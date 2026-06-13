@@ -1,5 +1,5 @@
 {
-  "scanner": "semgrep-mock",
+  "scanner": "opengrep-mock",
   "timestamp": "2026-06-07T06:47:51.291149Z",
   "target_path": "../cli/test",
   "findings": [

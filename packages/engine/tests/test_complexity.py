@@ -3,9 +3,9 @@
 import os
 import tempfile
 
-from engine.complexity import get_complexity_level, analyze_file_complexity
+from engine.core.complexity import get_complexity_level, analyze_file_complexity
 
-ENGINE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "engine")
+ENGINE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "engine", "core")
 
 
 class TestComplexityLevel:

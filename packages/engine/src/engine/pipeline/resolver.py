@@ -2,11 +2,11 @@ import os
 import time
 from typing import Dict, Any, List, Optional, Tuple
 
-from engine.logger import get_logger
-from engine.complexity import analyze_file_complexity
-from engine.ai_resolver import resolve_findings
-from engine.naming_audit import run_naming_audit
-from engine.constants import load_settings
+from engine.utils.logger import get_logger
+from engine.core.complexity import analyze_file_complexity
+from engine.core.ai_resolver import resolve_findings
+from engine.core.naming_audit import run_naming_audit
+from engine.config.constants import load_settings
 
 logger = get_logger(__name__)
 

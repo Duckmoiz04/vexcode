@@ -10,8 +10,8 @@ from typing import Tuple
 
 from dotenv import load_dotenv
 
-from engine.constants import load_settings
-from engine.logger import get_logger
+from engine.config.constants import load_settings
+from engine.utils.logger import get_logger
 
 logger = get_logger(__name__)
 

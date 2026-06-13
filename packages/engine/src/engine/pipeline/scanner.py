@@ -4,8 +4,8 @@ import subprocess
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional, List, Tuple
 
-from engine.logger import get_logger
-from engine.scanner import run_scan
+from engine.utils.logger import get_logger
+from engine.core.scanner import run_scan
 
 logger = get_logger(__name__)
 
@@ -102,7 +102,7 @@ def _detect_fast_scan_files(target: str, use_mock: bool) -> Optional[List[str]]:
 
 
 def run_scan_phase(target: str, use_mock: bool, fast: bool) -> Tuple[Dict[str, Any], Optional[List[str]]]:
-    """Run the scanning phase: detect fast-scan files, execute Semgrep scan.
+    """Run the scanning phase: detect fast-scan files, execute Opengrep scan.
 
     Returns (scan_results, target_files).
     target_files is None for full scan, [] for clean fast repo, or list of paths.
@@ -114,7 +114,7 @@ def run_scan_phase(target: str, use_mock: bool, fast: bool) -> Tuple[Dict[str, A
     if target_files == []:
         scan_time = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
         scan_results = {
-            "scanner": "semgrep-fast",
+            "scanner": "opengrep-fast",
             "timestamp": scan_time,
             "target_path": target,
             "findings": []
@@ -122,6 +122,6 @@ def run_scan_phase(target: str, use_mock: bool, fast: bool) -> Tuple[Dict[str, A
     else:
         scan_results = run_scan(target, use_mock=use_mock, files=target_files)
         if target_files is not None:
-            scan_results["scanner"] = "semgrep-fast"
+            scan_results["scanner"] = "opengrep-fast"
 
     return scan_results, target_files

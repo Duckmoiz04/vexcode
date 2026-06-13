@@ -19,7 +19,7 @@ _SETTINGS: Dict[str, Any] | None = None
 
 def _get_engine_root() -> Path:
     """Return the absolute path to ``packages/engine/`` (project root)."""
-    return Path(__file__).resolve().parents[2]
+    return Path(__file__).resolve().parents[3]
 
 
 def _nested_get(d: Dict[str, Any], keys: list[str], default: Any = None) -> Any:

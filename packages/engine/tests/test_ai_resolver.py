@@ -7,13 +7,13 @@ from unittest.mock import MagicMock
 import pytest
 import requests
 
-from engine.ai_resolver import (
+from engine.core.ai_resolver import (
     safe_json_parse,
     sanitize_remediation_code,
     resolve_findings,
     post_with_retry,
 )
-from engine.ai_config import get_ai_config
+from engine.config.ai_config import get_ai_config
 
 
 class TestSafeJsonParse:
@@ -78,7 +78,7 @@ class TestGetAiConfig:
     """Tests for get_ai_config() with various providers."""
 
     def test_no_provider_returns_empty(self, mocker):
-        mocker.patch("engine.ai_config._reload_env_file")
+        mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch.dict(os.environ, {}, clear=True)
         api_key, base_url, model, requires_key = get_ai_config()
         assert api_key == ""
@@ -87,7 +87,7 @@ class TestGetAiConfig:
         assert requires_key is False
 
     def test_9router_provider_returns_correct_config(self, mocker):
-        mocker.patch("engine.ai_config._reload_env_file")
+        mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch.dict(os.environ, {
             "AI_PROVIDER": "9router",
             "NINEROUTER_API_KEY": "key123",
@@ -101,7 +101,7 @@ class TestGetAiConfig:
         assert requires_key is False
 
     def test_openai_provider_returns_correct_config(self, mocker):
-        mocker.patch("engine.ai_config._reload_env_file")
+        mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch.dict(os.environ, {
             "AI_PROVIDER": "openai",
             "OPENAI_API_KEY": "sk-test",
@@ -115,7 +115,7 @@ class TestGetAiConfig:
         assert requires_key is True
 
     def test_google_provider_returns_correct_config(self, mocker):
-        mocker.patch("engine.ai_config._reload_env_file")
+        mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch.dict(os.environ, {
             "AI_PROVIDER": "google",
             "GOOGLE_API_KEY": "google-key",
@@ -129,7 +129,7 @@ class TestGetAiConfig:
         assert requires_key is True
 
     def test_anthropic_provider_returns_correct_config(self, mocker):
-        mocker.patch("engine.ai_config._reload_env_file")
+        mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch.dict(os.environ, {
             "AI_PROVIDER": "anthropic",
             "ANTHROPIC_API_KEY": "anthro-key",
@@ -143,7 +143,7 @@ class TestGetAiConfig:
         assert requires_key is True
 
     def test_unknown_provider_returns_empty(self, mocker):
-        mocker.patch("engine.ai_config._reload_env_file")
+        mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch.dict(os.environ, {
             "AI_PROVIDER": "unknown_provider",
             "UNKNOWN_API_KEY": "some-key",
@@ -160,8 +160,8 @@ class TestResolveFindings:
 
     def test_with_mocked_ai_response(self, mocker):
         """resolve_findings with mock HTTP response returns parsed resolutions."""
-        mocker.patch("engine.ai_config._reload_env_file")
-        mocker.patch("engine.ai_resolver.time.sleep")
+        mocker.patch("engine.config.ai_config._reload_env_file")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
         mocker.patch.dict(os.environ, {
             "AI_PROVIDER": "9router",
             "NINEROUTER_API_KEY": "fake_key",
@@ -183,7 +183,7 @@ class TestResolveFindings:
                 },
             }],
         }).encode("utf-8")
-        mocker.patch("engine.ai_resolver.requests.post", return_value=mock_response)
+        mocker.patch("engine.core.ai_resolver.requests.post", return_value=mock_response)
 
         findings = [{
             "file": "example.py",
@@ -202,15 +202,15 @@ class TestResolveFindings:
 
     def test_handles_http_error_gracefully(self, mocker):
         """resolve_findings with ConnectionError returns fallback suggestion."""
-        mocker.patch("engine.ai_config._reload_env_file")
-        mocker.patch("engine.ai_resolver.time.sleep")
+        mocker.patch("engine.config.ai_config._reload_env_file")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
         mocker.patch.dict(os.environ, {
             "AI_PROVIDER": "9router",
             "NINEROUTER_API_KEY": "fake_key",
             "NINEROUTER_BASE_URL": "http://localhost:20128/v1",
             "NINEROUTER_MODEL": "test-model",
         }, clear=True)
-        mocker.patch("engine.ai_resolver.requests.post",
+        mocker.patch("engine.core.ai_resolver.requests.post",
                       side_effect=requests.exceptions.ConnectionError("Connection refused"))
 
         findings = [{
@@ -229,7 +229,7 @@ class TestResolveFindings:
 
     def test_falls_back_to_mock_when_no_provider(self, mocker):
         """resolve_findings with no env provider falls back to mock data."""
-        mocker.patch("engine.ai_config._reload_env_file")
+        mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch.dict(os.environ, {}, clear=True)
 
         findings = [{
@@ -280,10 +280,10 @@ class TestPostWithRetry:
 
     def test_500_returns_immediately_no_retry(self, mocker):
         """HTTP 500 should not be retried."""
-        mocker.patch("engine.ai_resolver.time.sleep")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
         mock_response = MagicMock()
         mock_response.status_code = 500
-        mock_post = mocker.patch("engine.ai_resolver.requests.post", return_value=mock_response)
+        mock_post = mocker.patch("engine.core.ai_resolver.requests.post", return_value=mock_response)
 
         response = post_with_retry(
             "http://localhost:20128/v1/chat/completions",
@@ -297,13 +297,13 @@ class TestPostWithRetry:
 
     def test_429_retries_then_succeeds(self, mocker):
         """HTTP 429 should retry up to AI_MAX_RETRIES, then succeed."""
-        mocker.patch("engine.ai_resolver.time.sleep")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
         mock_429 = MagicMock()
         mock_429.status_code = 429
         mock_200 = MagicMock()
         mock_200.status_code = 200
         mock_post = mocker.patch(
-            "engine.ai_resolver.requests.post", side_effect=[mock_429, mock_429, mock_200],
+            "engine.core.ai_resolver.requests.post", side_effect=[mock_429, mock_429, mock_200],
         )
 
         response = post_with_retry(
@@ -318,9 +318,9 @@ class TestPostWithRetry:
 
     def test_timeout_retries_then_succeeds(self, mocker):
         """Timeout should retry, then succeed on 3rd attempt."""
-        mocker.patch("engine.ai_resolver.time.sleep")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
         mock_post = mocker.patch(
-            "engine.ai_resolver.requests.post",
+            "engine.core.ai_resolver.requests.post",
             side_effect=[
                 requests.exceptions.Timeout("Request timed out"),
                 requests.exceptions.Timeout("Request timed out"),
@@ -340,9 +340,9 @@ class TestPostWithRetry:
 
     def test_timeout_exhausts_retries_raises(self, mocker):
         """Timeout that exhausts all retries should raise."""
-        mocker.patch("engine.ai_resolver.time.sleep")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
         mock_post = mocker.patch(
-            "engine.ai_resolver.requests.post",
+            "engine.core.ai_resolver.requests.post",
             side_effect=requests.exceptions.Timeout("Request timed out"),
         )
 

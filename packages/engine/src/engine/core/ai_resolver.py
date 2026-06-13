@@ -1,9 +1,9 @@
 import os, json, time, requests
 from typing import Dict, Any, List, Tuple, Optional
 
-from engine.logger import get_logger
-from engine.ai_config import _reload_env_file, get_ai_config  # noqa: F401 — re-exported for backward compat
-from engine.ai_prompts import SYSTEM_PROMPT_RESOLVE
+from engine.utils.logger import get_logger
+from engine.config.ai_config import _reload_env_file, get_ai_config  # noqa: F401 — re-exported for backward compat
+from engine.config.ai_prompts import SYSTEM_PROMPT_RESOLVE
 
 logger = get_logger(__name__)
 
@@ -23,7 +23,7 @@ MOCK_AI_RESOLUTIONS = {
     }
 }
 
-from engine.constants import (
+from engine.config.constants import (
     MAX_CODE_CHARS, MAX_NAMING_AUDIT_FILES, MAX_RESOLVE_FINDINGS,
     AI_RESOLVE_MAX_TOKENS, NAMING_AUDIT_SLEEP, AI_MAX_RETRIES,
     AI_RETRY_BASE_WAIT_SECONDS, AI_RESOLVE_TIMEOUT_SECONDS, AI_NAMING_TIMEOUT_SECONDS,

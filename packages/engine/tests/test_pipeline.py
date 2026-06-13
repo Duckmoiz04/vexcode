@@ -12,7 +12,7 @@ class TestPipelineScanner:
         from engine.pipeline.scanner import run_scan_phase
 
         mock_scan_results = {
-            "scanner": "semgrep-mock",
+            "scanner": "opengrep-mock",
             "timestamp": "2026-06-09T00:00:00Z",
             "target_path": "/fake/target",
             "findings": [{
@@ -29,14 +29,14 @@ class TestPipelineScanner:
         assert target_files is None
 
     def test_run_scan_phase_fast_with_changed_files(self, mocker):
-        """run_scan_phase with fast=True and changed files sets scanner to semgrep-fast."""
+        """run_scan_phase with fast=True and changed files sets scanner to opengrep-fast."""
         mock_detect = mocker.patch("engine.pipeline.scanner._detect_fast_scan_files")
         mock_run_scan = mocker.patch("engine.pipeline.scanner.run_scan")
         from engine.pipeline.scanner import run_scan_phase
 
         mock_detect.return_value = ["/fake/target/modified.py"]
         mock_scan_results = {
-            "scanner": "semgrep-mock",
+            "scanner": "opengrep-mock",
             "timestamp": "2026-06-09T00:00:00Z",
             "target_path": "/fake/target",
             "findings": [],
@@ -49,7 +49,7 @@ class TestPipelineScanner:
         mock_run_scan.assert_called_once_with(
             "/fake/target", use_mock=True, files=["/fake/target/modified.py"]
         )
-        assert scan_results["scanner"] == "semgrep-fast"
+        assert scan_results["scanner"] == "opengrep-fast"
         assert target_files == ["/fake/target/modified.py"]
 
     def test_run_scan_phase_fast_clean_repo(self, mocker):
@@ -59,7 +59,7 @@ class TestPipelineScanner:
 
         scan_results, target_files = run_scan_phase("/fake/target", use_mock=True, fast=True)
 
-        assert scan_results["scanner"] == "semgrep-fast"
+        assert scan_results["scanner"] == "opengrep-fast"
         assert scan_results["findings"] == []
         assert target_files == []
 
@@ -204,7 +204,7 @@ class TestPipelineReporter:
         from engine.pipeline.reporter import assemble_report
 
         scan_results = {
-            "scanner": "semgrep-mock",
+            "scanner": "opengrep-mock",
             "timestamp": "2026-06-09T00:00:00Z",
             "target_path": "/fake/target",
             "findings": [{
@@ -225,7 +225,7 @@ class TestPipelineReporter:
 
         for key in self.REQUIRED_KEYS:
             assert key in report, f"Report missing required key: {key}"
-        assert report["scanner"] == "semgrep-mock"
+        assert report["scanner"] == "opengrep-mock"
         assert report["timestamp"] == "2026-06-09T00:00:00Z"
         assert report["target_path"] == "/fake/target"
         assert isinstance(report["findings"], list)
@@ -239,7 +239,7 @@ class TestPipelineReporter:
         from engine.pipeline.reporter import assemble_report
 
         scan_results = {
-            "scanner": "semgrep",
+            "scanner": "opengrep",
             "timestamp": "2026-06-09T00:00:00Z",
             "target_path": "/fake/target",
             "findings": [],
@@ -250,7 +250,7 @@ class TestPipelineReporter:
         )
 
         assert report["git_state"] is None
-        assert report["scanner"] == "semgrep"
+        assert report["scanner"] == "opengrep"
 
     def test_assemble_report_fallback_timestamp(self, mocker):
         """assemble_report generates timestamp when scan_results lacks one."""
@@ -258,7 +258,7 @@ class TestPipelineReporter:
         from engine.pipeline.reporter import assemble_report
 
         scan_results = {
-            "scanner": "semgrep",
+            "scanner": "opengrep",
             "target_path": "/fake/target",
             "findings": [],
         }
@@ -277,7 +277,7 @@ class TestPipelineReporter:
         from engine.pipeline.reporter import assemble_report
 
         scan_results = {
-            "scanner": "semgrep",
+            "scanner": "opengrep",
             "timestamp": "2026-06-09T00:00:00Z",
             "findings": [],
         }

@@ -1,8 +1,8 @@
 import sys
 from typing import List
 
-from engine.logger import get_logger
-from engine.ast_graph import (
+from engine.utils.logger import get_logger
+from engine.core.ast_graph import (
     is_gitnexus_available,
     get_repo_info_for_path,
     get_relative_repo_path,

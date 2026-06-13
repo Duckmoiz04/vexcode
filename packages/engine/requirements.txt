@@ -1,6 +1,5 @@
 requests>=2.31.0
 networkx>=3.1
-semgrep>=1.65.0
 python-dotenv>=1.0.1
 lizard>=1.17.10
 pytest>=8.0
