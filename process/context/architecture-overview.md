@@ -109,7 +109,7 @@
 
 | Module | Lines | Trách nhiệm |
 |--------|-------|-------------|
-| `bin/cli.js` | ~282 | CLI entry: commands `scan`, `serve`/`ui`, `help` |
+| `bin/cli.js` | ~282 | CLI entry: commands `analyze`, `serve`/`ui`, `help` |
 | `src/server.js` | ~65 | Express app factory: mount routes, middleware, static files |
 | `src/bridge.js` | ~233 | Spawn Python subprocess, pipe stdout/stderr, cancel scan |
 | `src/utils.js` | ~50 | Helpers: `getProjectName`, `getProjectReportDir`, `getReportFilename` |
@@ -299,14 +299,14 @@ Không có AI_PROVIDER → "AI provider is not configured..."
 ### Commands
 
 ```bash
-# Full scan
-vexcode scan --target D:/project
+# Full analysis
+vexcode analyze --target D:/project
 
 # Offline (skip Semgrep + AI API)
-vexcode scan --target D:/project --mock-scan --mock-ai
+vexcode analyze --target D:/project --mock-scan --mock-ai
 
-# Fast incremental scan (git changed files only)
-vexcode scan --target D:/project --fast
+# Fast incremental analysis (git changed files only)
+vexcode analyze --target D:/project --fast
 
 # Start web server
 vexcode serve --port 8080
@@ -316,7 +316,7 @@ vexcode ui
 
 # Help
 vexcode help
-vexcode scan --help
+vexcode analyze --help
 ```
 
 ### Report storage
