@@ -9,22 +9,22 @@
   --color-card-bg: hsla(240, 16%, 12%, 0.75);      /* Elevated card with glass blur */
   --color-card-border: hsla(240, 16%, 20%, 0.5);   /* Border default */
   
-  --color-accent: hsl(220, 100%, 50%);          /* Electric Blue Accent */
-  --color-accent-hover: hsl(220, 100%, 60%);    /* Light accent hover */
-  --color-success: hsl(145, 80%, 45%);         /* Green Success */
-  --color-success-hover: hsl(145, 80%, 55%);
-  --color-error: hsl(350, 85%, 55%);           /* Red Danger/Error */
-  --color-warning: hsl(35, 90%, 55%);          /* Yellow Warning */
-  --color-info: hsl(220, 100%, 50%);            /* File node blue */
-  --color-danger: hsl(350, 85%, 55%);          /* Danger Crimson */
-  --color-maintainability: hsl(145, 80%, 45%); /* Maintainability color */
+  --color-accent: var(--color-orange-500);            /* Vibrant Orange Accent */
+  --color-accent-hover: var(--color-orange-400);      /* Light accent hover */
+  --color-success: var(--color-green-500);            /* Green Success */
+  --color-success-hover: var(--color-green-400);
+  --color-error: var(--color-red-500);                /* Red Danger/Error */
+  --color-warning: var(--color-amber-500);            /* Yellow Warning */
+  --color-info: var(--color-orange-500);               /* File node */
+  --color-danger: var(--color-red-600);               /* Danger Crimson */
+  --color-maintainability: var(--color-green-500);    /* Maintainability color */
   
   --color-text-primary: #e4e4ed;    /* Text primary */
   --color-text-secondary: #8888a0;  /* Text secondary */
   --color-text-tertiary: #5a5a70;   /* Text muted */
   
-  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
   
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -179,3 +179,33 @@ body {
 .remediation-line {
   /* no border — gutter placeholder keeps visual consistent */
 }
+
+/* ─── CodeMirror Syntax Highlighting (VSCode Dark) ─────────────────────────── */
+/* These classes mirror @uiw/codemirror-theme-vscode's vscodeDarkStyle colors.
+   Applied by src/utils/syntaxHighlight.ts via tagHighlighter. */
+
+.cm-s-vscode-dark {
+  display: block;
+  white-space: pre;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.cm-s-vscode-dark .tok-keyword   { color: #569cd6; }
+.cm-s-vscode-dark .tok-control   { color: #c586c0; }
+.cm-s-vscode-dark .tok-definition { color: #9cdcfe; }
+.cm-s-vscode-dark .tok-heading   { color: #9cdcfe; font-weight: bold; }
+.cm-s-vscode-dark .tok-type      { color: #4ec9b0; }
+.cm-s-vscode-dark .tok-func      { color: #dcdcaa; }
+.cm-s-vscode-dark .tok-number    { color: #b5cea8; }
+.cm-s-vscode-dark .tok-operator  { color: #d4d4d4; }
+.cm-s-vscode-dark .tok-regexp    { color: #d16969; }
+.cm-s-vscode-dark .tok-string    { color: #ce9178; }
+.cm-s-vscode-dark .tok-angle     { color: #808080; }
+.cm-s-vscode-dark .tok-strong     { font-weight: bold; }
+.cm-s-vscode-dark .tok-emphasis   { font-style: italic; }
+.cm-s-vscode-dark .tok-strikethrough { text-decoration: line-through; }
+.cm-s-vscode-dark .tok-comment   { color: #6a9955; }
+.cm-s-vscode-dark .tok-link      { color: #6a9955; text-decoration: underline; }
+.cm-s-vscode-dark .tok-invalid   { color: #ff0000; }

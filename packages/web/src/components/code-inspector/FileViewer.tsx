@@ -1,128 +1,49 @@
 import React, { type RefObject } from 'react';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import type { Finding, AiResolution } from '../../types';
-
-// ─── Language Detection ──────────────────────────────────────────────────────
-
-const getPrismLanguage = (filePath: string | null | undefined): string => {
-  if (!filePath) return 'text';
-  const ext = filePath.split('.').pop()?.toLowerCase() || '';
-  switch (ext) {
-    case 'py': return 'python';
-    case 'js':
-    case 'mjs':
-    case 'cjs': return 'javascript';
-    case 'jsx': return 'jsx';
-    case 'ts': return 'typescript';
-    case 'tsx': return 'tsx';
-    case 'sh':
-    case 'bash': return 'bash';
-    case 'css': return 'css';
-    case 'scss':
-    case 'sass': return 'scss';
-    case 'less': return 'less';
-    case 'html':
-    case 'htm':
-    case 'xml': return 'markup';
-    case 'json': return 'json';
-    case 'md':
-    case 'markdown': return 'markdown';
-    case 'yml':
-    case 'yaml': return 'yaml';
-    case 'java': return 'java';
-    case 'c': return 'c';
-    case 'h': return 'c';
-    case 'cpp':
-    case 'cxx':
-    case 'cc': return 'cpp';
-    case 'hpp': return 'cpp';
-    case 'cs': return 'csharp';
-    case 'go': return 'go';
-    case 'rs': return 'rust';
-    case 'rb': return 'ruby';
-    case 'php': return 'php';
-    case 'sql': return 'sql';
-    case 'kt':
-    case 'kts': return 'kotlin';
-    case 'swift': return 'swift';
-    case 'vue': return 'markup';
-    default: return 'text';
-  }
-};
-
-// ─── Custom Theme ────────────────────────────────────────────────────────────
-
-const customSyntaxTheme: Record<string, React.CSSProperties> = {
-  ...vscDarkPlus,
-  'pre[class*="language-"]': {
-    ...(vscDarkPlus['pre[class*="language-"]'] as Record<string, React.CSSProperties>),
-    background: 'transparent',
-    margin: 0,
-    padding: 0,
-    fontSize: '13px',
-    lineHeight: '1.5',
-    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-  },
-  'code[class*="language-"]': {
-    ...(vscDarkPlus['code[class*="language-"]'] as Record<string, React.CSSProperties>),
-    background: 'transparent',
-    fontFamily: '"JetBrains Mono", "Fira Code", monospace',
-    fontSize: '13px',
-    lineHeight: '1.5',
-    display: 'block',
-  },
-};
+import { CodeHighlight } from '../../utils/syntaxHighlight.tsx';
 
 // ─── Gutter Line Renderer ────────────────────────────────────────────────────
 
-const renderGutterLine = (
-  lineNum: number,
-  fileFindings: Finding[],
-  onSelectFindingIndex?: (index: number | null) => void,
-  allFindings: Finding[] = [],
-  isTarget?: boolean
-) => {
-  const findingsOnLine = fileFindings.filter((f: Finding) => f.line === lineNum);
-  const hasFinding = findingsOnLine.length > 0;
-  let lineSeverity: 'error' | 'warning' | 'info' = 'info';
-  if (hasFinding) {
-    const severities = findingsOnLine.map((f: Finding) => (f.severity || '').toLowerCase());
-    if (severities.includes('error')) lineSeverity = 'error';
-    else if (severities.includes('warning')) lineSeverity = 'warning';
-  }
+const renderGutterLine = (lineNum: number, isTarget?: boolean) => {
   return (
     <div
       className={`gutter-cell flex items-start pr-10 font-semibold text-text-secondary/80 hover:text-text-tertiary text-[13px] leading-[1.5] transition-colors${isTarget ? ' gutter-cell--target' : ''}`}
       style={{ minWidth: '3.5em', minHeight: '1.5em', fontFamily: '"JetBrains Mono", "Fira Code", monospace' }}
     >
-      <div className="flex-shrink-0 w-3.5 mr-1 flex items-start justify-center">
-        {isTarget ? (
-          <span className="font-bold text-[13px] text-danger">−</span>
-        ) : hasFinding ? (
-          <button
-            onClick={() => {
-              if (onSelectFindingIndex && findingsOnLine[0]) {
-                const originalIndex = allFindings.indexOf(findingsOnLine[0]);
-                if (originalIndex !== -1) {
-                  onSelectFindingIndex(originalIndex);
-                }
-              }
-            }}
-            title={`Line ${lineNum}: ${findingsOnLine.map((f) => f.rule_id).join(', ')}`}
-            className={`h-3.5 w-3.5 rounded-full flex items-center justify-center text-[8.5px] font-extrabold cursor-pointer border ${
-              lineSeverity === 'error'
-                ? 'bg-danger/20 border-danger/60 text-danger hover:bg-danger/40'
-                : lineSeverity === 'warning'
-                ? 'bg-warning/20 border-warning/60 text-warning hover:bg-warning/40'
-                : 'bg-info/20 border-info/60 text-info hover:bg-info/40'
-            }`}
-          >
-            •
-          </button>
-        ) : null}
-      </div>
+      {isTarget && (
+        <span className="font-bold text-[13px] text-danger w-3.5 mr-1 shrink-0">−</span>
+      )}
       <span className="font-medium tabular-nums">{lineNum}</span>
+    </div>
+  );
+};
+
+// ─── Chunk Renderer ──────────────────────────────────────────────────────────
+
+const renderChunk = (
+  lines: string[],
+  offsetLineNum: number,
+  findingLine: number,
+  filePath: string | null | undefined,
+) => {
+  const text = lines.join('\n');
+  if (!text) return null;
+
+  return (
+    <div className="code-chunk" key={`chunk-${offsetLineNum}`}>
+      {lines.map((line, idx) => {
+        const actualLine = offsetLineNum + idx;
+        const isTarget = actualLine === findingLine;
+        return (
+          <div
+            key={`l-${actualLine}`}
+            id={`line-${actualLine}`}
+            className={`flex code-line${isTarget ? ' code-line--target' : ''}`}
+          >
+            <CodeHighlight code={line} filePath={filePath} />
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -135,9 +56,6 @@ interface FileViewerProps {
   isLoading: boolean;
   error: string | null;
   resolution: AiResolution | undefined;
-  fileFindings: Finding[];
-  allFindings: Finding[];
-  onSelectFindingIndex?: (index: number | null) => void;
   activeLineRef?: RefObject<HTMLDivElement | null>;
 }
 
@@ -149,9 +67,6 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   isLoading,
   error,
   resolution,
-  fileFindings,
-  allFindings,
-  onSelectFindingIndex,
   activeLineRef,
 }) => {
   return (
@@ -186,7 +101,6 @@ export const FileViewer: React.FC<FileViewerProps> = ({
               return line;
             });
 
-            const prismLanguage = getPrismLanguage(finding.file);
             const isEmptyRemediation = resolution?.remediation_code !== undefined &&
               (!resolution.remediation_code || resolution.remediation_code.trim() === '');
             const isFalsePositive = isEmptyRemediation &&
@@ -198,37 +112,6 @@ export const FileViewer: React.FC<FileViewerProps> = ({
             const targetLine = allFileLines[finding.line - 1] || '';
             const postLines = allFileLines.slice(finding.line);
 
-            const renderChunk = (lines: string[], offsetLineNum: number) => {
-              const text = lines.join('\n');
-              if (!text) return null;
-              let lineIdx = 0;
-              return (
-                <SyntaxHighlighter
-                  key={`chunk-${offsetLineNum}`}
-                  language={prismLanguage}
-                  style={customSyntaxTheme}
-                  showLineNumbers={false}
-                  wrapLines={true}
-                  lineProps={() => {
-                    const actualLine = offsetLineNum + lineIdx;
-                    lineIdx++;
-                    const isChunkTarget = actualLine === finding.line;
-                    return {
-                      id: `line-${actualLine}`,
-                      className: isChunkTarget ? 'code-line code-line--target' : '',
-                      style: {
-                        display: 'block',
-                        minHeight: '1.5em',
-                        padding: '0 12px 0 0',
-                      },
-                    };
-                  }}
-                >
-                  {text}
-                </SyntaxHighlighter>
-              );
-            };
-
             return (
               <div className="flex flex-col py-3">
                 {/* Pre-target lines */}
@@ -236,21 +119,21 @@ export const FileViewer: React.FC<FileViewerProps> = ({
                   <div className="gutter-col shrink-0">
                     {preLines.map((_, idx) => {
                       const lineNum = idx + 1;
-                      return renderGutterLine(lineNum, fileFindings, onSelectFindingIndex, allFindings);
+                      return renderGutterLine(lineNum);
                     })}
                   </div>
                   <div className="code-col flex-1 min-w-0">
-                    {renderChunk(preLines, 1)}
+                    {renderChunk(preLines, 1, finding.line, finding.file)}
                   </div>
                 </div>
 
                 {/* Target line + remediation */}
                 <div className="flex" ref={finding.line === 1 ? undefined : activeLineRef}>
                   <div className="gutter-col shrink-0">
-                    {renderGutterLine(finding.line, fileFindings, onSelectFindingIndex, allFindings, true)}
+                    {renderGutterLine(finding.line, true)}
                   </div>
                   <div className="code-col flex-1 min-w-0">
-                    {renderChunk([targetLine], finding.line)}
+                    {renderChunk([targetLine], finding.line, finding.line, finding.file)}
                   </div>
                 </div>
 
@@ -317,11 +200,11 @@ export const FileViewer: React.FC<FileViewerProps> = ({
                     <div className="gutter-col shrink-0">
                       {postLines.map((_, idx) => {
                         const lineNum = finding.line + 1 + idx;
-                        return renderGutterLine(lineNum, fileFindings, onSelectFindingIndex, allFindings, lineNum === finding.line);
+                        return renderGutterLine(lineNum);
                       })}
                     </div>
                     <div className="code-col flex-1 min-w-0">
-                      {renderChunk(postLines, finding.line + 1)}
+                      {renderChunk(postLines, finding.line + 1, finding.line, finding.file)}
                     </div>
                   </div>
                 )}
