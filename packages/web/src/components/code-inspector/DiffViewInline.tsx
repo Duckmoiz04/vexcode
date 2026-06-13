@@ -8,7 +8,7 @@ import { baseEditorTheme } from '../../utils/themes.ts';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
-interface DiffViewProps {
+interface DiffViewInlineProps {
   original: string;
   modified: string;
   filePath: string | null | undefined;
@@ -17,7 +17,7 @@ interface DiffViewProps {
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export const DiffView: React.FC<DiffViewProps> = ({ original, modified, filePath, themeExtension }) => {
+export const DiffViewInline: React.FC<DiffViewInlineProps> = ({ original, modified, filePath, themeExtension }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const themeCompartmentRef = useRef(new Compartment());
