@@ -6,6 +6,7 @@ Precedence (highest to lowest):
 """
 
 import os
+from pathlib import Path
 from typing import Tuple
 
 from dotenv import load_dotenv
@@ -19,10 +20,9 @@ logger = get_logger(__name__)
 # .env loader — secrets
 # ---------------------------------------------------------------------------
 
-current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-dotenv_path = os.path.join(current_dir, ".env")
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
+dotenv_path = Path.home() / ".vexcode" / ".env"
+if dotenv_path.exists():
+    load_dotenv(str(dotenv_path))
 else:
     load_dotenv()
 
@@ -35,7 +35,7 @@ def _reload_env_file() -> None:
     - Empty values in .env are ignored so missing settings fall back to whatever the
       caller already provided via os.environ.
     """
-    if not os.path.exists(dotenv_path):
+    if not dotenv_path.exists():
         return
     try:
         with open(dotenv_path, "r", encoding="utf-8") as f:
@@ -46,7 +46,7 @@ def _reload_env_file() -> None:
                 key, _, val = line.partition("=")
                 key = key.strip()
                 val = val.strip()
-                if val and key not in os.environ:
+                if val:
                     os.environ[key] = val
     except OSError:
         pass
@@ -102,7 +102,7 @@ def get_ai_config() -> Tuple[str, str, str, bool]:
 
     provider = (os.getenv("AI_PROVIDER") or "").lower()
 
-    if provider in ("9router", "openai", "google", "anthropic"):
+    if provider in ("9router", "openai", "google", "anthropic", "nvidia"):
         cfg = _get_provider_config(provider)
         return (
             cfg["api_key"],      # type: ignore[arg-type]

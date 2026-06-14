@@ -36,6 +36,7 @@ describe('SettingsDrawer', () => {
     expect(screen.getByText('Anthropic')).toBeInTheDocument();
     expect(screen.getByText('Google')).toBeInTheDocument();
     expect(screen.getByText('9router')).toBeInTheDocument();
+    expect(screen.getByText('NVIDIA NIM')).toBeInTheDocument();
   });
 
   it('calls onClose when overlay is clicked', () => {

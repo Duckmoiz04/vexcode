@@ -115,6 +115,14 @@ export function registerChatRoutes(app, deps) {
 
           const responseBuffer = await response.arrayBuffer();
           const responseText = new TextDecoder('utf-8').decode(responseBuffer);
+          if (!response.ok) {
+            let errorDetail = responseText;
+            try {
+              const errJson = JSON.parse(responseText);
+              errorDetail = errJson.error?.message || errJson.error?.type || JSON.stringify(errJson.error) || responseText;
+            } catch {}
+            throw new Error(`Provider returned ${response.status}: ${errorDetail}`);
+          }
           try {
             responseData = JSON.parse(responseText);
             const contentBlocks = responseData.content || [];
@@ -150,6 +158,14 @@ export function registerChatRoutes(app, deps) {
 
           const responseBuffer = await response.arrayBuffer();
           const responseText = new TextDecoder('utf-8').decode(responseBuffer);
+          if (!response.ok) {
+            let errorDetail = responseText;
+            try {
+              const errJson = JSON.parse(responseText);
+              errorDetail = errJson.error?.message || errJson.error?.type || JSON.stringify(errJson.error) || responseText;
+            } catch {}
+            throw new Error(`Provider returned ${response.status}: ${errorDetail}`);
+          }
           try {
             responseData = JSON.parse(responseText);
             const candidates = responseData.candidates || [];
@@ -177,6 +193,14 @@ export function registerChatRoutes(app, deps) {
 
           const responseBuffer = await response.arrayBuffer();
           const responseText = new TextDecoder('utf-8').decode(responseBuffer);
+          if (!response.ok) {
+            let errorDetail = responseText;
+            try {
+              const errJson = JSON.parse(responseText);
+              errorDetail = errJson.error?.message || errJson.error?.type || JSON.stringify(errJson.error) || responseText;
+            } catch {}
+            throw new Error(`Provider returned ${response.status}: ${errorDetail}`);
+          }
 
           try {
             let cleanText = responseText.trim();

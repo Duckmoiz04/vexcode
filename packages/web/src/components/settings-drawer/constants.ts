@@ -43,5 +43,14 @@ export const PROVIDERS: Record<string, ProviderInfo> = {
       { id: 'anthropic/claude-3-sonnet', name: 'Claude 3 Sonnet (Balanced)' }
     ],
     defaultBaseUrl: 'http://localhost:20128/v1'
+  },
+  nvidia: {
+    name: 'NVIDIA NIM',
+    models: [
+      { id: 'minimaxai/minimax-m2.7', name: 'Minimax M2.7' },
+      { id: 'nvidia/llama-3.1-nemotron-70b-instruct', name: 'Llama 3.1 Nemotron 70B' },
+      { id: 'mistralai/mistral-large', name: 'Mistral Large' }
+    ],
+    defaultBaseUrl: 'https://integrate.api.nvidia.com/v1'
   }
 };

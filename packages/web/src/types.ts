@@ -126,6 +126,9 @@ export interface Config {
   NINEROUTER_API_KEY?: string;
   NINEROUTER_BASE_URL?: string;
   NINEROUTER_MODEL?: string;
+  NVIDIA_API_KEY?: string;
+  NVIDIA_BASE_URL?: string;
+  NVIDIA_MODEL?: string;
   SEMGREP_RULES_PATH?: string;
   [key: string]: string | undefined;
 }

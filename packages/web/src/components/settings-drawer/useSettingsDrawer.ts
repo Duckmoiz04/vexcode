@@ -71,7 +71,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
   };
 
   const handleTestConnection = async () => {
-    const requiresKey = ['openai', 'anthropic', 'google'].includes(provider);
+    const requiresKey = ['openai', 'anthropic', 'google', 'nvidia'].includes(provider);
     if (requiresKey && !apiKey) {
       setTestStatus({ text: 'API key is required for this provider', type: 'error' });
       return;

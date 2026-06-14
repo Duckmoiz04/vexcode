@@ -65,6 +65,7 @@ export function writeEnvConfig(newConfig, envPath) {
       'ANTHROPIC_API_KEY', 'ANTHROPIC_BASE_URL', 'ANTHROPIC_MODEL',
       'GOOGLE_API_KEY', 'GOOGLE_BASE_URL', 'GOOGLE_MODEL',
       'NINEROUTER_API_KEY', 'NINEROUTER_BASE_URL', 'NINEROUTER_MODEL',
+      'NVIDIA_API_KEY', 'NVIDIA_BASE_URL', 'NVIDIA_MODEL',
       'SEMGREP_RULES_PATH',
     ]);
     for (const key of knownKeys) {

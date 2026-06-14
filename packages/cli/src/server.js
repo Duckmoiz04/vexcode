@@ -3,7 +3,7 @@ import cors from 'cors';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, copyFileSync, existsSync } from 'node:fs';
 
 import { runPythonAnalysis, cancelActiveScan, runRefreshAi } from './bridge.js';
 import { isPathSafe, readEnvConfig, writeEnvConfig } from './services/fileService.js';
@@ -20,7 +20,9 @@ const __dirname = dirname(__filename);
 
 const workspaceDir = resolve(__dirname, '../../..');
 const analysisCoreDir = resolve(__dirname, '../../engine');
-const envPath = resolve(analysisCoreDir, '.env');
+const vexcodeDir = join(homedir(), '.vexcode');
+const envPath = join(vexcodeDir, '.env');
+
 const publicDir = resolve(__dirname, 'public');
 const reportsBaseDir = join(homedir(), '.vexcode', 'reports');
 const backupsBaseDir = join(homedir(), '.vexcode', 'backups');
@@ -54,6 +56,15 @@ registerChatRoutes(app, deps);
 registerFileRoutes(app, deps);
 
 export function startServer(port = 3000) {
+  mkdirSync(vexcodeDir, { recursive: true });
+
+  // Migration from old location (packages/engine/.env)
+  const oldEnvPath = resolve(analysisCoreDir, '.env');
+  if (existsSync(oldEnvPath) && !existsSync(envPath)) {
+    copyFileSync(oldEnvPath, envPath);
+    console.log(`Migrated .env from ${oldEnvPath} to ${envPath}`);
+  }
+
   mkdirSync(reportsBaseDir, { recursive: true });
 
   return app.listen(port, () => {
