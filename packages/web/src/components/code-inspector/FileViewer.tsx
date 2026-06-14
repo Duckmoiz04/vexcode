@@ -103,7 +103,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
       </div>
 
       <div
-        className="flex-1 min-h-0 overflow-auto font-mono leading-[1.5] scrollbar-thin select-text bg-bg-primary border-t border-card-border/40"
+        className="flex-1 min-h-0 overflow-auto font-mono leading-[1.5] scrollbar-thin select-text bg-[#0a0a0f] border-t border-card-border/40"
       >
         {(() => {
           const modified = canShowDiff

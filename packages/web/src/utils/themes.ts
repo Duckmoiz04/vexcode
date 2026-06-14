@@ -364,9 +364,66 @@ const vscodeDarkPlus = createTheme({
   ],
 });
 
+// ─── 7. VexCode Midnight (Default Theme matching app branding) ──────────────
+
+const vexcodeMidnight = createTheme({
+  theme: 'dark',
+  settings: {
+    background: '#0a0a0f',
+    foreground: '#e4e4ed',
+    caret: '#FF9E3B',
+    selection: '#2c2d3c',
+    selectionMatch: '#2c2d3c88',
+    lineHighlight: '#12121c',
+    gutterBackground: '#0a0a0f',
+    gutterForeground: '#5a5a70',
+    gutterActiveForeground: '#FF9E3B',
+    gutterBorder: '1px solid #191924',
+    fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+    fontSize: '14px',
+  },
+  styles: [
+    { tag: t.keyword, color: '#FF9E3B' },
+    { tag: t.operatorKeyword, color: '#FF9E3B' },
+    { tag: t.controlKeyword, color: '#FF9E3B' },
+    { tag: t.moduleKeyword, color: '#FF9E3B' },
+    { tag: t.operator, color: '#e4e4ed' },
+    { tag: t.punctuation, color: '#e4e4ed' },
+    { tag: t.angleBracket, color: '#e4e4ed' },
+    { tag: t.tagName, color: '#FF9E3B' },
+    { tag: t.comment, color: '#5a5a70', fontStyle: 'italic' },
+    { tag: t.docComment, color: '#5a5a70', fontStyle: 'italic' },
+    { tag: t.lineComment, color: '#5a5a70', fontStyle: 'italic' },
+    { tag: t.blockComment, color: '#5a5a70', fontStyle: 'italic' },
+    { tag: t.function(t.variableName), color: '#C3A6FF' },
+    { tag: t.function(t.definition(t.variableName)), color: '#C3A6FF' },
+    { tag: t.number, color: '#FFC799' },
+    { tag: t.bool, color: '#FF9E3B' },
+    { tag: t.null, color: '#FF9E3B' },
+    { tag: t.constant(t.variableName), color: '#FFC799' },
+    { tag: t.self, color: '#FF9E3B' },
+    { tag: t.labelName, color: '#FFC799' },
+    { tag: t.typeName, color: '#7EECD6' },
+    { tag: t.className, color: '#7EECD6' },
+    { tag: t.definition(t.typeName), color: '#7EECD6' },
+    { tag: t.attributeName, color: '#82D2FF' },
+    { tag: t.propertyName, color: '#82D2FF' },
+    { tag: t.string, color: '#85E3B5' },
+    { tag: t.special(t.string), color: '#85E3B5' },
+    { tag: t.variableName, color: '#e4e4ed' },
+    { tag: t.regexp, color: '#85E3B5' },
+    { tag: t.heading, color: '#FF9E3B', fontWeight: 'bold' },
+    { tag: t.strong, color: '#e4e4ed', fontWeight: 'bold' },
+    { tag: t.emphasis, color: '#e4e4ed', fontStyle: 'italic' },
+    { tag: t.link, color: '#7EECD6' },
+    { tag: t.meta, color: '#5a5a70' },
+  ],
+});
+
 // ─── Registry ────────────────────────────────────────────────────────────────
 
 export const themeRegistry: ThemeDefinition[] = [
+  { id: 'vexcodeMidnight', name: 'VexCode Midnight', extension: vexcodeMidnight, dark: true },
   { id: 'vesper', name: 'Vesper', extension: vesper, dark: true },
   { id: 'oneDark', name: 'One Dark', extension: oneDark, dark: true },
   { id: 'nord', name: 'Nord', extension: nord, dark: true },
