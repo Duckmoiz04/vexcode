@@ -1,6 +1,8 @@
 """Tests for scanner.py — run_scan() with mock mode."""
 
-from engine.core.scanner import run_scan, MOCK_FINDINGS
+from unittest.mock import patch
+
+from engine.core.scanner import run_scan, MOCK_FINDINGS, EXCLUDE_DIRS
 
 
 class TestScanner:
@@ -50,3 +52,19 @@ class TestScanner:
         ts = result["timestamp"]
         assert "T" in ts
         assert ts.endswith("Z")
+
+
+class TestScannerExcludeDirs:
+    """Tests for EXCLUDE_DIRS in scan command construction (non-mock path)."""
+
+    def test_exclude_dirs_present_in_scan_cmd(self):
+        with patch("engine.core.scanner.ensure_opengrep", return_value="opengrep-bin"):
+            with patch("engine.core.scanner.subprocess.run") as mock_run:
+                with patch("os.path.exists", return_value=True):
+                    run_scan("/fake/target", use_mock=False)
+
+        cmd = mock_run.call_args[0][0]
+        exclude_flags = [cmd[i + 1] for i, arg in enumerate(cmd) if arg == "--exclude"]
+        assert len(exclude_flags) == len(EXCLUDE_DIRS)
+        for d in EXCLUDE_DIRS:
+            assert d in exclude_flags

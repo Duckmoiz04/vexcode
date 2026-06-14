@@ -1,4 +1,5 @@
 import React from 'react';
+import { CheckCircle } from 'lucide-react';
 import type { DonutSegment } from './dashboardTypes';
 
 interface HealthScoreChartProps {
@@ -16,6 +17,45 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
   donutSegments,
   totalIssues,
 }) => {
+  if (totalIssues === 0) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Health Score Circular SVG */}
+        <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col items-center">
+          <h4 className="text-xs font-bold text-text-secondary mb-4 uppercase tracking-wider self-start">Project Health Score</h4>
+          <div className="relative w-44 h-44 flex items-center justify-center">
+            <svg width="180" height="180" viewBox="0 0 100 100" className="-rotate-90">
+              <circle cx="50" cy="50" r="40" fill="transparent" stroke="var(--color-card-border)" strokeWidth="8" />
+              <circle
+                cx="50"
+                cy="50"
+                r="40"
+                fill="transparent"
+                stroke={healthColor}
+                strokeWidth="8"
+                strokeDasharray="251.2"
+                strokeDashoffset={healthDashOffset}
+                strokeLinecap="round"
+                className="transition-all duration-500 ease-out"
+              />
+            </svg>
+            <div className="absolute flex flex-col items-center justify-center">
+              <span className="text-3xl font-bold text-text-primary">{healthScore}</span>
+              <span className="text-[10px] text-text-secondary uppercase font-semibold">Score</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Severity Distribution — Empty State */}
+        <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col items-center justify-center md:col-span-2">
+          <CheckCircle className="w-12 h-12 text-green-500 mb-3" />
+          <p className="text-lg font-semibold text-text-primary">No issues found</p>
+          <p className="text-sm text-text-secondary">Clean project</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {/* Health Score Circular SVG */}

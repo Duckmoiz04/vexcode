@@ -138,3 +138,41 @@ class TestMainCLI:
             json.dump(empty_report, f)
         rc, stdout, stderr = _run_main("--refresh-ai", str(empty_report_path), "--mock-ai")
         assert rc == 0, f"Expected exit code 0 for empty findings, got {rc}"
+
+
+class TestOutputPath:
+    """Tests for --output path validation (Task 3)."""
+
+    def test_default_output_contains_vexcode_dir(self):
+        """Default --output value points to ~/.vexcode/reports/analysis_report.json."""
+        from engine.__main__ import create_parser
+        parser = create_parser()
+        default = parser.get_default("output")
+        assert ".vexcode" in default
+        assert "reports" in default
+        assert "analysis_report.json" in default
+
+    def test_output_auto_creates_parent_dir(self, tmp_path):
+        """Output path with non-existent parent dir creates it automatically."""
+        output_path = tmp_path / "deep" / "nested" / "report.json"
+        rc, stdout, stderr = _run_main(
+            "--target", ENGINE_DIR,
+            "--output", str(output_path),
+            "--mock-scan",
+            "--mock-ai"
+        )
+        assert rc == 0, f"main.py exited with {rc}. stderr: {stderr}"
+        assert output_path.exists(), f"Output file not created: {output_path}"
+
+    def test_output_invalid_path_fails_gracefully(self, tmp_path):
+        """Output path where parent cannot be created exits with code 1."""
+        block_file = tmp_path / "block"
+        block_file.write_text("blocking file")
+        invalid_output = tmp_path / "block" / "report.json"
+        rc, stdout, stderr = _run_main(
+            "--target", ENGINE_DIR,
+            "--output", str(invalid_output),
+            "--mock-scan",
+            "--mock-ai"
+        )
+        assert rc == 1, f"Expected exit code 1 for invalid path, got {rc}"

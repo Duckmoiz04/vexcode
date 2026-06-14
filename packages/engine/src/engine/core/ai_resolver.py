@@ -1,4 +1,6 @@
-import os, json, time, requests
+import os, json, random, time, requests
+from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from typing import Dict, Any, List, Tuple, Optional
 
 from engine.utils.logger import get_logger
@@ -103,7 +105,19 @@ def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> req
                 continue
             raise
         if response.status_code == 429 and attempt < AI_MAX_RETRIES:
-            wait = AI_RETRY_BASE_WAIT_SECONDS * (2 ** attempt)
+            retry_after = response.headers.get("Retry-After")
+            if retry_after is not None:
+                try:
+                    wait = int(retry_after) + random.uniform(0, 5)
+                except (ValueError, TypeError):
+                    try:
+                        parsed_date = parsedate_to_datetime(retry_after)
+                        delta = parsed_date - datetime.now(timezone.utc)
+                        wait = max(0, delta.total_seconds()) + random.uniform(0, 5)
+                    except (ValueError, TypeError):
+                        wait = AI_RETRY_BASE_WAIT_SECONDS * (2 ** attempt)
+            else:
+                wait = AI_RETRY_BASE_WAIT_SECONDS * (2 ** attempt)
             logger.info(f"429 Too Many Requests — retrying in {wait:.0f}s (attempt {attempt + 1}/{AI_MAX_RETRIES})...")
             time.sleep(wait)
             continue

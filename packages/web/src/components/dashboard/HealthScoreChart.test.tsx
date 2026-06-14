@@ -61,7 +61,25 @@ describe('HealthScoreChart', () => {
     );
 
     expect(screen.getByText('100')).toBeInTheDocument();
-    expect(screen.getByText('0')).toBeInTheDocument();
+    expect(screen.getByText('Project Health Score')).toBeInTheDocument();
+  });
+
+  it('renders empty state when no issues', () => {
+    renderWithProviders(
+      <HealthScoreChart
+        healthScore={100}
+        healthDashOffset={0}
+        healthColor="var(--color-success)"
+        donutSegments={[]}
+        totalIssues={0}
+      />
+    );
+
+    expect(screen.getByText('No issues found')).toBeInTheDocument();
+    expect(screen.getByText('Clean project')).toBeInTheDocument();
+    expect(screen.getByText('100')).toBeInTheDocument();
+    // Severity Distribution heading should NOT appear in empty state
+    expect(screen.queryByText('Severity Distribution')).not.toBeInTheDocument();
   });
 
   it('uses danger color for low health score', () => {

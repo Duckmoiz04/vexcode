@@ -17,6 +17,22 @@ export function getPythonPath() {
   return resolve(analysisCoreDir, pythonRelativePath);
 }
 
+/**
+ * Ensure the Python virtual environment exists.
+ * @returns {string} The resolved Python path.
+ * @throws {Error} If the Python interpreter is not found, with an actionable setup command.
+ */
+export function ensureVenv() {
+  const pythonPath = getPythonPath();
+  if (!existsSync(pythonPath)) {
+    throw new Error(
+      `Python interpreter not found at ${pythonPath}.` +
+      `\nEnsure .venv is set up:\n  cd packages/engine && python -m venv .venv`
+    );
+  }
+  return pythonPath;
+}
+
 let activeScan = null;
 
 /**
@@ -29,10 +45,11 @@ let activeScan = null;
  */
 export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false, mockAi = false, fastScan = false, onProgress = null) {
   return new Promise((resolvePromise, rejectPromise) => {
-    const pythonPath = getPythonPath();
-
-    if (!existsSync(pythonPath)) {
-      return rejectPromise(new Error(`Python interpreter not found at ${pythonPath}. Please ensure .venv is set up in packages/engine.`));
+    let pythonPath;
+    try {
+      pythonPath = ensureVenv();
+    } catch (err) {
+      return rejectPromise(err);
     }
 
     const args = [
@@ -155,10 +172,11 @@ export async function runScanAndReadReport(targetPath, reportOutputPath, mockSca
  */
 export function runRefreshAi(reportPath, mockAi = false, onProgress = null) {
   return new Promise((resolvePromise, rejectPromise) => {
-    const pythonPath = getPythonPath();
-
-    if (!existsSync(pythonPath)) {
-      return rejectPromise(new Error(`Python interpreter not found at ${pythonPath}. Please ensure .venv is set up in packages/engine.`));
+    let pythonPath;
+    try {
+      pythonPath = ensureVenv();
+    } catch (err) {
+      return rejectPromise(err);
     }
 
     const args = [

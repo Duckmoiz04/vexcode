@@ -84,3 +84,37 @@ class TestAnalyzeFileComplexity:
             assert result["functions"] == []
         finally:
             os.unlink(tmp_path)
+
+    def test_binary_file_returns_fallback(self):
+        """Binary file (with null bytes) should return fallback."""
+        with tempfile.NamedTemporaryFile(mode="wb", suffix=".bin", delete=False) as f:
+            f.write(b"\x00\x01\x02\x03" * 256)
+            tmp_path = f.name
+
+        try:
+            result = analyze_file_complexity(tmp_path)
+            assert result["complexity"] == 0
+            assert result["cognitive_complexity"] == 0
+            assert result["loc"] == 0
+            assert result["level"] == "LOW"
+            assert result["functions"] == []
+        finally:
+            os.unlink(tmp_path)
+
+    def test_large_file_returns_fallback(self):
+        """File larger than 1MB should return fallback."""
+        with tempfile.NamedTemporaryFile(mode="wb", suffix=".py", delete=False) as f:
+            f.write(b"x = 1\n")
+            tmp_path = f.name
+
+        os.truncate(tmp_path, 1024 * 1024 + 1)
+
+        try:
+            result = analyze_file_complexity(tmp_path)
+            assert result["complexity"] == 0
+            assert result["cognitive_complexity"] == 0
+            assert result["loc"] == 0
+            assert result["level"] == "LOW"
+            assert result["functions"] == []
+        finally:
+            os.unlink(tmp_path)

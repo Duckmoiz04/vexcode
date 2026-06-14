@@ -1,7 +1,31 @@
 import os
 import sys
+import logging
 import lizard
 from typing import Dict, Any, List
+
+logger = logging.getLogger(__name__)
+
+def _is_text_file(file_path: str, num_bytes: int = 1024) -> bool:
+    """
+    Detect whether a file is a text file by scanning for null bytes.
+    
+    Reads the first num_bytes bytes in binary mode. If a null byte (b'\\0')
+    is found, the file is considered binary.
+    
+    Args:
+        file_path: Path to the file to check.
+        num_bytes: Number of bytes to read (default 1024).
+        
+    Returns:
+        True if no null bytes were detected, False otherwise.
+    """
+    try:
+        with open(file_path, "rb") as f:
+            chunk = f.read(num_bytes)
+        return b'\0' not in chunk
+    except Exception:
+        return False
 
 def get_complexity_level(ccn: int) -> str:
     """
@@ -37,8 +61,16 @@ def analyze_file_complexity(file_path: str) -> Dict[str, Any]:
         return fallback_result
         
     try:
-        # Check if file size is 0 or it's a binary file
-        if os.path.getsize(file_path) == 0:
+        filesize = os.path.getsize(file_path)
+        if filesize == 0:
+            return fallback_result
+
+        if filesize > 1024 * 1024:
+            logger.warning("Skipping large file (>1MB): %s", file_path)
+            return fallback_result
+
+        if not _is_text_file(file_path):
+            logger.warning("Skipping binary file: %s", file_path)
             return fallback_result
             
         # Analyze file using lizard

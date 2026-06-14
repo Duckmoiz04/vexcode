@@ -49,6 +49,20 @@ describe('bridge.js unit tests (mock subprocess)', () => {
     });
   });
 
+  describe('ensureVenv()', () => {
+    it('should return the python path when venv exists', () => {
+      mockExistsSync.mockReturnValue(true);
+      const result = bridge.ensureVenv();
+      expect(result).toBeTypeOf('string');
+      expect(result).toMatch(/python(\.exe)?$/);
+    });
+
+    it('should throw actionable error when venv is missing', () => {
+      mockExistsSync.mockReturnValue(false);
+      expect(() => bridge.ensureVenv()).toThrow('python -m venv .venv');
+    });
+  });
+
   describe('runPythonAnalysis()', () => {
     it('should resolve with stdout and stderr on exit code 0', async () => {
       const child = createMockChild();

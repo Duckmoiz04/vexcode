@@ -27,6 +27,9 @@ MOCK_FINDINGS = [
     }
 ]
 
+# Directories to exclude from Opengrep scans.
+EXCLUDE_DIRS = [".venv", "node_modules", "__pycache__", ".git", ".agents", ".claude", ".codex"]
+
 def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) -> Dict[str, Any]:
     """
     Executes an Opengrep scan on the target path or specific files, and parses the results.
@@ -65,12 +68,16 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
         # Resolve opengrep binary path — auto-download if missing
         opengrep_bin = ensure_opengrep()
 
+        exclude_args = []
+        for d in EXCLUDE_DIRS:
+            exclude_args.extend(["--exclude", d])
+
         if files:
             print(f"Running Opengrep scan on {len(files)} files...", file=sys.stderr)
-            cmd = [opengrep_bin, "scan", "--json", "--quiet"] + files
+            cmd = [opengrep_bin, "scan", "--json", "--quiet"] + exclude_args + files
         else:
             print(f"Running Opengrep scan on target: {target_path}...", file=sys.stderr)
-            cmd = [opengrep_bin, "scan", "--json", "--quiet", target_path]
+            cmd = [opengrep_bin, "scan", "--json", "--quiet"] + exclude_args + [target_path]
 
         result = subprocess.run(cmd, capture_output=True, text=True, check=False)
 

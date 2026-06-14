@@ -316,6 +316,57 @@ class TestPostWithRetry:
         assert response.status_code == 200
         assert mock_post.call_count == 3
 
+    def test_429_retry_after_header_seconds(self, mocker):
+        """HTTP 429 with Retry-After: <seconds> should sleep at least that many seconds."""
+        mocker.patch("engine.core.ai_resolver.time.sleep")
+        mock_429 = MagicMock()
+        mock_429.status_code = 429
+        mock_429.headers = {"Retry-After": "30"}
+        mock_200 = MagicMock()
+        mock_200.status_code = 200
+        mock_post = mocker.patch(
+            "engine.core.ai_resolver.requests.post", side_effect=[mock_429, mock_200],
+        )
+        sleep_spy = mocker.patch("engine.core.ai_resolver.time.sleep")
+
+        response = post_with_retry(
+            "http://localhost:20128/v1/chat/completions",
+            headers={"Content-Type": "application/json"},
+            payload={"model": "test"},
+            timeout=30,
+        )
+
+        assert response.status_code == 200
+        assert mock_post.call_count == 2
+        # Sleep should be at least 30s (header value) + 0 jitter floor
+        assert sleep_spy.call_args[0][0] >= 30
+
+    def test_429_no_retry_after_uses_exponential_backoff(self, mocker):
+        """HTTP 429 without Retry-After header should fall back to exponential backoff."""
+        mocker.patch("engine.core.ai_resolver.time.sleep")
+        mock_429 = MagicMock()
+        mock_429.status_code = 429
+        mock_429.headers = {}  # No Retry-After header
+        mock_200 = MagicMock()
+        mock_200.status_code = 200
+        mock_post = mocker.patch(
+            "engine.core.ai_resolver.requests.post", side_effect=[mock_429, mock_200],
+        )
+        sleep_spy = mocker.patch("engine.core.ai_resolver.time.sleep")
+
+        response = post_with_retry(
+            "http://localhost:20128/v1/chat/completions",
+            headers={"Content-Type": "application/json"},
+            payload={"model": "test"},
+            timeout=30,
+        )
+
+        assert response.status_code == 200
+        assert mock_post.call_count == 2
+        # Should use AI_RETRY_BASE_WAIT_SECONDS * 2^0 = 15.0 for first retry
+        from engine.core.ai_resolver import AI_RETRY_BASE_WAIT_SECONDS
+        assert sleep_spy.call_args[0][0] == AI_RETRY_BASE_WAIT_SECONDS * (2 ** 0)
+
     def test_timeout_retries_then_succeeds(self, mocker):
         """Timeout should retry, then succeed on 3rd attempt."""
         mocker.patch("engine.core.ai_resolver.time.sleep")

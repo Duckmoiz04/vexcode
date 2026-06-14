@@ -25,7 +25,8 @@ def create_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Python Core Analysis Engine")
     parser.add_argument("--target", type=str, default=".",
                         help="Root directory path to run static analysis on.")
-    parser.add_argument("--output", type=str, default="analysis_report.json",
+    parser.add_argument("--output", type=str,
+                        default=os.path.join(os.path.expanduser("~"), ".vexcode", "reports", "analysis_report.json"),
                         help="Destination path for the JSON results report.")
     parser.add_argument("--mock-scan", action="store_true",
                         help="--mockForces the use of mock scan findings instead of invoking the Semgrep binary.")
@@ -49,6 +50,25 @@ def validate_args(args: argparse.Namespace) -> None:
     if not os.path.isdir(args.target):
         logger.error(f"Target directory does not exist: {args.target}")
         sys.exit(1)
+
+    output_parent = os.path.dirname(args.output)
+    if output_parent:
+        if not os.path.exists(output_parent):
+            logger.warning(
+                f"Output directory does not exist, creating: {output_parent}"
+            )
+            try:
+                os.makedirs(output_parent, exist_ok=True)
+            except OSError as e:
+                logger.error(
+                    f"Cannot create output directory '{output_parent}': {e}"
+                )
+                sys.exit(1)
+        if not os.access(output_parent, os.W_OK):
+            logger.error(
+                f"Output directory is not writable: {output_parent}"
+            )
+            sys.exit(1)
 
 
 def run_refresh_ai(args: argparse.Namespace) -> None:
@@ -86,7 +106,7 @@ def run_refresh_ai(args: argparse.Namespace) -> None:
 
 
 def run_analysis(args: argparse.Namespace) -> None:
-    """Run the full analysis pipeline: scan → enrich → resolve → report."""
+    """Run the full analysis pipeline: scan → enrich → dedup → resolve → report."""
     logger.info(f"Starting analysis on target: {args.target}")
 
     try:
@@ -95,6 +115,7 @@ def run_analysis(args: argparse.Namespace) -> None:
         from engine.pipeline.enricher import enrich_findings
         from engine.pipeline.resolver import resolve_phase
         from engine.pipeline.reporter import assemble_report, write_report
+        from engine.core.dedup import deduplicate_findings
 
         # 1. Scan
         scan_results, target_files = run_scan_phase(args.target, args.mock_scan, args.fast)
@@ -104,12 +125,15 @@ def run_analysis(args: argparse.Namespace) -> None:
         # 2. Enrich
         findings = enrich_findings(findings, args.target, args.mock_scan)
 
-        # 3. Resolve
+        # 3. Dedup
+        findings = deduplicate_findings(findings)
+
+        # 4. Resolve
         findings, resolutions, metrics = resolve_phase(
             findings, args.target, args.mock_ai, target_files
         )
 
-        # 4. Report
+        # 5. Report
         report = assemble_report(scan_results, findings, resolutions, args.target, metrics)
         write_report(report, args.output)
 
@@ -124,6 +148,7 @@ def run_analysis(args: argparse.Namespace) -> None:
 def main() -> None:
     parser = create_parser()
     args = parser.parse_args()
+    args.output = os.path.expanduser(args.output)
     validate_args(args)
 
     if args.refresh_ai:
