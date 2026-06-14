@@ -101,12 +101,16 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
 
     // Auto-scroll to the target error line
     if (goToLine && goToLine > 0) {
-      const line = view.state.doc.line(goToLine);
-      requestAnimationFrame(() => {
-        view.dispatch({
-          effects: EditorView.scrollIntoView(line.from, { y: 'center' }),
+      try {
+        const line = view.state.doc.line(goToLine);
+        requestAnimationFrame(() => {
+          view.dispatch({
+            effects: EditorView.scrollIntoView(line.from, { y: 'center' }),
+          });
         });
-      });
+      } catch {
+        // Line out of range or document empty — ignore
+      }
     }
 
     return () => {
