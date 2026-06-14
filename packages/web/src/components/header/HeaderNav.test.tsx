@@ -28,10 +28,10 @@ describe('HeaderNav', () => {
       />
     );
 
-    expect(screen.getByText('AI Code Review')).toBeInTheDocument();
+    expect(screen.getByText('Vexcode')).toBeInTheDocument();
     
     // Clicking logo should select null project
-    fireEvent.click(screen.getByText('AI Code Review'));
+    fireEvent.click(screen.getByText('Vexcode'));
     expect(onSelectProject).toHaveBeenCalledWith(null);
   });
 

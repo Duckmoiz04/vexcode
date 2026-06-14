@@ -308,6 +308,62 @@ const dracula = createTheme({
   ],
 });
 
+// ─── 6. VSCode Dark+ (Default VSCode Theme) ─────────────────────────────────
+
+const vscodeDarkPlus = createTheme({
+  theme: 'dark',
+  settings: {
+    background: '#1E1E1E',
+    foreground: '#D4D4D4',
+    caret: '#AEAFAD',
+    selection: '#264F78',
+    selectionMatch: '#264F7855',
+    lineHighlight: '#2A2D2E',
+    gutterBackground: '#1E1E1E',
+    gutterForeground: '#858585',
+    gutterActiveForeground: '#C6C6C6',
+    gutterBorder: '1px solid #333333',
+    fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
+    fontSize: '14px',
+  },
+  styles: [
+    { tag: t.keyword, color: '#569CD6' },
+    { tag: t.operatorKeyword, color: '#569CD6' },
+    { tag: t.controlKeyword, color: '#569CD6' },
+    { tag: t.moduleKeyword, color: '#569CD6' },
+    { tag: t.operator, color: '#D4D4D4' },
+    { tag: t.punctuation, color: '#D4D4D4' },
+    { tag: t.angleBracket, color: '#D4D4D4' },
+    { tag: t.tagName, color: '#569CD6' },
+    { tag: t.comment, color: '#6A9955', fontStyle: 'italic' },
+    { tag: t.docComment, color: '#6A9955', fontStyle: 'italic' },
+    { tag: t.lineComment, color: '#6A9955', fontStyle: 'italic' },
+    { tag: t.blockComment, color: '#6A9955', fontStyle: 'italic' },
+    { tag: t.function(t.variableName), color: '#DCDCAA' },
+    { tag: t.function(t.definition(t.variableName)), color: '#DCDCAA' },
+    { tag: t.number, color: '#B5CEA8' },
+    { tag: t.bool, color: '#569CD6' },
+    { tag: t.null, color: '#569CD6' },
+    { tag: t.constant(t.variableName), color: '#4FC1FF' },
+    { tag: t.self, color: '#569CD6' },
+    { tag: t.labelName, color: '#C586C0' },
+    { tag: t.typeName, color: '#4EC9B0' },
+    { tag: t.className, color: '#4EC9B0' },
+    { tag: t.definition(t.typeName), color: '#4EC9B0' },
+    { tag: t.attributeName, color: '#9CDCFE' },
+    { tag: t.propertyName, color: '#9CDCFE' },
+    { tag: t.string, color: '#CE9178' },
+    { tag: t.special(t.string), color: '#CE9178' },
+    { tag: t.variableName, color: '#9CDCFE' },
+    { tag: t.regexp, color: '#D16969' },
+    { tag: t.heading, color: '#569CD6', fontWeight: 'bold' },
+    { tag: t.strong, color: '#D4D4D4', fontWeight: 'bold' },
+    { tag: t.emphasis, color: '#D4D4D4', fontStyle: 'italic' },
+    { tag: t.link, color: '#569CD6' },
+    { tag: t.meta, color: '#D4D4D4' },
+  ],
+});
+
 // ─── Registry ────────────────────────────────────────────────────────────────
 
 export const themeRegistry: ThemeDefinition[] = [
@@ -315,6 +371,7 @@ export const themeRegistry: ThemeDefinition[] = [
   { id: 'oneDark', name: 'One Dark', extension: oneDark, dark: true },
   { id: 'nord', name: 'Nord', extension: nord, dark: true },
   { id: 'dracula', name: 'Dracula', extension: dracula, dark: true },
+  { id: 'vscodeDarkPlus', name: 'Dark+', extension: vscodeDarkPlus, dark: true },
   { id: 'githubLight', name: 'GitHub Light', extension: githubLight, dark: false },
 ];
 

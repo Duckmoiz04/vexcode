@@ -76,8 +76,8 @@ export const FileViewer: React.FC<FileViewerProps> = ({
       : `${buttonBase} bg-bg-tertiary/50 text-text-secondary hover:bg-bg-tertiary hover:text-text-primary border-card-border/30`;
 
   return (
-    <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3 flex flex-col">
-      <div className="flex items-center justify-between border-b border-card-border/40 pb-2">
+    <div className="flex flex-col flex-1 min-h-0 rounded-lg border border-card-border bg-card-bg backdrop-blur-md overflow-hidden">
+      <div className="flex items-center justify-between px-4 pt-3 pb-2 shrink-0 border-b border-card-border/40">
         <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
           {diffSubMode === 'inline' ? 'Inline Diff' : 'Split Diff'}
         </span>
@@ -103,7 +103,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
       </div>
 
       <div
-        className="overflow-auto font-mono leading-[1.5] max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-bg-primary border border-card-border/40 rounded-xl shadow-inner"
+        className="flex-1 min-h-0 overflow-auto font-mono leading-[1.5] scrollbar-thin select-text bg-bg-primary border-t border-card-border/40"
       >
         {(() => {
           const modified = canShowDiff
@@ -120,6 +120,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
               modified={modified}
               filePath={finding.file}
               themeExtension={currentTheme.extension}
+              targetLine={finding.line}
             />
           ) : (
             <DiffViewSplit
@@ -127,6 +128,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
               modified={modified}
               filePath={finding.file}
               themeExtension={currentTheme.extension}
+              targetLine={finding.line}
             />
           );
         })()}

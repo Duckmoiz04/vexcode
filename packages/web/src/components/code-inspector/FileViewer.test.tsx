@@ -19,7 +19,7 @@ describe('FileViewer', () => {
     remediation_code: 'fixed_line_1\nfixed_line_2',
   };
 
-  it('renders loading state when isLoading is true', () => {
+  it('shows "No diff available." when isLoading is true and no resolution', () => {
     renderWithProviders(
       <FileViewer
         finding={baseFinding}
@@ -30,10 +30,10 @@ describe('FileViewer', () => {
       />
     );
 
-    expect(screen.getByText(/loading file content/i)).toBeInTheDocument();
+    expect(screen.getByText(/no diff available/i)).toBeInTheDocument();
   });
 
-  it('renders error state when error is set', () => {
+  it('shows "No diff available." when error is set and no resolution', () => {
     renderWithProviders(
       <FileViewer
         finding={baseFinding}
@@ -44,10 +44,10 @@ describe('FileViewer', () => {
       />
     );
 
-    expect(screen.getByText(/network error/i)).toBeInTheDocument();
+    expect(screen.getByText(/no diff available/i)).toBeInTheDocument();
   });
 
-  it('renders code lines with line numbers when content is available', () => {
+  it('shows "No diff available." when resolution is undefined', () => {
     renderWithProviders(
       <FileViewer
         finding={baseFinding}
@@ -58,9 +58,7 @@ describe('FileViewer', () => {
       />
     );
 
-    // Line numbers should be visible in the gutter
-    expect(screen.getByText('1')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
+    expect(screen.getByText(/no diff available/i)).toBeInTheDocument();
   });
 
   it('renders remediation code block when resolution has remediation_code', () => {
@@ -79,7 +77,7 @@ describe('FileViewer', () => {
     expect(screen.getByText('fixed_line_2')).toBeInTheDocument();
   });
 
-  it('renders false positive indicator when suggestion starts with "false positive" and remediation is empty', () => {
+  it('shows "No diff available." when suggestion is false positive with empty remediation', () => {
     const fpResolution: AiResolution = {
       suggestion: 'False positive - this is safe',
       remediation_code: '',
@@ -95,10 +93,10 @@ describe('FileViewer', () => {
       />
     );
 
-    expect(screen.getByText(/false positive/i)).toBeInTheDocument();
+    expect(screen.getByText(/no diff available/i)).toBeInTheDocument();
   });
 
-  it('renders deletion indicator when remediation_code is empty and not false positive', () => {
+  it('renders diff view when remediation_code is empty and not false positive', () => {
     const delResolution: AiResolution = {
       suggestion: 'Remove this line',
       remediation_code: '',
@@ -114,6 +112,11 @@ describe('FileViewer', () => {
       />
     );
 
-    expect(screen.getByText(/line removed/i)).toBeInTheDocument();
+    // Empty remediation_code (not undefined) still triggers diff rendering
+    // because hasRemediation is true and isFalsePositive is false.
+    // Content appears in both deleted and inserted chunks, so check for
+    // the CodeMirror editor container instead of individual text nodes.
+    const editor = document.querySelector('.cm-editor');
+    expect(editor).toBeInTheDocument();
   });
 });

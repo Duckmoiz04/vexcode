@@ -169,27 +169,49 @@ body {
   border-left-color: hsl(220, 100%, 50%) !important;
 }
 
-/* Remediation row styling for inline diff blocks */
-.remediation-row {
-  background-color: hsla(145, 80%, 45%, 0.1);
+/* ─── CodeMirror Diff Highlighting (chunk-level) ──────────────────────────── */
+
+/* Clear default per-line styles from merge view */
+.cm-mergeView .cm-scroller {
+  background: transparent !important;
 }
-.remediation-row:hover {
-  background-color: hsla(145, 80%, 45%, 0.15);
-}
-.remediation-line {
-  /* no border — gutter placeholder keeps visual consistent */
+.cm-changedText,
+.cm-deletedText {
+  background: none !important;
 }
 
-/* ─── CodeMirror Syntax Highlighting (Vesper Dark) ──────────────────────────── */
-/* These classes are defined inline in SyntaxHighlight.tsx via inline <style>.
-   Color values match the Vesper theme. */
-
-.cm-s-vscode-dark {
-  display: block;
-  white-space: pre;
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
+/* Deleted chunk — red block background, no per-line border */
+.cm-deletedChunk {
+  background: rgba(239, 68, 68, 0.08) !important;
+}
+.cm-deletedLine {
+  background: none !important;
+  border: none !important;
+}
+.cm-deletedLineGutter {
+  background: rgba(239, 68, 68, 0.20) !important;
 }
 
-/* ── Syntax highlighting styles are inlined in CodeHighlight component ── */
+/* Inserted/changed lines — green block background, no per-line border */
+.cm-insertedLine,
+.cm-changedLine {
+  background: rgba(34, 197, 94, 0.08) !important;
+  border: none !important;
+}
+.cm-changedLineGutter {
+  background: rgba(34, 197, 94, 0.20) !important;
+}
+
+/* Inline changed line — same block treatment */
+.cm-inlineChangedLine {
+  background: rgba(34, 197, 94, 0.08) !important;
+  border: none !important;
+}
+.cm-inlineChangedLineGutter {
+  background: rgba(34, 197, 94, 0.20) !important;
+}
+
+/* Hide chunk buttons (Accept/Reject) since edit mode is removed */
+.cm-chunkButtons {
+  display: none !important;
+}

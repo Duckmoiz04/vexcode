@@ -96,9 +96,13 @@ describe('useReports', () => {
 
   describe('loadHistory', () => {
     it('fetches /api/reports/{project} and sets reports', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true, reports: mockReportList }),
-      } as Response);
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, reports: mockReportList }),
+        } as Response);
 
       const { result } = renderUseReports();
 
@@ -110,9 +114,13 @@ describe('useReports', () => {
     });
 
     it('auto-selects latest report when autoSelectLatest is true', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true, reports: mockReportList }),
-      } as Response);
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, reports: mockReportList }),
+        } as Response);
 
       const { result } = renderUseReports();
 
@@ -124,9 +132,13 @@ describe('useReports', () => {
     });
 
     it('does not auto-select when autoSelectLatest is false', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true, reports: mockReportList }),
-      } as Response);
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, reports: mockReportList }),
+        } as Response);
 
       const { result } = renderUseReports();
 
@@ -138,9 +150,13 @@ describe('useReports', () => {
     });
 
     it('clears reports on unsuccessful response', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: false }),
-      } as Response);
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: false }),
+        } as Response);
 
       const { result } = renderUseReports();
 
@@ -152,7 +168,11 @@ describe('useReports', () => {
     });
 
     it('shows error toast on failure', async () => {
-      vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network error'));
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockRejectedValueOnce(new Error('Network error'));
 
       const { result } = renderUseReports();
 
@@ -166,9 +186,13 @@ describe('useReports', () => {
 
   describe('loadReport', () => {
     it('fetches /api/report/{project}/{id} and sets currentReport', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () => Promise.resolve(mockReport),
-      } as Response);
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve(mockReport),
+        } as Response);
 
       const { result } = renderUseReports();
 
@@ -180,7 +204,11 @@ describe('useReports', () => {
     });
 
     it('shows error toast on failure', async () => {
-      vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network error'));
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockRejectedValueOnce(new Error('Network error'));
 
       const { result } = renderUseReports();
 
@@ -194,9 +222,13 @@ describe('useReports', () => {
 
   describe('handleSelectProject', () => {
     it('sets currentProject and clears report state', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () => Promise.resolve({ success: true, reports: mockReportList }),
-      } as Response);
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, reports: mockReportList }),
+        } as Response);
 
       const { result } = renderUseReports();
 
@@ -237,6 +269,9 @@ describe('useReports', () => {
   describe('currentReportId watcher', () => {
     it('loads report when currentProject and currentReportId are set', async () => {
       const fetchSpy = vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
         .mockResolvedValueOnce({
           json: () => Promise.resolve({ success: true, reports: mockReportList }),
         } as Response)

@@ -39,7 +39,7 @@ describe('Header', () => {
     );
 
     // Verify HeaderNav elements
-    expect(screen.getByText('AI Code Review')).toBeInTheDocument();
+    expect(screen.getByText('Vexcode')).toBeInTheDocument();
     expect(screen.getByText('project-1')).toBeInTheDocument();
     expect(screen.getByText('2026 06 10-12:00:00')).toBeInTheDocument();
 

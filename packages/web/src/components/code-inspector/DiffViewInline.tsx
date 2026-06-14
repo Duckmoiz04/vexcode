@@ -13,11 +13,28 @@ interface DiffViewInlineProps {
   modified: string;
   filePath: string | null | undefined;
   themeExtension: Extension;
+  targetLine?: number;
+}
+
+// ─── Scroll Helper ────────────────────────────────────────────────────────────
+
+function scrollToLine(view: EditorView, line: number) {
+  if (!view || line < 1) return;
+  try {
+    const docLine = view.state.doc.line(line);
+    requestAnimationFrame(() => {
+      view.dispatch({
+        effects: EditorView.scrollIntoView(docLine.from, { y: 'center' }),
+      });
+    });
+  } catch {
+    // line out of range — ignore
+  }
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export const DiffViewInline: React.FC<DiffViewInlineProps> = ({ original, modified, filePath, themeExtension }) => {
+export const DiffViewInline: React.FC<DiffViewInlineProps> = ({ original, modified, filePath, themeExtension, targetLine }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const themeCompartmentRef = useRef(new Compartment());
@@ -53,11 +70,16 @@ export const DiffViewInline: React.FC<DiffViewInlineProps> = ({ original, modifi
     const view = new EditorView({ state, parent: containerRef.current });
     viewRef.current = view;
 
+    // Auto-scroll to the target error line
+    if (targetLine) {
+      scrollToLine(view, targetLine);
+    }
+
     return () => {
       view.destroy();
       viewRef.current = null;
     };
-  }, [original, modified, filePath]);
+  }, [original, modified, filePath, targetLine]);
 
   // ── Reconfigure theme live (no editor destroy) ──────────────────────────
 
@@ -71,8 +93,7 @@ export const DiffViewInline: React.FC<DiffViewInlineProps> = ({ original, modifi
   return (
     <div
       ref={containerRef}
-      className="diff-view-container border border-card-border/40 rounded-xl overflow-hidden"
-      style={{ minHeight: '250px', maxHeight: '500px', overflow: 'auto' }}
+      className="diff-view-container h-full"
     />
   );
 };

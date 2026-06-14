@@ -13,11 +13,28 @@ interface DiffViewSplitProps {
   modified: string;
   filePath: string | null | undefined;
   themeExtension: Extension;
+  targetLine?: number;
+}
+
+// ─── Scroll Helper ────────────────────────────────────────────────────────────
+
+function scrollToLine(view: EditorView, line: number) {
+  if (!view || line < 1) return;
+  try {
+    const docLine = view.state.doc.line(line);
+    requestAnimationFrame(() => {
+      view.dispatch({
+        effects: EditorView.scrollIntoView(docLine.from, { y: 'center' }),
+      });
+    });
+  } catch {
+    // line out of range — ignore
+  }
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-export const DiffViewSplit: React.FC<DiffViewSplitProps> = ({ original, modified, filePath, themeExtension }) => {
+export const DiffViewSplit: React.FC<DiffViewSplitProps> = ({ original, modified, filePath, themeExtension, targetLine }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const mergeViewRef = useRef<MergeView | null>(null);
   const themeCompartmentARef = useRef(new Compartment());
@@ -63,11 +80,17 @@ export const DiffViewSplit: React.FC<DiffViewSplitProps> = ({ original, modified
 
     mergeViewRef.current = mergeView;
 
+    // Auto-scroll to the target error line (both panes)
+    if (targetLine) {
+      scrollToLine(mergeView.a, targetLine);
+      scrollToLine(mergeView.b, targetLine);
+    }
+
     return () => {
       mergeView.destroy();
       mergeViewRef.current = null;
     };
-  }, [original, modified, filePath]);
+  }, [original, modified, filePath, targetLine]);
 
   // ── Reconfigure theme live on both panes (no merge view destroy) ─────────
 
@@ -84,8 +107,7 @@ export const DiffViewSplit: React.FC<DiffViewSplitProps> = ({ original, modified
   return (
     <div
       ref={containerRef}
-      className="diff-view-container border border-card-border/40 rounded-xl overflow-hidden"
-      style={{ minHeight: '250px', maxHeight: '500px', overflow: 'auto' }}
+      className="diff-view-container h-full"
     />
   );
 };

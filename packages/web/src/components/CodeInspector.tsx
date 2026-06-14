@@ -82,81 +82,92 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
       />
 
       <div className="flex-1 flex overflow-hidden min-h-0 relative">
-        <div className="flex-1 overflow-y-auto p-6 space-y-5 scrollbar-thin min-w-0">
-          {/* File Metadata */}
-          <div className="flex flex-wrap gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
-            <div className="flex flex-col gap-1">
-              <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">File</span>
-              <span className="font-mono text-text-primary break-all">{relPath}</span>
-            </div>
-            <div className="flex flex-col gap-1 shrink-0">
-              <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Line</span>
-              <span className="font-mono text-text-primary">{finding.line}</span>
-            </div>
-            {metrics?.files?.[relPath] && (() => {
-              const fm = metrics.files[relPath];
-              const lvlCls = fm.level === 'HIGH' ? 'text-danger' : fm.level === 'MEDIUM' ? 'text-warning' : 'text-success';
-              return (<>
-                <div className="flex flex-col gap-1 shrink-0">
-                  <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Complexity (CCN)</span>
-                  <span className={`font-mono font-semibold ${lvlCls}`}>{fm.complexity} ({fm.level})</span>
-                </div>
-                <div className="flex flex-col gap-1 shrink-0">
-                  <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Cognitive</span>
-                  <span className="font-mono text-text-primary">{fm.cognitive_complexity || 0}</span>
-                </div>
-                <div className="flex flex-col gap-1 shrink-0">
-                  <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">LOC</span>
-                  <span className="font-mono text-text-primary">{fm.loc || 0}</span>
-                </div>
-              </>);
-            })()}
-          </div>
-
-          {/* Finding Message */}
-          <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs leading-relaxed text-text-secondary">
-            {finding.message}
-          </div>
-
-          {/* AST Context */}
-          {finding.ast_context && (
-            <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3">
-              <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AST Context</h4>
-              <div className="flex gap-6 text-xs">
-                <div className="flex flex-col gap-0.5"><span className="text-[9px] text-text-tertiary uppercase">Symbol</span><span className="font-mono text-text-primary font-semibold">{finding.ast_context.symbol_name || '-'}</span></div>
-                <div className="flex flex-col gap-0.5"><span className="text-[9px] text-text-tertiary uppercase">Kind</span><span className="font-mono text-text-primary">{finding.ast_context.kind || '-'}</span></div>
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          {/* Top sections - fixed height, no scroll */}
+          <div className="shrink-0 overflow-y-auto px-6 pt-6 space-y-5 scrollbar-thin">
+            {/* File Metadata */}
+            <div className="flex flex-wrap gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
+              <div className="flex flex-col gap-1">
+                <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">File</span>
+                <span className="font-mono text-text-primary break-all">{relPath}</span>
               </div>
-              {finding.ast_context.callers && finding.ast_context.callers.length > 0 && (
-                <div className="text-xs">
-                  <span className="text-[9px] text-text-tertiary uppercase block mb-1">Callers</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {finding.ast_context.callers.map((c: CallerInfo, i: number) => (
-                      <span key={i} className="px-2 py-0.5 rounded bg-bg-primary/50 text-[10px] font-mono text-text-secondary border border-card-border/40">{c.name}</span>
-                    ))}
+              <div className="flex flex-col gap-1 shrink-0">
+                <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Line</span>
+                <span className="font-mono text-text-primary">{finding.line}</span>
+              </div>
+              {metrics?.files?.[relPath] && (() => {
+                const fm = metrics.files[relPath];
+                const lvlCls = fm.level === 'HIGH' ? 'text-danger' : fm.level === 'MEDIUM' ? 'text-warning' : 'text-success';
+                return (<>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Complexity (CCN)</span>
+                    <span className={`font-mono font-semibold ${lvlCls}`}>{fm.complexity} ({fm.level})</span>
                   </div>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Cognitive</span>
+                    <span className="font-mono text-text-primary">{fm.cognitive_complexity || 0}</span>
+                  </div>
+                  <div className="flex flex-col gap-1 shrink-0">
+                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">LOC</span>
+                    <span className="font-mono text-text-primary">{fm.loc || 0}</span>
+                  </div>
+                </>);
+              })()}
+            </div>
+
+            {/* Finding Message */}
+            <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs leading-relaxed text-text-secondary">
+              {finding.message}
+            </div>
+
+            {/* AST Context */}
+            {finding.ast_context && (
+              <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3">
+                <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AST Context</h4>
+                <div className="flex gap-6 text-xs">
+                  <div className="flex flex-col gap-0.5"><span className="text-[9px] text-text-tertiary uppercase">Symbol</span><span className="font-mono text-text-primary font-semibold">{finding.ast_context.symbol_name || '-'}</span></div>
+                  <div className="flex flex-col gap-0.5"><span className="text-[9px] text-text-tertiary uppercase">Kind</span><span className="font-mono text-text-primary">{finding.ast_context.kind || '-'}</span></div>
                 </div>
-              )}
-              {finding.ast_context.blast_radius && finding.ast_context.blast_radius.length > 0 && (
-                <div className="text-xs flex items-center gap-2"><span className="text-[9px] text-text-tertiary uppercase">Blast Radius</span><span className="font-semibold text-accent">{finding.ast_context.blast_radius.length} affected symbol(s)</span></div>
-              )}
+                {finding.ast_context.callers && finding.ast_context.callers.length > 0 && (
+                  <div className="text-xs">
+                    <span className="text-[9px] text-text-tertiary uppercase block mb-1">Callers</span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {finding.ast_context.callers.map((c: CallerInfo, i: number) => (
+                        <span key={i} className="px-2 py-0.5 rounded bg-bg-primary/50 text-[10px] font-mono text-text-secondary border border-card-border/40">{c.name}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {finding.ast_context.blast_radius && finding.ast_context.blast_radius.length > 0 && (
+                  <div className="text-xs flex items-center gap-2"><span className="text-[9px] text-text-tertiary uppercase">Blast Radius</span><span className="font-semibold text-accent">{finding.ast_context.blast_radius.length} affected symbol(s)</span></div>
+                )}
+              </div>
+            )}
+
+            {/* AI Suggestion */}
+            <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-2">
+              <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AI Suggestion</h4>
+              <p className="text-xs text-text-secondary leading-relaxed">{resolution?.suggestion || 'No AI suggestion available.'}</p>
+            </div>
+          </div>
+
+          {/* FileViewer fills remaining space */}
+          <div className="flex-1 min-h-0 px-6 pt-5 pb-6 flex flex-col">
+            <FileViewer
+              finding={finding} fileContent={fileContent} isLoading={isFileLoading} error={fileError}
+              resolution={resolution} activeLineRef={activeLineRef}
+            />
+          </div>
+
+          {/* ApplyFixButton pinned to bottom if visible */}
+          {resolution?.remediation_code && !finding._applied && (
+            <div className="shrink-0 px-6 pb-6">
+              <ApplyFixButton
+                hasRemediation={!!resolution?.remediation_code} isApplied={!!finding._applied}
+                isApplying={isApplying} onApply={handleApply}
+              />
             </div>
           )}
-
-          {/* AI Suggestion */}
-          <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-2">
-            <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AI Suggestion</h4>
-            <p className="text-xs text-text-secondary leading-relaxed">{resolution?.suggestion || 'No AI suggestion available.'}</p>
-          </div>
-
-          <FileViewer
-            finding={finding} fileContent={fileContent} isLoading={isFileLoading} error={fileError}
-            resolution={resolution} activeLineRef={activeLineRef}
-          />
-
-          <ApplyFixButton
-            hasRemediation={!!resolution?.remediation_code} isApplied={!!finding._applied}
-            isApplying={isApplying} onApply={handleApply}
-          />
         </div>
 
         <ChatPanel
