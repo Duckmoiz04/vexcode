@@ -1,11 +1,10 @@
 import React, { useState, type RefObject } from 'react';
 import type { Finding, AiResolution } from '../../types';
-import { CodeMirrorEditor } from './CodeMirrorEditor.tsx';
 import { DiffViewInline } from './DiffViewInline.tsx';
 import { DiffViewSplit } from './DiffViewSplit.tsx';
 import { ThemePicker } from './ThemePicker.tsx';
 import { defaultTheme, type ThemeDefinition } from '../../utils/themes.ts';
-import { Pencil, GitCompareArrows, Columns } from 'lucide-react';
+import { GitCompareArrows, Columns } from 'lucide-react';
 
 // ─── Remediation Applier ─────────────────────────────────────────────────────
 
@@ -58,7 +57,6 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   resolution,
   activeLineRef,
 }) => {
-  const [mode, setMode] = useState<'edit' | 'diff'>('diff');
   const [diffSubMode, setDiffSubMode] = useState<'inline' | 'split'>('inline');
   const [currentTheme, setCurrentTheme] = useState<ThemeDefinition>(defaultTheme);
 
@@ -72,11 +70,6 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   const buttonBase =
     'flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wider transition-all border';
 
-  const btnClass = (btnMode: 'edit' | 'diff') =>
-    mode === btnMode
-      ? `${buttonBase} bg-accent/20 text-accent border-accent/40`
-      : `${buttonBase} bg-bg-tertiary/50 text-text-secondary hover:bg-bg-tertiary hover:text-text-primary border-card-border/30`;
-
   const diffSubBtnClass = (subMode: 'inline' | 'split') =>
     diffSubMode === subMode
       ? `${buttonBase} bg-accent/20 text-accent border-accent/40`
@@ -86,36 +79,25 @@ export const FileViewer: React.FC<FileViewerProps> = ({
     <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3 flex flex-col">
       <div className="flex items-center justify-between border-b border-card-border/40 pb-2">
         <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
-          {mode === 'edit' ? 'Edit Mode' : diffSubMode === 'inline' ? 'Inline Diff' : 'Split Diff'}
+          {diffSubMode === 'inline' ? 'Inline Diff' : 'Split Diff'}
         </span>
         <div className="flex items-center gap-3">
           <ThemePicker current={currentTheme} onChange={setCurrentTheme} />
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setMode(mode === 'edit' ? 'diff' : 'edit')}
-              className={btnClass('edit')}
-              title={mode === 'edit' ? 'Switch to diff view' : 'Switch to edit mode'}
+              onClick={() => setDiffSubMode('inline')}
+              className={diffSubBtnClass('inline')}
+              title="Inline diff view"
             >
-              <Pencil size={13} /> Edit
+              <GitCompareArrows size={13} /> Inline
             </button>
-            {mode === 'diff' && (
-              <>
-                <button
-                  onClick={() => setDiffSubMode('inline')}
-                  className={diffSubBtnClass('inline')}
-                  title="Inline diff view"
-                >
-                  <GitCompareArrows size={13} /> Inline
-                </button>
-                <button
-                  onClick={() => setDiffSubMode('split')}
-                  className={diffSubBtnClass('split')}
-                  title="Split diff view"
-                >
-                  <Columns size={13} /> Split
-                </button>
-              </>
-            )}
+            <button
+              onClick={() => setDiffSubMode('split')}
+              className={diffSubBtnClass('split')}
+              title="Split diff view"
+            >
+              <Columns size={13} /> Split
+            </button>
           </div>
         </div>
       </div>
@@ -123,7 +105,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
       <div
         className="overflow-auto font-mono leading-[1.5] max-h-[500px] min-h-[250px] scrollbar-thin select-text bg-bg-primary border border-card-border/40 rounded-xl shadow-inner"
       >
-        {mode === 'diff' ? (() => {
+        {(() => {
           const modified = canShowDiff
             ? applyRemediation(fileContent, finding, resolution!)
             : null;
@@ -147,15 +129,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
               themeExtension={currentTheme.extension}
             />
           );
-        })() : isLoading ? (
-          <div className="text-center py-8 text-text-tertiary italic">Loading file content...</div>
-        ) : error ? (
-          <div className="text-center py-8 text-danger italic">{error}</div>
-        ) : !fileContent ? (
-          <div className="text-center py-8 text-text-tertiary italic">No file content available.</div>
-        ) : (
-          <CodeMirrorEditor content={fileContent} filePath={finding.file} goToLine={finding.line} themeExtension={currentTheme.extension} />
-        )}
+        })()}
       </div>
     </div>
   );
