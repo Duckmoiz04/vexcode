@@ -58,7 +58,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   resolution,
   activeLineRef,
 }) => {
-  const [mode, setMode] = useState<'edit' | 'diff'>('edit');
+  const [mode, setMode] = useState<'edit' | 'diff'>('diff');
   const [diffSubMode, setDiffSubMode] = useState<'inline' | 'split'>('inline');
   const [currentTheme, setCurrentTheme] = useState<ThemeDefinition>(defaultTheme);
 
@@ -86,7 +86,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
     <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3 flex flex-col">
       <div className="flex items-center justify-between border-b border-card-border/40 pb-2">
         <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
-          {mode === 'edit' ? 'Edit Mode' : 'Diff View'}
+          {mode === 'edit' ? 'Edit Mode' : diffSubMode === 'inline' ? 'Inline Diff' : 'Split Diff'}
         </span>
         <div className="flex items-center gap-3">
           <ThemePicker current={currentTheme} onChange={setCurrentTheme} />
