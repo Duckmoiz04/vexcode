@@ -22,6 +22,9 @@ export interface BlastRadiusItem {
 
 export type FindingStatus = 'open' | 'applied' | 'false_positive' | 'ignored';
 
+/** Cross-scan classification: compares current scan with previous report. */
+export type ScanStatus = 'new' | 'persisting' | 'resolved' | 'regressed';
+
 export interface Finding {
   id?: string;                   // Stable hash of (file, line, rule_id) - set by scanner
   rule_id: string;
@@ -33,6 +36,8 @@ export interface Finding {
   ast_context?: AstContext;
   /** Per-finding status. Opt-in: missing is treated as 'open'. */
   status?: FindingStatus;
+  /** Cross-scan classification from engine comparison with previous report. */
+  scan_status?: ScanStatus;
   /** @deprecated Use status === 'applied' instead. Kept for backward compat. */
   _applied?: boolean;
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, RotateCcw, ChevronDown, AlertOctagon, AlertTriangle, Info, Shield, Bug, Wrench, Layout, Clock, CheckCircle2, Ban, EyeOff, Terminal, X } from 'lucide-react';
+import { Filter, RotateCcw, ChevronDown, AlertOctagon, AlertTriangle, Info, Shield, Bug, Wrench, Layout, Clock, CheckCircle2, Ban, EyeOff, Terminal, X, Sparkles, RefreshCw } from 'lucide-react';
 
 interface FilterPanelProps {
   searchQuery: string;
@@ -12,11 +12,14 @@ interface FilterPanelProps {
   setFilterStatuses: React.Dispatch<React.SetStateAction<string[]>>;
   filterLanguages: string[];
   setFilterLanguages: React.Dispatch<React.SetStateAction<string[]>>;
+  filterScanStatuses: string[];
+  setFilterScanStatuses: React.Dispatch<React.SetStateAction<string[]>>;
   filterCounts: {
     severity: { error: number; warning: number; info: number };
     category: { security: number; quality: number; maintainability: number; architecture: number };
     status: { open: number; applied: number; false_positive: number; ignored: number };
     language: Record<string, number>;
+    scanStatus: { new: number; persisting: number; resolved: number; regressed: number };
   };
   availableLanguages: string[];
 }
@@ -32,6 +35,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   setFilterStatuses,
   filterLanguages,
   setFilterLanguages,
+  filterScanStatuses,
+  setFilterScanStatuses,
   filterCounts,
   availableLanguages,
 }) => {
@@ -40,6 +45,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
     category: true,
     status: true,
     language: true,
+    scanStatus: true,
   });
 
   const toggleFilterSection = (section: string) => {
@@ -57,7 +63,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
               Filters
             </h3>
           </div>
-          <div className={`transition-opacity duration-150 ${(searchQuery || filterSeverities.length > 0 || filterCategories.length > 0 || filterStatuses.length > 0 || filterLanguages.length > 0) ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+          <div className={`transition-opacity duration-150 ${(searchQuery || filterSeverities.length > 0 || filterCategories.length > 0 || filterStatuses.length > 0 || filterLanguages.length > 0 || filterScanStatuses.length > 0) ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
             <button
               onClick={() => {
                 setSearchQuery('');
@@ -65,6 +71,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 setFilterCategories([]);
                 setFilterStatuses([]);
                 setFilterLanguages([]);
+                setFilterScanStatuses([]);
               }}
               className="flex items-center gap-1 text-xs font-bold text-accent-hover hover:text-accent-hover transition-colors cursor-pointer bg-accent/20 border border-accent/45 rounded-lg px-2.5 py-1.5 shadow-sm hover:bg-accent/30 hover:border-accent/60 duration-100"
             >
@@ -235,6 +242,67 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       key={opt.id}
                       onClick={() => {
                         setFilterStatuses(prev =>
+                          prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
+                        );
+                      }}
+                      className={`flex items-center justify-between py-1.5 px-2.5 rounded-sm border text-sm font-semibold cursor-pointer transition-all select-none ${
+                        isActive
+                          ? 'border-accent/50 bg-accent/12 text-text-primary'
+                          : 'border-card-border/30 bg-transparent text-text-secondary hover:border-card-border/60 hover:bg-bg-primary/30 hover:text-text-primary'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        {opt.icon}
+                        <span className="font-sans text-sm font-medium">{opt.label}</span>
+                      </div>
+                      <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
+                        {count}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Scan Status Filter */}
+          <div className="pb-[14px] border-b border-text-tertiary/30 pt-[2px]">
+            <div className="flex items-center justify-between py-1.5 select-none">
+              <div
+                onClick={() => toggleFilterSection('scanStatus')}
+                className="flex items-center gap-1.5 cursor-pointer group flex-1"
+              >
+                <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform duration-150 ${expandedFilters.scanStatus ? '' : '-rotate-90'}`} />
+                <label className="text-xs text-text-tertiary uppercase font-bold tracking-wider group-hover:text-text-primary transition-colors cursor-pointer">Scan Status</label>
+              </div>
+              {filterScanStatuses.length > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFilterScanStatuses([]);
+                  }}
+                  className="p-1 rounded text-text-tertiary hover:text-accent-hover hover:bg-accent/10 transition-colors cursor-pointer"
+                  title="Clear Scan Status Filters"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            {expandedFilters.scanStatus && (
+              <div className="flex flex-col gap-1.5 mt-2 animate-fade-in">
+                {[
+                  { id: 'new', label: 'New', key: 'new', icon: <Sparkles className="h-4 w-4 text-success shrink-0" /> },
+                  { id: 'persisting', label: 'Persisting', key: 'persisting', icon: <AlertTriangle className="h-4 w-4 text-warning shrink-0" /> },
+                  { id: 'resolved', label: 'Resolved', key: 'resolved', icon: <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> },
+                  { id: 'regressed', label: 'Regressed', key: 'regressed', icon: <RefreshCw className="h-4 w-4 text-danger shrink-0" /> },
+                ].map(opt => {
+                  const isActive = filterScanStatuses.includes(opt.id);
+                  const count = filterCounts.scanStatus[opt.key as keyof typeof filterCounts.scanStatus] || 0;
+                  return (
+                    <div
+                      key={opt.id}
+                      onClick={() => {
+                        setFilterScanStatuses(prev =>
                           prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
                         );
                       }}

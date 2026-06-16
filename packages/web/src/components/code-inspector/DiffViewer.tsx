@@ -80,7 +80,7 @@ export function makeMergeControlButton(
   return btn;
 }
 
-function makeCheckIcon(): HTMLElement {
+function makeCheckIcon(): SVGSVGElement {
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('width', '14');
@@ -97,7 +97,7 @@ function makeCheckIcon(): HTMLElement {
   return svg;
 }
 
-function makeXIcon(): HTMLElement {
+function makeXIcon(): SVGSVGElement {
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('width', '14');
@@ -300,7 +300,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     const view = viewRef.current;
     if (!view) return;
     try {
-      const chunks = getChunks(view.state).chunks;
+      const chunks = getChunks(view.state)?.chunks ?? [];
       const idx = Math.min(currentChunkIndex, chunks.length - 1);
       if (idx >= 0 && chunks[idx]) {
         acceptChunk(view, chunks[idx].fromB);
@@ -315,7 +315,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     const view = viewRef.current;
     if (!view) return;
     try {
-      const chunks = getChunks(view.state).chunks;
+      const chunks = getChunks(view.state)?.chunks ?? [];
       const idx = Math.min(currentChunkIndex, chunks.length - 1);
       if (idx >= 0 && chunks[idx]) {
         rejectChunk(view, chunks[idx].fromB);
@@ -343,7 +343,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     const view = viewRef.current;
     if (!view) return;
     try {
-      const chunks = getChunks(view.state).chunks;
+      const chunks = getChunks(view.state)?.chunks ?? [];
       // Process from end to start to avoid position shifts
       for (let i = chunks.length - 1; i >= 0; i--) {
         acceptChunk(view, chunks[i].fromB);
@@ -358,7 +358,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     const view = viewRef.current;
     if (!view) return;
     try {
-      const chunks = getChunks(view.state).chunks;
+      const chunks = getChunks(view.state)?.chunks ?? [];
       for (let i = chunks.length - 1; i >= 0; i--) {
         rejectChunk(view, chunks[i].fromB);
       }

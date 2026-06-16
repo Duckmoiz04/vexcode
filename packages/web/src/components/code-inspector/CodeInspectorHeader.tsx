@@ -1,6 +1,6 @@
 import React from 'react';
-import { HelpCircle, ExternalLink } from 'lucide-react';
-import type { Finding } from '../../types';
+import { HelpCircle, ExternalLink, CheckCircle2, AlertTriangle, RefreshCw } from 'lucide-react';
+import type { Finding, ScanStatus } from '../../types';
 
 interface CodeInspectorHeaderProps {
   finding: Finding;
@@ -9,6 +9,42 @@ interface CodeInspectorHeaderProps {
   onBack: (() => void) | undefined;
   onOpenInIDE: () => void;
 }
+
+/** Badge component showing cross-scan classification status. */
+const ScanStatusBadge: React.FC<{ scanStatus?: ScanStatus }> = ({ scanStatus }) => {
+  if (!scanStatus) return null;
+
+  const config: Record<ScanStatus, { label: string; className: string; icon?: React.ReactNode }> = {
+    new: {
+      label: 'New',
+      className: 'bg-success/15 border-success/30 text-success',
+    },
+    persisting: {
+      label: 'Persisting',
+      className: 'bg-warning/15 border-warning/30 text-warning',
+      icon: <AlertTriangle className="h-3 w-3" />,
+    },
+    resolved: {
+      label: 'Resolved',
+      className: 'bg-success/15 border-success/30 text-success',
+      icon: <CheckCircle2 className="h-3 w-3" />,
+    },
+    regressed: {
+      label: 'Regressed',
+      className: 'bg-danger/15 border-danger/30 text-danger',
+      icon: <RefreshCw className="h-3 w-3" />,
+    },
+  };
+
+  const { label, className, icon } = config[scanStatus];
+
+  return (
+    <span className={`text-xs px-2.5 py-0.5 rounded font-semibold border flex items-center gap-1 ${className}`}>
+      {icon}
+      {label}
+    </span>
+  );
+};
 
 export const CodeInspectorHeader: React.FC<CodeInspectorHeaderProps> = ({
   finding,
@@ -75,6 +111,7 @@ export const CodeInspectorHeader: React.FC<CodeInspectorHeaderProps> = ({
         >
           {finding._applied ? 'Applied' : 'Pending'}
         </span>
+        <ScanStatusBadge scanStatus={finding.scan_status} />
       </div>
     </div>
   );

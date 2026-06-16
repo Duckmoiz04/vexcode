@@ -162,22 +162,29 @@ def run_analysis(args: argparse.Namespace) -> None:
         # 3. Dedup
         findings = deduplicate_findings(findings)
 
-        # 4. Resolve
+        # 4. Cross-scan classification (compare with previous report)
+        from engine.pipeline.scanner import get_previous_report_path, classify_findings_against_previous
+        previous_report_path = get_previous_report_path(args.target)
+        if previous_report_path:
+            logger.info(f"Comparing with previous report: {previous_report_path}")
+        findings = classify_findings_against_previous(findings, previous_report_path)
+
+        # 5. Resolve
         findings, resolutions, metrics = resolve_phase(
             findings, args.target, args.mock_ai, target_files
         )
 
-        # 5. Git state (used by both formats)
+        # 6. Git state (used by both formats)
         git_state = get_git_state(args.target)
 
-        # 6. Report — write VexCode (primary, consumed by web UI directly)
+        # 7. Report — write VexCode (primary, consumed by web UI directly)
         vexcode_report = assemble_report(
             scan_results, findings, resolutions, args.target, metrics, git_state,
         )
         write_report(vexcode_report, args.output)
         logger.info(f"VexCode report written: {args.output}")
 
-        # 7. Report — write SARIF sidecar (boundary format for external tools)
+        # 8. Report — write SARIF sidecar (boundary format for external tools)
         if not args.no_sarif:
             sarif_report = build_sarif(
                 scan_results=scan_results,

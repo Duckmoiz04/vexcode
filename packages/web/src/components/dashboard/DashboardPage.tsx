@@ -5,6 +5,7 @@ import { MetricsCards } from './MetricsCards';
 import { HealthScoreChart } from './HealthScoreChart';
 import { CategoryBreakdown } from './CategoryBreakdown';
 import { Leaderboards } from './Leaderboards';
+import { CrossScanSummary } from './CrossScanSummary';
 
 interface DashboardPageProps {
   report: Report | null;
@@ -61,6 +62,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           totalFindings={findings.length}
         />
       </div>
+
+      {/* Cross-Scan Comparison */}
+      <CrossScanSummary findings={findings} />
 
       {/* Leaderboards row */}
       <Leaderboards

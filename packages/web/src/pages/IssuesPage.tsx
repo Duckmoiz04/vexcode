@@ -21,11 +21,14 @@ interface IssuesPageProps {
   setFilterStatuses: React.Dispatch<React.SetStateAction<string[]>>;
   filterLanguages: string[];
   setFilterLanguages: React.Dispatch<React.SetStateAction<string[]>>;
+  filterScanStatuses: string[];
+  setFilterScanStatuses: React.Dispatch<React.SetStateAction<string[]>>;
   filterCounts: {
     severity: { error: number; warning: number; info: number };
     category: { security: number; quality: number; maintainability: number; architecture: number };
     status: { open: number; applied: number; false_positive: number; ignored: number };
     language: Record<string, number>;
+    scanStatus: { new: number; persisting: number; resolved: number; regressed: number };
   };
   availableLanguages: string[];
   searchedAndFilteredFindings: Finding[];
@@ -52,6 +55,8 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
   setFilterStatuses,
   filterLanguages,
   setFilterLanguages,
+  filterScanStatuses,
+  setFilterScanStatuses,
   filterCounts,
   availableLanguages,
   searchedAndFilteredFindings,
@@ -78,6 +83,8 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
           setFilterStatuses={setFilterStatuses}
           filterLanguages={filterLanguages}
           setFilterLanguages={setFilterLanguages}
+          filterScanStatuses={filterScanStatuses}
+          setFilterScanStatuses={setFilterScanStatuses}
           filterCounts={filterCounts}
           availableLanguages={availableLanguages}
         />

@@ -23,6 +23,8 @@ interface SidebarProps {
   setFilterStatuses: (statuses: string[]) => void;
   filterLanguages: string[];
   setFilterLanguages: (langs: string[]) => void;
+  filterScanStatuses: string[];
+  setFilterScanStatuses: (statuses: string[]) => void;
   availableLanguages: string[];
 }
 
@@ -39,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectFindingIndex,
   filterStatuses,
   filterLanguages,
+  filterScanStatuses,
 }) => {
   const [sidebarTab, setSidebarTab] = useState<'explorer' | 'findings'>('explorer');
 
@@ -79,9 +82,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         }
       }
 
+      if (filterScanStatuses && filterScanStatuses.length > 0) {
+        const scanStatus = finding.scan_status || 'new';
+        if (!filterScanStatuses.includes(scanStatus)) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [findings, searchQuery, filterSeverities, filterCategories, filterStatuses, filterLanguages]);
+  }, [findings, searchQuery, filterSeverities, filterCategories, filterStatuses, filterLanguages, filterScanStatuses]);
 
   return (
     <div className="w-72 min-w-72 bg-[#161622] border-r border-card-border flex flex-col h-full overflow-hidden">

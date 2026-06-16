@@ -42,6 +42,8 @@ describe('Sidebar Container', () => {
     setFilterStatuses: vi.fn(),
     filterLanguages: [],
     setFilterLanguages: vi.fn(),
+    filterScanStatuses: [],
+    setFilterScanStatuses: vi.fn(),
     availableLanguages: ['TypeScript'],
   };
 

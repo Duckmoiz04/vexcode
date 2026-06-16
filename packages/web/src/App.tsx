@@ -6,7 +6,7 @@ import { ScanModal } from './components/ScanModal';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { IssuesPage } from './pages/IssuesPage';
-import type { Finding, FindingStatus, Report, Config } from './types';
+import type { Finding, FindingStatus, Report, Config, ScanStatus } from './types';
 import { useToast } from './hooks/useToast';
 import { useConfig } from './hooks/useConfig';
 import { useReports } from './hooks/useReports';
@@ -36,6 +36,7 @@ export const App: React.FC = () => {
   const [filterCategories, setFilterCategories] = useState<string[]>([]);
   const [filterStatuses, setFilterStatuses] = useState<string[]>([]);
   const [filterLanguages, setFilterLanguages] = useState<string[]>([]);
+  const [filterScanStatuses, setFilterScanStatuses] = useState<string[]>([]);
 
   const classifyFinding = (finding: Finding) => {
     const ruleId = (finding.rule_id || '').toLowerCase();
@@ -82,7 +83,8 @@ export const App: React.FC = () => {
       severity: { error: 0, warning: 0, info: 0 },
       category: { security: 0, quality: 0, maintainability: 0, architecture: 0 },
       status: { open: 0, applied: 0, false_positive: 0, ignored: 0 },
-      language: {} as Record<string, number>
+      language: {} as Record<string, number>,
+      scanStatus: { new: 0, persisting: 0, resolved: 0, regressed: 0 },
     };
 
     raw.forEach((f: Finding) => {
@@ -103,6 +105,11 @@ export const App: React.FC = () => {
 
       const lang = getFileLanguage(f.file);
       counts.language[lang] = (counts.language[lang] || 0) + 1;
+
+      const scanStatus = (f.scan_status || 'new') as ScanStatus;
+      if (scanStatus in counts.scanStatus) {
+        counts.scanStatus[scanStatus]++;
+      }
     });
 
     return counts;
@@ -152,9 +159,17 @@ export const App: React.FC = () => {
         }
       }
 
+      // 6. Scan status filter
+      if (filterScanStatuses.length > 0) {
+        const scanStatus = finding.scan_status || 'new';
+        if (!filterScanStatuses.includes(scanStatus)) {
+          return false;
+        }
+      }
+
       return true;
     });
-  }, [currentReport, searchQuery, filterSeverities, filterCategories, filterStatuses, filterLanguages, getFileLanguage]);
+  }, [currentReport, searchQuery, filterSeverities, filterCategories, filterStatuses, filterLanguages, filterScanStatuses, getFileLanguage]);
 
   const handleApplyFix = async (finding: Finding, remediationCode: string) => {
     try {
@@ -256,6 +271,7 @@ export const App: React.FC = () => {
     setActiveTab('dashboard');
     setSelectedFindingIndex(null);
     setSelectedFilePath(null);
+    setFilterScanStatuses([]);
   }, []);
 
   const handleSelectProjectWithReset = useCallback((project: string | null) => {
@@ -335,6 +351,8 @@ export const App: React.FC = () => {
               setFilterStatuses={setFilterStatuses}
               filterLanguages={filterLanguages}
               setFilterLanguages={setFilterLanguages}
+              filterScanStatuses={filterScanStatuses}
+              setFilterScanStatuses={setFilterScanStatuses}
               availableLanguages={availableLanguages}
             />
 
@@ -391,6 +409,8 @@ export const App: React.FC = () => {
                     setFilterStatuses={setFilterStatuses}
                     filterLanguages={filterLanguages}
                     setFilterLanguages={setFilterLanguages}
+                    filterScanStatuses={filterScanStatuses}
+                    setFilterScanStatuses={setFilterScanStatuses}
                     filterCounts={filterCounts}
                     availableLanguages={availableLanguages}
                     searchedAndFilteredFindings={searchedAndFilteredFindings}
