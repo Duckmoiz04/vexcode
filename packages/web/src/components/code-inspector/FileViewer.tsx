@@ -185,9 +185,12 @@ export const FileViewer: React.FC<FileViewerProps> = ({
     if (resolution?.remediation_code) {
       // Could not reconstruct fixed file (no code_text or alignment failed).
       // Fall back to showing just the remediation snippet below the source.
+      // Both editors render at natural content height — the page-level
+      // scroll (on CodeInspector's center column) is responsible for
+      // scrolling, not the FileViewer. This avoids nested scrollbars.
       return (
-        <div className="flex flex-col gap-3 h-full min-h-0">
-          <div className="flex-1 min-h-0">
+        <div className="flex flex-col gap-3 p-1">
+          <div className="flex flex-col">
             <CodeMirrorEditor
               content={fileContent}
               filePath={finding.file}
@@ -196,32 +199,36 @@ export const FileViewer: React.FC<FileViewerProps> = ({
               themeExtension={currentTheme.extension}
             />
           </div>
-          <div className="shrink-0">
-            <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider px-3 py-1.5 border-t border-card-border/30 bg-[#0c0c14]">
+          <div className="flex flex-col border-t border-card-border/30">
+            <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
               Suggested Fix (snippet)
             </div>
-            <CodeMirrorEditor
-              content={resolution.remediation_code}
-              filePath={finding.file}
-              themeExtension={currentTheme.extension}
-            />
+            <div className="flex flex-col">
+              <CodeMirrorEditor
+                content={resolution.remediation_code}
+                filePath={finding.file}
+                themeExtension={currentTheme.extension}
+              />
+            </div>
           </div>
         </div>
       );
     }
     return (
-      <CodeMirrorEditor
-        content={fileContent}
-        filePath={finding.file}
-        goToLine={finding.line}
-        errorLines={siblingErrorLines}
-        themeExtension={currentTheme.extension}
-      />
+      <div className="w-full flex flex-col">
+        <CodeMirrorEditor
+          content={fileContent}
+          filePath={finding.file}
+          goToLine={finding.line}
+          errorLines={siblingErrorLines}
+          themeExtension={currentTheme.extension}
+        />
+      </div>
     );
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 rounded-lg border border-card-border bg-card-bg backdrop-blur-md overflow-hidden">
+    <div className="flex flex-col rounded-lg border border-card-border bg-card-bg backdrop-blur-md">
       <div className="flex items-center justify-between px-4 pt-3 pb-2 shrink-0 border-b border-card-border/40">
         <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
           {resolution?.remediation_code ? 'Diff View' : 'Source Viewer'}
@@ -230,7 +237,12 @@ export const FileViewer: React.FC<FileViewerProps> = ({
           <ThemePicker current={currentTheme} onChange={setCurrentTheme} />
         </div>
       </div>
-      <div className="flex-1 min-h-0 overflow-auto font-mono leading-[1.5] scrollbar-thin select-text bg-[#0a0a0f] border-t border-card-border/40">
+      {/* Content area — natural height. No `flex-1 min-h-0 overflow-hidden`
+          so the editor renders at its natural content height and the
+          page-level scrollbar (on the center column) can reach the bottom
+          of the file. The dark `bg-[#0a0a0f]` extends to the full content
+          height because the content area is natural height. */}
+      <div className="font-mono leading-[1.5] scrollbar-thin select-text bg-[#0a0a0f] border-t border-card-border/40 flex flex-col">
         {renderContent()}
       </div>
     </div>

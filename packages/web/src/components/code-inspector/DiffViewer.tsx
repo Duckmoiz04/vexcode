@@ -21,8 +21,10 @@ interface DiffViewerProps {
  * Build a custom Accept/Reject button for each diff chunk. CodeMirror wraps
  * the returned element in a `.cm-chunkButtons` container that is
  * `position: absolute; inset-inline-end: 5px` by default. We provide a
- * larger, icon-bearing button; the wrapper is positioned below the chunk
- * by `mergeButtonsTheme` so the buttons don't sit on the code line.
+ * larger, icon-bearing button; the wrapper is positioned INLINE-RIGHT (next
+ * to the deleted chunk, vertically centered) by `mergeButtonsTheme` so the
+ * buttons never add an extra empty line below the chunk — critical for
+ * single-line fixes where the chunk itself is only one line tall.
  *
  * We set INLINE styles on the button itself so it always renders correctly
  * regardless of CSS specificity battles with CodeMirror's default theme.
@@ -123,54 +125,44 @@ function makeXIcon(): HTMLElement {
 }
 
 /**
- * Override the default CodeMirror merge-control positioning.
+ * Override the default CodeMirror merge-control styling.
  *
- * The default `.cm-deletedChunk` has NO `position: relative`, so the
- * absolutely-positioned `.cm-chunkButtons` is positioned relative to
- * the nearest positioned ancestor (the editor itself) — not the chunk.
- * That's the root cause of the "buttons not visible" bug. We fix it by
- * setting `position: relative` on `.cm-deletedChunk` first, then move
- * the wrapper to `top: 100%` (just below the chunk) so the larger
- * buttons don't increase line height.
- *
- * Selectors are prefixed with `&` so the theme module adds an ancestor
- * class (`.cm-editor` etc.), raising specificity above CodeMirror's
- * default merge theme. `!important` is used on positioning properties
- * to definitively beat the default.
+ * This is intentionally MINIMAL — we want the original CodeMirror
+ * `Accept` / `Reject` text buttons (not the custom icon+label version),
+ * just slightly bigger so they're easier to read. The only non-cosmetic
+ * override is `position: relative !important` on `.cm-deletedChunk`,
+ * which is the critical fix for the well-known "buttons float to top of
+ * editor" bug. See `docs/codemirror-merge-wiki.md` § 4 "Known Bug:
+ * `.cm-deletedChunk` is missing `position: relative`".
  */
 const mergeButtonsTheme = EditorView.theme({
   '& .cm-deletedChunk': {
-    // CRITICAL: make the chunk a positioning context so .cm-chunkButtons
-    // (position: absolute) anchors to the chunk, not the editor.
+    // CRITICAL: make the chunk a positioning context so the absolutely-
+    // positioned `.cm-chunkButtons` anchors to the chunk, not the editor.
     position: 'relative !important',
-    // Extra space at the bottom so the buttons below don't visually
-    // collide with the next line.
-    paddingBottom: '28px !important',
+    // Reserve space for the buttons that sit BELOW the chunk. The merge
+    // package's default button placement is `top: 100%` of the chunk
+    // (i.e., immediately below the last deleted line). Without this
+    // padding, the buttons would visually overlap the next line.
+    paddingBottom: '24px',
   },
   '& .cm-deletedChunk .cm-chunkButtons': {
+    // Default-style placement: immediately below the chunk, right-aligned.
     position: 'absolute !important',
     insetInlineEnd: '6px !important',
     top: '100% !important',
     marginTop: '4px',
     display: 'inline-flex !important',
-    gap: '6px',
-    zIndex: '5',
+    gap: '4px',
   },
+  // The default Accept/Reject buttons (from `mergeControls: true`) are
+  // tiny — `font-size: 11px`, `padding: 2px 8px`, `border-radius: 3px`.
+  // Bump them up a notch so they're easier to read while still feeling
+  // like the default CodeMirror style.
   '& .cm-deletedChunk button': {
-    // Defeat the default white text on tiny green/red background.
-    // (Inline styles on the button itself will override these anyway.)
-    color: 'inherit',
-  },
-  '& .cm-merge-btn': {
-    margin: '0 2px',
-  },
-  '& .cm-merge-btn-icon': {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  '& .cm-merge-btn-label': {
-    fontSize: '11px',
+    padding: '3px 10px !important',
+    fontSize: '12px !important',
+    fontWeight: '500 !important',
   },
 });
 
@@ -212,11 +204,10 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
       // Keep deleted lines syntax-highlighted so the diff stays readable
       // (otherwise deletions appear as plain gray blocks).
       syntaxHighlightDeletions: true,
-      // Custom bigger Accept/Reject buttons. CodeMirror wraps our element in
-      // a `.cm-chunkButtons` div that is `position: absolute`. We provide
-      // the button content; the positioning (below the chunk) is done in
-      // `mergeButtonsTheme` via the wrapper class.
-      mergeControls: makeMergeControlButton,
+      // Use the default CodeMirror Accept/Reject text buttons.
+      // (Swap to `makeMergeControlButton` if you want the styled
+      // icon+label version — placement would need to change too.)
+      // Placement and sizing are controlled by `mergeButtonsTheme` above.
     });
 
     const extensions: Extension[] = [
@@ -354,6 +345,11 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
+    // Single page scroll model: no `flex-1 min-h-0 h-full` on the root
+    // (those forced the diff to fit a constrained parent, which created a
+    // nested scrollbar). The diff renders at its natural content height
+    // and the page-level scrollbar (on CodeInspector's center column)
+    // reaches the bottom of the diff.
     <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f]">
       {/* Header with legend and navigation */}
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
@@ -395,12 +391,16 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
         </div>
       </div>
 
-      {/* CodeMirror container */}
+      {/* CodeMirror container — natural height, no internal scroll.
+          `overflow-visible` (the default) lets the diff render at its full
+          content height so the page-level scrollbar can reach the bottom.
+          The CodeMirror `.cm-scroller` inside still has its own scroll for
+          very long lines, but the container itself doesn't constrain
+          height. */}
       <div
         ref={containerRef}
-        className="diff-viewer-editor flex-1 min-h-0 overflow-auto"
+        className="diff-viewer-editor"
         style={{
-          maxHeight: '350px',
           // `scroll-behavior: smooth` makes all scroll operations animated —
           // including those triggered by `EditorView.scrollIntoView` from
           // `goToNextChunk` / `goToPreviousChunk` and the initial auto-scroll

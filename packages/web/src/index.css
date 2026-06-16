@@ -225,33 +225,16 @@ body {
   border-radius: 4px;
 }
 
-/* Accept/reject buttons container */
-.diff-viewer .cm-chunkButtons {
-  position: absolute;
-  inset-inline-end: 5px;
-}
-.diff-viewer .cm-chunkButtons button {
-  border: none;
-  padding: 2px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 11px;
-  margin-left: 4px;
-}
-.diff-viewer .cm-chunkButtons button[name="accept"] {
-  background: hsla(142, 76%, 36%, 0.3);
-  color: hsl(142, 76%, 65%);
-}
-.diff-viewer .cm-chunkButtons button[name="accept"]:hover {
-  background: hsla(142, 76%, 36%, 0.5);
-}
-.diff-viewer .cm-chunkButtons button[name="reject"] {
-  background: hsla(350, 85%, 55%, 0.2);
-  color: hsl(350, 85%, 70%);
-}
-.diff-viewer .cm-chunkButtons button[name="reject"]:hover {
-  background: hsla(350, 85%, 55%, 0.4);
-}
+/* Accept/reject buttons container.
+   NOTE: positioning + spacing for `.cm-chunkButtons` and the buttons inside is
+   handled by `mergeButtonsTheme` (an `EditorView.theme(...)`) in DiffViewer.tsx,
+   plus inline styles on the buttons themselves. We intentionally DO NOT set
+   `position`, `top`, `inset-inline-end`, or button colors here — doing so
+   would have the SAME specificity (0,1,0) as the injected theme rules and,
+   because the theme stylesheet is injected BEFORE the app stylesheet, the
+   app stylesheet would win and re-introduce the "buttons floating to top of
+   editor" / "buttons not visible" bugs. See `docs/codemirror-merge-wiki.md`
+   § 12 "Global stylesheet `.cm-chunkButtons` rules collide with `EditorView.theme()`". */
 
 /* Collapsed unchanged sections */
 .diff-viewer .cm-collapsedLines {

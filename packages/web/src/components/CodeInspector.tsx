@@ -107,10 +107,17 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
         onOpenInIDE={() => openInIDE(finding.file, finding.line)}
       />
 
-      <div className="flex-1 flex overflow-hidden min-h-0 relative">
-        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          {/* Top sections - fixed height, no scroll */}
-          <div className="shrink-0 overflow-y-auto px-6 pt-6 space-y-5 scrollbar-thin">
+      <div className="flex-1 flex overflow-y-auto min-h-0 relative">
+        <div className="flex-1 flex flex-col overflow-y-auto min-w-0">
+          {/* Top sections — single page scroll model.
+              The whole center column is one scrollable area, so the top
+              sections take their NATURAL height (no cap, no internal scroll).
+              If the page is taller than the viewport, the column itself
+              scrolls; if the page fits, nothing scrolls. There is intentionally
+              no `overflow-y-auto` on the top sections anymore — that would
+              create a NESTED scrollbar inside the page-level scrollbar, which
+              is exactly what we want to avoid. */}
+          <div className="shrink-0 px-6 pt-6 pb-2 space-y-5">
             {/* File Metadata */}
             <div className="flex flex-wrap gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
               <div className="flex flex-col gap-1">
@@ -177,8 +184,15 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             </div>
           </div>
 
-          {/* FileViewer fills remaining space */}
-          <div className="flex-1 min-h-0 px-6 pt-5 pb-6 flex flex-col">
+          {/* FileViewer's content area — natural height.
+              We no longer use `flex-1 min-h-0` here because the page-level
+              scroll (on the center column) handles overflow. The FileViewer
+              and the diff/code editor inside it render at their natural
+              content height, so the user can scroll the page to reach the
+              bottom of the file. If a file is very long (500+ lines), the
+              page will be very tall — that's the explicit trade-off for
+              having a single scrollbar. */}
+          <div className="px-6 pt-3 pb-4 flex flex-col">
             <FileViewer
               finding={finding} fileContent={fileContent} isLoading={isFileLoading} error={fileError}
               resolution={resolution} activeLineRef={activeLineRef}
