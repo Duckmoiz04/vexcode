@@ -123,23 +123,28 @@ function makeXIcon(): HTMLElement {
 }
 
 /**
- * Override the default CodeMirror merge-control positioning. By default the
- * `.cm-chunkButtons` wrapper is `position: absolute; right: 5px; top: 0`
- * which puts the small button on the right edge of the deleted chunk,
- * possibly increasing the line height when we make the button larger.
+ * Override the default CodeMirror merge-control positioning.
  *
- * We move the wrapper to `top: 100%` (just below the chunk), keep it
- * `position: absolute` (so it overlays without affecting flow), and add
- * enough padding so the buttons look prominent but stay out of the way.
+ * The default `.cm-deletedChunk` has NO `position: relative`, so the
+ * absolutely-positioned `.cm-chunkButtons` is positioned relative to
+ * the nearest positioned ancestor (the editor itself) — not the chunk.
+ * That's the root cause of the "buttons not visible" bug. We fix it by
+ * setting `position: relative` on `.cm-deletedChunk` first, then move
+ * the wrapper to `top: 100%` (just below the chunk) so the larger
+ * buttons don't increase line height.
  *
  * Selectors are prefixed with `&` so the theme module adds an ancestor
  * class (`.cm-editor` etc.), raising specificity above CodeMirror's
- * default merge theme.
+ * default merge theme. `!important` is used on positioning properties
+ * to definitively beat the default.
  */
 const mergeButtonsTheme = EditorView.theme({
   '& .cm-deletedChunk': {
-    // Extra space at the bottom of the deleted chunk so the buttons below
-    // it don't visually collide with the next line.
+    // CRITICAL: make the chunk a positioning context so .cm-chunkButtons
+    // (position: absolute) anchors to the chunk, not the editor.
+    position: 'relative !important',
+    // Extra space at the bottom so the buttons below don't visually
+    // collide with the next line.
     paddingBottom: '28px !important',
   },
   '& .cm-deletedChunk .cm-chunkButtons': {
@@ -150,6 +155,11 @@ const mergeButtonsTheme = EditorView.theme({
     display: 'inline-flex !important',
     gap: '6px',
     zIndex: '5',
+  },
+  '& .cm-deletedChunk button': {
+    // Defeat the default white text on tiny green/red background.
+    // (Inline styles on the button itself will override these anyway.)
+    color: 'inherit',
   },
   '& .cm-merge-btn': {
     margin: '0 2px',
@@ -389,7 +399,14 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
       <div
         ref={containerRef}
         className="diff-viewer-editor flex-1 min-h-0 overflow-auto"
-        style={{ maxHeight: '350px' }}
+        style={{
+          maxHeight: '350px',
+          // `scroll-behavior: smooth` makes all scroll operations animated —
+          // including those triggered by `EditorView.scrollIntoView` from
+          // `goToNextChunk` / `goToPreviousChunk` and the initial auto-scroll
+          // to the first chunk. Browser-native, zero-JS animation.
+          scrollBehavior: 'smooth',
+        }}
       />
     </div>
   );
