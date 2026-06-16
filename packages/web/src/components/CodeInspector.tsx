@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import type { Finding, Metrics, CallerInfo, AiResolution } from '../types';
 import { useFileContent } from '../hooks/useFileContent';
 import { useAutoScroll } from '../hooks/useAutoScroll';
@@ -7,6 +7,7 @@ import { useAIProvider } from '../context/AIProviderContext';
 import { FileViewer } from './code-inspector/FileViewer';
 import { ChatPanel } from './code-inspector/ChatPanel';
 import { CodeInspectorHeader } from './code-inspector/CodeInspectorHeader';
+import { ChevronUp, ChevronDown } from 'lucide-react';
 
 interface CodeInspectorProps {
   finding: Finding;
@@ -89,6 +90,19 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
 
   const relPath = getRelativePath(finding.file, targetPath);
 
+  // Same-file findings for sibling navigation
+  const sameFileFindings = useMemo(() => {
+    if (!allFindings) return [];
+    return allFindings
+      .map((f, idx) => ({ f, idx }))
+      .filter(({ f }) => f.file === finding.file);
+  }, [allFindings, finding.file]);
+
+  const currentPosInFile = sameFileFindings.findIndex(
+    ({ f }) => f.line === finding.line && f.rule_id === finding.rule_id
+  );
+  const hasMultipleInFile = sameFileFindings.length > 1;
+
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg-secondary relative">
       <CodeInspectorHeader
@@ -97,6 +111,37 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
         onBack={onSelectFindingIndex ? () => onSelectFindingIndex(null) : undefined}
         onOpenInIDE={() => openInIDE(finding.file, finding.line, targetPath)}
       />
+
+      {/* Sibling finding navigation bar — shows when file has multiple findings */}
+      {hasMultipleInFile && onSelectFindingIndex && currentPosInFile >= 0 && (
+        <div className="flex items-center justify-between px-6 py-1.5 border-b border-card-border/50 bg-bg-secondary/80 shrink-0">
+          <span className="text-[11px] text-text-tertiary font-mono">
+            Finding {currentPosInFile + 1} of {sameFileFindings.length} in this file
+          </span>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => {
+                const prev = currentPosInFile > 0 ? currentPosInFile - 1 : sameFileFindings.length - 1;
+                onSelectFindingIndex(sameFileFindings[prev].idx);
+              }}
+              className="flex items-center gap-1 px-2 py-0.5 text-[11px] rounded border border-card-border/40 bg-bg-tertiary/40 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60 transition-all cursor-pointer"
+              title="Previous finding in this file"
+            >
+              <ChevronUp size={12} /> Prev
+            </button>
+            <button
+              onClick={() => {
+                const next = currentPosInFile < sameFileFindings.length - 1 ? currentPosInFile + 1 : 0;
+                onSelectFindingIndex(sameFileFindings[next].idx);
+              }}
+              className="flex items-center gap-1 px-2 py-0.5 text-[11px] rounded border border-card-border/40 bg-bg-tertiary/40 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60 transition-all cursor-pointer"
+              title="Next finding in this file"
+            >
+              Next <ChevronDown size={12} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="flex-1 flex overflow-y-auto min-h-0 relative">
         <div className="flex-1 flex flex-col overflow-y-auto min-w-0">

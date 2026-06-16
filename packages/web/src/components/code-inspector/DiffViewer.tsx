@@ -15,6 +15,8 @@ interface DiffViewerProps {
   remediationCode: string;
   filePath: string | null | undefined;
   themeExtension: Extension;
+  /** Line number to scroll to after the merge view is created. */
+  goToLine?: number;
 }
 
 /**
@@ -129,6 +131,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
   remediationCode,
   filePath,
   themeExtension,
+  goToLine,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -207,8 +210,18 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
         const result = getChunks(view.state);
         const count = result?.chunks.length || 0;
         setChunkCount(count);
-        // Auto-scroll to first chunk if present
-        if (result && result.chunks.length > 0) {
+        // Auto-scroll: prefer goToLine (the error line), fall back to first chunk
+        if (goToLine && goToLine > 0 && goToLine <= view.state.doc.lines) {
+          try {
+            const line = view.state.doc.line(goToLine);
+            view.dispatch({
+              selection: { anchor: line.from },
+              effects: EditorView.scrollIntoView(line.from, { y: 'center' }),
+            });
+          } catch {
+            // line invalid, ignore
+          }
+        } else if (result && result.chunks.length > 0) {
           const first = result.chunks[0];
           try {
             const line = view.state.doc.lineAt(first.fromB);
@@ -243,6 +256,31 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
       effects: themeCompartmentRef.current.reconfigure(themeExtension),
     });
   }, [themeExtension]);
+
+  // ── Effect 2b: Scroll to error line when goToLine changes ─────────────
+  // Fires independently of editor creation so switching findings within the
+  // same file (same editor) still scrolls to the new error line.
+
+  useEffect(() => {
+    const view = viewRef.current;
+    if (!view || !goToLine || goToLine <= 0) return;
+    if (view.state.doc.lines < goToLine) return;
+    const scrollToLine = () => {
+      if (!viewRef.current || viewRef.current !== view) return;
+      try {
+        const line = view.state.doc.line(goToLine);
+        view.dispatch({
+          selection: { anchor: line.from },
+          effects: EditorView.scrollIntoView(line.from, { y: 'center' }),
+        });
+      } catch {
+        // line invalid
+      }
+    };
+    requestAnimationFrame(scrollToLine);
+    const timer = setTimeout(scrollToLine, 150);
+    return () => clearTimeout(timer);
+  }, [goToLine]);
 
   // ── Chunk navigation handlers ────────────────────────────────────────────
 
@@ -405,7 +443,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     // nested scrollbar). The diff renders at its natural content height
     // and the page-level scrollbar (on CodeInspector's center column)
     // reaches the bottom of the diff.
-    <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f] max-h-full">
+    <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f] flex-1 min-h-0 overflow-y-auto scrollbar-thin">
       {/* Header with legend and navigation — sticky so it stays visible
           while the user scrolls the diff inside the FileViewer's 60vh
           content area. z-10 keeps it above the CodeMirror content. */}

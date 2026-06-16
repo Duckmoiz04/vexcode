@@ -162,6 +162,8 @@ export const FileViewer: React.FC<FileViewerProps> = ({
     );
   }, [fileContent, finding.code_text, finding.message, finding.line, resolution?.remediation_code]);
 
+  const hasDiff = !!(resolution?.remediation_code && fixedFile && fixedFile !== fileContent);
+
   const renderContent = () => {
     if (isLoading) {
       return <div className="text-center py-8 text-text-tertiary italic">Loading file content...</div>;
@@ -179,6 +181,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
           remediationCode={fixedFile}
           filePath={finding.file}
           themeExtension={currentTheme.extension}
+          goToLine={finding.line}
         />
       );
     }
@@ -248,7 +251,11 @@ export const FileViewer: React.FC<FileViewerProps> = ({
             2. Code view scroll: navigate within the diff/file
           The `bg-[#0a0a0f]` extends to the full content height because
           the content area is now constrained by max-h, not natural height. */}
-      <div className="max-h-[60vh] min-h-0 overflow-y-auto font-mono leading-[1.5] scrollbar-thin select-text bg-[#0a0a0f] border-t border-card-border/40 flex flex-col">
+      <div className={`font-mono leading-[1.5] scrollbar-thin select-text bg-[#0a0a0f] border-t border-card-border/40 ${
+        hasDiff
+          ? 'flex-1 min-h-0 overflow-hidden flex flex-col'
+          : 'max-h-[60vh] min-h-0 overflow-y-auto flex flex-col'
+      }`}>
         {renderContent()}
       </div>
     </div>
