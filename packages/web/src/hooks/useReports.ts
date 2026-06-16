@@ -53,7 +53,7 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
     try {
       const res = await fetch(`/api/report/${project}/${reportId}`);
       const data = await res.json();
-      setCurrentReport(data || null);
+      setCurrentReport((data as Report) ?? null);
     } catch (err) {
       console.error('Failed to load report:', err);
       showToast('Error loading report data', 'error');

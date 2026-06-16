@@ -90,6 +90,43 @@ def parse_api_response(text: str) -> Dict[str, Any]:
             pass
     raise ValueError(f"Cannot parse API response body: {text[:200]}")
 
+
+def _extract_message_content(response_data: Dict[str, Any]) -> str:
+    """Robustly extract text content from a chat-completions response.
+
+    Handles several response shapes that the standard ``response.choices[0].message.content``
+    accessor does not cover:
+
+    - **Standard**: ``content`` is a plain string.
+    - **Multimodal list of parts** (e.g. NVIDIA NIM ``minimax-m3``): ``content`` is a
+      list of dicts, each with ``type`` (e.g. ``"text"``, ``"reasoning"``) and ``text``.
+    - **Tool-call / refusal**: ``content`` is ``None`` or empty.
+
+    Returns an empty string when no text can be extracted; never raises.
+    """
+    try:
+        choices = response_data.get("choices")
+        if not choices:
+            return ""
+        message = choices[0].get("message") or {}
+        content = message.get("content")
+
+        if isinstance(content, str):
+            return content.strip()
+        if isinstance(content, list):
+            parts: list = []
+            for part in content:
+                if not isinstance(part, dict):
+                    continue
+                ptype = part.get("type")
+                if ptype in ("text", "reasoning", None) and "text" in part:
+                    parts.append(str(part.get("text") or ""))
+            return "\n".join(parts).strip()
+        # None / dict / other — treat as empty
+        return ""
+    except (KeyError, IndexError, TypeError, AttributeError):
+        return ""
+
 def post_with_retry(url: str, headers: dict, payload: dict, timeout: int) -> requests.Response:
     """POST with exponential-backoff retry on rate limits and local router read timeouts."""
     last_error = None
@@ -266,7 +303,27 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
             response = post_with_retry(url, headers, payload, timeout=AI_RESOLVE_TIMEOUT_SECONDS)
             response.raise_for_status()
             response_data = parse_api_response(decode_response_text(response))
-            content = response_data["choices"][0]["message"]["content"].strip()
+            content = _extract_message_content(response_data)
+            if not content:
+                # Empty content — model may have refused, used tool calls,
+                # or returned a multimodal response we could not flatten.
+                choices = response_data.get("choices") or [{}]
+                first = choices[0] or {}
+                finish = first.get("finish_reason") or "?"
+                logger.info(
+                    f"  [{idx+1}/{len(unique_findings)}] AI returned empty content "
+                    f"(finish_reason={finish}) for {rule_id}. "
+                    f"Model may have refused or returned non-text. Re-run with --mock-ai or a different model."
+                )
+                resolutions[rule_id] = {
+                    "suggestion": (
+                        f"False positive: AI returned no text content for {rule_id} "
+                        f"(finish_reason={finish}). The model may have refused, used tool calls, "
+                        f"or returned a non-text/multimodal response. Re-run with --mock-ai or a different model."
+                    ),
+                    "remediation_code": "",
+                }
+                continue
             result = safe_json_parse(content)
             if isinstance(result, dict):
                 for key, value in result.items():
@@ -280,8 +337,17 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                         resolutions[real_key] = {"suggestion": suggestion, "remediation_code": remediation}
                     else:
                         resolutions[real_key] = value
+            else:
+                # Model returned text but it wasn't parseable JSON — store as plain suggestion.
+                logger.info(
+                    f"  [{idx+1}/{len(unique_findings)}] AI response for {rule_id} was not JSON; using raw text as suggestion."
+                )
+                resolutions[rule_id] = {
+                    "suggestion": content[:500],
+                    "remediation_code": "",
+                }
             logger.info(f"  [{idx+1}/{len(unique_findings)}] Resolved: {rule_id}")
-        except (requests.RequestException, json.JSONDecodeError) as e:
+        except (requests.RequestException, json.JSONDecodeError, ValueError, KeyError, IndexError, TypeError) as e:
             logger.info(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}")
             resolutions[rule_id] = {
                 "suggestion": f"False positive: AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection, or pick a faster model.",

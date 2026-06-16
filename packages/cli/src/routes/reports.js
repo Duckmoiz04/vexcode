@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
 import { listProjects, listProjectReports, getReportContent, getLatestReportContent } from '../services/reportService.js';
+import { readSarifSidecar } from '../services/formatDetector.js';
 
 export function registerReportRoutes(app, deps) {
   const { isPathSafe, workspaceDir, reportsBaseDir, runRefreshAi } = deps;
@@ -33,6 +34,29 @@ export function registerReportRoutes(app, deps) {
         return res.status(404).json(result);
       }
       res.json(result.report);
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  app.get('/api/report/:project/:id/sarif', (req, res) => {
+    try {
+      const result = getReportContent(req.params.project, req.params.id);
+      if (!result.success) {
+        return res.status(404).json(result);
+      }
+      // SARIF sidecar path: <report.json path> with .sarif extension
+      const jsonPath = `${result.report._savedAt}`;
+      const sarif = readSarifSidecar(jsonPath);
+      if (!sarif) {
+        return res.status(404).json({
+          success: false,
+          error: 'SARIF sidecar not found. Re-run a scan to generate the latest SARIF export.'
+        });
+      }
+      res.setHeader('Content-Type', 'application/sarif+json');
+      res.setHeader('Content-Disposition', `attachment; filename="${req.params.id}.sarif"`);
+      return res.json(sarif);
     } catch (error) {
       res.status(500).json({ success: false, error: error.message });
     }

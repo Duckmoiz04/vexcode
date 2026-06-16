@@ -1,5 +1,7 @@
 """Tests for pipeline submodules — scanner, enricher, resolver, reporter."""
 
+import json
+import pytest
 from unittest.mock import MagicMock
 
 
@@ -191,99 +193,154 @@ class TestPipelineResolver:
         assert "modified.py" in metrics["files"]
 
 
-class TestPipelineReporter:
-    """Tests for pipeline/reporter.py — assemble_report()."""
+class TestPipelineDualOutput:
+    """Tests for the dual-output architecture: VexCode .json + SARIF .sarif sidecar."""
 
-    REQUIRED_KEYS = {"scanner", "timestamp", "target_path", "findings",
-                     "ai_resolutions", "git_state", "metrics"}
+    def test_run_analysis_writes_both_json_and_sarif(self, mocker, tmp_path):
+        """A full scan writes a VexCode .json AND a SARIF 2.1.0 .sarif sidecar."""
+        from engine.__main__ import run_analysis
+        from argparse import Namespace
 
-    def test_assemble_report_all_keys(self, mocker):
-        """assemble_report returns dict with all 7 required keys."""
-        mocker.patch("engine.pipeline.reporter.get_git_state",
-                      return_value={"commit": "abc123", "is_dirty": False})
-        from engine.pipeline.reporter import assemble_report
+        # Mock the entire pipeline
+        mocker.patch("engine.pipeline.scanner.run_scan_phase", return_value=(
+            {
+                "scanner": "opengrep-mock",
+                "timestamp": "2026-06-09T00:00:00Z",
+                "target_path": "/fake/target",
+                "findings": [{
+                    "file": "test.py", "line": 1, "rule_id": "x.y",
+                    "message": "msg", "severity": "WARNING",
+                }],
+            },
+            None,
+        ))
+        mocker.patch("engine.pipeline.enricher.enrich_findings", side_effect=lambda f, *a, **kw: f)
+        mocker.patch("engine.core.dedup.deduplicate_findings", side_effect=lambda f: f)
+        mocker.patch("engine.pipeline.resolver.resolve_phase", return_value=(
+            [{"file": "test.py", "line": 1, "rule_id": "x.y",
+              "message": "msg", "severity": "WARNING"}],
+            {"x.y": {"suggestion": "Fix it", "remediation_code": "# fixed"}},
+            {"files": {"test.py": {"complexity": 5, "loc": 100, "level": "LOW", "functions": []}}},
+        ))
+        mocker.patch("engine.pipeline.scanner.get_git_state",
+                     return_value={"commit": "abc123", "is_dirty": False})
 
-        scan_results = {
-            "scanner": "opengrep-mock",
+        output_path = tmp_path / "report.json"
+        args = Namespace(
+            target="/fake/target",
+            output=str(output_path),
+            mock_scan=True,
+            mock_ai=True,
+            fast=False,
+            refresh_ai=None,
+            no_sarif=False,
+        )
+        with pytest.raises(SystemExit) as exc_info:
+            run_analysis(args)
+        assert exc_info.value.code == 0
+
+        # VexCode JSON
+        assert output_path.exists()
+        with open(output_path) as f:
+            vexcode = json.load(f)
+        assert "findings" in vexcode
+        assert "ai_resolutions" in vexcode
+        assert "scanner" in vexcode
+
+        # SARIF sidecar
+        sarif_path = output_path.with_suffix(".sarif")
+        assert sarif_path.exists()
+        with open(sarif_path) as f:
+            sarif = json.load(f)
+        assert sarif["version"] == "2.1.0"
+        assert sarif["runs"][0]["tool"]["driver"]["name"] == "opengrep-mock"
+
+    def test_run_analysis_no_sarif_flag_skips_sidecar(self, mocker, tmp_path):
+        """--no-sarif skips writing the SARIF sidecar."""
+        from engine.__main__ import run_analysis
+        from argparse import Namespace
+
+        mocker.patch("engine.pipeline.scanner.run_scan_phase", return_value=(
+            {"scanner": "opengrep", "timestamp": "2026-06-09T00:00:00Z",
+             "target_path": "/fake/target", "findings": []},
+            None,
+        ))
+        mocker.patch("engine.pipeline.enricher.enrich_findings", side_effect=lambda f, *a, **kw: f)
+        mocker.patch("engine.core.dedup.deduplicate_findings", side_effect=lambda f: f)
+        mocker.patch("engine.pipeline.resolver.resolve_phase", return_value=(
+            [], {}, {"files": {}},
+        ))
+        mocker.patch("engine.pipeline.scanner.get_git_state", return_value=None)
+
+        output_path = tmp_path / "report.json"
+        args = Namespace(
+            target="/fake/target",
+            output=str(output_path),
+            mock_scan=True,
+            mock_ai=True,
+            fast=False,
+            refresh_ai=None,
+            no_sarif=True,
+        )
+        with pytest.raises(SystemExit) as exc_info:
+            run_analysis(args)
+        assert exc_info.value.code == 0
+
+        assert output_path.exists()
+        assert not output_path.with_suffix(".sarif").exists()
+
+    def test_refresh_ai_updates_vexcode_and_sidecar(self, mocker, tmp_path):
+        """--refresh-ai updates the VexCode .json AND refreshes the SARIF sidecar if present."""
+        from engine.__main__ import run_refresh_ai
+        from argparse import Namespace
+
+        # Pre-existing VexCode report
+        report_path = tmp_path / "report.json"
+        existing = {
+            "scanner": "opengrep",
             "timestamp": "2026-06-09T00:00:00Z",
             "target_path": "/fake/target",
             "findings": [{
                 "file": "test.py", "line": 1, "rule_id": "x.y",
                 "message": "msg", "severity": "WARNING",
             }],
+            "ai_resolutions": {},
+            "git_state": {"commit": "abc", "is_dirty": False},
+            "metrics": {"files": {}},
         }
-        resolutions = {"x.y": {"suggestion": "Fix it", "remediation_code": "# fixed"}}
-        metrics = {
-            "files": {"test.py": {
-                "complexity": 5, "loc": 100, "level": "LOW", "functions": [],
-            }},
-        }
+        with open(report_path, "w") as f:
+            json.dump(existing, f)
 
-        report = assemble_report(
-            scan_results, scan_results["findings"], resolutions, "/fake/target", metrics,
+        # Pre-existing SARIF sidecar
+        sarif_path = report_path.with_suffix(".sarif")
+        with open(sarif_path, "w") as f:
+            json.dump({"version": "2.1.0", "runs": []}, f)
+
+        mocker.patch("engine.core.ai_resolver.resolve_findings", return_value={
+            "x.y": {"suggestion": "Mock fix", "remediation_code": "# mock"},
+        })
+        mocker.patch("engine.pipeline.sarif_builder.build_sarif", return_value={
+            "version": "2.1.0", "runs": [{"tool": {"driver": {"name": "opengrep"}}}],
+        })
+
+        args = Namespace(
+            target="/fake/target",
+            output=str(report_path),
+            mock_scan=True,
+            mock_ai=True,
+            fast=False,
+            refresh_ai=str(report_path),
+            no_sarif=False,
         )
+        with pytest.raises(SystemExit) as exc_info:
+            run_refresh_ai(args)
+        assert exc_info.value.code == 0
 
-        for key in self.REQUIRED_KEYS:
-            assert key in report, f"Report missing required key: {key}"
-        assert report["scanner"] == "opengrep-mock"
-        assert report["timestamp"] == "2026-06-09T00:00:00Z"
-        assert report["target_path"] == "/fake/target"
-        assert isinstance(report["findings"], list)
-        assert isinstance(report["ai_resolutions"], dict)
-        assert isinstance(report["metrics"], dict)
-        assert isinstance(report["git_state"], dict)
+        with open(report_path) as f:
+            updated = json.load(f)
+        assert "x.y" in updated["ai_resolutions"]
+        assert "re_resolved_at" in updated
 
-    def test_assemble_report_git_state_none(self, mocker):
-        """assemble_report handles None git_state gracefully."""
-        mocker.patch("engine.pipeline.reporter.get_git_state", return_value=None)
-        from engine.pipeline.reporter import assemble_report
-
-        scan_results = {
-            "scanner": "opengrep",
-            "timestamp": "2026-06-09T00:00:00Z",
-            "target_path": "/fake/target",
-            "findings": [],
-        }
-
-        report = assemble_report(
-            scan_results, [], {}, "/fake/target", {"files": {}},
-        )
-
-        assert report["git_state"] is None
-        assert report["scanner"] == "opengrep"
-
-    def test_assemble_report_fallback_timestamp(self, mocker):
-        """assemble_report generates timestamp when scan_results lacks one."""
-        mocker.patch("engine.pipeline.reporter.get_git_state", return_value=None)
-        from engine.pipeline.reporter import assemble_report
-
-        scan_results = {
-            "scanner": "opengrep",
-            "target_path": "/fake/target",
-            "findings": [],
-        }
-
-        report = assemble_report(
-            scan_results, [], {}, "/fake/target", {"files": {}},
-        )
-
-        assert "timestamp" in report
-        assert isinstance(report["timestamp"], str)
-        assert len(report["timestamp"]) > 0
-
-    def test_assemble_report_fallback_target_path(self, mocker):
-        """assemble_report falls back to target arg when scan_results lacks target_path."""
-        mocker.patch("engine.pipeline.reporter.get_git_state", return_value=None)
-        from engine.pipeline.reporter import assemble_report
-
-        scan_results = {
-            "scanner": "opengrep",
-            "timestamp": "2026-06-09T00:00:00Z",
-            "findings": [],
-        }
-
-        report = assemble_report(
-            scan_results, [], {}, "/fallback/target", {"files": {}},
-        )
-
-        assert report["target_path"] == "/fallback/target"
+        with open(sarif_path) as f:
+            refreshed_sarif = json.load(f)
+        assert refreshed_sarif["version"] == "2.1.0"

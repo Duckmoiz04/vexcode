@@ -14,6 +14,7 @@ import { registerReportRoutes } from './routes/reports.js';
 import { registerApplyRoutes } from './routes/apply.js';
 import { registerChatRoutes } from './routes/chat.js';
 import { registerFileRoutes } from './routes/files.js';
+import { registerFindingsRoutes } from './routes/findings.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -54,6 +55,7 @@ registerReportRoutes(app, deps);
 registerApplyRoutes(app, deps);
 registerChatRoutes(app, deps);
 registerFileRoutes(app, deps);
+registerFindingsRoutes(app, deps);
 
 export function startServer(port = 3000) {
   mkdirSync(vexcodeDir, { recursive: true });

@@ -1,4 +1,4 @@
-import { readFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, renameSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
 import { getProjectReportDir, getLatestReportPath } from '../utils.js';
 
@@ -36,7 +36,7 @@ export function listProjects(reportsBaseDir) {
           latestReport: {
             id: reports[0].replace('.json', ''),
             timestamp: latestReport.timestamp || null,
-            findings: latestReport.findings?.length || 0
+            findings: (latestReport.findings || []).length
           }
         });
       }
@@ -74,7 +74,7 @@ export function listProjectReports(projectName) {
       id: filename.replace('.json', ''),
       timestamp: report.timestamp || null,
       target: report.target_path || null,
-      findings: report.findings?.length || 0
+      findings: (report.findings || []).length
     };
   });
 
@@ -165,4 +165,108 @@ export function getLatestReportContent(reportsBaseDir) {
   content._project = latestReport.project;
 
   return { success: true, report: content };
+}
+
+/**
+ * Atomically write a report to disk.
+ * Strategy: write to a temp file, then rename (atomic on most filesystems).
+ * @param {string} reportPath - absolute path to the report JSON
+ * @param {object} reportData - the parsed report object
+ */
+export function writeReportAtomic(reportPath, reportData) {
+  const tmpPath = `${reportPath}.tmp-${Date.now()}`;
+  writeFileSync(tmpPath, JSON.stringify(reportData, null, 2), 'utf8');
+  renameSync(tmpPath, reportPath);
+}
+
+/**
+ * Mark a specific finding as applied in the report JSON on disk.
+ * Locates finding by id (preferred) or by (file, line, rule_id) tuple.
+ * Sets finding._applied = true and finding.status = 'applied'.
+ * @param {string} reportPath - absolute path to the report JSON
+ * @param {object} findingLocator - { id?, file?, line?, rule_id? }
+ * @returns {{ success: boolean, error?: string }}
+ */
+export function markFindingApplied(reportPath, findingLocator) {
+  if (!existsSync(reportPath)) {
+    return { success: false, error: 'Report file not found.' };
+  }
+
+  let report;
+  try {
+    report = JSON.parse(readFileSync(reportPath, 'utf8'));
+  } catch (e) {
+    return { success: false, error: `Failed to parse report: ${e.message}` };
+  }
+
+  const findings = report.findings || [];
+  const target = findings.find((f) => {
+    if (findingLocator.id && f.id) {
+      return f.id === findingLocator.id;
+    }
+    return (
+      f.file === findingLocator.file &&
+      f.line === findingLocator.line &&
+      f.rule_id === findingLocator.rule_id
+    );
+  });
+
+  if (!target) {
+    return { success: false, error: 'Finding not found in report.' };
+  }
+
+  target._applied = true;
+  target.status = 'applied';
+
+  writeReportAtomic(reportPath, report);
+  return { success: true, finding: target };
+}
+
+/**
+ * Set the status of a specific finding in the report JSON on disk.
+ * Locates finding by id (preferred) or by (file, line, rule_id) tuple.
+ * @param {string} reportPath - absolute path to the report JSON
+ * @param {object} findingLocator - { id?, file?, line?, rule_id? }
+ * @param {'open' | 'applied' | 'false_positive' | 'ignored'} status
+ * @returns {{ success: boolean, error?: string, finding?: object }}
+ */
+export function updateFindingStatus(reportPath, findingLocator, status) {
+  const VALID_STATUSES = ['open', 'applied', 'false_positive', 'ignored'];
+  if (!VALID_STATUSES.includes(status)) {
+    return { success: false, error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` };
+  }
+
+  if (!existsSync(reportPath)) {
+    return { success: false, error: 'Report file not found.' };
+  }
+
+  let report;
+  try {
+    report = JSON.parse(readFileSync(reportPath, 'utf8'));
+  } catch (e) {
+    return { success: false, error: `Failed to parse report: ${e.message}` };
+  }
+
+  const findings = report.findings || [];
+  const target = findings.find((f) => {
+    if (findingLocator.id && f.id) {
+      return f.id === findingLocator.id;
+    }
+    return (
+      f.file === findingLocator.file &&
+      f.line === findingLocator.line &&
+      f.rule_id === findingLocator.rule_id
+    );
+  });
+
+  if (!target) {
+    return { success: false, error: 'Finding not found in report.' };
+  }
+
+  target.status = status;
+  // Keep _applied in sync for backward compatibility
+  target._applied = status === 'applied';
+
+  writeReportAtomic(reportPath, report);
+  return { success: true, finding: target };
 }

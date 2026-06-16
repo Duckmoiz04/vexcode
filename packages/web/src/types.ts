@@ -20,7 +20,10 @@ export interface BlastRadiusItem {
   depth: number;
 }
 
+export type FindingStatus = 'open' | 'applied' | 'false_positive' | 'ignored';
+
 export interface Finding {
+  id?: string;                   // Stable hash of (file, line, rule_id) - set by scanner
   rule_id: string;
   severity: 'error' | 'warning' | 'info';
   file: string;
@@ -28,6 +31,9 @@ export interface Finding {
   message: string;
   code_text?: string;
   ast_context?: AstContext;
+  /** Per-finding status. Opt-in: missing is treated as 'open'. */
+  status?: FindingStatus;
+  /** @deprecated Use status === 'applied' instead. Kept for backward compat. */
   _applied?: boolean;
 }
 

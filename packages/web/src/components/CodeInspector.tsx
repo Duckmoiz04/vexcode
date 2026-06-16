@@ -16,6 +16,9 @@ interface CodeInspectorProps {
   onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
   metrics?: Metrics;
   onSelectFindingIndex?: (index: number | null) => void;
+  /** All findings in the report — used to highlight sibling error lines
+   *  in the same file when viewing one finding. */
+  allFindings?: Finding[];
 }
 
 function getRelativePath(absolutePath: string, targetPath: string | null): string {
@@ -46,7 +49,7 @@ async function openInIDE(filePath: string, line: number): Promise<void> {
 }
 
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
-  finding, aiResolutions, targetPath, onApplyFix, metrics, onSelectFindingIndex,
+  finding, aiResolutions, targetPath, onApplyFix, metrics, onSelectFindingIndex, allFindings,
 }) => {
   const [isApplying, setIsApplying] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -156,6 +159,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             <FileViewer
               finding={finding} fileContent={fileContent} isLoading={isFileLoading} error={fileError}
               resolution={resolution} activeLineRef={activeLineRef}
+              allFindings={allFindings}
             />
           </div>
 

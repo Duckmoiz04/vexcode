@@ -3,7 +3,7 @@ import { Loader2, Wand2 } from 'lucide-react';
 import { FilterPanel } from '../components/FilterPanel';
 import { FindingsList } from '../components/FindingsList';
 import { CodeInspector } from '../components/CodeInspector';
-import type { Finding, Report } from '../types';
+import type { Finding, FindingStatus, Report } from '../types';
 
 interface IssuesPageProps {
   currentReport: Report | null;
@@ -24,12 +24,13 @@ interface IssuesPageProps {
   filterCounts: {
     severity: { error: number; warning: number; info: number };
     category: { security: number; quality: number; maintainability: number; architecture: number };
-    status: { pending: number; applied: number };
+    status: { open: number; applied: number; false_positive: number; ignored: number };
     language: Record<string, number>;
   };
   availableLanguages: string[];
   searchedAndFilteredFindings: Finding[];
   onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
+  onStatusChange?: (finding: Finding, status: FindingStatus) => void;
   onReResolve: () => Promise<void>;
   isReResolving: boolean;
   onSelectFindingIndex: (index: number | null) => void;
@@ -55,6 +56,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
   availableLanguages,
   searchedAndFilteredFindings,
   onApplyFix,
+  onStatusChange,
   onReResolve,
   isReResolving,
   onSelectFindingIndex,
@@ -115,6 +117,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
               setSelectedFilePath(file);
               setSelectedFindingIndex(index);
             }}
+            onStatusChange={onStatusChange}
           />
         </div>
       </div>
@@ -130,6 +133,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
         onApplyFix={onApplyFix}
         metrics={currentReport.metrics}
         onSelectFindingIndex={onSelectFindingIndex}
+        allFindings={currentReport.findings}
       />
     </div>
   );

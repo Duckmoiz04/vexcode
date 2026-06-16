@@ -67,8 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       }
 
       if (filterStatuses.length > 0) {
-        const isApplied = !!finding._applied;
-        const status = isApplied ? 'applied' : 'pending';
+        const status = finding.status || (finding._applied ? 'applied' : 'open');
         if (!filterStatuses.includes(status)) {
           return false;
         }

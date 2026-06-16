@@ -1,12 +1,13 @@
 import { resolve } from 'node:path';
 import { backupFile, applyFixToFile, rollbackFile } from '../services/backupService.js';
+import { markFindingApplied } from '../services/reportService.js';
 
 export function registerApplyRoutes(app, deps) {
   const { isPathSafe, workspaceDir, backupsBaseDir } = deps;
 
   app.post('/api/apply', (req, res) => {
     try {
-      const { filePath, targetLine, targetContent, replacementContent, codeText } = req.body;
+      const { filePath, targetLine, targetContent, replacementContent, codeText, reportPath, findingId, findingFile, findingLine, findingRuleId } = req.body;
 
       if (!filePath || targetLine === undefined || targetContent === undefined || replacementContent === undefined) {
         return res.status(400).json({ success: false, error: 'Missing required parameters: filePath, targetLine, targetContent, replacementContent.' });
@@ -26,6 +27,19 @@ export function registerApplyRoutes(app, deps) {
       const result = applyFixToFile(resolvedPath, targetLine, targetContent, replacementContent, codeText);
       if (!result.success) {
         return res.status(400).json(result);
+      }
+
+      // Persist status to report JSON (optional: reportPath + findingId required)
+      if (reportPath && (findingId || (findingFile && findingLine !== undefined && findingRuleId))) {
+        try {
+          const locator = findingId
+            ? { id: findingId }
+            : { file: findingFile, line: findingLine, rule_id: findingRuleId };
+          markFindingApplied(reportPath, locator);
+        } catch (persistErr) {
+          // Don't fail the apply if status persistence fails — log and continue
+          console.error('Failed to persist finding status:', persistErr.message);
+        }
       }
 
       res.json({

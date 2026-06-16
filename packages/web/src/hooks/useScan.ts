@@ -148,8 +148,9 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
       const data = await response.json();
 
       if (data.success && data.report) {
-        setCurrentReport(data.report);
-        await loadHistory(data.report._project || '', false);
+        const updated = data.report as Report;
+        setCurrentReport(updated);
+        await loadHistory(updated._project || '', false);
         showToast('AI suggestions updated for this report.');
       } else {
         showToast(data.error || 'AI re-analysis failed', 'error');

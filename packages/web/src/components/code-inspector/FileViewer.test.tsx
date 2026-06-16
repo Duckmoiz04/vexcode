@@ -70,4 +70,76 @@ describe('FileViewer', () => {
     const editor = document.querySelector('.cm-editor');
     expect(editor).toBeInTheDocument();
   });
+
+  it('renders DiffViewer when both fileContent and remediation_code are present', () => {
+    const findingWithCode = createMockFinding({
+      ...baseFinding,
+      file: 'src/test.py',
+      line: 2,
+      code_text: '    exec(user_input)',
+    });
+    const fileContent = 'import os\n    exec(user_input)\nprint("done")';
+    const resolution: AiResolution = {
+      suggestion: 'Use subprocess instead of exec',
+      remediation_code: '    import subprocess\n    subprocess.run(["echo", user_input])',
+    };
+
+    renderWithProviders(
+      <FileViewer
+        finding={findingWithCode}
+        fileContent={fileContent}
+        isLoading={false}
+        error={null}
+        resolution={resolution}
+      />
+    );
+
+    // DiffViewer wraps the editor in .diff-viewer-editor
+    expect(document.querySelector('.diff-viewer-editor')).toBeInTheDocument();
+  });
+
+  it('falls back to source + snippet view when code_text cannot be located in file', () => {
+    const findingBad = createMockFinding({
+      ...baseFinding,
+      file: 'src/test.py',
+      line: 2,
+      code_text: 'something that does not appear anywhere in this file',
+    });
+    const fileContent = 'import os\n    exec(user_input)\nprint("done")';
+    const resolution: AiResolution = {
+      suggestion: 'Use subprocess',
+      remediation_code: '    import subprocess',
+    };
+
+    renderWithProviders(
+      <FileViewer
+        finding={findingBad}
+        fileContent={fileContent}
+        isLoading={false}
+        error={null}
+        resolution={resolution}
+      />
+    );
+
+    // Fallback renders two CodeMirror editors (source + snippet)
+    const editors = document.querySelectorAll('.cm-editor');
+    expect(editors.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it('shows only source viewer when resolution has no remediation_code', () => {
+    const resolution: AiResolution = { suggestion: 'Some suggestion only' };
+    renderWithProviders(
+      <FileViewer
+        finding={baseFinding}
+        fileContent="x = 1\ny = 2"
+        isLoading={false}
+        error={null}
+        resolution={resolution}
+      />
+    );
+
+    // Only one editor, no diff wrapper
+    expect(document.querySelectorAll('.cm-editor').length).toBe(1);
+    expect(document.querySelector('.diff-viewer-editor')).not.toBeInTheDocument();
+  });
 });

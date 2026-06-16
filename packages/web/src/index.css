@@ -169,4 +169,107 @@ body {
   border-left-color: hsl(220, 100%, 50%) !important;
 }
 
+/* ─── Unified Merge View (DiffViewer) Styles ────────────────────────────── */
 
+/* Override base theme's height: auto !important on .cm-scroller */
+.diff-viewer .cm-editor {
+  height: 100%;
+}
+.diff-viewer .cm-editor .cm-scroller {
+  font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  font-size: 13px;
+}
+
+/* Changed lines in document A (original/deleted) — warm red tint */
+.diff-viewer .cm-merge-a .cm-changedLine,
+.diff-viewer .cm-deletedChunk {
+  background-color: hsla(350, 85%, 55%, 0.10) !important;
+  border-left: 3px solid hsl(350, 85%, 55%);
+}
+
+/* Changed lines in document B (modified/inserted) — green tint */
+.diff-viewer .cm-merge-b .cm-changedLine,
+.diff-viewer .cm-inlineChangedLine {
+  background-color: hsla(142, 76%, 36%, 0.10) !important;
+  border-left: 3px solid hsl(142, 76%, 36%);
+}
+
+/* Word-level changed text (dark theme) — bottom gradient underline */
+.diff-viewer .cm-merge-a .cm-changedText,
+.diff-viewer .cm-deletedChunk .cm-deletedText {
+  background: linear-gradient(hsla(350, 85%, 65%, 0.4), hsla(350, 85%, 65%, 0.4)) bottom/100% 2px no-repeat;
+}
+.diff-viewer .cm-merge-b .cm-changedText {
+  background: linear-gradient(hsla(142, 76%, 56%, 0.5), hsla(142, 76%, 56%, 0.5)) bottom/100% 2px no-repeat;
+}
+
+/* Deleted text within inserted lines (red background) */
+.diff-viewer .cm-merge-b .cm-deletedText {
+  background: hsla(350, 85%, 55%, 0.20);
+}
+
+/* Gutter markers for changed lines */
+.diff-viewer .cm-merge-a .cm-changedLineGutter {
+  background: hsl(350, 70%, 55%);
+}
+.diff-viewer .cm-merge-b .cm-changedLineGutter {
+  background: hsl(142, 60%, 45%);
+}
+.diff-viewer .cm-inlineChangedLineGutter {
+  background: hsl(260, 60%, 55%);
+}
+
+/* Deleted chunk widget (shows original lines above fix) */
+.diff-viewer .cm-deletedChunk {
+  padding-left: 6px;
+  border-radius: 4px;
+}
+
+/* Accept/reject buttons container */
+.diff-viewer .cm-chunkButtons {
+  position: absolute;
+  inset-inline-end: 5px;
+}
+.diff-viewer .cm-chunkButtons button {
+  border: none;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  margin-left: 4px;
+}
+.diff-viewer .cm-chunkButtons button[name="accept"] {
+  background: hsla(142, 76%, 36%, 0.3);
+  color: hsl(142, 76%, 65%);
+}
+.diff-viewer .cm-chunkButtons button[name="accept"]:hover {
+  background: hsla(142, 76%, 36%, 0.5);
+}
+.diff-viewer .cm-chunkButtons button[name="reject"] {
+  background: hsla(350, 85%, 55%, 0.2);
+  color: hsl(350, 85%, 70%);
+}
+.diff-viewer .cm-chunkButtons button[name="reject"]:hover {
+  background: hsla(350, 85%, 55%, 0.4);
+}
+
+/* Collapsed unchanged sections */
+.diff-viewer .cm-collapsedLines {
+  padding: 5px 5px 5px 10px;
+  cursor: pointer;
+  font-style: italic;
+  color: hsla(0, 0%, 100%, 0.35);
+  background: linear-gradient(to bottom, transparent 0, hsla(240, 16%, 12%, 0.6) 30%, hsla(240, 16%, 12%, 0.6) 70%, transparent 100%);
+  border-radius: 4px;
+}
+.diff-viewer .cm-collapsedLines:hover {
+  color: hsla(0, 0%, 100%, 0.6);
+  background: linear-gradient(to bottom, transparent 0, hsla(240, 16%, 16%, 0.6) 30%, hsla(240, 16%, 16%, 0.6) 70%, transparent 100%);
+}
+
+/* Inserted/deleted inline elements */
+.diff-viewer .cm-insertedLine,
+.diff-viewer .cm-deletedLine,
+.diff-viewer .cm-deletedLine del {
+  text-decoration-skip-ink: none;
+}

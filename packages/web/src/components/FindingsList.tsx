@@ -1,6 +1,6 @@
 import React from 'react';
-import { Search, X } from 'lucide-react';
-import type { Finding, Report } from '../types';
+import { Search, X, CheckCircle2, Ban, EyeOff, RotateCcw } from 'lucide-react';
+import type { Finding, FindingStatus, Report } from '../types';
 
 interface FindingsListProps {
   searchedAndFilteredFindings: Finding[];
@@ -8,6 +8,7 @@ interface FindingsListProps {
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   onSelectFinding: (filePath: string, originalIndex: number) => void;
+  onStatusChange?: (finding: Finding, status: FindingStatus) => void;
 }
 
 const classifyFinding = (finding: Finding) => {
@@ -36,12 +37,25 @@ const classifyFinding = (finding: Finding) => {
   return 'quality';
 };
 
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  open: { label: 'Open', color: 'bg-bg-tertiary border-card-border text-text-secondary' },
+  applied: { label: 'Applied', color: 'bg-success/15 border-success/35 text-success' },
+  false_positive: { label: 'False Positive', color: 'bg-warning/15 border-warning/35 text-warning' },
+  ignored: { label: 'Ignored', color: 'bg-info/15 border-info/35 text-info' },
+};
+
+const getStatus = (f: Finding): FindingStatus => {
+  if (f.status) return f.status;
+  return f._applied ? 'applied' : 'open';
+};
+
 export const FindingsList: React.FC<FindingsListProps> = ({
   searchedAndFilteredFindings,
   currentReport,
   searchQuery,
   setSearchQuery,
   onSelectFinding,
+  onStatusChange,
 }) => {
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-bg-secondary p-4 pl-2 overflow-y-auto scrollbar-thin">
@@ -95,7 +109,8 @@ export const FindingsList: React.FC<FindingsListProps> = ({
             const originalIndex = currentReport.findings.indexOf(f);
             const severity = (f.severity || '').toLowerCase();
             const cat = classifyFinding(f);
-            const isApplied = f._applied;
+            const status = getStatus(f);
+            const statusStyle = STATUS_LABELS[status] || STATUS_LABELS.open;
 
             return (
               <div
@@ -154,14 +169,44 @@ export const FindingsList: React.FC<FindingsListProps> = ({
                     {f.message}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 shrink-0 self-end md:self-center font-mono text-xs">
-                  <span className={`text-[10px] px-2.5 py-0.5 rounded border font-semibold font-sans ${
-                    isApplied
-                      ? 'bg-success/15 border-success/35 text-success'
-                      : 'bg-bg-tertiary border-card-border text-text-secondary'
-                  }`}>
-                    {isApplied ? 'Applied' : 'Pending'}
+                <div className="flex items-center gap-2 shrink-0 self-end md:self-center font-mono text-xs">
+                  <span className={`text-[10px] px-2.5 py-0.5 rounded border font-semibold font-sans ${statusStyle.color}`}>
+                    {statusStyle.label}
                   </span>
+                  {onStatusChange && (
+                    <div className="flex items-center gap-1">
+                      {status === 'open' && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); onStatusChange(f, 'false_positive'); }}
+                            className="p-1 rounded text-text-tertiary hover:text-warning hover:bg-warning/10 transition-colors"
+                            title="Mark as False Positive"
+                          >
+                            <Ban className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); onStatusChange(f, 'ignored'); }}
+                            className="p-1 rounded text-text-tertiary hover:text-info hover:bg-info/10 transition-colors"
+                            title="Ignore finding"
+                          >
+                            <EyeOff className="h-3.5 w-3.5" />
+                          </button>
+                        </>
+                      )}
+                      {status !== 'open' && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); onStatusChange(f, 'open'); }}
+                          className="p-1 rounded text-text-tertiary hover:text-accent hover:bg-accent/10 transition-colors"
+                          title="Reopen finding"
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             );

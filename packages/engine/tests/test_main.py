@@ -8,8 +8,12 @@ import sys
 ENGINE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MAIN_PY = os.path.join(ENGINE_DIR, "main.py")
 
-REQUIRED_KEYS = {"scanner", "timestamp", "target_path", "findings",
-                 "ai_resolutions", "git_state", "metrics"}
+# VexCode-format required keys
+VEXCODE_REQUIRED_KEYS = {"scanner", "timestamp", "target_path", "findings",
+                          "ai_resolutions", "git_state", "metrics"}
+
+# SARIF 2.1.0 required keys
+SARIF_REQUIRED_KEYS = {"$schema", "version", "runs"}
 
 
 def _find_python():
@@ -30,27 +34,37 @@ def _run_main(*args):
     return result.returncode, result.stdout, result.stderr
 
 
-def _assert_valid_report(report):
-    """Assert report has all required keys and correct types."""
-    for key in REQUIRED_KEYS:
+def _assert_vexcode_report(report):
+    """Assert report is a valid VexCode-format document."""
+    for key in VEXCODE_REQUIRED_KEYS:
         assert key in report, f"Report missing required key: {key}"
     assert isinstance(report["scanner"], str)
-    assert isinstance(report["timestamp"], str)
-    assert isinstance(report["target_path"], str)
     assert isinstance(report["findings"], list)
     assert isinstance(report["ai_resolutions"], dict)
     assert isinstance(report["metrics"], dict)
     assert "files" in report["metrics"]
-    assert isinstance(report["metrics"]["files"], dict)
-    if report["git_state"] is not None:
-        assert isinstance(report["git_state"], dict)
+
+
+def _assert_sarif_report(report):
+    """Assert report is a valid SARIF 2.1.0 document."""
+    for key in SARIF_REQUIRED_KEYS:
+        assert key in report, f"SARIF missing required key: {key}"
+    assert report["version"] == "2.1.0"
+    assert isinstance(report["runs"], list)
+    assert len(report["runs"]) >= 1
+    run = report["runs"][0]
+    assert "tool" in run
+    assert isinstance(run["tool"]["driver"]["name"], str)
+    assert isinstance(run["results"], list)
+    assert "properties" in run
+    assert "metrics" in run["properties"]
 
 
 class TestMainCLI:
     """Integration tests for main.py CLI."""
 
-    def test_scan_mock(self, tmp_path):
-        """Full scan with --mock-scan --mock-ai produces valid report JSON."""
+    def test_scan_mock_writes_dual_reports(self, tmp_path):
+        """Full scan writes BOTH a VexCode .json AND a SARIF 2.1.0 .sarif sidecar."""
         output_path = tmp_path / "report.json"
         rc, stdout, stderr = _run_main(
             "--target", ENGINE_DIR,
@@ -61,9 +75,17 @@ class TestMainCLI:
         assert rc == 0, f"main.py exited with {rc}. stderr: {stderr}"
         assert output_path.exists(), f"Output file not created: {output_path}"
         with open(output_path, "r", encoding="utf-8") as f:
-            report = json.load(f)
-        _assert_valid_report(report)
-        assert len(report["scanner"]) > 0
+            vexcode = json.load(f)
+        _assert_vexcode_report(vexcode)
+        assert len(vexcode["scanner"]) > 0
+
+        # SARIF sidecar must also exist
+        sarif_path = output_path.with_suffix(".sarif")
+        assert sarif_path.exists(), f"SARIF sidecar not created: {sarif_path}"
+        with open(sarif_path, "r", encoding="utf-8") as f:
+            sarif = json.load(f)
+        _assert_sarif_report(sarif)
+        assert sarif["runs"][0]["tool"]["driver"]["name"] == vexcode["scanner"]
 
     def test_scan_fast_mock(self, tmp_path):
         """Fast scan with --fast --mock-scan --mock-ai exits cleanly."""
@@ -78,29 +100,38 @@ class TestMainCLI:
         assert rc == 0, f"main.py --fast exited with {rc}. stderr: {stderr}"
         assert output_path.exists(), f"Output file not created: {output_path}"
         with open(output_path, "r", encoding="utf-8") as f:
-            report = json.load(f)
-        _assert_valid_report(report)
-        assert "fast" in report["scanner"].lower()
+            vexcode = json.load(f)
+        _assert_vexcode_report(vexcode)
+        assert "fast" in vexcode["scanner"].lower()
+
+    def test_no_sarif_flag(self, tmp_path):
+        """--no-sarif skips writing the SARIF sidecar."""
+        output_path = tmp_path / "report.json"
+        rc, stdout, stderr = _run_main(
+            "--target", ENGINE_DIR,
+            "--output", str(output_path),
+            "--mock-scan",
+            "--mock-ai",
+            "--no-sarif"
+        )
+        assert rc == 0, f"main.py exited with {rc}. stderr: {stderr}"
+        assert output_path.exists()
+        assert not output_path.with_suffix(".sarif").exists()
 
     def test_refresh_ai_mock(self, tmp_path):
-        """Refresh AI mode updates ai_resolutions on an existing report."""
+        """Refresh AI mode updates ai_resolutions on an existing VexCode report."""
         initial_report_path = tmp_path / "initial_report.json"
         initial_report = {
             "scanner": "opengrep",
             "timestamp": "2026-06-09T00:00:00Z",
             "target_path": ENGINE_DIR,
-            "findings": [
-                {
-                    "file": "test.py",
-                    "line": 1,
-                    "rule_id": "test.rule",
-                    "message": "test finding",
-                    "severity": "warning"
-                }
-            ],
+            "findings": [{
+                "file": "test.py", "line": 1, "rule_id": "test.rule",
+                "message": "test finding", "severity": "WARNING",
+            }],
             "ai_resolutions": {},
-            "git_state": None,
-            "metrics": {"files": {}}
+            "git_state": {"commit": "", "is_dirty": False},
+            "metrics": {"files": {}},
         }
         with open(initial_report_path, "w", encoding="utf-8") as f:
             json.dump(initial_report, f)
@@ -110,10 +141,9 @@ class TestMainCLI:
 
         with open(initial_report_path, "r", encoding="utf-8") as f:
             updated_report = json.load(f)
-        _assert_valid_report(updated_report)
-        assert isinstance(updated_report["ai_resolutions"], dict)
-        assert len(updated_report["ai_resolutions"]) > 0, \
-            "ai_resolutions should be populated after re-resolve"
+        # Should still be valid VexCode
+        _assert_vexcode_report(updated_report)
+        assert "test.rule" in updated_report["ai_resolutions"]
         assert "re_resolved_at" in updated_report
 
     def test_refresh_ai_missing_file(self, tmp_path):

@@ -12,8 +12,69 @@ from engine.core.ai_resolver import (
     sanitize_remediation_code,
     resolve_findings,
     post_with_retry,
+    _extract_message_content,
 )
 from engine.config.ai_config import get_ai_config
+
+
+class TestExtractMessageContent:
+    """Tests for _extract_message_content() — robust content extraction."""
+
+    def test_string_content(self):
+        data = {"choices": [{"message": {"content": "hello"}}]}
+        assert _extract_message_content(data) == "hello"
+
+    def test_string_content_with_whitespace(self):
+        data = {"choices": [{"message": {"content": "  hello  \n"}}]}
+        assert _extract_message_content(data) == "hello"
+
+    def test_multimodal_list_with_text_part(self):
+        data = {"choices": [{"message": {"content": [
+            {"type": "text", "text": "hello"},
+        ]}}]}
+        assert _extract_message_content(data) == "hello"
+
+    def test_multimodal_list_with_multiple_text_parts(self):
+        data = {"choices": [{"message": {"content": [
+            {"type": "text", "text": "line 1"},
+            {"type": "text", "text": "line 2"},
+        ]}}]}
+        assert _extract_message_content(data) == "line 1\nline 2"
+
+    def test_multimodal_list_with_reasoning_part(self):
+        data = {"choices": [{"message": {"content": [
+            {"type": "reasoning", "text": "thinking..."},
+            {"type": "text", "text": "answer"},
+        ]}}]}
+        assert _extract_message_content(data) == "thinking...\nanswer"
+
+    def test_multimodal_list_skips_non_text_parts(self):
+        data = {"choices": [{"message": {"content": [
+            {"type": "image_url", "image_url": {"url": "x"}},
+            {"type": "text", "text": "caption"},
+        ]}}]}
+        assert _extract_message_content(data) == "caption"
+
+    def test_null_content(self):
+        data = {"choices": [{"message": {"content": None}}]}
+        assert _extract_message_content(data) == ""
+
+    def test_missing_choices(self):
+        assert _extract_message_content({}) == ""
+        assert _extract_message_content({"choices": []}) == ""
+
+    def test_missing_message(self):
+        data = {"choices": [{"finish_reason": "stop"}]}
+        assert _extract_message_content(data) == ""
+
+    def test_dict_content_treated_as_empty(self):
+        data = {"choices": [{"message": {"content": {"weird": "shape"}}}]}
+        assert _extract_message_content(data) == ""
+
+    def test_does_not_raise_on_garbage(self):
+        # Should not raise on any input shape
+        assert _extract_message_content(None) == ""  # type: ignore[arg-type]
+        assert _extract_message_content({"choices": [None]}) == ""  # type: ignore[list-item]
 
 
 class TestSafeJsonParse:
@@ -199,6 +260,118 @@ class TestResolveFindings:
                 == "Use safe subprocess instead of exec")
         assert "subprocess.run" in resolutions[
             "python.lang.security.audit.dangerous-exec"]["remediation_code"]
+
+    def test_with_nvidia_multimodal_content_list(self, mocker):
+        """NVIDIA NIM multimodal models return content as a list of parts.
+
+        The resolver must flatten the text parts and parse the JSON payload.
+        """
+        mocker.patch("engine.config.ai_config._reload_env_file")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
+        mocker.patch.dict(os.environ, {
+            "AI_PROVIDER": "nvidia",
+            "NVIDIA_API_KEY": "nvapi-test",
+            "NVIDIA_BASE_URL": "https://integrate.api.nvidia.com/v1",
+            "NVIDIA_MODEL": "minimaxai/minimax-m3",
+        }, clear=True)
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = json.dumps({
+            "choices": [{
+                "finish_reason": "stop",
+                "message": {
+                    "content": [
+                        {"type": "text", "text": json.dumps({
+                            "r0": {
+                                "suggestion": "Use subprocess instead of exec",
+                                "remediation_code": "subprocess.run(['echo', x])",
+                            },
+                        })},
+                    ],
+                },
+            }],
+        }).encode("utf-8")
+        mocker.patch("engine.core.ai_resolver.requests.post", return_value=mock_response)
+
+        findings = [{
+            "file": "example.py",
+            "line": 12,
+            "rule_id": "python.lang.security.audit.dangerous-exec",
+            "message": "dangerous exec",
+            "code_text": "exec(user_input)",
+        }]
+
+        resolutions = resolve_findings(findings, use_mock=False)
+        assert "python.lang.security.audit.dangerous-exec" in resolutions
+        assert "subprocess" in resolutions[
+            "python.lang.security.audit.dangerous-exec"]["remediation_code"]
+
+    def test_with_null_content_records_fallback(self, mocker):
+        """When the model returns content=null (refusal/tool-call), record a False positive."""
+        mocker.patch("engine.config.ai_config._reload_env_file")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
+        mocker.patch.dict(os.environ, {
+            "AI_PROVIDER": "nvidia",
+            "NVIDIA_API_KEY": "nvapi-test",
+            "NVIDIA_BASE_URL": "https://integrate.api.nvidia.com/v1",
+            "NVIDIA_MODEL": "minimaxai/minimax-m3",
+        }, clear=True)
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = json.dumps({
+            "choices": [{
+                "finish_reason": "tool_calls",
+                "message": {
+                    "content": None,
+                    "tool_calls": [{"id": "1", "type": "function"}],
+                },
+            }],
+        }).encode("utf-8")
+        mocker.patch("engine.core.ai_resolver.requests.post", return_value=mock_response)
+
+        findings = [{
+            "file": "example.py",
+            "line": 12,
+            "rule_id": "test.rule",
+            "message": "test",
+        }]
+
+        resolutions = resolve_findings(findings, use_mock=False)
+        assert "test.rule" in resolutions
+        assert "False positive" in resolutions["test.rule"]["suggestion"]
+        assert "no text content" in resolutions["test.rule"]["suggestion"]
+        assert resolutions["test.rule"]["remediation_code"] == ""
+
+    def test_with_malformed_response_does_not_crash(self, mocker):
+        """A response missing `choices` should not raise; record a fallback instead."""
+        mocker.patch("engine.config.ai_config._reload_env_file")
+        mocker.patch("engine.core.ai_resolver.time.sleep")
+        mocker.patch.dict(os.environ, {
+            "AI_PROVIDER": "nvidia",
+            "NVIDIA_API_KEY": "nvapi-test",
+            "NVIDIA_BASE_URL": "https://integrate.api.nvidia.com/v1",
+            "NVIDIA_MODEL": "minimaxai/minimax-m3",
+        }, clear=True)
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        # No 'choices' key at all
+        mock_response.content = json.dumps({"unexpected": "shape"}).encode("utf-8")
+        mocker.patch("engine.core.ai_resolver.requests.post", return_value=mock_response)
+
+        findings = [{
+            "file": "example.py",
+            "line": 12,
+            "rule_id": "test.rule",
+            "message": "test",
+        }]
+
+        # Should not raise
+        resolutions = resolve_findings(findings, use_mock=False)
+        assert "test.rule" in resolutions
+        assert "False positive" in resolutions["test.rule"]["suggestion"]
 
     def test_handles_http_error_gracefully(self, mocker):
         """resolve_findings with ConnectionError returns fallback suggestion."""

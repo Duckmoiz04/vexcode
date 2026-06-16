@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, RotateCcw, ChevronDown, AlertOctagon, AlertTriangle, Info, Shield, Bug, Wrench, Layout, Clock, CheckCircle2, Terminal, X } from 'lucide-react';
+import { Filter, RotateCcw, ChevronDown, AlertOctagon, AlertTriangle, Info, Shield, Bug, Wrench, Layout, Clock, CheckCircle2, Ban, EyeOff, Terminal, X } from 'lucide-react';
 
 interface FilterPanelProps {
   searchQuery: string;
@@ -15,7 +15,7 @@ interface FilterPanelProps {
   filterCounts: {
     severity: { error: number; warning: number; info: number };
     category: { security: number; quality: number; maintainability: number; architecture: number };
-    status: { pending: number; applied: number };
+    status: { open: number; applied: number; false_positive: number; ignored: number };
     language: Record<string, number>;
   };
   availableLanguages: string[];
@@ -205,7 +205,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 className="flex items-center gap-1.5 cursor-pointer group flex-1"
               >
                 <ChevronDown className={`h-4 w-4 text-text-tertiary transition-transform duration-150 ${expandedFilters.status ? '' : '-rotate-90'}`} />
-                <label className="text-xs text-text-tertiary uppercase font-bold tracking-wider group-hover:text-text-primary transition-colors cursor-pointer">Fix Status</label>
+                <label className="text-xs text-text-tertiary uppercase font-bold tracking-wider group-hover:text-text-primary transition-colors cursor-pointer">Status</label>
               </div>
               {filterStatuses.length > 0 && (
                 <button
@@ -223,8 +223,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             {expandedFilters.status && (
               <div className="flex flex-col gap-1.5 mt-2 animate-fade-in">
                 {[
-                  { id: 'pending', label: 'Pending', key: 'pending', icon: <Clock className="h-4 w-4 text-text-secondary shrink-0" /> },
-                  { id: 'applied', label: 'Applied', key: 'applied', icon: <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> }
+                  { id: 'open', label: 'Open', key: 'open', icon: <Clock className="h-4 w-4 text-text-secondary shrink-0" /> },
+                  { id: 'applied', label: 'Applied', key: 'applied', icon: <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> },
+                  { id: 'false_positive', label: 'False Positive', key: 'false_positive', icon: <Ban className="h-4 w-4 text-warning shrink-0" /> },
+                  { id: 'ignored', label: 'Ignored', key: 'ignored', icon: <EyeOff className="h-4 w-4 text-info shrink-0" /> },
                 ].map(opt => {
                   const isActive = filterStatuses.includes(opt.id);
                   const count = filterCounts.status[opt.key as keyof typeof filterCounts.status] || 0;

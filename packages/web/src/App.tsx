@@ -6,7 +6,7 @@ import { ScanModal } from './components/ScanModal';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { IssuesPage } from './pages/IssuesPage';
-import type { Finding, Report, Config } from './types';
+import type { Finding, FindingStatus, Report, Config } from './types';
 import { useToast } from './hooks/useToast';
 import { useConfig } from './hooks/useConfig';
 import { useReports } from './hooks/useReports';
@@ -81,7 +81,7 @@ export const App: React.FC = () => {
     const counts = {
       severity: { error: 0, warning: 0, info: 0 },
       category: { security: 0, quality: 0, maintainability: 0, architecture: 0 },
-      status: { pending: 0, applied: 0 },
+      status: { open: 0, applied: 0, false_positive: 0, ignored: 0 },
       language: {} as Record<string, number>
     };
 
@@ -96,8 +96,10 @@ export const App: React.FC = () => {
         counts.category[cat as keyof typeof counts.category]++;
       }
 
-      const status = f._applied ? 'applied' : 'pending';
-      counts.status[status]++;
+      const status = f.status || (f._applied ? 'applied' : 'open');
+      if (status in counts.status) {
+        counts.status[status as keyof typeof counts.status]++;
+      }
 
       const lang = getFileLanguage(f.file);
       counts.language[lang] = (counts.language[lang] || 0) + 1;
@@ -137,8 +139,7 @@ export const App: React.FC = () => {
 
       // 4. Status filter
       if (filterStatuses.length > 0) {
-        const isApplied = !!finding._applied;
-        const status = isApplied ? 'applied' : 'pending';
+        const status = finding.status || (finding._applied ? 'applied' : 'open');
         if (!filterStatuses.includes(status)) {
           return false;
         }
@@ -166,6 +167,11 @@ export const App: React.FC = () => {
           targetContent: finding.code_text || finding.message,
           replacementContent: remediationCode,
           codeText: finding.code_text,
+          reportPath: currentReport?._savedAt,
+          findingId: finding.id,
+          findingFile: finding.file,
+          findingLine: finding.line,
+          findingRuleId: finding.rule_id,
         }),
       });
 
@@ -176,7 +182,7 @@ export const App: React.FC = () => {
         if (currentReport && currentReport.findings) {
           const updatedFindings = currentReport.findings.map((f: Finding) => {
             if (f.file === finding.file && f.line === finding.line && f.rule_id === finding.rule_id) {
-              return { ...f, _applied: true };
+              return { ...f, _applied: true, status: 'applied' as FindingStatus };
             }
             return f;
           });
@@ -191,6 +197,37 @@ export const App: React.FC = () => {
       const message = err instanceof Error ? err.message : String(err);
       showToast(`Apply fix failed: ${message}`, 'error');
       return false;
+    }
+  };
+
+  const handleStatusChange = async (finding: Finding, status: FindingStatus) => {
+    // Optimistic update
+    if (currentReport && currentReport.findings) {
+      const updatedFindings = currentReport.findings.map((f: Finding) => {
+        if (f === finding || (f.file === finding.file && f.line === finding.line && f.rule_id === finding.rule_id)) {
+          return { ...f, status, _applied: status === 'applied' };
+        }
+        return f;
+      });
+      setCurrentReport({ ...currentReport, findings: updatedFindings });
+    }
+
+    // Persist via API
+    try {
+      const reportPath = currentReport?._savedAt;
+      const findingId = finding.id;
+      if (reportPath && findingId) {
+        const response = await fetch(`/api/finding/${encodeURIComponent(reportPath)}/${encodeURIComponent(findingId)}/status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status }),
+        });
+        if (!response.ok) {
+          showToast('Failed to update finding status', 'error');
+        }
+      }
+    } catch {
+      showToast('Failed to update finding status', 'error');
     }
   };
 
@@ -341,6 +378,7 @@ export const App: React.FC = () => {
                     availableLanguages={availableLanguages}
                     searchedAndFilteredFindings={searchedAndFilteredFindings}
                     onApplyFix={handleApplyFix}
+                    onStatusChange={handleStatusChange}
                     onReResolve={() => handleReResolve(currentReport)}
                     isReResolving={isReResolving}
                     onSelectFindingIndex={handleSelectFindingIndex}

@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import requests
@@ -17,6 +18,7 @@ from engine.core.ai_resolver import (
     parse_api_response,
     decode_response_text,
     safe_json_parse,
+    _extract_message_content,
 )
 
 logger = get_logger(__name__)
@@ -110,7 +112,16 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
             # Use parse_api_response on raw response text to handle 9router trailing
             # garbage that causes response.json() to raise "Extra data" errors.
             response_data = parse_api_response(decode_response_text(response))
-            content = response_data["choices"][0]["message"]["content"].strip()
+            content = _extract_message_content(response_data)
+            if not content:
+                # Empty content — model refused, used tool calls, or returned non-text.
+                choices = response_data.get("choices") or [{}]
+                finish = (choices[0] or {}).get("finish_reason") or "?"
+                logger.info(
+                    f"AI returned empty content (finish_reason={finish}) "
+                    f"during naming audit for {rel_path}. Skipping."
+                )
+                continue
             issues = safe_json_parse(content)
             
             if isinstance(issues, list):
@@ -137,7 +148,7 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                         "remediation_code": rem
                     }
                     
-        except requests.RequestException as e:
+        except (requests.RequestException, json.JSONDecodeError, ValueError, KeyError, IndexError, TypeError) as e:
             logger.info(f"Error auditing naming for {f_path}: {e}")
 
         # Throttle requests to avoid 429 Too Many Requests from 9router
