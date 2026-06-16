@@ -251,6 +251,23 @@ export const App: React.FC = () => {
     }
   };
 
+  // Reset view state when switching projects or scans
+  const resetView = useCallback(() => {
+    setActiveTab('dashboard');
+    setSelectedFindingIndex(null);
+    setSelectedFilePath(null);
+  }, []);
+
+  const handleSelectProjectWithReset = useCallback((project: string | null) => {
+    resetView();
+    handleSelectProject(project);
+  }, [resetView, handleSelectProject]);
+
+  const handleSelectReportIdWithReset = useCallback((reportId: string | null) => {
+    resetView();
+    setCurrentReportId(reportId);
+  }, [resetView, setCurrentReportId]);
+
   return (
     <AIProviderProvider config={config as Config}>
     <div className="flex flex-col h-screen w-screen overflow-hidden bg-bg-primary">
@@ -280,13 +297,13 @@ export const App: React.FC = () => {
       <Header
         projectName={currentProject}
         projects={projects}
-        onSelectProject={handleSelectProject}
+        onSelectProject={handleSelectProjectWithReset}
         onOpenSettings={() => setIsSettingsOpen(true)}
         onStartScan={(fastScan) => handleStartScan('', false, false, fastScan)}
         onReResolve={() => handleReResolve(currentReport)}
         reports={reports}
         currentReportId={currentReportId}
-        onSelectReportId={setCurrentReportId}
+        onSelectReportId={handleSelectReportIdWithReset}
       />
 
       {/* Main Content Area */}
@@ -294,7 +311,7 @@ export const App: React.FC = () => {
         {!currentProject ? (
           <OnboardingPage
             projects={projects}
-            onSelectProject={handleSelectProject}
+            onSelectProject={handleSelectProjectWithReset}
             onStartScan={handleStartScan}
           />
         ) : (
