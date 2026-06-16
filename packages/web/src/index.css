@@ -174,10 +174,15 @@ body {
 /* Override base theme's height: auto !important on .cm-scroller */
 .diff-viewer .cm-editor {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .diff-viewer .cm-editor .cm-scroller {
   font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
   font-size: 13px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 /* Changed lines in document A (original/deleted) — warm red tint */

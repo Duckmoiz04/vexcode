@@ -405,7 +405,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     // nested scrollbar). The diff renders at its natural content height
     // and the page-level scrollbar (on CodeInspector's center column)
     // reaches the bottom of the diff.
-    <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f]">
+    <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f] max-h-full">
       {/* Header with legend and navigation — sticky so it stays visible
           while the user scrolls the diff inside the FileViewer's 60vh
           content area. z-10 keeps it above the CodeMirror content. */}
