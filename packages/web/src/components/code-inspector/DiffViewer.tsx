@@ -23,8 +23,12 @@ interface DiffViewerProps {
  * `position: absolute; inset-inline-end: 5px` by default. We provide a
  * larger, icon-bearing button; the wrapper is positioned below the chunk
  * by `mergeButtonsTheme` so the buttons don't sit on the code line.
+ *
+ * We set INLINE styles on the button itself so it always renders correctly
+ * regardless of CSS specificity battles with CodeMirror's default theme.
+ * Class names are still applied for additional styling.
  */
-function makeMergeControlButton(
+export function makeMergeControlButton(
   type: 'accept' | 'reject',
   action: (e: MouseEvent) => void,
 ): HTMLElement {
@@ -34,14 +38,45 @@ function makeMergeControlButton(
   btn.className = isAccept ? 'cm-merge-btn cm-merge-btn-accept' : 'cm-merge-btn cm-merge-btn-reject';
   btn.title = isAccept ? 'Accept this change' : 'Reject this change';
 
+  // Inline base styles (always win, regardless of theme)
+  const baseBtn: Record<string, string> = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '5px',
+    padding: '4px 10px',
+    fontSize: '11px',
+    fontWeight: '600',
+    lineHeight: '1.2',
+    borderRadius: '5px',
+    border: '1px solid',
+    cursor: 'pointer',
+    userSelect: 'none',
+    fontFamily: 'inherit',
+    transition: 'all 120ms ease',
+  };
+  const colorStyles: Record<string, string> = isAccept
+    ? {
+        color: 'hsl(142 76% 65%)',
+        backgroundColor: 'hsla(142 76% 36% / 0.25)',
+        borderColor: 'hsla(142 76% 50% / 0.7)',
+      }
+    : {
+        color: 'hsl(350 85% 70%)',
+        backgroundColor: 'hsla(350 85% 55% / 0.2)',
+        borderColor: 'hsla(350 85% 60% / 0.6)',
+      };
+  Object.assign(btn.style, baseBtn, colorStyles);
+
   const iconWrap = document.createElement('span');
   iconWrap.className = 'cm-merge-btn-icon';
+  iconWrap.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;';
   iconWrap.appendChild(isAccept ? makeCheckIcon() : makeXIcon());
   btn.appendChild(iconWrap);
 
   const label = document.createElement('span');
   label.className = 'cm-merge-btn-label';
   label.textContent = isAccept ? 'Apply' : 'Decline';
+  label.style.fontSize = '11px';
   btn.appendChild(label);
 
   btn.addEventListener('mousedown', action);
@@ -96,61 +131,35 @@ function makeXIcon(): HTMLElement {
  * We move the wrapper to `top: 100%` (just below the chunk), keep it
  * `position: absolute` (so it overlays without affecting flow), and add
  * enough padding so the buttons look prominent but stay out of the way.
+ *
+ * Selectors are prefixed with `&` so the theme module adds an ancestor
+ * class (`.cm-editor` etc.), raising specificity above CodeMirror's
+ * default merge theme.
  */
 const mergeButtonsTheme = EditorView.theme({
-  '.cm-deletedChunk': {
+  '& .cm-deletedChunk': {
     // Extra space at the bottom of the deleted chunk so the buttons below
     // it don't visually collide with the next line.
-    paddingBottom: '28px',
+    paddingBottom: '28px !important',
   },
-  '.cm-deletedChunk .cm-chunkButtons': {
-    position: 'absolute',
-    insetInlineEnd: '6px',
-    top: '100%',
+  '& .cm-deletedChunk .cm-chunkButtons': {
+    position: 'absolute !important',
+    insetInlineEnd: '6px !important',
+    top: '100% !important',
     marginTop: '4px',
-    display: 'inline-flex',
+    display: 'inline-flex !important',
     gap: '6px',
     zIndex: '5',
   },
-  '.cm-merge-btn': {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '5px',
-    padding: '4px 10px',
-    fontSize: '11px',
-    fontWeight: '600',
-    lineHeight: '1.2',
-    borderRadius: '5px',
-    border: '1px solid',
-    cursor: 'pointer',
-    userSelect: 'none',
-    fontFamily: 'inherit',
-    transition: 'all 120ms ease',
+  '& .cm-merge-btn': {
+    margin: '0 2px',
   },
-  '.cm-merge-btn-accept': {
-    color: 'hsl(142 76% 60%)',
-    backgroundColor: 'hsla(142 76% 36% / 0.18)',
-    borderColor: 'hsla(142 76% 36% / 0.5)',
-  },
-  '.cm-merge-btn-accept:hover': {
-    backgroundColor: 'hsla(142 76% 36% / 0.32)',
-    borderColor: 'hsla(142 76% 36% / 0.8)',
-  },
-  '.cm-merge-btn-reject': {
-    color: 'hsl(350 85% 65%)',
-    backgroundColor: 'hsla(350 85% 55% / 0.15)',
-    borderColor: 'hsla(350 85% 55% / 0.45)',
-  },
-  '.cm-merge-btn-reject:hover': {
-    backgroundColor: 'hsla(350 85% 55% / 0.28)',
-    borderColor: 'hsla(350 85% 55% / 0.75)',
-  },
-  '.cm-merge-btn-icon': {
+  '& .cm-merge-btn-icon': {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  '.cm-merge-btn-label': {
+  '& .cm-merge-btn-label': {
     fontSize: '11px',
   },
 });

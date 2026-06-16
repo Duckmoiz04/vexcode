@@ -51,6 +51,29 @@ async function openInIDE(filePath: string, line: number): Promise<void> {
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
   finding, aiResolutions, targetPath, onApplyFix, metrics, onSelectFindingIndex, allFindings,
 }) => {
+  // Guard: parent may pass an out-of-range index, in which case `finding` is
+  // undefined. Render a minimal empty state instead of crashing on
+  // `finding.file` etc. (Issue: `Cannot read properties of undefined
+  // (reading 'file')` when navigating past the last finding.)
+  if (!finding) {
+    return (
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg-secondary relative">
+        <div className="flex-1 flex items-center justify-center text-text-tertiary text-sm">
+          No finding selected.
+          {onSelectFindingIndex && (
+            <button
+              type="button"
+              onClick={() => onSelectFindingIndex(null)}
+              className="ml-3 px-3 py-1 text-xs rounded border border-card-border hover:bg-bg-tertiary"
+            >
+              Back to list
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   const [isApplying, setIsApplying] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const activeLineRef = useRef<HTMLDivElement>(null);

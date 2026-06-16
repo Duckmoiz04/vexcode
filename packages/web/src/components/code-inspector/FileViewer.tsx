@@ -111,6 +111,23 @@ function reindentToTarget(replacementLines: string[], targetIndent: string): str
   });
 }
 
+/**
+ * Compute the list of sibling error line numbers in the same file as the
+ * active finding. Siblings are findings in the same file at DIFFERENT lines
+ * from the active one. Pure function — exported for unit testing.
+ */
+export function computeSiblingErrorLines(
+  allFindings: Finding[] | undefined,
+  activeFile: string,
+  activeLine: number,
+): number[] {
+  if (!allFindings || allFindings.length === 0) return [];
+  return allFindings
+    .filter((f) => f.file === activeFile && f.line !== activeLine)
+    .map((f) => f.line)
+    .filter((n) => Number.isFinite(n) && n > 0);
+}
+
 export const FileViewer: React.FC<FileViewerProps> = ({
   finding,
   fileContent,
