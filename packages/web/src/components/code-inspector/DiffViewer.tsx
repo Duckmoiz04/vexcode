@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { EditorState, Compartment } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers } from '@codemirror/view';
 import { defaultKeymap } from '@codemirror/commands';
-import { unifiedMergeView, getChunks, goToNextChunk, goToPreviousChunk } from '@codemirror/merge';
+import { unifiedMergeView, getChunks, goToNextChunk, goToPreviousChunk, acceptChunk, rejectChunk } from '@codemirror/merge';
 import type { Extension } from '@codemirror/state';
 import { baseEditorTheme } from '../../utils/themes.ts';
 import { getLanguageExtension } from './CodeMirrorEditor.tsx';
@@ -18,17 +18,12 @@ interface DiffViewerProps {
 }
 
 /**
- * Build a custom Accept/Reject button for each diff chunk. CodeMirror wraps
- * the returned element in a `.cm-chunkButtons` container that is
- * `position: absolute; inset-inline-end: 5px` by default. We provide a
- * larger, icon-bearing button; the wrapper is positioned INLINE-RIGHT (next
- * to the deleted chunk, vertically centered) by `mergeButtonsTheme` so the
- * buttons never add an extra empty line below the chunk — critical for
- * single-line fixes where the chunk itself is only one line tall.
+ * Build a custom Accept/Reject button for each diff chunk.
  *
- * We set INLINE styles on the button itself so it always renders correctly
- * regardless of CSS specificity battles with CodeMirror's default theme.
- * Class names are still applied for additional styling.
+ * NOTE: Inline CodeMirror merge buttons are now disabled (`mergeControls: false`).
+ * Accept/Reject actions have been moved to the sticky DiffViewer header so they
+ * never overlap the code. This factory is kept exported for the unit-test suite
+ * and as a reference if the inline buttons are re-enabled later.
  */
 export function makeMergeControlButton(
   type: 'accept' | 'reject',
@@ -124,47 +119,8 @@ function makeXIcon(): HTMLElement {
   return svg;
 }
 
-/**
- * Override the default CodeMirror merge-control styling.
- *
- * This is intentionally MINIMAL — we want the original CodeMirror
- * `Accept` / `Reject` text buttons (not the custom icon+label version),
- * just slightly bigger so they're easier to read. The only non-cosmetic
- * override is `position: relative !important` on `.cm-deletedChunk`,
- * which is the critical fix for the well-known "buttons float to top of
- * editor" bug. See `docs/codemirror-merge-wiki.md` § 4 "Known Bug:
- * `.cm-deletedChunk` is missing `position: relative`".
- */
-const mergeButtonsTheme = EditorView.theme({
-  '& .cm-deletedChunk': {
-    // CRITICAL: make the chunk a positioning context so the absolutely-
-    // positioned `.cm-chunkButtons` anchors to the chunk, not the editor.
-    position: 'relative !important',
-    // Reserve space for the buttons that sit BELOW the chunk. The merge
-    // package's default button placement is `top: 100%` of the chunk
-    // (i.e., immediately below the last deleted line). Without this
-    // padding, the buttons would visually overlap the next line.
-    paddingBottom: '24px',
-  },
-  '& .cm-deletedChunk .cm-chunkButtons': {
-    // Default-style placement: immediately below the chunk, right-aligned.
-    position: 'absolute !important',
-    insetInlineEnd: '6px !important',
-    top: '100% !important',
-    marginTop: '4px',
-    display: 'inline-flex !important',
-    gap: '4px',
-  },
-  // The default Accept/Reject buttons (from `mergeControls: true`) are
-  // tiny — `font-size: 11px`, `padding: 2px 8px`, `border-radius: 3px`.
-  // Bump them up a notch so they're easier to read while still feeling
-  // like the default CodeMirror style.
-  '& .cm-deletedChunk button': {
-    padding: '3px 10px !important',
-    fontSize: '12px !important',
-    fontWeight: '500 !important',
-  },
-});
+// mergeButtonsTheme removed — inline CodeMirror buttons are disabled.
+// Per-chunk Accept/Reject now live in the sticky header.
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
@@ -178,6 +134,11 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
   const viewRef = useRef<EditorView | null>(null);
   const themeCompartmentRef = useRef(new Compartment());
   const [chunkCount, setChunkCount] = useState(0);
+  // Position of the "current" chunk (the one the cursor is nearest to).
+  // Tracked via the Prev/Next handlers; resets to 0 when the editor is
+  // recreated (new filePath or new content). Used for the "1/3" indicator
+  // in the header.
+  const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
 
   // ── Effect 1: Create / recreate editor when filePath or content changes ─
   // FIX: removed themeExtension from deps to prevent editor destroy on theme change.
@@ -192,6 +153,11 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
       viewRef.current = null;
     }
 
+    // New editor → reset current-chunk index. Without this, switching
+    // to a new file would keep the old `currentChunkIndex` and could
+    // show "5/3" in the header.
+    setCurrentChunkIndex(0);
+
     const lang = getLanguageExtension(filePath);
     const langExt = Array.isArray(lang) ? lang : lang ? [lang] : [];
 
@@ -204,17 +170,16 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
       // Keep deleted lines syntax-highlighted so the diff stays readable
       // (otherwise deletions appear as plain gray blocks).
       syntaxHighlightDeletions: true,
-      // Use the default CodeMirror Accept/Reject text buttons.
-      // (Swap to `makeMergeControlButton` if you want the styled
-      // icon+label version — placement would need to change too.)
-      // Placement and sizing are controlled by `mergeButtonsTheme` above.
+      // Inline Accept/Reject buttons DISABLED — they overlap the code and
+      // feel visually broken. Per-chunk and bulk actions now live in the
+      // sticky DiffViewer header (Accept/Reject + Accept all/Reject all).
+      mergeControls: false,
     });
 
     const extensions: Extension[] = [
       keymap.of(defaultKeymap),
       themeCompartmentRef.current.of(themeExtension),
       baseEditorTheme,
-      mergeButtonsTheme,
       lineNumbers(),
       EditorView.editable.of(false),
       EditorState.readOnly.of(true),
@@ -264,6 +229,8 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
       view.destroy();
       viewRef.current = null;
     };
+    // Reset current-chunk index whenever the editor is recreated.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [originalCode, remediationCode, filePath]);   // ← NO themeExtension
 
   // ── Effect 2: Update theme live (no editor destroy) ─────────────────────
@@ -285,32 +252,120 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     // goToNextChunk is a StateCommand — signature is ({state, dispatch}).
     // The previous version called it with just `view`, so it got
     // state=undefined and silently did nothing. Pass the proper pair.
+    const total = Math.max(chunkCount, 1);
     try {
       const moved = goToNextChunk({
         state: view.state,
         dispatch: view.dispatch.bind(view),
       });
-      if (!moved) {
-        // Wrapped to first chunk — focus the view so the scrollIntoView effect lands
+      if (moved) {
+        // Advance position indicator; wrap to 0 at the end.
+        setCurrentChunkIndex((prev) => (prev + 1) % total);
+      } else {
+        // Wrapped to first chunk — focus the view so scrollIntoView lands
+        setCurrentChunkIndex(0);
         view.focus();
       }
     } catch {
       // No more chunks or view not ready
     }
-  }, []);
+  }, [chunkCount]);
 
   const handlePreviousChunk = useCallback(() => {
     const view = viewRef.current;
     if (!view) return;
+    const total = Math.max(chunkCount, 1);
     try {
       const moved = goToPreviousChunk({
         state: view.state,
         dispatch: view.dispatch.bind(view),
       });
-      if (!moved) view.focus();
+      if (moved) {
+        setCurrentChunkIndex((prev) => (prev - 1 + total) % total);
+      } else {
+        setCurrentChunkIndex(Math.max(total - 1, 0));
+        view.focus();
+      }
     } catch {
       // No more chunks or view not ready
     }
+  }, [chunkCount]);
+
+  // ── Per-chunk Accept / Reject ────────────────────────────────────────────
+  // Act on the chunk at `currentChunkIndex`. After accepting or rejecting,
+  // the chunk disappears — remaining chunks shift to fill the gap, so we
+  // clamp `currentChunkIndex` to the new (smaller) chunk count.
+
+  const handleAcceptCurrent = useCallback(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    try {
+      const chunks = getChunks(view.state).chunks;
+      const idx = Math.min(currentChunkIndex, chunks.length - 1);
+      if (idx >= 0 && chunks[idx]) {
+        acceptChunk(view, chunks[idx].fromB);
+      }
+    } catch {
+      // Best effort
+    }
+    setCurrentChunkIndex(prev => Math.max(prev, 0));
+  }, [currentChunkIndex]);
+
+  const handleRejectCurrent = useCallback(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    try {
+      const chunks = getChunks(view.state).chunks;
+      const idx = Math.min(currentChunkIndex, chunks.length - 1);
+      if (idx >= 0 && chunks[idx]) {
+        rejectChunk(view, chunks[idx].fromB);
+      }
+    } catch {
+      // Best effort
+    }
+    setCurrentChunkIndex(prev => Math.max(prev, 0));
+  }, [currentChunkIndex]);
+
+  // ── Bulk Accept / Reject ─────────────────────────────────────────────────
+  // We process chunks from END → START so each `acceptChunk` / `rejectChunk`
+  // call doesn't shift the positions of chunks that haven't been processed
+  // yet. (Processing START → END would also work if we recomputed chunks
+  // after each call, but iterating backward is simpler and equivalent.)
+  //
+  // `acceptChunk(view, pos)` accepts the chunk at position `pos` in the
+  // new (B) document and keeps the new content. `rejectChunk` keeps the
+  // old content instead. Both dispatch a transaction that the
+  // useEffect's listener picks up to recompute `chunkCount` — which will
+  // become 0 once all chunks are processed, at which point the header
+  // automatically hides the controls (see `chunkCount > 0` guard).
+
+  const handleAcceptAll = useCallback(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    try {
+      const chunks = getChunks(view.state).chunks;
+      // Process from end to start to avoid position shifts
+      for (let i = chunks.length - 1; i >= 0; i--) {
+        acceptChunk(view, chunks[i].fromB);
+      }
+    } catch {
+      // Best effort — if any chunk fails, leave the rest for the user
+    }
+    setCurrentChunkIndex(0);
+  }, []);
+
+  const handleRejectAll = useCallback(() => {
+    const view = viewRef.current;
+    if (!view) return;
+    try {
+      const chunks = getChunks(view.state).chunks;
+      for (let i = chunks.length - 1; i >= 0; i--) {
+        rejectChunk(view, chunks[i].fromB);
+      }
+    } catch {
+      // Best effort
+    }
+    setCurrentChunkIndex(0);
   }, []);
 
   // ── Keyboard shortcuts ───────────────────────────────────────────────────
@@ -351,8 +406,10 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     // and the page-level scrollbar (on CodeInspector's center column)
     // reaches the bottom of the diff.
     <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f]">
-      {/* Header with legend and navigation */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
+      {/* Header with legend and navigation — sticky so it stays visible
+          while the user scrolls the diff inside the FileViewer's 60vh
+          content area. z-10 keeps it above the CodeMirror content. */}
+      <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
         <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
           <span className="flex items-center gap-1">
             <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[hsla(350,85%,55%,0.4)]" />
@@ -364,30 +421,80 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
             Suggested Fix
           </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {chunkCount > 0 && (
-            <span className="text-[10px] text-text-tertiary font-mono">
-              {chunkCount} change{chunkCount > 1 ? 's' : ''}
-            </span>
+            <>
+              <span className="text-[10px] text-text-tertiary font-mono">
+                {chunkCount} change{chunkCount > 1 ? 's' : ''}
+              </span>
+              <span className="text-text-quaternary text-[10px]">|</span>
+              {/* Position indicator: "current / total" (1-based). Clamp to
+                  bounds just in case currentChunkIndex briefly exceeds
+                  chunkCount (e.g., a chunk is accepted between renders). */}
+              <span className="text-[10px] text-text-secondary font-mono">
+                {Math.min(currentChunkIndex + 1, chunkCount)}/{chunkCount}
+              </span>
+              <span className="text-text-quaternary text-[10px]">|</span>
+              <button
+                onClick={handlePreviousChunk}
+                disabled={chunkCount === 0}
+                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-bg-tertiary/60 border border-card-border/40 hover:bg-bg-tertiary disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary transition-all"
+                title="Previous Change (Alt+&uarr;)"
+              >
+                <ChevronLeft size={12} />
+                Prev
+              </button>
+              <button
+                onClick={handleNextChunk}
+                disabled={chunkCount === 0}
+                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-bg-tertiary/60 border border-card-border/40 hover:bg-bg-tertiary disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary transition-all"
+                title="Next Change (Alt+&darr;)"
+              >
+                Next
+                <ChevronRight size={12} />
+              </button>
+              <span className="text-text-quaternary text-[10px]">|</span>
+              {/* Per-chunk Accept / Reject — act on currentChunkIndex */}
+              <button
+                onClick={handleAcceptCurrent}
+                disabled={chunkCount === 0}
+                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-emerald-900/30 border border-emerald-700/40 hover:bg-emerald-900/50 text-emerald-300 hover:text-emerald-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                title="Accept the currently selected change"
+              >
+                <Check size={12} />
+                Accept
+              </button>
+              <button
+                onClick={handleRejectCurrent}
+                disabled={chunkCount === 0}
+                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-red-900/30 border border-red-700/40 hover:bg-red-900/50 text-red-300 hover:text-red-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                title="Reject the currently selected change"
+              >
+                <X size={12} />
+                Reject
+              </button>
+              <span className="text-text-quaternary text-[10px]">|</span>
+              {/* Bulk Accept all / Reject all */}
+              <button
+                onClick={handleAcceptAll}
+                disabled={chunkCount === 0}
+                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-emerald-900/30 border border-emerald-700/40 hover:bg-emerald-900/50 text-emerald-300 hover:text-emerald-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                title="Accept all changes in this file"
+              >
+                <Check size={12} />
+                Accept all
+              </button>
+              <button
+                onClick={handleRejectAll}
+                disabled={chunkCount === 0}
+                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-red-900/30 border border-red-700/40 hover:bg-red-900/50 text-red-300 hover:text-red-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                title="Reject all changes in this file (keep original)"
+              >
+                <X size={12} />
+                Reject all
+              </button>
+            </>
           )}
-          <button
-            onClick={handlePreviousChunk}
-            disabled={chunkCount === 0}
-            className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-bg-tertiary/60 border border-card-border/40 hover:bg-bg-tertiary disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary transition-all"
-            title="Previous Change (Alt+&uarr;)"
-          >
-            <ChevronLeft size={12} />
-            Prev
-          </button>
-          <button
-            onClick={handleNextChunk}
-            disabled={chunkCount === 0}
-            className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-bg-tertiary/60 border border-card-border/40 hover:bg-bg-tertiary disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary transition-all"
-            title="Next Change (Alt+&darr;)"
-          >
-            Next
-            <ChevronRight size={12} />
-          </button>
         </div>
       </div>
 

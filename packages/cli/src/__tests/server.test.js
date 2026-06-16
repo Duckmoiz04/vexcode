@@ -410,7 +410,7 @@ describe('Express REST Server API', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toContain('outside the workspace directory');
+      expect(res.body.error).toContain('outside the allowed directory');
     });
 
     it('should return 404 when file not found', async () => {
@@ -467,7 +467,7 @@ describe('Express REST Server API', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toContain('outside the workspace directory');
+      expect(res.body.error).toContain('outside the allowed directory');
     });
 
     it('should return 404 when file does not exist', async () => {
@@ -735,7 +735,7 @@ describe('Express REST Server API', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toContain('outside the workspace directory');
+      expect(res.body.error).toContain('outside the allowed directory');
     });
   });
 

@@ -6,7 +6,6 @@ import { useChat } from '../hooks/useChat';
 import { useAIProvider } from '../context/AIProviderContext';
 import { FileViewer } from './code-inspector/FileViewer';
 import { ChatPanel } from './code-inspector/ChatPanel';
-import { ApplyFixButton } from './code-inspector/ApplyFixButton';
 import { CodeInspectorHeader } from './code-inspector/CodeInspectorHeader';
 
 interface CodeInspectorProps {
@@ -34,11 +33,11 @@ function getRelativePath(absolutePath: string, targetPath: string | null): strin
   return abs;
 }
 
-async function openInIDE(filePath: string, line: number): Promise<void> {
+async function openInIDE(filePath: string, line: number, baseDir: string | null): Promise<void> {
   try {
     const r = await fetch('/api/open-in-ide', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filePath, line }),
+      body: JSON.stringify({ filePath, line, baseDir }),
     });
     const d = await r.json();
     if (!d.success) { console.error('Failed to open in IDE:', d.error); alert(d.error || 'Failed to open in IDE'); }
@@ -49,7 +48,7 @@ async function openInIDE(filePath: string, line: number): Promise<void> {
 }
 
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
-  finding, aiResolutions, targetPath, onApplyFix, metrics, onSelectFindingIndex, allFindings,
+  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings,
 }) => {
   // Guard: parent may pass an out-of-range index, in which case `finding` is
   // undefined. Render a minimal empty state instead of crashing on
@@ -74,13 +73,12 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
     );
   }
 
-  const [isApplying, setIsApplying] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const activeLineRef = useRef<HTMLDivElement>(null);
 
   const { selectedProvider, apiKey, apiBaseUrl, aiModel, aiTemperature, aiMaxTokens } = useAIProvider();
 
-  const { content: fileContent, isLoading: isFileLoading, error: fileError } = useFileContent(finding.file);
+  const { content: fileContent, isLoading: isFileLoading, error: fileError } = useFileContent(finding.file, targetPath);
   useAutoScroll(activeLineRef as React.RefObject<HTMLElement>, finding.line, !isFileLoading);
 
   const resolution = aiResolutions?.[finding.rule_id];
@@ -88,13 +86,6 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const { chatMessages, chatInput, setChatInput, isChatLoading, handleSendChat } = useChat({
     finding, resolution, selectedProvider, apiKey, apiBaseUrl, aiModel, aiTemperature, aiMaxTokens,
   });
-
-  const handleApply = async () => {
-    if (!resolution?.remediation_code) return;
-    setIsApplying(true);
-    await onApplyFix(finding, resolution.remediation_code);
-    setIsApplying(false);
-  };
 
   const relPath = getRelativePath(finding.file, targetPath);
 
@@ -104,7 +95,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
         finding={finding} isChatOpen={isChatOpen}
         onToggleChat={() => setIsChatOpen(!isChatOpen)}
         onBack={onSelectFindingIndex ? () => onSelectFindingIndex(null) : undefined}
-        onOpenInIDE={() => openInIDE(finding.file, finding.line)}
+        onOpenInIDE={() => openInIDE(finding.file, finding.line, targetPath)}
       />
 
       <div className="flex-1 flex overflow-y-auto min-h-0 relative">
@@ -199,16 +190,6 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
               allFindings={allFindings}
             />
           </div>
-
-          {/* ApplyFixButton pinned to bottom if visible */}
-          {resolution?.remediation_code && !finding._applied && (
-            <div className="shrink-0 px-6 pb-6">
-              <ApplyFixButton
-                hasRemediation={!!resolution?.remediation_code} isApplied={!!finding._applied}
-                isApplying={isApplying} onApply={handleApply}
-              />
-            </div>
-          )}
         </div>
 
         <ChatPanel

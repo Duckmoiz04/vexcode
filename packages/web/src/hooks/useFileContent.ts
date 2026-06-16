@@ -6,7 +6,7 @@ interface FileContentResult {
   error: string | null;
 }
 
-export function useFileContent(filePath: string | null): FileContentResult {
+export function useFileContent(filePath: string | null, baseDir: string | null = null): FileContentResult {
   const [content, setContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,8 +35,13 @@ export function useFileContent(filePath: string | null): FileContentResult {
       setError(null);
 
       try {
+        const params = new URLSearchParams();
+        params.set('path', filePath);
+        if (baseDir) {
+          params.set('baseDir', baseDir);
+        }
         const response = await fetch(
-          `/api/file-content?path=${encodeURIComponent(filePath)}`,
+          `/api/file-content?${params.toString()}`,
           { signal: controller.signal }
         );
         const data = await response.json();
@@ -47,7 +52,10 @@ export function useFileContent(filePath: string | null): FileContentResult {
           setContent(data.content);
         } else {
           setContent('');
-          setError('Failed to load file content');
+          // Surface the backend's specific error message (e.g. "File not found
+          // at ...") instead of a generic string, so the user (and we) can
+          // diagnose path-resolution issues.
+          setError(data.error || 'Failed to load file content');
         }
       } catch (err: unknown) {
         if (cancelled) return;
@@ -67,7 +75,7 @@ export function useFileContent(filePath: string | null): FileContentResult {
       cancelled = true;
       controller.abort();
     };
-  }, [filePath]);
+  }, [filePath, baseDir]);
 
   return { content, isLoading, error };
 }

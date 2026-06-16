@@ -237,12 +237,18 @@ export const FileViewer: React.FC<FileViewerProps> = ({
           <ThemePicker current={currentTheme} onChange={setCurrentTheme} />
         </div>
       </div>
-      {/* Content area — natural height. No `flex-1 min-h-0 overflow-hidden`
-          so the editor renders at its natural content height and the
-          page-level scrollbar (on the center column) can reach the bottom
-          of the file. The dark `bg-[#0a0a0f]` extends to the full content
-          height because the content area is natural height. */}
-      <div className="font-mono leading-[1.5] scrollbar-thin select-text bg-[#0a0a0f] border-t border-card-border/40 flex flex-col">
+      {/* Content area — max-h with internal scroll.
+          The page-level scroll (on CodeInspector's center column) handles
+          the OVERALL page navigation (top sections + ApplyFixButton).
+          This content area is capped at 60vh with `overflow-y-auto` so
+          the diff/source editor doesn't make the page absurdly tall for
+          long files. The user has two scroll contexts:
+            1. Page scroll: navigate between top sections, code view, and
+               ApplyFixButton
+            2. Code view scroll: navigate within the diff/file
+          The `bg-[#0a0a0f]` extends to the full content height because
+          the content area is now constrained by max-h, not natural height. */}
+      <div className="max-h-[60vh] min-h-0 overflow-y-auto font-mono leading-[1.5] scrollbar-thin select-text bg-[#0a0a0f] border-t border-card-border/40 flex flex-col">
         {renderContent()}
       </div>
     </div>
