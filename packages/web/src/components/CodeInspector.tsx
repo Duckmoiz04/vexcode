@@ -216,6 +216,36 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             {/* AI Suggestion */}
             <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-2">
               <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AI Suggestion</h4>
+
+              {(resolution?.ai_status === 'failed' || resolution?.ai_error) && (
+                <div className="flex items-start gap-2 p-2.5 rounded-md border border-danger/30 bg-danger/5 text-xs text-danger">
+                  <span className="mt-0.5 shrink-0">⚠</span>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-semibold">AI resolution failed</span>
+                    <span>{resolution?.ai_error || 'Unknown error'}</span>
+                  </div>
+                </div>
+              )}
+
+              {resolution?.ai_status === 'fallback_mock' && (
+                <div className="flex items-start gap-2 p-2.5 rounded-md border border-warning/30 bg-warning/5 text-xs text-warning">
+                  <span className="mt-0.5 shrink-0">ℹ</span>
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-semibold">Mock fallback</span>
+                    <span>AI provider not configured. Showing generic suggestions.</span>
+                  </div>
+                </div>
+              )}
+
+              {resolution?.ai_status === 'success' && resolution?.model && (
+                <div className="flex items-center gap-2 p-2 rounded-md border border-success/20 bg-success/5 text-[10px] text-text-tertiary">
+                  <span>Resolved by <span className="font-mono font-semibold text-accent">{resolution.model}</span></span>
+                  {resolution?.generated_at && (
+                    <span className="ml-auto">{new Date(resolution.generated_at).toLocaleString()}</span>
+                  )}
+                </div>
+              )}
+
               <p className="text-xs text-text-secondary leading-relaxed">{resolution?.suggestion || 'No AI suggestion available.'}</p>
             </div>
           </div>

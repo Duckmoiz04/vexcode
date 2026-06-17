@@ -42,9 +42,21 @@ export interface Finding {
   _applied?: boolean;
 }
 
+export type AIStatus = 'success' | 'failed' | 'fallback_mock';
+
 export interface AiResolution {
   suggestion: string;
   remediation_code?: string;
+  /** Whether the AI call succeeded, failed, or fell back to a mock. */
+  ai_status?: AIStatus;
+  /** Error message when ai_status === 'failed'. */
+  ai_error?: string;
+  /** The model name that generated this resolution. */
+  model?: string;
+  /** ISO 8601 timestamp when this resolution was generated. */
+  generated_at?: string;
+  /** The target file path this remediation applies to (when narrow). */
+  remediation_target_file?: string;
 }
 
 export interface GitState {
