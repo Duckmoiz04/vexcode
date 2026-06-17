@@ -44,6 +44,16 @@ vi.mock('../bridge.js', () => ({
     existing.reResolved = true;
     fs.writeFileSync(reportPath, JSON.stringify(existing), 'utf8');
     return Promise.resolve();
+  }),
+  runConfigCli: vi.fn().mockImplementation((command, payload) => {
+    if (command === 'dump') {
+      return Promise.resolve({
+        enabled: false,
+        providers: {},
+        agents: {}
+      });
+    }
+    return Promise.resolve({ success: true });
   })
 }));
 
