@@ -138,6 +138,11 @@ class TestSanitizeRemediationCode:
 class TestGetAiConfig:
     """Tests for get_ai_config() with various providers."""
 
+    @pytest.fixture(autouse=True)
+    def _reset_ai_config_cache(self, mocker):
+        """Reset the config cache before each test so env var patches take effect."""
+        mocker.patch("engine.config.ai_config._PROVIDERS", None)
+
     def test_no_provider_returns_empty(self, mocker):
         mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch.dict(os.environ, {}, clear=True)
@@ -218,6 +223,11 @@ class TestGetAiConfig:
 
 class TestResolveFindings:
     """Tests for resolve_findings()."""
+
+    @pytest.fixture(autouse=True)
+    def _reset_ai_config_cache(self, mocker):
+        """Reset the config cache before each test so env var patches take effect."""
+        mocker.patch("engine.config.ai_config._PROVIDERS", None)
 
     def test_with_mocked_ai_response(self, mocker):
         """resolve_findings with mock HTTP response returns parsed resolutions."""

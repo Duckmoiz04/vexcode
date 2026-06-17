@@ -27,18 +27,55 @@ resolve_timeout_seconds = 90
 naming_timeout_seconds = 90
 request_cooldown_seconds = 8.0
 
-[ai.providers.ninerouter]
+# ---------------------------------------------------------------------------
+# AI Multi-Provider Configuration
+# ---------------------------------------------------------------------------
+# Master toggle — when false, all AI features are disabled.
+[ai]
+enabled = false
+
+# Provider definitions.
+# Each provider stores its *non-secret* defaults here.
+# API keys always go in ~/.vexcode/.env under {PREFIX}_API_KEY (e.g. OPENAI_API_KEY).
+[ai.providers."9router"]
+enabled = false
 model = ""
 requires_key = false
 
 [ai.providers.openai]
+enabled = true
 model = "gpt-4"
 requires_key = true
 
 [ai.providers.google]
+enabled = true
 model = "gemini-pro"
 requires_key = true
 
 [ai.providers.anthropic]
+enabled = true
 model = "claude-3-haiku"
 requires_key = true
+
+[ai.providers.nvidia]
+enabled = false
+model = ""
+requires_key = true
+
+# Agent definitions.
+# Each agent is a task type: which provider+model to use and whether it is active.
+# The provider value must match a key under [ai.providers].
+[ai.agents.suggest]
+provider = "openai"
+model = "gpt-4"
+enabled = true
+
+[ai.agents.bug_scan]
+provider = "openai"
+model = "gpt-4"
+enabled = false
+
+[ai.agents.naming_audit]
+provider = "openai"
+model = "gpt-4"
+enabled = true
