@@ -25,7 +25,18 @@ class TestScanner:
 
     def test_run_scan_mock_returns_mock_findings(self):
         result = run_scan("/fake/target", use_mock=True)
-        assert result["findings"] == MOCK_FINDINGS
+        # MOCK_FINDINGS are enriched with id, category, language + severity normalized to lowercase
+        assert len(result["findings"]) == len(MOCK_FINDINGS)
+        for rf, mf in zip(result["findings"], MOCK_FINDINGS):
+            assert rf["file"] == mf["file"]
+            assert rf["line"] == mf["line"]
+            assert rf["rule_id"] == mf["rule_id"]
+            assert rf["message"] == mf["message"]
+            assert rf["code_text"] == mf["code_text"]
+            assert rf["severity"] == mf["severity"].lower()
+            assert isinstance(rf.get("id"), str) and len(rf["id"]) > 0
+            assert isinstance(rf.get("category"), str) and len(rf["category"]) > 0
+            assert isinstance(rf.get("language"), str) and len(rf["language"]) > 0
 
     def test_mock_findings_structure(self):
         assert isinstance(MOCK_FINDINGS, list)

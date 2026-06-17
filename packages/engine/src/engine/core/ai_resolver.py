@@ -1,7 +1,8 @@
 import os, json, random, time, requests
+import concurrent.futures
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, Any, List, Tuple, Optional, Literal
 
 from engine.utils.logger import get_logger
 from engine.config.ai_config import _reload_env_file, get_ai_config  # noqa: F401 — re-exported for backward compat
@@ -9,26 +10,57 @@ from engine.config.ai_prompts import SYSTEM_PROMPT_RESOLVE
 
 logger = get_logger(__name__)
 
+AIStatus = Literal["success", "failed", "fallback_mock"]
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _make_resolution(
+    suggestion: str,
+    remediation_code: str = "",
+    *,
+    ai_status: str = "success",
+    ai_error: str = "",
+    model: str = "",
+    remediation_target_file: str = "",
+) -> Dict[str, Any]:
+    return {
+        "suggestion": suggestion,
+        "remediation_code": remediation_code,
+        "ai_status": ai_status,
+        "ai_error": ai_error,
+        "model": model,
+        "generated_at": _now_iso(),
+        "remediation_target_file": remediation_target_file,
+    }
+
+
 # Standard mock AI resolutions map
 MOCK_AI_RESOLUTIONS = {
-    "python.lang.security.audit.dangerous-exec": {
-        "suggestion": "Avoid using exec(). Use structured functions or parse inputs securely.",
-        "remediation_code": "import subprocess\n# Avoid exec(user_input)\n# Use safe subprocess with arguments\nsubprocess.run(['echo', user_input])"
-    },
-    "python.lang.security.audit.hardcoded-password": {
-        "suggestion": "Load password from environment variables instead of hardcoding it in the connection string.",
-        "remediation_code": "import os\npassword = os.environ.get('DB_PASSWORD')\n# conn = connect(password=password)"
-    },
-    "maintainability.naming.obscure": {
-        "suggestion": "Đổi tên hàm 'do_it' thành 'process_user_data' và tham số 'x' thành 'user_input' để tăng tính rõ nghĩa và dễ bảo trì.",
-        "remediation_code": "def process_user_data(user_input):"
-    }
+    "python.lang.security.audit.dangerous-exec": _make_resolution(
+        suggestion="Avoid using exec(). Use structured functions or parse inputs securely.",
+        remediation_code="import subprocess\n# Avoid exec(user_input)\n# Use safe subprocess with arguments\nsubprocess.run(['echo', user_input])",
+        model="mock",
+    ),
+    "python.lang.security.audit.hardcoded-password": _make_resolution(
+        suggestion="Load password from environment variables instead of hardcoding it in the connection string.",
+        remediation_code="import os\npassword = os.environ.get('DB_PASSWORD')\n# conn = connect(password=password)",
+        model="mock",
+    ),
+    "maintainability.naming.obscure": _make_resolution(
+        suggestion="Đổi tên hàm 'do_it' thành 'process_user_data' và tham số 'x' thành 'user_input' để tăng tính rõ nghĩa và dễ bảo trì.",
+        remediation_code="def process_user_data(user_input):",
+        model="mock",
+    ),
 }
 
 from engine.config.constants import (
     MAX_CODE_CHARS, MAX_NAMING_AUDIT_FILES, MAX_RESOLVE_FINDINGS,
     AI_RESOLVE_MAX_TOKENS, NAMING_AUDIT_SLEEP, AI_MAX_RETRIES,
     AI_RETRY_BASE_WAIT_SECONDS, AI_RESOLVE_TIMEOUT_SECONDS, AI_NAMING_TIMEOUT_SECONDS,
+    AI_PARALLEL_WORKERS,
 )
 
 # Strip comment-only "remediation" so frontend doesn't render fake fixes.
@@ -208,10 +240,12 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
             if rule_id in MOCK_AI_RESOLUTIONS:
                 resolutions[rule_id] = MOCK_AI_RESOLUTIONS[rule_id]
             else:
-                resolutions[rule_id] = {
-                    "suggestion": f"Avoid this pattern for rule {rule_id}. Ensure input validation and standard security practices.",
-                    "remediation_code": f"# Remediation for {rule_id}\n# Please review and replace dangerous code patterns."
-                }
+                resolutions[rule_id] = _make_resolution(
+                    suggestion=f"Avoid this pattern for rule {rule_id}. Ensure input validation and standard security practices.",
+                    remediation_code=f"# Remediation for {rule_id}\n# Please review and replace dangerous code patterns.",
+                    ai_status="fallback_mock",
+                    model="mock",
+                )
         return resolutions
 
     # Per-rule sequential: 1 rule/request avoids huge payloads that timeout (60s+).
@@ -260,104 +294,147 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
     if not unique_findings:
         return {}
 
-    logger.info(f"Querying AI completions endpoint ({base_url}) using model '{model}'...")
+    logger.info(f"Querying AI completions endpoint ({base_url}) using model '{model}' with {AI_PARALLEL_WORKERS} parallel workers...")
 
     resolutions: Dict[str, Any] = {}
+    total = len(unique_findings)
 
-    for idx, item in enumerate(unique_findings):
-        rule_id = item["rule_id"]
-        alias = f"r{idx}"  # Short alias for long rule_ids
-
-        user_prompt = (
-            f"Rule ID alias: {alias}\n"
-            f"Full Rule: {rule_id}\n"
-            f"File: {item['file']} (Line {item['line']})\n"
-            f"Code: {item.get('code_text', 'N/A')}\n"
-            f"Message: {item['message']}\n"
-        )
-        surrounding = item.get("surrounding_code")
-        if surrounding:
-            user_prompt += f"Surrounding code (target line marked with >>>>):\n{surrounding}\n"
-        ast_ctx = item.get("ast_context")
-        if ast_ctx:
-            callers = ", ".join(c.get("name", "?") for c in ast_ctx.get("callers", [])) or "none"
-            impact = ast_ctx.get("impact", {})
-            user_prompt += (
-                f"Symbol: {ast_ctx.get('symbol_name')} ({ast_ctx.get('kind')})\n"
-                f"Callers: {callers}\n"
-                f"Risk: {impact.get('risk', 'UNKNOWN')}, "
-                f"Impacted: {impact.get('impactedCount', 0)}\n"
-            )
-
-        payload = {
-            "model": model,
-            "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT_RESOLVE},
-                {"role": "user", "content": user_prompt}
-            ],
-            "temperature": 0.1,
-            "max_tokens": AI_RESOLVE_MAX_TOKENS
+    with concurrent.futures.ThreadPoolExecutor(max_workers=AI_PARALLEL_WORKERS) as executor:
+        futures = {
+            executor.submit(_call_ai_for_rule, item, url, headers, model, idx, total): idx
+            for idx, item in enumerate(unique_findings)
         }
-
-        try:
-            response = post_with_retry(url, headers, payload, timeout=AI_RESOLVE_TIMEOUT_SECONDS)
-            response.raise_for_status()
-            response_data = parse_api_response(decode_response_text(response))
-            content = _extract_message_content(response_data)
-            if not content:
-                # Empty content — model may have refused, used tool calls,
-                # or returned a multimodal response we could not flatten.
-                choices = response_data.get("choices") or [{}]
-                first = choices[0] or {}
-                finish = first.get("finish_reason") or "?"
-                logger.info(
-                    f"  [{idx+1}/{len(unique_findings)}] AI returned empty content "
-                    f"(finish_reason={finish}) for {rule_id}. "
-                    f"Model may have refused or returned non-text. Re-run with --mock-ai or a different model."
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                result = future.result()
+                resolutions.update(result)
+            except Exception as e:
+                idx = futures[future]
+                rule_id = unique_findings[idx].get("rule_id", f"unknown-{idx}")
+                logger.info(f"  [{idx+1}/{total}] Unexpected error resolving {rule_id}: {e}")
+                resolutions[rule_id] = _make_resolution(
+                    suggestion=f"False positive: AI resolution failed for {rule_id}: {e}.",
+                    remediation_code="",
+                    ai_status="failed",
+                    ai_error=str(e),
+                    model=model,
                 )
-                resolutions[rule_id] = {
-                    "suggestion": (
-                        f"False positive: AI returned no text content for {rule_id} "
-                        f"(finish_reason={finish}). The model may have refused, used tool calls, "
-                        f"or returned a non-text/multimodal response. Re-run with --mock-ai or a different model."
-                    ),
-                    "remediation_code": "",
-                }
-                continue
-            result = safe_json_parse(content)
-            if isinstance(result, dict):
-                for key, value in result.items():
-                    real_key = rule_id if key == alias else key
-                    if isinstance(value, dict):
-                        suggestion = (value.get("suggestion") or "").strip()
-                        remediation = (value.get("remediation_code") or "").strip()
-                        remediation = sanitize_remediation_code(remediation)
-                        if not remediation and suggestion and not suggestion.lower().startswith("false positive"):
-                            suggestion = f"False positive: {suggestion}"
-                        resolutions[real_key] = {"suggestion": suggestion, "remediation_code": remediation}
-                    else:
-                        resolutions[real_key] = value
-            else:
-                # Model returned text but it wasn't parseable JSON — store as plain suggestion.
-                logger.info(
-                    f"  [{idx+1}/{len(unique_findings)}] AI response for {rule_id} was not JSON; using raw text as suggestion."
-                )
-                resolutions[rule_id] = {
-                    "suggestion": content[:500],
-                    "remediation_code": "",
-                }
-            logger.info(f"  [{idx+1}/{len(unique_findings)}] Resolved: {rule_id}")
-        except (requests.RequestException, json.JSONDecodeError, ValueError, KeyError, IndexError, TypeError) as e:
-            logger.info(f"  [{idx+1}/{len(unique_findings)}] Error resolving {rule_id}: {e}")
-            resolutions[rule_id] = {
-                "suggestion": f"False positive: AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection, or pick a faster model.",
-                "remediation_code": "",
-            }
-
-        if idx < len(unique_findings) - 1:  # Rate limiting sleep
-            time.sleep(NAMING_AUDIT_SLEEP)
 
     return resolutions
+
+
+def _call_ai_for_rule(item: Dict[str, Any], url: str, headers: dict, model: str, idx: int, total: int) -> Dict[str, Any]:
+    rule_id = item["rule_id"]
+    alias = f"r{idx}"
+
+    user_prompt = (
+        f"Rule ID alias: {alias}\n"
+        f"Full Rule: {rule_id}\n"
+        f"File: {item['file']} (Line {item['line']})\n"
+        f"Code: {item.get('code_text', 'N/A')}\n"
+        f"Message: {item['message']}\n"
+    )
+    surrounding = item.get("surrounding_code")
+    if surrounding:
+        user_prompt += f"Surrounding code (target line marked with >>>>):\n{surrounding}\n"
+    ast_ctx = item.get("ast_context")
+    if ast_ctx:
+        callers = ", ".join(c.get("name", "?") for c in ast_ctx.get("callers", [])) or "none"
+        impact = ast_ctx.get("impact", {})
+        user_prompt += (
+            f"Symbol: {ast_ctx.get('symbol_name')} ({ast_ctx.get('kind')})\n"
+            f"Callers: {callers}\n"
+            f"Risk: {impact.get('risk', 'UNKNOWN')}, "
+            f"Impacted: {impact.get('impactedCount', 0)}\n"
+        )
+
+    payload = {
+        "model": model,
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT_RESOLVE},
+            {"role": "user", "content": user_prompt}
+        ],
+        "temperature": 0.1,
+        "max_tokens": AI_RESOLVE_MAX_TOKENS
+    }
+
+    try:
+        response = post_with_retry(url, headers, payload, timeout=AI_RESOLVE_TIMEOUT_SECONDS)
+        response.raise_for_status()
+        response_data = parse_api_response(decode_response_text(response))
+        content = _extract_message_content(response_data)
+        if not content:
+            choices = response_data.get("choices") or [{}]
+            first = choices[0] or {}
+            finish = first.get("finish_reason") or "?"
+            logger.info(
+                f"  [{idx+1}/{total}] AI returned empty content "
+                f"(finish_reason={finish}) for {rule_id}. "
+                f"Model may have refused or returned non-text."
+            )
+            return {
+                rule_id: _make_resolution(
+                    suggestion=(
+                        f"False positive: AI returned no text content for {rule_id} "
+                        f"(finish_reason={finish}). The model may have refused, used tool calls, "
+                        f"or returned a non-text/multimodal response."
+                    ),
+                    remediation_code="",
+                    ai_status="failed",
+                    ai_error=f"model returned empty content (finish_reason={finish})",
+                    model=model,
+                )
+            }
+        result = safe_json_parse(content)
+        if isinstance(result, dict):
+            out: Dict[str, Any] = {}
+            for key, value in result.items():
+                real_key = rule_id if key == alias else key
+                if isinstance(value, dict):
+                    suggestion = (value.get("suggestion") or "").strip()
+                    remediation = (value.get("remediation_code") or "").strip()
+                    remediation = sanitize_remediation_code(remediation)
+                    if not remediation and suggestion and not suggestion.lower().startswith("false positive"):
+                        suggestion = f"False positive: {suggestion}"
+                    out[real_key] = _make_resolution(
+                        suggestion=suggestion,
+                        remediation_code=remediation,
+                        ai_status="success",
+                        model=model,
+                    )
+                else:
+                    out[real_key] = _make_resolution(
+                        suggestion=str(value),
+                        remediation_code="",
+                        ai_status="success",
+                        model=model,
+                    )
+            logger.info(f"  [{idx+1}/{total}] Resolved: {rule_id}")
+            return out
+
+        logger.info(
+            f"  [{idx+1}/{total}] AI response for {rule_id} was not JSON; using raw text as suggestion."
+        )
+        return {
+            rule_id: _make_resolution(
+                suggestion=content[:500],
+                remediation_code="",
+                ai_status="failed",
+                ai_error="response was not valid JSON",
+                model=model,
+            )
+        }
+    except (requests.RequestException, json.JSONDecodeError, ValueError, KeyError, IndexError, TypeError) as e:
+        logger.info(f"  [{idx+1}/{total}] Error resolving {rule_id}: {e}")
+        return {
+            rule_id: _make_resolution(
+                suggestion=f"False positive: AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection, or pick a faster model.",
+                remediation_code="",
+                ai_status="failed",
+                ai_error=str(e),
+                model=model,
+            )
+        }
 
 if __name__ == "__main__":
     print(json.dumps(resolve_findings([{"rule_id": "python.lang.security.audit.dangerous-exec", "file": "example.py", "line": 12}], use_mock=True), indent=2))

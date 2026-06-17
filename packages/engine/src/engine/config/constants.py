@@ -111,3 +111,7 @@ AI_NAMING_TIMEOUT_SECONDS = get_int_env(
     "AI_NAMING_TIMEOUT_SECONDS",
     _nested_get(_settings, ["ai_settings", "naming_timeout_seconds"], 90),
 )
+AI_PARALLEL_WORKERS = get_int_env(
+    "AI_PARALLEL_WORKERS",
+    _nested_get(_settings, ["ai_settings", "parallel_workers"], 3),
+)

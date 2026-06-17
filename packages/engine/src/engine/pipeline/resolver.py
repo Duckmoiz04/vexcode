@@ -1,5 +1,4 @@
 import os
-import time
 from typing import Dict, Any, List, Optional, Tuple
 
 from engine.utils.logger import get_logger
@@ -14,9 +13,6 @@ _settings = load_settings()
 
 MAX_FILES_FOR_COMPLEXITY = _settings.get("analysis", {}).get(
     "max_files_for_complexity", 100
-)
-FAST_SCAN_SLEEP_SECONDS = _settings.get("analysis", {}).get(
-    "fast_scan_sleep_seconds", 15
 )
 MAX_NAMING_AUDIT_CANDIDATES = _settings.get("analysis", {}).get(
     "max_naming_audit_candidates", 5
@@ -104,9 +100,6 @@ def resolve_phase(findings: List[dict], target: str, use_mock: bool,
 
     resolutions = {}
     if findings:
-        if not use_mock and files_to_audit:
-            logger.info("Cooling down 15s before AI resolution to avoid rate limiting...")
-            time.sleep(FAST_SCAN_SLEEP_SECONDS)
         logger.info("Resolving findings with AI...")
         resolutions = resolve_findings(
             findings, use_mock=use_mock, target_path=target
