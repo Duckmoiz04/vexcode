@@ -1,12 +1,12 @@
 # packages/cli
 
-**Node.js >= 18.3 ESM CLI tool** — `vexcode` binary + Express API server + vanilla JS dashboard.
+**Node.js >= 18.3 ESM CLI tool** — `vexcode` binary + Express API server. The web dashboard is a separate React 19 + TypeScript + Vite SPA built from `packages/web/` and deployed into `src/public/`.
 
 ## Architecture
 
 ```
 CLI (bin/cli.js) → Bridge (bridge.js) → Python engine subprocess
-                 → Server (server.js) → REST API → Frontend (src/public/)
+                 → Server (server.js) → REST API → Frontend (src/public/ — Vite build from packages/web/)
 ```
 
 ## Modules
@@ -17,9 +17,7 @@ CLI (bin/cli.js) → Bridge (bridge.js) → Python engine subprocess
 | `src/server.js` | 604 | Express server; 10+ endpoints (config, scan, reports, apply, chat) |
 | `src/bridge.js` | 148 | Python process spawner; JSON stdin/stdout bridge |
 | `src/index.js` | 4 | Library placeholder (`greet()` export) |
-| `src/public/app.js` | ~1500 | Vanilla JS SPA dashboard |
-| `src/public/index.html` | 503 | Dashboard HTML |
-| `src/public/styles.css` | ~2000 | Dark-theme CSS with custom properties |
+| `src/public/` | Vite build | React 19 + TypeScript + Vite dashboard (source in `packages/web/`) |
 
 Test files (Vitest): `src/__tests__/{cli,server,bridge}.test.js` + `e2e_verify.js` (manual).
 

@@ -195,19 +195,60 @@ DATN2/
 
 ---
 
-## Current Project Status (2026-06-11)
+## AI Resolution Schema
 
-### ✅ Dự án hoàn thiện sau architecture-cleanup
-- 15 commits trên master — toàn bộ kế hoạch "architecture-cleanup" hoàn thành
-- **Kiến trúc modular**: Web monolith (`App.tsx` state center) → Context + hooks + services + 12 component modules
-- **138 web tests** (từ 0 lên 138), 75 CLI tests — tất cả pass
-- Build web: **pass**, TypeScript **0 errors**
-- Python: pre-existing issue thiếu `lizard` trong system Python (đã có trong `.venv`)
-- Không còn active plan — dự án sẵn sàng cho feature mới
+Every resolution returned by the engine includes provenance metadata:
+
+```typescript
+interface AiResolution {
+  suggestion: string;          // Human-readable remediation suggestion
+  remediation_code?: string;   // Code snippet to apply
+  ai_status?: 'success' | 'failed' | 'fallback_mock';  // Outcome
+  ai_error?: string;           // Populated when status === 'failed'
+  model?: string;              // Model name that generated it
+  generated_at?: string;       // ISO 8601 timestamp
+  remediation_target_file?: string;  // File path when narrow-scoped
+}
+```
+
+- `ai_status: "success"` → real AI call succeeded
+- `ai_status: "failed"` → AI call failed; check `ai_error` for details
+- `ai_status: "fallback_mock"` → AI provider not configured; generic suggestion used
+
+The frontend `CodeInspector.tsx` renders an error banner when `ai_status === "failed"` and a mock-fallback notice when `ai_status === "fallback_mock"`.
+
+## AI Resolution Parallelism
+
+The engine now uses `ThreadPoolExecutor` with `AI_PARALLEL_WORKERS` (default: 3) to resolve findings concurrently. Rate limiting is handled by `post_with_retry()` exponential backoff. The previous 15-second cooldown before AI resolution has been removed.
+
+## ISO 25010 Categorisation (Python Engine)
+
+The Python engine classifies findings using ISO 25010 quality dimensions. Each finding maps to a `Category`:
+
+| Category | ISO 25010 Characteristic | Example |
+|----------|--------------------------|---------|
+| `performance_efficiency` | Time behaviour / Resource utilisation | Inefficient DB queries |
+| `security` | Security | SQL injection, hardcoded secrets |
+| `reliability` | Maturity / Fault tolerance | Missing error handling |
+| `maintainability` | Modifiability / Testability | Complex functions, naming issues |
+| `portability` | Adaptability / Installability | Hardcoded paths |
+| `compatibility` | Co-existence / Interoperability | Deprecated API usage |
+| `usability` | Appropriateness recognisability | Poor error messages |
+| `functional_correctness` | Functional correctness | Logic bugs |
+
+The `Category` type is defined in `packages/engine/src/engine/core/category.py` and mapped to Semgrep rule IDs in `packages/engine/src/engine/core/rule_categories.yaml`.
+
+## Current Project Status (2026-06-17)
+
+### ✅ Giai đoạn stabilize-core (Phase D + E + G) hoàn thành
+- **Phase D (Engine Error Reporting)**: Bổ sung `ai_status`/`ai_error`/`model`/`generated_at` vào resolution dict, extract `call_ai_for_rule()` function, thêm error banner trong CodeInspector cho AI failures
+- **Phase D (Remove 15s cooldown)**: Xoá `time.sleep(FAST_SCAN_SLEEP_SECONDS)` khỏi `resolver.py` — rate limiting được xử lý bởi `post_with_retry()` exponential backoff
+- **Phase E (Parallel AI)**: Thêm `AI_PARALLEL_WORKERS=3` và `ThreadPoolExecutor` trong `ai_resolver.py` — resolve findings song song thay vì tuần tự
+- **Phase G (Docs sync)**: Cập nhật `cli/AGENTS.md`, tạo `packages/web/AGENTS.md`, cập nhật context này
 
 ### Test Health
 | Package | Tests | Status |
 |---|---|---|
-| Web | 138 (23 files) | ✅ All pass |
+| Web | 138+ (23 files) | ✅ All pass |
 | CLI | 75 (3 files) | ✅ All pass |
-| Python | 6 failures | ⚠️ Pre-existing: `lizard` chưa cài trong test subprocess |
+| Python | 230+ (test suite) | ✅ All pass (lizard pre-existing handled) |
