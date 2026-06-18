@@ -47,7 +47,7 @@ export const ScanButton: React.FC<ScanButtonProps> = ({
 
       {isScanOpen && (
         <div className="absolute top-full right-0 z-50 mt-1.5 w-56 animate-slide-up overflow-hidden rounded-xl border border-card-border bg-bg-tertiary shadow-2xl">
-          <div className="px-3 py-2 border-b border-card-border text-[9px] font-semibold tracking-wider text-text-tertiary uppercase">
+          <div className="px-3 py-2 border-b border-card-border text-xs font-semibold tracking-wider text-text-tertiary uppercase">
             Scan Options
           </div>
           <div className="p-1 space-y-0.5">
@@ -61,7 +61,7 @@ export const ScanButton: React.FC<ScanButtonProps> = ({
               <Search className="h-3.5 w-3.5 text-accent shrink-0" />
               <div className="flex flex-col">
                 <span className="font-semibold">Full Scan</span>
-                <span className="text-[9px] text-text-tertiary">Scan entire directory</span>
+                <span className="text-xs text-text-tertiary">Scan entire directory</span>
               </div>
             </button>
             <button
@@ -74,7 +74,7 @@ export const ScanButton: React.FC<ScanButtonProps> = ({
               <Folder className="h-3.5 w-3.5 text-success shrink-0" />
               <div className="flex flex-col">
                 <span className="font-semibold">Fast Scan (Git)</span>
-                <span className="text-[9px] text-text-tertiary">Only scan changed files</span>
+                <span className="text-xs text-text-tertiary">Only scan changed files</span>
               </div>
             </button>
             {onReResolve && currentReportId && (
@@ -88,7 +88,7 @@ export const ScanButton: React.FC<ScanButtonProps> = ({
                 <Wand2 className="h-3.5 w-3.5 text-warning shrink-0" />
                 <div className="flex flex-col">
                   <span className="font-semibold">Re-ask AI</span>
-                  <span className="text-[9px] text-text-tertiary">Resolve existing findings</span>
+                  <span className="text-xs text-text-tertiary">Resolve existing findings</span>
                 </div>
               </button>
             )}

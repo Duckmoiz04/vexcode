@@ -53,7 +53,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
                 {f.rule_id.split('.').pop() || f.rule_id}
               </span>
               {isApplied && (
-                <span className="text-[11px] px-1.5 py-0.5 bg-success/15 border border-success/30 text-success rounded font-bold font-sans uppercase">
+                <span className="text-xs px-1.5 py-0.5 bg-success/15 border border-success/30 text-success rounded font-bold font-sans uppercase">
                   applied
                 </span>
               )}

@@ -75,6 +75,15 @@ export interface Metrics {
   files: Record<string, FileMetrics>;
 }
 
+export interface PaginationInfo {
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  filterCounts?: Record<string, number>;
+  severityCounts?: Record<string, number>;
+}
+
 export interface Report {
   scanner: string;
   timestamp: string;
@@ -86,6 +95,7 @@ export interface Report {
   _id?: string;
   _project?: string;
   _savedAt?: string;
+  _pagination?: PaginationInfo;
 }
 
 // ─── API Response Types ─────────────────────────────────────────────────────
@@ -127,6 +137,8 @@ export interface AIProviderContextType {
   aiModel: string;
   aiTemperature: number;
   aiMaxTokens: number;
+  /** Structured AI settings from /api/settings/ai, if available. */
+  aiSettings: AiSettings | null;
 }
 
 export interface Config {
@@ -153,7 +165,32 @@ export interface Config {
   NVIDIA_BASE_URL?: string;
   NVIDIA_MODEL?: string;
   SEMGREP_RULES_PATH?: string;
+  /** Structured AI settings from /api/settings/ai (merged at load time). */
+  _aiSettings?: AiSettings;
   [key: string]: string | undefined;
+}
+
+// ─── Structured AI Settings (from /api/settings/ai) ────────────────────────
+
+export interface AiProviderConfig {
+  enabled: boolean;
+  model: string;
+  requires_key: boolean;
+  /** Masked as "••••••" in GET responses; send actual value in PUT. */
+  api_key: string;
+  base_url: string;
+}
+
+export interface AiAgentConfig {
+  provider: string;
+  model: string;
+  enabled: boolean;
+}
+
+export interface AiSettings {
+  enabled: boolean;
+  providers: Record<string, AiProviderConfig>;
+  agents: Record<string, AiAgentConfig>;
 }
 
 // ─── UI Component Props ───────────────────────────────────────────────────────

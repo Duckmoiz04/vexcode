@@ -1,6 +1,14 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { Report } from '../types';
 
+interface ScanProgress {
+  phase: string;
+  message: string;
+  current: number;
+  total: number;
+  percentage: number;
+}
+
 interface UseScanDeps {
   showToast: (message: string, type?: 'success' | 'error') => void;
   loadProjects: () => Promise<void>;
@@ -10,12 +18,24 @@ interface UseScanDeps {
   onScanComplete?: (projectName: string) => void;
 }
 
+const PHASE_LABELS: Record<string, string> = {
+  scan: 'Static Security Scan (Semgrep)',
+  enrich: 'AST Structural Analysis (GitNexus)',
+  complexity: 'Calculate Complexity Metrics (Lizard)',
+  dedup: 'Deduplicating Findings',
+  classify: 'Cross-Scan Classification',
+  naming_audit: 'Audit Obscure Naming (AI)',
+  ai_resolve: 'Generate Fix Suggestions (AI)',
+  report: 'Package & Save Report',
+};
+
 export function useScan({ showToast, loadProjects, loadHistory, currentReport, setCurrentReport, onScanComplete }: UseScanDeps) {
   const [isScanning, setIsScanning] = useState(false);
   const [isReResolving, setIsReResolving] = useState(false);
   const [scanStatus, setScanStatus] = useState('Initializing scan...');
   const [elapsedTime, setElapsedTime] = useState(0);
   const [scanLogs, setScanLogs] = useState<string[]>([]);
+  const [scanProgress, setScanProgress] = useState<ScanProgress | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
 
   const formatTime = useCallback((seconds: number) => {
@@ -77,7 +97,22 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
     eventSource.onmessage = async (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (data.type === 'status') {
+        if (data.type === 'progress') {
+          setScanProgress(data);
+          setScanStatus(data.message);
+          const phaseLabel = PHASE_LABELS[data.phase] || data.phase;
+          setScanLogs((prev) => {
+            const logLine = `[${data.percentage.toFixed(0)}%] ${phaseLabel}: ${data.message}`;
+            if (prev.length > 0 && prev[prev.length - 1] === logLine) {
+              return prev;
+            }
+            const nextLogs = [...prev, logLine];
+            if (nextLogs.length > 4) {
+              return nextLogs.slice(nextLogs.length - 4);
+            }
+            return nextLogs;
+          });
+        } else if (data.type === 'status') {
           setScanStatus(data.message);
           setScanLogs((prev) => {
             if (prev.length > 0 && prev[prev.length - 1] === data.message) {
@@ -134,33 +169,64 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
     }
 
     setIsReResolving(true);
-    showToast('Asking AI to review existing findings...');
+    setScanStatus('Starting AI re-resolution...');
+    setScanLogs((prev) => [...prev, '[SYSTEM] Starting AI re-resolution via SSE...']);
 
-    try {
-      const response = await fetch('/api/re-resolve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reportPath: report._savedAt,
-          mockAi: false,
-        }),
-      });
-      const data = await response.json();
+    const params = new URLSearchParams({
+      reportPath: report._savedAt,
+      mockAi: 'false',
+    });
 
-      if (data.success && data.report) {
-        const updated = data.report as Report;
-        setCurrentReport(updated);
-        await loadHistory(updated._project || '', false);
-        showToast('AI suggestions updated for this report.');
-      } else {
-        showToast(data.error || 'AI re-analysis failed', 'error');
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      showToast(`AI re-analysis failed: ${message}`, 'error');
-    } finally {
-      setIsReResolving(false);
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
     }
+
+    const eventSource = new EventSource(`/api/re-resolve/stream?${params.toString()}`);
+    eventSourceRef.current = eventSource;
+
+    eventSource.onmessage = async (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'progress') {
+          setScanStatus(data.message);
+          const phaseLabel = data.phase || 'ai_resolve';
+          setScanLogs((prev) => {
+            const logLine = `[${(data.percentage ?? 0).toFixed(0)}%] ${phaseLabel}: ${data.message}`;
+            if (prev.length > 0 && prev[prev.length - 1] === logLine) return prev;
+            const nextLogs = [...prev, logLine];
+            return nextLogs.length > 4 ? nextLogs.slice(nextLogs.length - 4) : nextLogs;
+          });
+        } else if (data.type === 'status') {
+          setScanStatus(data.message);
+        } else if (data.type === 'complete' && data.report) {
+          setScanLogs((prev) => [...prev, '[SYSTEM] AI re-resolution complete!']);
+          eventSource.close();
+          eventSourceRef.current = null;
+          const updated = data.report as Report;
+          setCurrentReport(updated);
+          await loadHistory(updated._project || '', false);
+          setIsReResolving(false);
+          showToast('AI suggestions updated for this report.');
+        } else if (data.type === 'error') {
+          setScanLogs((prev) => [...prev, `[ERROR] ${data.error || 'Re-resolution failed'}`]);
+          eventSource.close();
+          eventSourceRef.current = null;
+          setIsReResolving(false);
+          showToast(data.error || 'AI re-analysis failed', 'error');
+        }
+      } catch (err: unknown) {
+        console.error('Error parsing re-resolve SSE event:', err);
+      }
+    };
+
+    eventSource.onerror = () => {
+      console.error('Re-resolve EventSource connection lost');
+      setScanLogs((prev) => [...prev, '[ERROR] Lost connection with re-resolution server']);
+      eventSource.close();
+      eventSourceRef.current = null;
+      setIsReResolving(false);
+      showToast('AI re-resolution connection failed', 'error');
+    };
   }, [showToast, loadHistory, setCurrentReport]);
 
   return {
@@ -169,6 +235,8 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
     scanLogs,
     elapsedTime,
     isReResolving,
+    scanProgress,
+    PHASE_LABELS,
     handleStartScan,
     handleCancelScan,
     handleReResolve,

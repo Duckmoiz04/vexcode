@@ -53,10 +53,10 @@ export const Leaderboards: React.FC<LeaderboardsProps> = ({
                 onClick={() => onSelectFilePath(sf.file)}
                 className="flex items-center justify-between p-2.5 rounded-lg bg-bg-primary/40 hover:bg-bg-primary/80 border border-card-border/40 cursor-pointer transition-all"
               >
-                <span className="text-[11px] font-mono text-text-primary truncate pr-4" title={sf.file}>
+                <span className="text-xs font-mono text-text-primary truncate pr-4" title={sf.file}>
                   {getRelativePath(sf.file, targetPath)}
                 </span>
-                <span className="text-[10px] text-accent shrink-0 font-semibold">{sf.count} issue(s)</span>
+                <span className="text-xs text-accent shrink-0 font-semibold">{sf.count} issue(s)</span>
               </div>
             ))
           )}
@@ -83,14 +83,14 @@ export const Leaderboards: React.FC<LeaderboardsProps> = ({
                   className="flex flex-col p-2 bg-bg-primary/40 hover:bg-bg-primary/80 border border-card-border/40 rounded-lg cursor-pointer transition-all gap-1"
                 >
                   <div className="flex justify-between items-center w-full">
-                    <span className="text-[11px] font-mono text-text-primary truncate pr-2" title={cf.file}>
+                    <span className="text-xs font-mono text-text-primary truncate pr-2" title={cf.file}>
                       {getRelativePath(cf.file, targetPath)}
                     </span>
-                    <span className={`text-[9px] border px-1.5 py-0.5 rounded font-semibold shrink-0 ${badgeColor}`}>
+                    <span className={`text-xs border px-1.5 py-0.5 rounded font-semibold shrink-0 ${badgeColor}`}>
                       CCN: {cf.complexity}
                     </span>
                   </div>
-                  <div className="flex justify-between text-[9px] text-text-tertiary font-mono">
+                  <div className="flex justify-between text-xs text-text-tertiary font-mono">
                     <span>LOC: {cf.loc}</span>
                     <span>Cognitive: {cf.cognitive}</span>
                   </div>
@@ -118,13 +118,13 @@ export const Leaderboards: React.FC<LeaderboardsProps> = ({
                   className="flex flex-col p-2.5 rounded-lg bg-bg-primary/40 border border-card-border/40 text-xs text-text-secondary gap-1"
                 >
                   <div className="flex justify-between items-center w-full">
-                    <span className="font-mono font-bold text-text-primary text-[11px] truncate pr-2">{sym.name}</span>
-                    <span className="text-[9px] bg-accent/10 border border-accent/20 px-2 py-0.5 rounded text-accent font-semibold shrink-0">
+                    <span className="font-mono font-bold text-text-primary text-xs truncate pr-2">{sym.name}</span>
+                    <span className="text-xs bg-accent/10 border border-accent/20 px-2 py-0.5 rounded text-accent font-semibold shrink-0">
                       {sym.blastCount} affected
                     </span>
                   </div>
-                  <div className="text-[10px] text-text-tertiary font-mono truncate">{getRelativePath(sym.file, targetPath)}</div>
-                  <div className="text-[10px] text-text-secondary truncate">{affectedDetails}</div>
+                  <div className="text-xs text-text-tertiary font-mono truncate">{getRelativePath(sym.file, targetPath)}</div>
+                  <div className="text-xs text-text-secondary truncate">{affectedDetails}</div>
                 </div>
               );
             })

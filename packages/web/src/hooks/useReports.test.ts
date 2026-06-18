@@ -288,7 +288,7 @@ describe('useReports', () => {
 
       // The watcher should have triggered loadReport
       await waitFor(() => {
-        expect(fetchSpy).toHaveBeenCalledWith('/api/report/project-a/rep-1');
+        expect(fetchSpy).toHaveBeenCalledWith('/api/report/project-a/rep-1?page=1&pageSize=50');
       });
     });
   });

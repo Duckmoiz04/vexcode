@@ -12,7 +12,7 @@ export const AiProviderSelector: React.FC<AiProviderSelectorProps> = ({
 }) => {
   return (
     <div className="space-y-2">
-      <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">AI Provider</h4>
+      <h4 className="text-xs text-text-tertiary uppercase font-bold tracking-wider">AI Provider</h4>
       <div className="grid grid-cols-2 gap-2">
         {Object.keys(PROVIDERS).map((p) => {
           const isActive = p === provider;

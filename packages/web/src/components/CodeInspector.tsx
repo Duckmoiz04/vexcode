@@ -115,7 +115,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
       {/* Sibling finding navigation bar — shows when file has multiple findings */}
       {hasMultipleInFile && onSelectFindingIndex && currentPosInFile >= 0 && (
         <div className="flex items-center justify-between px-6 py-1.5 border-b border-card-border/50 bg-bg-secondary/80 shrink-0">
-          <span className="text-[11px] text-text-tertiary font-mono">
+          <span className="text-xs text-text-tertiary font-mono">
             Finding {currentPosInFile + 1} of {sameFileFindings.length} in this file
           </span>
           <div className="flex items-center gap-1.5">
@@ -124,7 +124,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 const prev = currentPosInFile > 0 ? currentPosInFile - 1 : sameFileFindings.length - 1;
                 onSelectFindingIndex(sameFileFindings[prev].idx);
               }}
-              className="flex items-center gap-1 px-2 py-0.5 text-[11px] rounded border border-card-border/40 bg-bg-tertiary/40 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60 transition-all cursor-pointer"
+              className="flex items-center gap-1 px-2 py-0.5 text-xs rounded border border-card-border/40 bg-bg-tertiary/40 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60 transition-all cursor-pointer"
               title="Previous finding in this file"
             >
               <ChevronUp size={12} /> Prev
@@ -134,7 +134,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 const next = currentPosInFile < sameFileFindings.length - 1 ? currentPosInFile + 1 : 0;
                 onSelectFindingIndex(sameFileFindings[next].idx);
               }}
-              className="flex items-center gap-1 px-2 py-0.5 text-[11px] rounded border border-card-border/40 bg-bg-tertiary/40 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60 transition-all cursor-pointer"
+              className="flex items-center gap-1 px-2 py-0.5 text-xs rounded border border-card-border/40 bg-bg-tertiary/40 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60 transition-all cursor-pointer"
               title="Next finding in this file"
             >
               Next <ChevronDown size={12} />
@@ -157,11 +157,11 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             {/* File Metadata */}
             <div className="flex flex-wrap gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">File</span>
+                <span className="text-xs text-text-tertiary uppercase font-bold tracking-wider">File</span>
                 <span className="font-mono text-text-primary break-all">{relPath}</span>
               </div>
               <div className="flex flex-col gap-1 shrink-0">
-                <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Line</span>
+                <span className="text-xs text-text-tertiary uppercase font-bold tracking-wider">Line</span>
                 <span className="font-mono text-text-primary">{finding.line}</span>
               </div>
               {metrics?.files?.[relPath] && (() => {
@@ -169,15 +169,15 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
                 const lvlCls = fm.level === 'HIGH' ? 'text-danger' : fm.level === 'MEDIUM' ? 'text-warning' : 'text-success';
                 return (<>
                   <div className="flex flex-col gap-1 shrink-0">
-                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Complexity (CCN)</span>
+                    <span className="text-xs text-text-tertiary uppercase font-bold tracking-wider">Complexity (CCN)</span>
                     <span className={`font-mono font-semibold ${lvlCls}`}>{fm.complexity} ({fm.level})</span>
                   </div>
                   <div className="flex flex-col gap-1 shrink-0">
-                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Cognitive</span>
+                    <span className="text-xs text-text-tertiary uppercase font-bold tracking-wider">Cognitive</span>
                     <span className="font-mono text-text-primary">{fm.cognitive_complexity || 0}</span>
                   </div>
                   <div className="flex flex-col gap-1 shrink-0">
-                    <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">LOC</span>
+                    <span className="text-xs text-text-tertiary uppercase font-bold tracking-wider">LOC</span>
                     <span className="font-mono text-text-primary">{fm.loc || 0}</span>
                   </div>
                 </>);
@@ -192,30 +192,30 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             {/* AST Context */}
             {finding.ast_context && (
               <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-3">
-                <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AST Context</h4>
+                <h4 className="text-xs text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AST Context</h4>
                 <div className="flex gap-6 text-xs">
-                  <div className="flex flex-col gap-0.5"><span className="text-[9px] text-text-tertiary uppercase">Symbol</span><span className="font-mono text-text-primary font-semibold">{finding.ast_context.symbol_name || '-'}</span></div>
-                  <div className="flex flex-col gap-0.5"><span className="text-[9px] text-text-tertiary uppercase">Kind</span><span className="font-mono text-text-primary">{finding.ast_context.kind || '-'}</span></div>
+                  <div className="flex flex-col gap-0.5"><span className="text-xs text-text-tertiary uppercase">Symbol</span><span className="font-mono text-text-primary font-semibold">{finding.ast_context.symbol_name || '-'}</span></div>
+                  <div className="flex flex-col gap-0.5"><span className="text-xs text-text-tertiary uppercase">Kind</span><span className="font-mono text-text-primary">{finding.ast_context.kind || '-'}</span></div>
                 </div>
                 {finding.ast_context.callers && finding.ast_context.callers.length > 0 && (
                   <div className="text-xs">
-                    <span className="text-[9px] text-text-tertiary uppercase block mb-1">Callers</span>
+                    <span className="text-xs text-text-tertiary uppercase block mb-1">Callers</span>
                     <div className="flex flex-wrap gap-1.5">
                       {finding.ast_context.callers.map((c: CallerInfo, i: number) => (
-                        <span key={i} className="px-2 py-0.5 rounded bg-bg-primary/50 text-[10px] font-mono text-text-secondary border border-card-border/40">{c.name}</span>
+                        <span key={i} className="px-2 py-0.5 rounded bg-bg-primary/50 text-xs font-mono text-text-secondary border border-card-border/40">{c.name}</span>
                       ))}
                     </div>
                   </div>
                 )}
                 {finding.ast_context.blast_radius && finding.ast_context.blast_radius.length > 0 && (
-                  <div className="text-xs flex items-center gap-2"><span className="text-[9px] text-text-tertiary uppercase">Blast Radius</span><span className="font-semibold text-accent">{finding.ast_context.blast_radius.length} affected symbol(s)</span></div>
+                  <div className="text-xs flex items-center gap-2"><span className="text-xs text-text-tertiary uppercase">Blast Radius</span><span className="font-semibold text-accent">{finding.ast_context.blast_radius.length} affected symbol(s)</span></div>
                 )}
               </div>
             )}
 
             {/* AI Suggestion */}
             <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-2">
-              <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AI Suggestion</h4>
+              <h4 className="text-xs text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">AI Suggestion</h4>
 
               {(resolution?.ai_status === 'failed' || resolution?.ai_error) && (
                 <div className="flex items-start gap-2 p-2.5 rounded-md border border-danger/30 bg-danger/5 text-xs text-danger">
@@ -238,7 +238,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
               )}
 
               {resolution?.ai_status === 'success' && resolution?.model && (
-                <div className="flex items-center gap-2 p-2 rounded-md border border-success/20 bg-success/5 text-[10px] text-text-tertiary">
+                <div className="flex items-center gap-2 p-2 rounded-md border border-success/20 bg-success/5 text-xs text-text-tertiary">
                   <span>Resolved by <span className="font-mono font-semibold text-accent">{resolution.model}</span></span>
                   {resolution?.generated_at && (
                     <span className="ml-auto">{new Date(resolution.generated_at).toLocaleString()}</span>

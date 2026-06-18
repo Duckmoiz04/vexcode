@@ -23,7 +23,7 @@ export const ApiConfigSection: React.FC<ApiConfigSectionProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1">
+      <h4 className="text-xs text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1">
         API Configuration
       </h4>
 
@@ -52,7 +52,7 @@ export const ApiConfigSection: React.FC<ApiConfigSectionProps> = ({
           placeholder={PROVIDERS[provider]?.defaultBaseUrl || 'Enter Base URL'}
           className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary"
         />
-        <span className="text-[9px] text-text-tertiary block mt-1">
+        <span className="text-xs text-text-tertiary block mt-1">
           Example: {PROVIDERS[provider]?.defaultBaseUrl || ''}
         </span>
       </div>
@@ -69,7 +69,7 @@ export const ApiConfigSection: React.FC<ApiConfigSectionProps> = ({
         </button>
         {testStatus.text && (
           <div
-            className={`text-[10px] px-2 py-1 rounded border font-medium ${
+            className={`text-xs px-2 py-1 rounded border font-medium ${
               testStatus.type === 'success'
                 ? 'bg-success/10 border-success/30 text-success'
                 : testStatus.type === 'error'

@@ -203,7 +203,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
             />
           </div>
           <div className="flex flex-col border-t border-card-border/30">
-            <div className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
+            <div className="text-xs text-text-tertiary uppercase font-bold tracking-wider px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
               Suggested Fix (snippet)
             </div>
             <div className="flex flex-col">
@@ -233,7 +233,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   return (
     <div className="flex flex-col rounded-lg border border-card-border bg-card-bg backdrop-blur-md">
       <div className="flex items-center justify-between px-4 pt-3 pb-2 shrink-0 border-b border-card-border/40">
-        <span className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">
+        <span className="text-xs text-text-tertiary uppercase font-bold tracking-wider">
           {resolution?.remediation_code ? 'Diff View' : 'Source Viewer'}
         </span>
         <div className="flex items-center gap-3">

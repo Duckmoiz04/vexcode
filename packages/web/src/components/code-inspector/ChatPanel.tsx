@@ -65,7 +65,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
               💬
             </div>
             <p className="font-semibold text-text-secondary text-[12px]">Ask AI about this finding</p>
-            <span className="max-w-[240px] leading-relaxed text-[10px] text-text-tertiary/80">
+            <span className="max-w-[240px] leading-relaxed text-xs text-text-tertiary/80">
               Ask questions like: "Why is this finding dangerous?", "How can I fix this manually?", or "What is the blast radius of this issue?"
             </span>
           </div>

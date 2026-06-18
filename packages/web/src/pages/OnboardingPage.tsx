@@ -89,7 +89,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({
         </div>
 
         {/* Divider */}
-        <div className="flex items-center justify-center gap-4 text-text-tertiary text-[10px] uppercase font-bold tracking-widest select-none">
+        <div className="flex items-center justify-center gap-4 text-text-tertiary text-xs uppercase font-bold tracking-widest select-none">
           <span className="h-px bg-card-border/70 flex-1" />
           <span>Or Scan a New Project</span>
           <span className="h-px bg-card-border/70 flex-1" />
@@ -121,7 +121,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({
                 <span>Browse</span>
               </button>
             </div>
-            <p className="text-[11px] text-text-tertiary leading-relaxed">
+            <p className="text-xs text-text-tertiary leading-relaxed">
               Browse selects the folder name as a shortcut; type the full path manually. Browsers
               don't expose the full filesystem path for security reasons.
             </p>

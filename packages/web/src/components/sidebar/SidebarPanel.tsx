@@ -47,7 +47,7 @@ export const SidebarPanel: React.FC<SidebarPanelProps> = ({
         <h3 className="text-[13px] font-bold uppercase tracking-wider text-text-secondary">
           {sidebarTab === 'explorer' ? 'File Structure' : 'Project Issues'}
         </h3>
-        <span className="text-[11px] font-mono font-bold text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
+        <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
           {searchedAndFilteredCount} / {totalCount}
         </span>
       </div>

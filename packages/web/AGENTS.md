@@ -43,7 +43,7 @@ Vite Build (npm run build) → packages/cli/src/public/ (served by CLI Express s
 - **TypeScript**: strict mode via `tsconfig.app.json`; no `as any` or `@ts-ignore`
 - **Vite**: fast dev server, TypeScript-only build (no Babel)
 - **Vitest**: unit testing framework with `@testing-library/react`
-- **Tailwind CSS v3**: utility-first styling; design tokens defined via Tailwind classes
+- **Tailwind CSS v4**: utility-first styling via `@tailwindcss/vite` plugin; design tokens defined via `@theme` directive in CSS
 - **lucide-react**: icon set (no img/sprites)
 - **CodeMirror 6**: code viewer with syntax highlighting and merge editor
 - **Error handling**: `ErrorBoundary` at top level; individual components handle their own loading/error states

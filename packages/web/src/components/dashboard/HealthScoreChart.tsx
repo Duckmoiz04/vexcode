@@ -41,7 +41,7 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
             </svg>
             <div className="absolute flex flex-col items-center justify-center">
               <span className="text-3xl font-bold text-text-primary">{healthScore}</span>
-              <span className="text-[10px] text-text-secondary uppercase font-semibold">Score</span>
+              <span className="text-xs text-text-secondary uppercase font-semibold">Score</span>
             </div>
           </div>
         </div>
@@ -79,7 +79,7 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
           </svg>
           <div className="absolute flex flex-col items-center justify-center">
             <span className="text-3xl font-bold text-text-primary">{healthScore}</span>
-            <span className="text-[10px] text-text-secondary uppercase font-semibold">Score</span>
+            <span className="text-xs text-text-secondary uppercase font-semibold">Score</span>
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
             <span className="text-3xl font-bold text-text-primary">
               {totalIssues}
             </span>
-            <span className="text-[10px] text-text-secondary uppercase font-semibold">Issues</span>
+            <span className="text-xs text-text-secondary uppercase font-semibold">Issues</span>
           </div>
         </div>
       </div>

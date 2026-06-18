@@ -108,9 +108,9 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
 
             {isOpen && (
               <div className="absolute top-full left-0 z-50 mt-1.5 w-80 animate-slide-up overflow-hidden rounded-xl border border-card-border bg-bg-tertiary shadow-2xl">
-                <div className="flex items-center justify-between px-4 py-2.5 border-b border-card-border text-[10px] font-semibold tracking-wider text-text-tertiary uppercase">
+                <div className="flex items-center justify-between px-4 py-2.5 border-b border-card-border text-xs font-semibold tracking-wider text-text-tertiary uppercase">
                   <span>Projects</span>
-                  <span className="bg-accent px-1.5 py-0.5 rounded-full text-white text-[9px]">{projects.length}</span>
+                  <span className="bg-accent px-1.5 py-0.5 rounded-full text-white text-xs">{projects.length}</span>
                 </div>
                 <div className="max-h-72 overflow-y-auto p-1.5">
                   {projects.length === 0 ? (
@@ -131,7 +131,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                       >
                         <Folder className="h-4 w-4 shrink-0 text-accent/80" />
                         <span className="flex-1 truncate font-mono text-xs">{p.name}</span>
-                        <span className="text-[10px] text-text-tertiary font-sans shrink-0">{p.reportCount} scan(s)</span>
+                        <span className="text-xs text-text-tertiary font-sans shrink-0">{p.reportCount} scan(s)</span>
                       </button>
                     ))
                   )}
@@ -159,9 +159,9 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
 
                 {isVersionOpen && (
                   <div className="absolute top-full left-0 z-50 mt-1.5 w-72 animate-slide-up overflow-hidden rounded-xl border border-card-border bg-bg-tertiary shadow-2xl">
-                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-card-border text-[10px] font-semibold tracking-wider text-text-tertiary uppercase">
+                    <div className="flex items-center justify-between px-4 py-2.5 border-b border-card-border text-xs font-semibold tracking-wider text-text-tertiary uppercase">
                       <span>Scan Versions</span>
-                      <span className="bg-accent px-1.5 py-0.5 rounded-full text-white text-[9px]">{reports.length}</span>
+                      <span className="bg-accent px-1.5 py-0.5 rounded-full text-white text-xs">{reports.length}</span>
                     </div>
                     <div className="max-h-72 overflow-y-auto p-1.5">
                       {reports.length === 0 ? (
@@ -188,7 +188,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
                                 </span>
                               )}
                             </div>
-                            <span className="text-[10px] text-text-tertiary font-sans shrink-0 ml-3">{r.findings} findings</span>
+                            <span className="text-xs text-text-tertiary font-sans shrink-0 ml-3">{r.findings} findings</span>
                           </button>
                         ))
                       )}

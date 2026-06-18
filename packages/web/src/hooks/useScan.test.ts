@@ -370,14 +370,14 @@ describe('useScan', () => {
       );
     });
 
-    it('re-resolves successfully', async () => {
-      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () =>
-          Promise.resolve({
-            success: true,
-            report: { ...mockReport, _project: 'project-a' },
-          }),
-      } as Response);
+    it('re-resolves successfully via SSE', async () => {
+      let capturedEventSource: MockEventSource | null = null;
+      (globalThis as any).EventSource = class extends MockEventSource {
+        constructor(url: string) {
+          super(url);
+          capturedEventSource = this;
+        }
+      };
 
       const { result } = renderUseScan();
 
@@ -389,13 +389,19 @@ describe('useScan', () => {
         });
       });
 
-      expect(fetchSpy).toHaveBeenCalledWith('/api/re-resolve', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reportPath: '/path/to/report.json',
-          mockAi: false,
-        }),
+      expect(capturedEventSource).toBeDefined();
+      expect(capturedEventSource!.url).toContain('/api/re-resolve/stream');
+      expect(capturedEventSource!.url).toContain('reportPath=%2Fpath%2Fto%2Freport.json');
+      expect(result.current.isReResolving).toBe(true);
+
+      // Simulate SSE complete event
+      await act(async () => {
+        capturedEventSource!.onmessage!({
+          data: JSON.stringify({
+            type: 'complete',
+            report: { ...mockReport, _project: 'project-a' },
+          }),
+        } as MessageEvent);
       });
 
       expect(mockShowToast).toHaveBeenCalledWith('AI suggestions updated for this report.');
@@ -403,13 +409,13 @@ describe('useScan', () => {
     });
 
     it('calls setCurrentReport with updated report on re-resolve success', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () =>
-          Promise.resolve({
-            success: true,
-            report: { ...mockReport, _project: 'project-a', findings: [{ rule_id: 'new', severity: 'error', file: 'b.ts', line: 2, message: 'new finding' }] },
-          }),
-      } as Response);
+      let capturedEventSource: MockEventSource | null = null;
+      (globalThis as any).EventSource = class extends MockEventSource {
+        constructor(url: string) {
+          super(url);
+          capturedEventSource = this;
+        }
+      };
 
       const { result } = renderHook(() =>
         useScan({
@@ -429,19 +435,29 @@ describe('useScan', () => {
         });
       });
 
+      // Simulate SSE complete event
+      await act(async () => {
+        capturedEventSource!.onmessage!({
+          data: JSON.stringify({
+            type: 'complete',
+            report: { ...mockReport, _project: 'project-a', findings: [{ rule_id: 'new', severity: 'error', file: 'b.ts', line: 2, message: 'new finding' }] },
+          }),
+        } as MessageEvent);
+      });
+
       expect(mockSetCurrentReport).toHaveBeenCalledWith(
         expect.objectContaining({ _project: 'project-a' })
       );
     });
 
     it('shows error toast on re-resolve failure', async () => {
-      vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-        json: () =>
-          Promise.resolve({
-            success: false,
-            error: 'AI analysis failed',
-          }),
-      } as Response);
+      let capturedEventSource: MockEventSource | null = null;
+      (globalThis as any).EventSource = class extends MockEventSource {
+        constructor(url: string) {
+          super(url);
+          capturedEventSource = this;
+        }
+      };
 
       const { result } = renderUseScan();
 
@@ -451,6 +467,16 @@ describe('useScan', () => {
           _savedAt: '/path/to/report.json',
           findings: [{ rule_id: 'test', severity: 'warning', file: 'a.ts', line: 1, message: 'test' }],
         });
+      });
+
+      // Simulate SSE error event
+      await act(async () => {
+        capturedEventSource!.onmessage!({
+          data: JSON.stringify({
+            type: 'error',
+            error: 'AI analysis failed',
+          }),
+        } as MessageEvent);
       });
 
       expect(mockShowToast).toHaveBeenCalledWith('AI analysis failed', 'error');

@@ -104,7 +104,7 @@ export const FileTree: React.FC<FileTreeProps> = ({
           <div className="w-4 h-4 shrink-0" />
           <File className="h-4 w-4 shrink-0 text-info" />
           <span className="truncate flex-1">{node.name}</span>
-          <span className="px-1.5 py-0.2 bg-bg-tertiary text-text-tertiary rounded text-[11px] font-sans border border-card-border">
+          <span className="px-1.5 py-0.2 bg-bg-tertiary text-text-tertiary rounded text-xs font-sans border border-card-border">
             {findingsCount}
           </span>
         </div>

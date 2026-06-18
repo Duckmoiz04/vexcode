@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { renderWithProviders, screen, fireEvent } from '../../test/test-utils';
+import { renderWithProviders, screen, fireEvent, waitFor } from '../../test/test-utils';
 import { SettingsDrawer } from './SettingsDrawer';
 import type { Config } from '../../types';
 
@@ -12,38 +12,70 @@ describe('SettingsDrawer', () => {
     initialConfig: null as Config | null,
   };
 
-  it('renders the drawer when open', () => {
+  it('renders the modal when open', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
 
     expect(screen.getByText('Settings')).toBeInTheDocument();
-    expect(screen.getByText('Save Configuration')).toBeInTheDocument();
   });
 
-  it('renders all section headings', () => {
+  it('renders tab headers', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
 
-    expect(screen.getByText('AI Provider')).toBeInTheDocument();
-    expect(screen.getByText('API Configuration')).toBeInTheDocument();
-    expect(screen.getByText('AI Model')).toBeInTheDocument();
+    expect(screen.getByText('Providers')).toBeInTheDocument();
+    expect(screen.getByText('Model/Agent')).toBeInTheDocument();
+    expect(screen.getByText('Rules')).toBeInTheDocument();
+  });
+
+  it('shows Providers tab content by default', () => {
+    renderWithProviders(<SettingsDrawer {...defaultProps} />);
+
+    expect(screen.getByText('AI Providers')).toBeInTheDocument();
+    expect(screen.queryByText('Agent Assignments')).not.toBeInTheDocument();
+  });
+
+  it('shows Model/Agent tab content when Model/Agent is clicked', () => {
+    renderWithProviders(<SettingsDrawer {...defaultProps} />);
+
+    fireEvent.click(screen.getByText('Model/Agent'));
+
+    expect(screen.getByText('Agent Assignments')).toBeInTheDocument();
     expect(screen.getByText('Advanced Settings')).toBeInTheDocument();
-    expect(screen.getByText('Semgrep')).toBeInTheDocument();
   });
 
-  it('renders provider buttons', () => {
+  it('shows Rules tab content when Rules is clicked', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
 
-    expect(screen.getByText('OpenAI')).toBeInTheDocument();
-    expect(screen.getByText('Anthropic')).toBeInTheDocument();
-    expect(screen.getByText('Google')).toBeInTheDocument();
-    expect(screen.getByText('9router')).toBeInTheDocument();
-    expect(screen.getByText('NVIDIA NIM')).toBeInTheDocument();
+    expect(screen.queryByText('Rules Path')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText('Rules'));
+
+    expect(screen.getByText('Rules Path')).toBeInTheDocument();
+  });
+
+  it('renders provider cards', () => {
+    renderWithProviders(<SettingsDrawer {...defaultProps} />);
+
+    expect(screen.getAllByText('OpenAI').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Anthropic').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Google').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('9router').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('NVIDIA NIM').length).toBeGreaterThan(0);
+  });
+
+  it('renders agent assignment rows', () => {
+    renderWithProviders(<SettingsDrawer {...defaultProps} />);
+
+    fireEvent.click(screen.getByText('Model/Agent'));
+
+    expect(screen.getByText('Code Suggest')).toBeInTheDocument();
+    expect(screen.getByText('Bug Scan')).toBeInTheDocument();
+    expect(screen.getByText('Naming Audit')).toBeInTheDocument();
   });
 
   it('calls onClose when overlay is clicked', () => {
     const onClose = vi.fn();
     renderWithProviders(<SettingsDrawer {...defaultProps} onClose={onClose} />);
 
-    // The overlay is the first fixed div with backdrop-blur
     const overlay = document.querySelector('.backdrop-blur-sm');
     expect(overlay).toBeInTheDocument();
     if (overlay) {
@@ -61,18 +93,50 @@ describe('SettingsDrawer', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('calls onSave with config when Save is clicked', async () => {
+  it('auto-saves when provider toggle changes', async () => {
     const onSave = vi.fn().mockResolvedValue(undefined);
-    renderWithProviders(<SettingsDrawer {...defaultProps} onSave={onSave} />);
+    const initialConfig = {
+      AI_PROVIDER: 'openai',
+      AI_TEMPERATURE: '0.1',
+      AI_MAX_TOKENS: '4096',
+      AI_RESOLVE_TIMEOUT_SECONDS: '90',
+      AI_NAMING_TIMEOUT_SECONDS: '90',
+      AI_MAX_RETRIES: '2',
+      AI_REQUEST_COOLDOWN_SECONDS: '8',
+      OPENAI_API_KEY: 'sk-test',
+      _aiSettings: {
+        enabled: true,
+        providers: {
+          openai: { enabled: true, requires_key: true, api_key: 'sk-test', base_url: 'https://api.openai.com/v1', model: 'gpt-4o-mini' },
+        },
+        agents: { suggest: { provider: 'openai', model: 'gpt-4o-mini', enabled: true } },
+      },
+    };
 
-    const saveBtn = screen.getByText('Save Configuration');
-    fireEvent.click(saveBtn);
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      json: () => Promise.resolve({ success: true, models: [{ id: 'gpt-4o-mini' }] }),
+    });
 
-    expect(onSave).toHaveBeenCalledTimes(1);
-    const savedConfig = onSave.mock.calls[0][0] as Config;
-    expect(savedConfig.AI_PROVIDER).toBe('openai');
-    expect(savedConfig.AI_TEMPERATURE).toBe('0.1');
-    expect(savedConfig.AI_MAX_TOKENS).toBe('4096');
+    renderWithProviders(<SettingsDrawer {...defaultProps} onSave={onSave} initialConfig={initialConfig as unknown as Config} />);
+
+    const openaiLabel = screen.getAllByText('OpenAI')[0];
+    fireEvent.click(openaiLabel);
+
+    fireEvent.click(screen.getByText('Connect'));
+
+    const toggles = await screen.findAllByRole('switch');
+    expect(toggles.length).toBeGreaterThan(0);
+
+    fireEvent.click(toggles[0]);
+
+    await waitFor(() => {
+      expect(onSave.mock.calls.length).toBeGreaterThanOrEqual(2);
+      const lastCall = onSave.mock.calls[onSave.mock.calls.length - 1][0] as Config;
+      expect(lastCall._aiSettings!.providers.openai.enabled).toBe(false);
+    });
+
+    globalThis.fetch = originalFetch;
   });
 
   it('loads initial config values', () => {
@@ -83,22 +147,40 @@ describe('SettingsDrawer', () => {
       ANTHROPIC_API_KEY: 'sk-ant-test',
       ANTHROPIC_BASE_URL: 'https://api.anthropic.com',
       ANTHROPIC_MODEL: 'claude-3-haiku-20240307',
+      _aiSettings: {
+        enabled: true,
+        providers: {
+          anthropic: {
+            enabled: true,
+            model: 'claude-3-haiku-20240307',
+            requires_key: true,
+            api_key: 'sk-ant-test',
+            base_url: 'https://api.anthropic.com',
+          },
+        },
+        agents: {
+          suggest: { provider: 'anthropic', model: 'claude-3-haiku-20240307', enabled: true },
+        },
+      },
     };
 
     renderWithProviders(<SettingsDrawer {...defaultProps} initialConfig={initialConfig} />);
 
-    // Provider should be anthropic (highlighted)
-    const anthropicBtn = screen.getByText('Anthropic').closest('button');
-    expect(anthropicBtn?.className).toContain('border-accent');
+    // Provider cards still render
+    expect(screen.getAllByText('OpenAI').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Anthropic').length).toBeGreaterThan(0);
+
+    fireEvent.click(screen.getByText('Model/Agent'));
+    expect(screen.getByDisplayValue('Anthropic')).toBeInTheDocument();
   });
 
   it('toggles advanced settings accordion', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
 
-    // Advanced settings fields should not be visible initially
+    fireEvent.click(screen.getByText('Model/Agent'));
+
     expect(screen.queryByText('Temperature')).not.toBeInTheDocument();
 
-    // Click to open
     fireEvent.click(screen.getByText('Advanced Settings'));
     expect(screen.getByText('Temperature')).toBeInTheDocument();
     expect(screen.getByText('Max Tokens')).toBeInTheDocument();

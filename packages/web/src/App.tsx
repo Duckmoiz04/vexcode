@@ -18,11 +18,13 @@ export const App: React.FC = () => {
   const { config, isSettingsOpen, setIsSettingsOpen, handleSaveConfig } = useConfig(showToast);
   const {
     currentProject, projects, reports, currentReportId, currentReport, setCurrentReport,
+    pagination, currentPage, pageSize,
     loadProjects, loadHistory, handleSelectProject, setCurrentReportId,
+    handlePageChange, handleSetPageSize,
   } = useReports(showToast);
   const {
-    isScanning, scanStatus, scanLogs, elapsedTime, isReResolving,
-    handleStartScan, handleCancelScan, handleReResolve,
+    isScanning, scanStatus, scanLogs, elapsedTime, isReResolving, scanProgress, PHASE_LABELS,
+    handleStartScan, handleCancelScan, handleReResolve, formatTime,
   } = useScan({ showToast, loadProjects, loadHistory, currentReport, setCurrentReport, onScanComplete: handleSelectProject });
 
   const [selectedFindingIndex, setSelectedFindingIndex] = useState<number | null>(null);
@@ -266,6 +268,11 @@ export const App: React.FC = () => {
     }
   };
 
+  const handlePageChangeWithReset = useCallback((page: number) => {
+    setSelectedFindingIndex(null);
+    handlePageChange(page);
+  }, [handlePageChange]);
+
   // Reset view state when switching projects or scans
   const resetView = useCallback(() => {
     setActiveTab('dashboard');
@@ -306,6 +313,8 @@ export const App: React.FC = () => {
         scanStatus={scanStatus}
         elapsedTime={elapsedTime}
         scanLogs={scanLogs}
+        scanProgress={scanProgress}
+        PHASE_LABELS={PHASE_LABELS}
         onCancelScan={handleCancelScan}
       />
 
@@ -419,6 +428,9 @@ export const App: React.FC = () => {
                     onReResolve={() => handleReResolve(currentReport)}
                     isReResolving={isReResolving}
                     onSelectFindingIndex={handleSelectFindingIndex}
+                    pagination={pagination}
+                    currentPage={currentPage}
+                    onPageChange={handlePageChangeWithReset}
                   />
                 )}
               </div>

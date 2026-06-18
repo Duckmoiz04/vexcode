@@ -1,40 +1,32 @@
 import React from 'react';
 
+interface ScanProgress {
+  phase: string;
+  message: string;
+  current: number;
+  total: number;
+  percentage: number;
+}
+
 interface ScanModalProps {
   isScanning: boolean;
   scanStatus: string;
   elapsedTime: number;
   scanLogs: string[];
+  scanProgress: ScanProgress | null;
+  PHASE_LABELS?: Record<string, string>;
   onCancelScan: () => void;
 }
 
-const getStepStatus = (stepIndex: number, statusText: string) => {
-  const txt = (statusText || '').toLowerCase();
-  
-  // Step index mappings:
-  // 0: Static Security Scan (Semgrep)
-  // 1: AST Structural Analysis (GitNexus)
-  // 2: Complexity Metrics (Lizard)
-  // 3: Obscure Naming Audit (AI)
-  // 4: Generate Fix Suggestions (9router AI)
-  // 5: Package & Save Report
-  
-  let currentStep = 0;
-  if (txt.includes('gitnexus') || txt.includes('ast context') || txt.includes('enriching')) {
-    currentStep = 1;
-  } else if (txt.includes('lizard') || txt.includes('complexity')) {
-    currentStep = 2;
-  } else if (txt.includes('naming quality') || txt.includes('naming audit')) {
-    currentStep = 3;
-  } else if (txt.includes('resolving findings') || txt.includes('ai resolutions') || txt.includes('using mock ai')) {
-    currentStep = 4;
-  } else if (txt.includes('writing report') || txt.includes('executed successfully')) {
-    currentStep = 5;
-  }
-  
-  if (currentStep > stepIndex) return 'completed';
-  if (currentStep === stepIndex) return 'active';
-  return 'pending';
+const PHASE_MAP: Record<string, number> = {
+  scan: 0,
+  enrich: 1,
+  complexity: 2,
+  dedup: 2,
+  classify: 2,
+  naming_audit: 3,
+  ai_resolve: 4,
+  report: 5,
 };
 
 const scanSteps = [
@@ -42,7 +34,7 @@ const scanSteps = [
   { label: 'AST Structural Analysis (GitNexus)', desc: 'Construct call graph & blast radius' },
   { label: 'Calculate Complexity Metrics (Lizard)', desc: 'Measure Cyclomatic complexity & LOC' },
   { label: 'Audit Obscure Naming (AI)', desc: 'Evaluate symbol naming semantics' },
-  { label: 'Generate Fix Suggestions (9router AI)', desc: 'Generate context-aware remediation code' },
+  { label: 'Generate Fix Suggestions (AI)', desc: 'Generate context-aware remediation code' },
   { label: 'Package & Save Report', desc: 'Synchronize analysis results' }
 ];
 
@@ -57,8 +49,21 @@ export const ScanModal: React.FC<ScanModalProps> = ({
   scanStatus,
   elapsedTime,
   scanLogs,
+  scanProgress,
+  PHASE_LABELS,
   onCancelScan,
 }) => {
+  if (!isScanning) return null;
+
+  const currentStep = scanProgress ? PHASE_MAP[scanProgress.phase] ?? -1 : -1;
+  const pct = scanProgress?.percentage ?? 0;
+
+  const getStepStatus = (stepIndex: number) => {
+    if (currentStep < 0) return 'pending';
+    if (stepIndex < currentStep) return 'completed';
+    if (stepIndex === currentStep) return 'active';
+    return 'pending';
+  };
   if (!isScanning) return null;
 
   return (
@@ -81,25 +86,39 @@ export const ScanModal: React.FC<ScanModalProps> = ({
               </h3>
             </div>
             <div className="flex items-center gap-2">
-              <span className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border font-bold ${
+              <span className={`text-xs font-mono px-2.5 py-0.5 rounded-full border font-bold ${
                 scanStatus.toLowerCase().includes('fast')
                   ? 'bg-success/10 border-success/35 text-success'
                   : 'bg-accent/10 border-accent/35 text-accent'
               }`}>
                 {scanStatus.toLowerCase().includes('fast') ? 'FAST SCAN' : 'FULL SCAN'}
               </span>
-              <span className="text-[11px] text-text-secondary font-mono bg-bg-primary/80 px-2.5 py-0.5 rounded border border-card-border/60 font-semibold flex items-center gap-1.5 shadow-inner">
+              <span className="text-xs text-text-secondary font-mono bg-bg-primary/80 px-2.5 py-0.5 rounded border border-card-border/60 font-semibold flex items-center gap-1.5 shadow-inner">
                 <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
                 {formatTime(elapsedTime)}
               </span>
             </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="w-full bg-bg-primary rounded-full h-2 overflow-hidden border border-card-border/40">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-accent to-accent/70 transition-all duration-500 ease-out"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-text-secondary font-mono">
+              {PHASE_LABELS?.[scanProgress?.phase ?? ''] ?? scanProgress?.phase ?? ''}
+            </span>
+            <span className="text-xs text-accent font-bold font-mono">{pct.toFixed(0)}%</span>
           </div>
         </div>
 
         {/* Steps Checklist */}
         <div className="space-y-3 py-3 border-y border-card-border/30">
           {scanSteps.map((step, idx) => {
-            const status = getStepStatus(idx, scanStatus);
+            const status = getStepStatus(idx);
             return (
               <div 
                 key={idx} 
@@ -113,7 +132,7 @@ export const ScanModal: React.FC<ScanModalProps> = ({
               >
                 <div className="mt-0.5 shrink-0">
                   {status === 'completed' ? (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success/15 border border-success/40 text-success text-[10px] font-bold shadow-[0_0_8px_rgba(34,197,94,0.2)]">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success/15 border border-success/40 text-success text-xs font-bold shadow-[0_0_8px_rgba(34,197,94,0.2)]">
                       ✓
                     </div>
                   ) : status === 'active' ? (
@@ -135,7 +154,7 @@ export const ScanModal: React.FC<ScanModalProps> = ({
                   }`}>
                     {step.label}
                   </span>
-                  <span className={`text-[10px] mt-1.5 leading-none ${
+                  <span className={`text-xs mt-1.5 leading-none ${
                     status === 'active' ? 'text-text-secondary' : 'text-text-tertiary'
                   }`}>
                     {step.desc}
@@ -149,13 +168,13 @@ export const ScanModal: React.FC<ScanModalProps> = ({
         {/* Terminal Logs View */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] text-text-secondary uppercase font-bold tracking-wider flex items-center gap-1.5">
+            <span className="text-xs text-text-secondary uppercase font-bold tracking-wider flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse" />
               Log Console (Terminal)
             </span>
-            <span className="text-[8px] font-mono text-text-tertiary">Real-time SSE Stream</span>
+            <span className="text-xs font-mono text-text-tertiary">Real-time SSE Stream</span>
           </div>
-          <div className="font-mono text-[10px] text-left text-success bg-bg-primary border border-card-border/60 p-3.5 rounded-xl h-24 overflow-y-auto scrollbar-thin select-text flex flex-col gap-1 shadow-inner">
+          <div className="font-mono text-xs text-left text-success bg-bg-primary border border-card-border/60 p-3.5 rounded-xl h-24 overflow-y-auto scrollbar-thin select-text flex flex-col gap-1 shadow-inner">
             {scanLogs.map((log, lIdx) => (
               <div key={lIdx} className={`truncate ${lIdx === scanLogs.length - 1 ? 'text-cyan-400 font-semibold' : 'opacity-60'}`}>
                 <span className="text-text-tertiary select-none mr-2">&gt;</span>

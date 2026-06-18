@@ -11,7 +11,7 @@ export const SemgrepSection: React.FC<SemgrepSectionProps> = ({
 }) => {
   return (
     <div className="space-y-2 border-t border-card-border/50 pt-4">
-      <h4 className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider">Semgrep</h4>
+      <h4 className="text-xs text-text-tertiary uppercase font-bold tracking-wider">Semgrep</h4>
       <div className="space-y-1">
         <label htmlFor="settings-semgrep-rules" className="text-xs text-text-secondary font-medium">Rules Path</label>
         <input

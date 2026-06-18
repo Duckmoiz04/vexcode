@@ -1,10 +1,9 @@
-import React from 'react';
-import { X, Check } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { X, Globe, Bot, FileCode } from 'lucide-react';
 import type { Config } from '../../types';
 import { useSettingsDrawer } from './useSettingsDrawer';
-import { AiProviderSelector } from './AiProviderSelector';
-import { ApiConfigSection } from './ApiConfigSection';
-import { ModelSelector } from './ModelSelector';
+import { ProviderSection } from './ProviderSection';
+import { AgentAssignmentSection } from './AgentAssignmentSection';
 import { AdvancedSettings } from './AdvancedSettings';
 import { SemgrepSection } from './SemgrepSection';
 
@@ -15,11 +14,89 @@ interface SettingsDrawerProps {
   initialConfig: Config | null;
 }
 
+const TABS = [
+  { id: 'providers', label: 'Providers', icon: Globe },
+  { id: 'agents', label: 'Model/Agent', icon: Bot },
+  { id: 'rules', label: 'Rules', icon: FileCode },
+] as const;
+
+type TabId = (typeof TABS)[number]['id'];
+
+function Toggle({ id, checked, onChange, label }: {
+  id: string; checked: boolean; onChange: (v: boolean) => void; label: string;
+}) {
+  return (
+    <button
+      id={id}
+      role="switch"
+      aria-checked={checked}
+      onClick={() => onChange(!checked)}
+      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border transition-colors duration-200 outline-none ${
+        checked ? 'border-accent bg-accent/20' : 'border-card-border bg-bg-primary/50'
+      }`}
+    >
+      <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow-sm transform transition-transform duration-200 ${
+        checked ? 'translate-x-[18px]' : 'translate-x-[3px]'
+      }`} />
+    </button>
+  );
+}
+
 export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   isOpen, onClose, onSave, initialConfig,
 }) => {
   const state = useSettingsDrawer(isOpen, initialConfig);
-  const handleSave = async () => { await onSave(state.buildConfig()); };
+  const [activeTab, setActiveTab] = useState<TabId>('providers');
+
+  const handleTestConnection = useCallback(async (pk: string) => {
+    const result = await state.handleTestConnection(pk);
+    if (result.success) {
+      state.handleProviderConfigChange(pk, 'enabled', true);
+      const config = state.buildConfig();
+      if (config._aiSettings?.providers[pk]) {
+        config._aiSettings.providers[pk].enabled = true;
+        config._aiSettings.providers[pk].api_key = state.providerConfigs[pk].apiKey;
+        config._aiSettings.providers[pk].base_url = state.providerConfigs[pk].baseUrl;
+      }
+      if (!config.AI_PROVIDER) {
+        const upper = pk.toUpperCase();
+        config.AI_PROVIDER = pk;
+        config[`${upper}_API_KEY`] = state.providerConfigs[pk].apiKey;
+        config[`${upper}_BASE_URL`] = state.providerConfigs[pk].baseUrl;
+      }
+      await onSave(config);
+    }
+  }, [state, onSave]);
+
+  const handleDisconnect = useCallback(async (pk: string) => {
+    state.handleProviderConfigChange(pk, 'apiKey', '');
+    state.handleProviderConfigChange(pk, 'testStatus', { text: '', type: 'idle' });
+    state.handleProviderConfigChange(pk, 'enabled', false);
+    const config = state.buildConfig();
+    if (config._aiSettings?.providers[pk]) {
+      config._aiSettings.providers[pk].api_key = '';
+      config._aiSettings.providers[pk].enabled = false;
+    }
+    if (config.AI_PROVIDER === pk) {
+      config.AI_PROVIDER = '';
+    }
+    await onSave(config);
+  }, [state, onSave]);
+
+  const handleEnabledChange = useCallback(async (pk: string, value: boolean) => {
+    state.handleProviderConfigChange(pk, 'enabled', value);
+    const config = state.buildConfig();
+    if (config._aiSettings?.providers[pk]) {
+      config._aiSettings.providers[pk].enabled = value;
+    }
+    if (value && !config.AI_PROVIDER) {
+      const upper = pk.toUpperCase();
+      config.AI_PROVIDER = pk;
+      config[`${upper}_API_KEY`] = state.providerConfigs[pk].apiKey;
+      config[`${upper}_BASE_URL`] = state.providerConfigs[pk].baseUrl;
+    }
+    await onSave(config);
+  }, [state, onSave]);
 
   return (
     <>
@@ -29,71 +106,111 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         }`}
         onClick={onClose}
       />
-      <aside
-        className={`fixed top-0 right-0 h-full w-96 max-w-[90vw] bg-bg-tertiary border-l border-card-border shadow-2xl z-50 flex flex-col transition-transform duration-300 ease-out transform ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+      <div
+        className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${
+          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
       >
-        <div className="px-5 py-4 border-b border-card-border flex items-center justify-between">
-          <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Settings</h3>
-          <button
-            onClick={onClose}
-            aria-label="Close settings"
-            title="Close settings"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary/55 transition-all cursor-pointer"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+        <div className="w-[1000px] max-w-[94vw] h-[700px] max-h-[90vh] bg-bg-tertiary border border-card-border rounded-xl shadow-2xl flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="px-5 py-3 border-b border-card-border flex items-center justify-between shrink-0">
+            <h3 className="text-sm font-bold text-text-primary uppercase tracking-wider">Settings</h3>
+            <button
+              onClick={onClose}
+              aria-label="Close settings"
+              title="Close settings"
+              className="flex h-7 w-7 items-center justify-center rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-primary/55 transition-all cursor-pointer"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
 
-        <div className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-thin">
-          <AiProviderSelector provider={state.provider} onSelect={state.handleProviderSelect} />
-          <ApiConfigSection
-            provider={state.provider}
-            apiKey={state.apiKey}
-            apiBaseUrl={state.apiBaseUrl}
-            testStatus={state.testStatus}
-            onApiKeyChange={state.setApiKey}
-            onBaseUrlChange={state.setApiBaseUrl}
-            onTestConnection={state.handleTestConnection}
-          />
-          <ModelSelector
-            selectedModel={state.selectedModel}
-            modelsList={state.modelsList}
-            onModelChange={state.setSelectedModel}
-          />
-          <AdvancedSettings
-            isOpen={state.isAdvancedOpen}
-            onToggle={() => state.setIsAdvancedOpen(!state.isAdvancedOpen)}
-            temperature={state.temperature}
-            maxTokens={state.maxTokens}
-            resolveTimeout={state.resolveTimeout}
-            namingTimeout={state.namingTimeout}
-            maxRetries={state.maxRetries}
-            requestCooldown={state.requestCooldown}
-            onTemperatureChange={state.setTemperature}
-            onMaxTokensChange={state.setMaxTokens}
-            onResolveTimeoutChange={state.setResolveTimeout}
-            onNamingTimeoutChange={state.setNamingTimeout}
-            onMaxRetriesChange={state.setMaxRetries}
-            onCooldownChange={state.setRequestCooldown}
-          />
-          <SemgrepSection
-            semgrepRules={state.semgrepRules}
-            onSemgrepRulesChange={state.setSemgrepRules}
-          />
-        </div>
+          <div className="flex flex-1 min-h-0">
+            <div className="w-[160px] shrink-0 border-r border-card-border bg-bg-primary/10 flex flex-col py-2">
+              {TABS.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2.5 px-4 py-2.5 text-xs font-medium transition-colors cursor-pointer border-l-2 ${
+                      activeTab === tab.id
+                        ? 'text-accent bg-accent/5 border-l-accent'
+                        : 'text-text-tertiary hover:text-text-secondary hover:bg-bg-primary/30 border-l-transparent'
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5 shrink-0" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
 
-        <div className="p-4 border-t border-card-border bg-bg-primary/20">
-          <button
-            onClick={handleSave}
-            className="w-full flex items-center justify-center gap-2 py-2 px-4 bg-accent hover:bg-accent-hover text-white text-xs font-semibold rounded-lg shadow-lg hover:-translate-y-0.5 transition-all cursor-pointer"
-          >
-            <Check className="h-4 w-4" />
-            <span>Save Configuration</span>
-          </button>
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-5 scrollbar-thin">
+              {activeTab === 'providers' && (
+                <>
+                  {state.aiEnabled && (
+                    <ProviderSection
+                      configs={state.providerConfigs}
+                      onConfigChange={state.handleProviderConfigChange}
+                      onTestConnection={handleTestConnection}
+                      onDisconnect={handleDisconnect}
+                      onEnabledChange={handleEnabledChange}
+                    />
+                  )}
+                </>
+              )}
+
+              {activeTab === 'agents' && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-text-secondary font-medium">Enable AI Analysis</span>
+                    <Toggle
+                      id="settings-ai-master-toggle"
+                      checked={state.aiEnabled}
+                      onChange={state.handleAiEnabledChange}
+                      label="Enable AI analysis"
+                    />
+                  </div>
+
+                  {state.aiEnabled && (
+                    <AgentAssignmentSection
+                      agents={state.agentMappings}
+                      enabledProviders={state.enabledProviders}
+                      onAgentChange={state.handleAgentChange}
+                    />
+                  )}
+
+                  <AdvancedSettings
+                    isOpen={state.isAdvancedOpen}
+                    onToggle={() => state.setIsAdvancedOpen(!state.isAdvancedOpen)}
+                    temperature={state.temperature}
+                    maxTokens={state.maxTokens}
+                    resolveTimeout={state.resolveTimeout}
+                    namingTimeout={state.namingTimeout}
+                    maxRetries={state.maxRetries}
+                    requestCooldown={state.requestCooldown}
+                    onTemperatureChange={state.setTemperature}
+                    onMaxTokensChange={state.setMaxTokens}
+                    onResolveTimeoutChange={state.setResolveTimeout}
+                    onNamingTimeoutChange={state.setNamingTimeout}
+                    onMaxRetriesChange={state.setMaxRetries}
+                    onCooldownChange={state.setRequestCooldown}
+                  />
+                </>
+              )}
+
+              {activeTab === 'rules' && (
+                <SemgrepSection
+                  semgrepRules={state.semgrepRules}
+                  onSemgrepRulesChange={state.setSemgrepRules}
+                />
+              )}
+            </div>
+          </div>
         </div>
-      </aside>
+      </div>
     </>
   );
 };

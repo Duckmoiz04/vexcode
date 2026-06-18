@@ -29,7 +29,7 @@ export const MetricsCards: React.FC<MetricsCardsProps> = ({
           <span>Total Issues</span>
         </div>
         <div className="text-2xl font-bold text-text-primary">{totalFindings}</div>
-        <div className="text-[10px] text-text-tertiary mt-1">Overall findings identified</div>
+        <div className="text-xs text-text-tertiary mt-1">Overall findings identified</div>
       </div>
 
       {/* Security */}
@@ -39,7 +39,7 @@ export const MetricsCards: React.FC<MetricsCardsProps> = ({
           <span>Security</span>
         </div>
         <div className="text-2xl font-bold text-text-primary">{security}</div>
-        <div className="text-[10px] text-text-tertiary mt-1">Vulnerabilities & secrets</div>
+        <div className="text-xs text-text-tertiary mt-1">Vulnerabilities & secrets</div>
       </div>
 
       {/* Quality */}
@@ -49,7 +49,7 @@ export const MetricsCards: React.FC<MetricsCardsProps> = ({
           <span>Quality</span>
         </div>
         <div className="text-2xl font-bold text-text-primary">{quality}</div>
-        <div className="text-[10px] text-text-tertiary mt-1">Logic bugs & code defects</div>
+        <div className="text-xs text-text-tertiary mt-1">Logic bugs & code defects</div>
       </div>
 
       {/* Architecture */}
@@ -59,7 +59,7 @@ export const MetricsCards: React.FC<MetricsCardsProps> = ({
           <span>Architecture</span>
         </div>
         <div className="text-2xl font-bold text-text-primary">{architecture}</div>
-        <div className="text-[10px] text-text-tertiary mt-1">AST & call flow insights</div>
+        <div className="text-xs text-text-tertiary mt-1">AST & call flow insights</div>
       </div>
 
       {/* Maintainability */}
@@ -71,12 +71,12 @@ export const MetricsCards: React.FC<MetricsCardsProps> = ({
         <div className="flex items-baseline gap-2">
           <div className="text-2xl font-bold text-text-primary">{maintainability}</div>
           {avgComplexity > 0 && (
-            <span className="text-[10px] font-mono text-text-secondary">
+            <span className="text-xs font-mono text-text-secondary">
               (Avg CCN: {avgComplexity})
             </span>
           )}
         </div>
-        <div className="text-[10px] text-text-tertiary mt-1">
+        <div className="text-xs text-text-tertiary mt-1">
           {avgComplexity > 0 ? `Avg Cognitive: ${avgCognitive}` : 'Style & complexity issues'}
         </div>
       </div>

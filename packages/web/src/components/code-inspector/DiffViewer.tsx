@@ -448,7 +448,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
           while the user scrolls the diff inside the FileViewer's 60vh
           content area. z-10 keeps it above the CodeMirror content. */}
       <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
-        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
+        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">
           <span className="flex items-center gap-1">
             <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[hsla(350,85%,55%,0.4)]" />
             Original
@@ -462,21 +462,21 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           {chunkCount > 0 && (
             <>
-              <span className="text-[10px] text-text-tertiary font-mono">
+              <span className="text-xs text-text-tertiary font-mono">
                 {chunkCount} change{chunkCount > 1 ? 's' : ''}
               </span>
-              <span className="text-text-quaternary text-[10px]">|</span>
+              <span className="text-text-quaternary text-xs">|</span>
               {/* Position indicator: "current / total" (1-based). Clamp to
                   bounds just in case currentChunkIndex briefly exceeds
                   chunkCount (e.g., a chunk is accepted between renders). */}
-              <span className="text-[10px] text-text-secondary font-mono">
+              <span className="text-xs text-text-secondary font-mono">
                 {Math.min(currentChunkIndex + 1, chunkCount)}/{chunkCount}
               </span>
-              <span className="text-text-quaternary text-[10px]">|</span>
+              <span className="text-text-quaternary text-xs">|</span>
               <button
                 onClick={handlePreviousChunk}
                 disabled={chunkCount === 0}
-                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-bg-tertiary/60 border border-card-border/40 hover:bg-bg-tertiary disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary transition-all"
+                className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-bg-tertiary/60 border border-card-border/40 hover:bg-bg-tertiary disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary transition-all"
                 title="Previous Change (Alt+&uarr;)"
               >
                 <ChevronLeft size={12} />
@@ -485,18 +485,18 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
               <button
                 onClick={handleNextChunk}
                 disabled={chunkCount === 0}
-                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-bg-tertiary/60 border border-card-border/40 hover:bg-bg-tertiary disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary transition-all"
+                className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-bg-tertiary/60 border border-card-border/40 hover:bg-bg-tertiary disabled:opacity-30 disabled:cursor-not-allowed text-text-secondary hover:text-text-primary transition-all"
                 title="Next Change (Alt+&darr;)"
               >
                 Next
                 <ChevronRight size={12} />
               </button>
-              <span className="text-text-quaternary text-[10px]">|</span>
+              <span className="text-text-quaternary text-xs">|</span>
               {/* Per-chunk Accept / Reject — act on currentChunkIndex */}
               <button
                 onClick={handleAcceptCurrent}
                 disabled={chunkCount === 0}
-                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-emerald-900/30 border border-emerald-700/40 hover:bg-emerald-900/50 text-emerald-300 hover:text-emerald-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-emerald-900/30 border border-emerald-700/40 hover:bg-emerald-900/50 text-emerald-300 hover:text-emerald-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 title="Accept the currently selected change"
               >
                 <Check size={12} />
@@ -505,18 +505,18 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
               <button
                 onClick={handleRejectCurrent}
                 disabled={chunkCount === 0}
-                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-red-900/30 border border-red-700/40 hover:bg-red-900/50 text-red-300 hover:text-red-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-red-900/30 border border-red-700/40 hover:bg-red-900/50 text-red-300 hover:text-red-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 title="Reject the currently selected change"
               >
                 <X size={12} />
                 Reject
               </button>
-              <span className="text-text-quaternary text-[10px]">|</span>
+              <span className="text-text-quaternary text-xs">|</span>
               {/* Bulk Accept all / Reject all */}
               <button
                 onClick={handleAcceptAll}
                 disabled={chunkCount === 0}
-                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-emerald-900/30 border border-emerald-700/40 hover:bg-emerald-900/50 text-emerald-300 hover:text-emerald-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-emerald-900/30 border border-emerald-700/40 hover:bg-emerald-900/50 text-emerald-300 hover:text-emerald-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 title="Accept all changes in this file"
               >
                 <Check size={12} />
@@ -525,7 +525,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
               <button
                 onClick={handleRejectAll}
                 disabled={chunkCount === 0}
-                className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded bg-red-900/30 border border-red-700/40 hover:bg-red-900/50 text-red-300 hover:text-red-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="flex items-center gap-1 text-xs px-2 py-0.5 rounded bg-red-900/30 border border-red-700/40 hover:bg-red-900/50 text-red-300 hover:text-red-100 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
                 title="Reject all changes in this file (keep original)"
               >
                 <X size={12} />

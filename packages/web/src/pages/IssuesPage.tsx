@@ -3,7 +3,7 @@ import { Loader2, Wand2 } from 'lucide-react';
 import { FilterPanel } from '../components/FilterPanel';
 import { FindingsList } from '../components/FindingsList';
 import { CodeInspector } from '../components/CodeInspector';
-import type { Finding, FindingStatus, Report } from '../types';
+import type { Finding, FindingStatus, Report, PaginationInfo } from '../types';
 
 interface IssuesPageProps {
   currentReport: Report | null;
@@ -37,6 +37,9 @@ interface IssuesPageProps {
   onReResolve: () => Promise<void>;
   isReResolving: boolean;
   onSelectFindingIndex: (index: number | null) => void;
+  pagination?: PaginationInfo | null;
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
 }
 
 export const IssuesPage: React.FC<IssuesPageProps> = ({
@@ -65,6 +68,9 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
   onReResolve,
   isReResolving,
   onSelectFindingIndex,
+  pagination,
+  currentPage,
+  onPageChange,
 }) => {
   if (!currentReport || !currentReport.findings) return null;
 
@@ -96,7 +102,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
               <h2 className="text-xs font-bold uppercase tracking-wider text-text-primary">
                 Code & Issues
               </h2>
-              <p className="mt-1 text-[11px] text-text-tertiary truncate">
+              <p className="mt-1 text-xs text-text-tertiary truncate">
                 Re-run AI suggestions for this saved scan without scanning the project again.
               </p>
             </div>
@@ -125,6 +131,9 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
               setSelectedFindingIndex(index);
             }}
             onStatusChange={onStatusChange}
+            pagination={pagination}
+            currentPage={currentPage}
+            onPageChange={onPageChange}
           />
         </div>
       </div>

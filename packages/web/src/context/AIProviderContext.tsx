@@ -20,6 +20,7 @@ export function AIProviderProvider({ config, children }: AIProviderProviderProps
     aiModel: providerKey ? (config[`${providerKey}_MODEL`] || '') : '',
     aiTemperature: parseFloat(config?.AI_TEMPERATURE ?? '0.1') || 0.1,
     aiMaxTokens: parseInt(config?.AI_MAX_TOKENS ?? '4096') || 4096,
+    aiSettings: config?._aiSettings ?? null,
   };
 
   return (

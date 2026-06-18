@@ -75,7 +75,7 @@ export const CrossScanSummary: React.FC<CrossScanSummaryProps> = ({ findings }) 
               <div className={cfg.color}>{cfg.icon}</div>
               <div className="min-w-0">
                 <div className={`text-lg font-bold ${cfg.color}`}>{count}</div>
-                <div className="text-[10px] text-text-tertiary truncate">{cfg.description}</div>
+                <div className="text-xs text-text-tertiary truncate">{cfg.description}</div>
               </div>
             </div>
           );

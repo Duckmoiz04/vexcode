@@ -14,7 +14,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
 }) => {
   return (
     <div className="space-y-2">
-      <label htmlFor="settings-model" className="text-[10px] text-text-tertiary uppercase font-bold tracking-wider block">AI Model</label>
+      <label htmlFor="settings-model" className="text-xs text-text-tertiary uppercase font-bold tracking-wider block">AI Model</label>
       <div className="relative">
         <select
           id="settings-model"

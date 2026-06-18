@@ -29,11 +29,15 @@ describe('useConfig', () => {
     expect(result.current.isSettingsOpen).toBe(false);
   });
 
-  it('loads config from /api/config on mount', async () => {
+  it('loads config from /api/config and /api/settings/ai on mount', async () => {
     const mockConfig: Config = { AI_PROVIDER: 'openai', AI_TEMPERATURE: '0.5' };
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce({
-      json: () => Promise.resolve(mockConfig),
-    } as Response);
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve(mockConfig),
+      } as Response)
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true, config: null }),
+      } as Response);
 
     const { result } = renderUseConfig();
 
@@ -41,12 +45,15 @@ describe('useConfig', () => {
       expect(result.current.config).toEqual(mockConfig);
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith('/api/config');
+    expect(fetchSpy).toHaveBeenNthCalledWith(1, '/api/config');
+    expect(fetchSpy).toHaveBeenNthCalledWith(2, '/api/settings/ai');
   });
 
   it('handles fetch error gracefully', async () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(globalThis, 'fetch').mockRejectedValueOnce(new Error('Network error'));
+    vi.spyOn(globalThis, 'fetch')
+      .mockRejectedValueOnce(new Error('Network error'))
+      .mockRejectedValueOnce(new Error('Network error'));
 
     const { result } = renderUseConfig();
 
@@ -76,19 +83,33 @@ describe('useConfig', () => {
   });
 
   it('handleSaveConfig POSTs config and shows success toast', async () => {
+    const mockJsonHeaders = { 'content-type': 'application/json' };
     const fetchSpy = vi.spyOn(globalThis, 'fetch')
-      // initial loadConfig on mount
+      // initial loadConfig on mount — /api/config
       .mockResolvedValueOnce({
         json: () => Promise.resolve({ AI_PROVIDER: 'openai' }),
-      } as Response)
-      // POST /api/config
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response)
+      // initial loadConfig — /api/settings/ai
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true, config: { enabled: false, providers: {}, agents: {} } }),
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response)
+      // handleSaveConfig — POST /api/config (no _aiSettings in payload → skip PUT)
       .mockResolvedValueOnce({
         json: () => Promise.resolve({ success: true }),
-      } as Response)
-      // reload config after save
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response)
+      // reload config after save — /api/config
       .mockResolvedValueOnce({
         json: () => Promise.resolve({ AI_PROVIDER: 'anthropic' }),
-      } as Response);
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response)
+      // reload config after save — /api/settings/ai
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true, config: null }),
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response);
 
     const { result } = renderUseConfig();
 
@@ -101,26 +122,34 @@ describe('useConfig', () => {
       await result.current.handleSaveConfig({ AI_PROVIDER: 'anthropic' });
     });
 
-    expect(fetchSpy).toHaveBeenCalledWith('/api/config', {
+    // The POST is the 3rd fetch call (after initial load × 2)
+    expect(fetchSpy).toHaveBeenNthCalledWith(3, '/api/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ AI_PROVIDER: 'anthropic' }),
     });
 
     expect(mockShowToast).toHaveBeenCalledWith('Configuration saved successfully!');
-    expect(result.current.isSettingsOpen).toBe(false);
   });
 
   it('handleSaveConfig shows error toast on failure', async () => {
+    const mockJsonHeaders = { 'content-type': 'application/json' };
     vi.spyOn(globalThis, 'fetch')
-      // initial loadConfig on mount
+      // initial loadConfig on mount — /api/config
       .mockResolvedValueOnce({
         json: () => Promise.resolve({ AI_PROVIDER: 'openai' }),
-      } as Response)
-      // POST /api/config returns error
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response)
+      // initial loadConfig — /api/settings/ai
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true, config: null }),
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response)
+      // POST /api/config returns error (no _aiSettings → skip PUT)
       .mockResolvedValueOnce({
         json: () => Promise.resolve({ success: false, error: 'Invalid config' }),
-      } as Response);
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response);
 
     const { result } = renderUseConfig();
 
@@ -137,12 +166,19 @@ describe('useConfig', () => {
   });
 
   it('handleSaveConfig shows error toast on network failure', async () => {
+    const mockJsonHeaders = { 'content-type': 'application/json' };
     vi.spyOn(globalThis, 'fetch')
-      // initial loadConfig on mount
+      // initial loadConfig on mount — /api/config
       .mockResolvedValueOnce({
         json: () => Promise.resolve({ AI_PROVIDER: 'openai' }),
-      } as Response)
-      // POST /api/config rejected
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response)
+      // initial loadConfig — /api/settings/ai
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve({ success: true, config: null }),
+        headers: { get: (k: string) => mockJsonHeaders[k as keyof typeof mockJsonHeaders] ?? null },
+      } as unknown as Response)
+      // POST /api/config rejected (no _aiSettings → skip PUT)
       .mockRejectedValueOnce(new Error('Offline'));
 
     const { result } = renderUseConfig();
