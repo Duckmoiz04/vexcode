@@ -41,13 +41,13 @@ model = "gemini-1.5-flash"
 base_url = "https://generativelanguage.googleapis.com"
 
 [ai.providers.9router]
-enabled = false
+enabled = true
 requires_key = true
 model = "openai/gpt-4o-mini"
 base_url = "http://localhost:20128/v1"
 
 [ai.providers.nvidia]
-enabled = false
+enabled = true
 requires_key = true
 model = "minimaxai/minimax-m2.7"
 base_url = "https://integrate.api.nvidia.com/v1"
