@@ -35,7 +35,7 @@ export const MetricsCards: React.FC<MetricsCardsProps> = ({
       {/* Security */}
       <div className="p-4 rounded-xl border border-card-border bg-card-bg backdrop-blur-md">
         <div className="flex items-center gap-2 text-text-secondary mb-2 text-xs font-semibold">
-          <ShieldCheck className="h-4 w-4 text-danger animate-pulse" />
+          <ShieldCheck className="h-4 w-4 text-danger" />
           <span>Security</span>
         </div>
         <div className="text-2xl font-bold text-text-primary">{security}</div>

@@ -68,7 +68,7 @@ export const ScanModal: React.FC<ScanModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-50 flex items-center justify-center p-4 select-none">
-      <div className="bg-bg-secondary/95 border border-card-border/80 rounded-2xl w-full max-w-lg shadow-[0_0_50px_rgba(0,149,255,0.15)] p-8 flex flex-col gap-6 animate-slide-up glass">
+      <div className="bg-bg-secondary/95 border border-card-border/80 rounded-2xl w-full max-w-lg shadow-2xl p-8 flex flex-col gap-6 animate-slide-up glass">
         
         {/* Modal Header */}
         <div className="flex flex-col gap-3">
@@ -124,7 +124,7 @@ export const ScanModal: React.FC<ScanModalProps> = ({
                 key={idx} 
                 className={`flex items-start gap-4 p-2.5 rounded-xl border transition-all duration-300 ${
                   status === 'active' 
-                    ? 'bg-accent/5 border-accent/25 shadow-[0_0_15px_rgba(0,149,255,0.03)]' 
+                    ? 'bg-accent/5 border-accent/20' 
                     : status === 'completed' 
                     ? 'bg-success/5 border-success/10' 
                     : 'border-transparent bg-transparent opacity-40'
@@ -132,7 +132,7 @@ export const ScanModal: React.FC<ScanModalProps> = ({
               >
                 <div className="mt-0.5 shrink-0">
                   {status === 'completed' ? (
-                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success/15 border border-success/40 text-success text-xs font-bold shadow-[0_0_8px_rgba(34,197,94,0.2)]">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success/10 border border-success/30 text-success text-xs font-bold">
                       ✓
                     </div>
                   ) : status === 'active' ? (

@@ -33,7 +33,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex min-h-screen w-screen items-center justify-center bg-bg-primary p-6 font-sans">
           <div className="w-full max-w-md rounded-2xl border border-card-border bg-card-bg p-8 text-center shadow-2xl backdrop-blur-xl animate-slide-up">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-danger/10 text-danger shadow-[0_0_20px_rgba(239,68,68,0.15)] animate-pulse-glow">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-danger/10 text-danger border border-danger/25">
               <AlertTriangle className="h-8 w-8" />
             </div>
             

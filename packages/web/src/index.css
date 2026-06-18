@@ -36,8 +36,6 @@
   --animate-slide-up: slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --animate-slide-in: slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --animate-fade-in: fade-in 0.2s ease-out;
-  --animate-breathe: breathe 3s ease-in-out infinite;
-  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
 }
 
 @keyframes slide-up {
@@ -71,27 +69,6 @@
   }
 }
 
-@keyframes breathe {
-  0%, 100% {
-    border-color: rgba(255, 255, 255, 0.05);
-    box-shadow: 0 0 0 0 rgba(0, 149, 255, 0);
-  }
-  50% {
-    border-color: hsl(220, 100%, 50%);
-    box-shadow: 0 0 20px 2px rgba(0, 149, 255, 0.2);
-  }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 15px rgba(0, 149, 255, 0.3);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0, 149, 255, 0.5);
-  }
-}
 
 /* Custom Scrollbar */
 .scrollbar-thin {
@@ -144,8 +121,7 @@ body {
 
 /* Glassmorphism utility */
 .glass {
-  background: var(--color-card-bg);
-  backdrop-filter: blur(12px);
+  background: var(--color-bg-tertiary);
   border: 1px solid var(--color-card-border);
 }
 

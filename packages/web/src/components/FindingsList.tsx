@@ -132,10 +132,10 @@ export const FindingsList: React.FC<FindingsListProps> = ({
                       <span
                         className={`h-2 w-2 rounded-full shrink-0 ${
                           severity === 'error'
-                            ? 'bg-error shadow-[0_0_8px_rgba(239,68,68,0.5)]'
+                            ? 'bg-error'
                             : severity === 'warning'
-                            ? 'bg-warning shadow-[0_0_8px_rgba(245,158,11,0.5)]'
-                            : 'bg-info shadow-[0_0_8px_rgba(59,130,246,0.5)]'
+                            ? 'bg-warning'
+                            : 'bg-info'
                         }`}
                       />
                       <span className="text-[12px] font-mono font-bold text-text-primary group-hover:text-accent transition-colors truncate">

@@ -72,10 +72,10 @@ export const CodeInspectorHeader: React.FC<CodeInspectorHeaderProps> = ({
         <span
           className={`flex h-6 w-6 items-center justify-center rounded-md font-bold text-sm ${
             severity === 'error'
-              ? 'bg-error/15 text-error border border-error/30 shadow-[0_0_8px_rgba(239,68,68,0.15)]'
+              ? 'bg-error/10 text-error border border-error/25'
               : severity === 'warning'
-              ? 'bg-warning/15 text-warning border border-warning/30 shadow-[0_0_8px_rgba(245,158,11,0.15)]'
-              : 'bg-info/15 text-info border border-info/30 shadow-[0_0_8px_rgba(59,130,246,0.15)]'
+              ? 'bg-warning/10 text-warning border border-warning/25'
+              : 'bg-info/10 text-info border border-info/25'
           }`}
         >
           {severity === 'error' ? '!' : severity === 'warning' ? '?' : 'i'}
