@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { X, Globe, Bot, FileCode } from 'lucide-react';
+import { X, Globe, Bot, FileCode, AlertCircle } from 'lucide-react';
 import type { Config } from '../../types';
 import { useSettingsDrawer } from './useSettingsDrawer';
 import { ProviderSection } from './ProviderSection';
@@ -58,12 +58,6 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
         config._aiSettings.providers[pk].api_key = state.providerConfigs[pk].apiKey;
         config._aiSettings.providers[pk].base_url = state.providerConfigs[pk].baseUrl;
       }
-      if (!config.AI_PROVIDER) {
-        const upper = pk.toUpperCase();
-        config.AI_PROVIDER = pk;
-        config[`${upper}_API_KEY`] = state.providerConfigs[pk].apiKey;
-        config[`${upper}_BASE_URL`] = state.providerConfigs[pk].baseUrl;
-      }
       await onSave(config);
     }
   }, [state, onSave]);
@@ -72,13 +66,11 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     state.handleProviderConfigChange(pk, 'apiKey', '');
     state.handleProviderConfigChange(pk, 'testStatus', { text: '', type: 'idle' });
     state.handleProviderConfigChange(pk, 'enabled', false);
+    state.handleProviderConfigChange(pk, 'fetchedModels', undefined);
     const config = state.buildConfig();
     if (config._aiSettings?.providers[pk]) {
       config._aiSettings.providers[pk].api_key = '';
       config._aiSettings.providers[pk].enabled = false;
-    }
-    if (config.AI_PROVIDER === pk) {
-      config.AI_PROVIDER = '';
     }
     await onSave(config);
   }, [state, onSave]);
@@ -88,12 +80,6 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     const config = state.buildConfig();
     if (config._aiSettings?.providers[pk]) {
       config._aiSettings.providers[pk].enabled = value;
-    }
-    if (value && !config.AI_PROVIDER) {
-      const upper = pk.toUpperCase();
-      config.AI_PROVIDER = pk;
-      config[`${upper}_API_KEY`] = state.providerConfigs[pk].apiKey;
-      config[`${upper}_BASE_URL`] = state.providerConfigs[pk].baseUrl;
     }
     await onSave(config);
   }, [state, onSave]);
@@ -149,38 +135,37 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-5 space-y-5 scrollbar-thin">
               {activeTab === 'providers' && (
-                <>
-                  {state.aiEnabled && (
-                    <ProviderSection
-                      configs={state.providerConfigs}
-                      onConfigChange={state.handleProviderConfigChange}
-                      onTestConnection={handleTestConnection}
-                      onDisconnect={handleDisconnect}
-                      onEnabledChange={handleEnabledChange}
-                    />
-                  )}
-                </>
+                <ProviderSection
+                  configs={state.providerConfigs}
+                  onConfigChange={state.handleProviderConfigChange}
+                  onTestConnection={handleTestConnection}
+                  onDisconnect={handleDisconnect}
+                  onEnabledChange={handleEnabledChange}
+                />
               )}
 
               {activeTab === 'agents' && (
                 <>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-text-secondary font-medium">Enable AI Analysis</span>
-                    <Toggle
-                      id="settings-ai-master-toggle"
-                      checked={state.aiEnabled}
-                      onChange={state.handleAiEnabledChange}
-                      label="Enable AI analysis"
-                    />
-                  </div>
-
-                  {state.aiEnabled && (
-                    <AgentAssignmentSection
-                      agents={state.agentMappings}
-                      enabledProviders={state.enabledProviders}
-                      onAgentChange={state.handleAgentChange}
-                    />
+                  {!state.hasConnectedProvider && (
+                    <div className="flex items-start gap-3 p-4 rounded-lg border border-warning/30 bg-warning/5">
+                      <AlertCircle className="h-4 w-4 text-warning shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-semibold text-warning">No AI Provider Connected</p>
+                        <p className="text-xs text-text-tertiary mt-1 leading-relaxed">
+                          Connect an AI provider in the <strong>Providers</strong> tab first.
+                          Once connected, you can assign models to AI agents here.
+                        </p>
+                      </div>
+                    </div>
                   )}
+
+                  <AgentAssignmentSection
+                    agents={state.agentMappings}
+                    enabledProviders={state.enabledProviders}
+                    providerConfigs={state.providerConfigs}
+                    disabled={!state.hasConnectedProvider}
+                    onAgentChange={state.handleAgentChange}
+                  />
 
                   <AdvancedSettings
                     isOpen={state.isAdvancedOpen}

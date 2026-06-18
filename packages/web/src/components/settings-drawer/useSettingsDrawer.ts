@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { Config, AiSettings, AiAgentConfig } from '../../types';
 import { PROVIDERS } from './constants';
 
@@ -12,6 +12,21 @@ interface ProviderFormState {
   baseUrl: string;
   enabled: boolean;
   testStatus: TestStatus;
+  /** Models fetched from the provider API (populated after Connect). */
+  fetchedModels?: { id: string; name: string }[];
+}
+
+const ENV_PREFIX_MAP: Record<string, string> = {
+  '9router': 'NINEROUTER',
+  openai: 'OPENAI',
+  anthropic: 'ANTHROPIC',
+  google: 'GOOGLE',
+  nvidia: 'NVIDIA',
+};
+
+/** Return the env-var prefix for a provider (e.g. "9router" → "NINEROUTER"). */
+export function getEnvPrefix(providerKey: string): string {
+  return ENV_PREFIX_MAP[providerKey] || providerKey.toUpperCase();
 }
 
 function defaultProviderForm(
@@ -20,22 +35,26 @@ function defaultProviderForm(
   initialConfig?: Config | null,
 ): ProviderFormState {
   const provSettings = aiSettings?.providers?.[pk];
-  const upper = pk.toUpperCase();
-  const apiKey = provSettings?.api_key ?? initialConfig?.[`${upper}_API_KEY`] ?? '';
-  const baseUrl = provSettings?.base_url ?? initialConfig?.[`${upper}_BASE_URL`] ?? PROVIDERS[pk]?.defaultBaseUrl ?? '';
+  const prefix = getEnvPrefix(pk);
+  const rawKey: string = provSettings?.api_key ?? '';
+  const structuredKey: string = rawKey === '••••••' ? '' : rawKey;
+  const flatKey: string = (initialConfig?.[`${prefix}_API_KEY`] as string | undefined) ?? '';
+  const apiKey: string = flatKey || structuredKey;
+  const baseUrl: string = (initialConfig?.[`${prefix}_BASE_URL`] as string | undefined)
+    || provSettings?.base_url
+    || PROVIDERS[pk]?.defaultBaseUrl
+    || '';
   const enabled = provSettings?.enabled ?? true;
-  return { apiKey, baseUrl, enabled, testStatus: { text: '', type: 'idle' } };
+  const hasRealKey = (flatKey || structuredKey) !== '';
+  const testStatus: TestStatus = hasRealKey
+    ? { text: 'Connected (saved)', type: 'success' }
+    : { text: '', type: 'idle' };
+  return { apiKey, baseUrl, enabled, testStatus };
 }
 
 function buildDefaultAgents(): Record<string, AiAgentConfig> {
-  return {
-    suggest: { provider: 'openai', model: 'gpt-4o-mini', enabled: true },
-    bug_scan: { provider: 'openai', model: 'gpt-4o-mini', enabled: false },
-    naming_audit: { provider: 'openai', model: 'gpt-4o-mini', enabled: false },
-    chat: { provider: 'openai', model: 'gpt-4o-mini', enabled: false },
-    explain: { provider: 'openai', model: 'gpt-4o-mini', enabled: false },
-    summarize: { provider: 'openai', model: 'gpt-4o-mini', enabled: false },
-  };
+  // Empty by default — agents are populated only after a provider is connected.
+  return {};
 }
 
 function initAllProviderConfigs(aiSettings?: AiSettings | null, initialConfig?: Config | null): Record<string, ProviderFormState> {
@@ -76,7 +95,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     setSemgrepRules(initialConfig?.SEMGREP_RULES_PATH || '');
   }, [initialConfig, isOpen]);
 
-  const handleProviderConfigChange = useCallback((pk: string, field: string, value: string | boolean | TestStatus) => {
+  const handleProviderConfigChange = useCallback((pk: string, field: string, value: string | boolean | TestStatus | undefined) => {
     setProviderConfigs((prev) => ({
       ...prev,
       [pk]: { ...prev[pk], [field]: value },
@@ -107,6 +126,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
         if (data.models && data.models.length > 0) {
           const msg = `Connected! ${data.models.length} model(s) available`;
           handleProviderConfigChange(pk, 'testStatus', { text: msg, type: 'success' });
+          handleProviderConfigChange(pk, 'fetchedModels', data.models);
           return { success: true, message: msg };
         } else {
           const msg = requiresKey && cfg.apiKey ? 'Invalid API key or access denied' : 'Connected!';
@@ -126,21 +146,33 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     }
   }, [providerConfigs, handleProviderConfigChange]);
 
-  const enabledProviders = Object.entries(providerConfigs)
-    .filter(([, cfg]) => cfg.enabled)
-    .map(([pk]) => pk);
+  const enabledProviders = useMemo(
+    () => Object.entries(providerConfigs).filter(([, cfg]) => cfg.enabled).map(([pk]) => pk),
+    [providerConfigs],
+  );
+
+  const hasConnectedProvider = useMemo(
+    () => Object.values(providerConfigs).some((cfg) => cfg.testStatus.type === 'success'),
+    [providerConfigs],
+  );
 
   const buildConfig = (): Config => {
     const config: Config = {};
 
-    // Flat keys for backward compatibility
-    const firstEnabled = Object.entries(providerConfigs).find(([, c]) => c.enabled);
-    if (firstEnabled) {
-      config.AI_PROVIDER = firstEnabled[0];
-      const upper = firstEnabled[0].toUpperCase();
-      config[`${upper}_API_KEY`] = firstEnabled[1].apiKey;
-      config[`${upper}_BASE_URL`] = firstEnabled[1].baseUrl;
+    // Flat keys for backward compatibility: write ALL enabled providers so that
+    // each provider's real .env key is preserved (the backend GET masks them).
+    const allEnabled = Object.entries(providerConfigs).filter(([, c]) => c.enabled);
+    if (allEnabled.length > 0) {
+      config.AI_PROVIDER = allEnabled[0][0];
+    } else {
+      config.AI_PROVIDER = '';
     }
+    for (const [pk, cfg] of allEnabled) {
+      const prefix = getEnvPrefix(pk);
+      config[`${prefix}_API_KEY`] = cfg.apiKey;
+      config[`${prefix}_BASE_URL`] = cfg.baseUrl;
+    }
+
     config.AI_TEMPERATURE = temperature.toString();
     config.AI_MAX_TOKENS = maxTokens.toString();
     config.AI_RESOLVE_TIMEOUT_SECONDS = resolveTimeout.toString();
@@ -168,7 +200,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     agentMappings,
     temperature, maxTokens, resolveTimeout, namingTimeout,
     maxRetries, requestCooldown, semgrepRules,
-    isAdvancedOpen, aiEnabled, enabledProviders,
+    isAdvancedOpen, aiEnabled, enabledProviders, hasConnectedProvider,
     setTemperature, setMaxTokens, setResolveTimeout,
     setNamingTimeout, setMaxRetries, setRequestCooldown,
     setSemgrepRules, setIsAdvancedOpen,

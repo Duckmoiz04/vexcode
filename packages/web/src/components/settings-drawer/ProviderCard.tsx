@@ -82,18 +82,17 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
               }`} />
             </button>
           )}
-          {isVerified && !isExpanded ? (
+          {isVerified && (
             <button
               onClick={(e) => { e.stopPropagation(); onDisconnect(); }}
-              className="text-xs px-3 py-1 rounded-lg border border-danger/30 bg-danger/10 text-danger hover:bg-danger/20 font-medium transition-all cursor-pointer"
+              className="text-xs px-2 py-1 rounded-lg text-text-secondary hover:text-danger font-medium transition-all cursor-pointer"
             >
               Disconnect
             </button>
-          ) : (
-            <span className="text-text-secondary">
-              {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </span>
           )}
+          <span className="text-text-secondary">
+            {isExpanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+          </span>
         </div>
       </div>
 
