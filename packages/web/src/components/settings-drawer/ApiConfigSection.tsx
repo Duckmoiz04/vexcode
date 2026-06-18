@@ -37,7 +37,7 @@ export const ApiConfigSection: React.FC<ApiConfigSectionProps> = ({
           onChange={(e) => onApiKeyChange(e.target.value)}
           placeholder={provider === '9router' ? 'optional for 9router' : 'Enter API Key'}
           autoComplete="new-password"
-          className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary"
+          className="w-full bg-bg-primary border border-card-border rounded-md px-3 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary"
         />
       </div>
 
@@ -50,7 +50,7 @@ export const ApiConfigSection: React.FC<ApiConfigSectionProps> = ({
           value={apiBaseUrl}
           onChange={(e) => onBaseUrlChange(e.target.value)}
           placeholder={PROVIDERS[provider]?.defaultBaseUrl || 'Enter Base URL'}
-          className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary"
+          className="w-full bg-bg-primary border border-card-border rounded-md px-3 py-2 text-xs text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary"
         />
         <span className="text-xs text-text-tertiary block mt-1">
           Example: {PROVIDERS[provider]?.defaultBaseUrl || ''}
@@ -62,7 +62,7 @@ export const ApiConfigSection: React.FC<ApiConfigSectionProps> = ({
         <button
           onClick={onTestConnection}
           disabled={testStatus.type === 'loading'}
-          className="flex items-center justify-center gap-2 py-1.5 px-3 border border-card-border bg-bg-primary/30 hover:bg-bg-primary/70 text-xs font-semibold rounded-lg text-text-secondary hover:text-text-primary transition-all cursor-pointer disabled:opacity-50"
+          className="flex items-center justify-center gap-2 py-1.5 px-3 border border-card-border bg-bg-primary/30 hover:bg-bg-primary/70 text-xs font-semibold rounded-md text-text-secondary hover:text-text-primary transition-all cursor-pointer disabled:opacity-50"
         >
           <Play className="h-3 w-3" />
           <span>Test Connection</span>

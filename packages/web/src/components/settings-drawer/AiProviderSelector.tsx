@@ -20,7 +20,7 @@ export const AiProviderSelector: React.FC<AiProviderSelectorProps> = ({
             <button
               key={p}
               onClick={() => onSelect(p)}
-              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-lg border text-xs font-semibold cursor-pointer transition-all ${
+              className={`flex items-center justify-center gap-2 py-2 px-3 rounded-md border text-xs font-semibold cursor-pointer transition-all ${
                 isActive
                   ? 'border-accent bg-accent/10 text-text-primary shadow-glow-soft'
                   : 'border-card-border bg-bg-primary/30 text-text-secondary hover:border-text-secondary hover:bg-bg-primary/55'

@@ -20,7 +20,7 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
           id="settings-model"
           value={selectedModel}
           onChange={(e) => onModelChange(e.target.value)}
-          className="w-full bg-bg-primary text-text-primary border border-card-border rounded-lg px-3 py-2 text-xs outline-none cursor-pointer focus:border-accent transition-all appearance-none"
+          className="w-full bg-bg-primary text-text-primary border border-card-border rounded-md px-3 py-2 text-xs outline-none cursor-pointer focus:border-accent transition-all appearance-none"
         >
           {modelsList.map((m) => (
             <option key={m.id} value={m.id}>

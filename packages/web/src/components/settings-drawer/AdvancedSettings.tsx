@@ -38,16 +38,16 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
     <div className="border-t border-card-border/50 pt-4">
       <button
         onClick={onToggle}
-        className="flex justify-between items-center w-full text-xs font-bold text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+        className="flex justify-between items-center w-full text-[13px] font-bold text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
       >
         <span>Advanced Settings</span>
-        <ChevronDownIcon className={`h-3 w-3 text-text-tertiary transition-transform duration-150 ${isOpen ? '' : '-rotate-90'}`} />
+        <ChevronDownIcon className={`h-5 w-5 text-text-tertiary transition-transform duration-150 ${isOpen ? '' : '-rotate-90'}`} />
       </button>
       {isOpen && (
         <div className="space-y-4 pt-3 animate-slide-up">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label htmlFor="settings-temperature" className="text-xs text-text-tertiary uppercase font-medium">Temperature</label>
+              <label htmlFor="settings-temperature" className="text-[13px] text-text-tertiary uppercase font-medium">Temperature</label>
               <input
                 id="settings-temperature"
                 type="number"
@@ -56,12 +56,12 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 min="0"
                 max="2"
                 step="0.1"
-                className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full bg-bg-primary border border-card-border rounded-md px-3 py-2 text-[13px] text-text-primary outline-none focus:border-accent transition-all"
               />
-              <span className="text-xs text-text-tertiary block mt-0.5">0=Precise, 2=Creative</span>
+              <span className="text-[13px] text-text-tertiary block mt-0.5">0=Precise, 2=Creative</span>
             </div>
             <div className="space-y-1">
-              <label htmlFor="settings-max-tokens" className="text-xs text-text-tertiary uppercase font-medium">Max Tokens</label>
+              <label htmlFor="settings-max-tokens" className="text-[13px] text-text-tertiary uppercase font-medium">Max Tokens</label>
               <input
                 id="settings-max-tokens"
                 type="number"
@@ -70,11 +70,11 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 min="256"
                 max="128000"
                 step="256"
-                className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full bg-bg-primary border border-card-border rounded-md px-3 py-2 text-[13px] text-text-primary outline-none focus:border-accent transition-all"
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="settings-resolve-timeout" className="text-xs text-text-tertiary uppercase font-medium">Resolve Timeout</label>
+              <label htmlFor="settings-resolve-timeout" className="text-[13px] text-text-tertiary uppercase font-medium">Resolve Timeout</label>
               <input
                 id="settings-resolve-timeout"
                 type="number"
@@ -83,12 +83,12 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 min="15"
                 max="600"
                 step="15"
-                className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full bg-bg-primary border border-card-border rounded-md px-3 py-2 text-[13px] text-text-primary outline-none focus:border-accent transition-all"
               />
-              <span className="text-xs text-text-tertiary block mt-0.5">Seconds per finding</span>
+              <span className="text-[13px] text-text-tertiary block mt-0.5">Seconds per finding</span>
             </div>
             <div className="space-y-1">
-              <label htmlFor="settings-naming-timeout" className="text-xs text-text-tertiary uppercase font-medium">Naming Timeout</label>
+              <label htmlFor="settings-naming-timeout" className="text-[13px] text-text-tertiary uppercase font-medium">Naming Timeout</label>
               <input
                 id="settings-naming-timeout"
                 type="number"
@@ -97,12 +97,12 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 min="15"
                 max="600"
                 step="15"
-                className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full bg-bg-primary border border-card-border rounded-md px-3 py-2 text-[13px] text-text-primary outline-none focus:border-accent transition-all"
               />
-              <span className="text-xs text-text-tertiary block mt-0.5">Seconds per audit file</span>
+              <span className="text-[13px] text-text-tertiary block mt-0.5">Seconds per audit file</span>
             </div>
             <div className="space-y-1">
-              <label htmlFor="settings-max-retries" className="text-xs text-text-tertiary uppercase font-medium">Max Retries</label>
+              <label htmlFor="settings-max-retries" className="text-[13px] text-text-tertiary uppercase font-medium">Max Retries</label>
               <input
                 id="settings-max-retries"
                 type="number"
@@ -111,11 +111,11 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 min="0"
                 max="5"
                 step="1"
-                className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full bg-bg-primary border border-card-border rounded-md px-3 py-2 text-[13px] text-text-primary outline-none focus:border-accent transition-all"
               />
             </div>
             <div className="space-y-1">
-              <label htmlFor="settings-cooldown" className="text-xs text-text-tertiary uppercase font-medium">Cooldown</label>
+              <label htmlFor="settings-cooldown" className="text-[13px] text-text-tertiary uppercase font-medium">Cooldown</label>
               <input
                 id="settings-cooldown"
                 type="number"
@@ -124,9 +124,9 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
                 min="0"
                 max="120"
                 step="1"
-                className="w-full bg-bg-primary border border-card-border rounded-lg px-3 py-1.5 text-xs text-text-primary outline-none focus:border-accent transition-all"
+                className="w-full bg-bg-primary border border-card-border rounded-md px-3 py-2 text-[13px] text-text-primary outline-none focus:border-accent transition-all"
               />
-              <span className="text-xs text-text-tertiary block mt-0.5">Seconds between AI calls</span>
+              <span className="text-[13px] text-text-tertiary block mt-0.5">Seconds between AI calls</span>
             </div>
           </div>
         </div>

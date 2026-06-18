@@ -8,9 +8,15 @@ interface AgentConfig {
   enabled: boolean;
 }
 
+interface ProviderState {
+  fetchedModels?: { id: string; name: string }[];
+}
+
 interface AgentAssignmentSectionProps {
   agents: Record<string, AgentConfig>;
   enabledProviders: string[];
+  providerConfigs: Record<string, ProviderState>;
+  disabled?: boolean;
   onAgentChange: (name: string, field: string, value: string | boolean) => void;
 }
 
@@ -26,6 +32,8 @@ const AGENT_LABELS: Record<string, string> = {
 export const AgentAssignmentSection: React.FC<AgentAssignmentSectionProps> = ({
   agents,
   enabledProviders,
+  providerConfigs,
+  disabled = false,
   onAgentChange,
 }) => {
   const agentNames = Object.keys(agents).length > 0
@@ -33,22 +41,23 @@ export const AgentAssignmentSection: React.FC<AgentAssignmentSectionProps> = ({
     : Object.keys(AGENT_LABELS);
 
   return (
-    <div className="space-y-2">
-      <h4 className="text-xs text-text-tertiary uppercase font-bold tracking-wider">
+    <div className={`space-y-2 transition-opacity duration-200 ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
+      <h4 className="text-base text-text-primary/90 font-medium tracking-wider mb-8">
         Agent Assignments
       </h4>
-      <p className="text-xs text-text-tertiary leading-relaxed">
+      <p className="text-[13px] text-text-tertiary leading-relaxed">
         Assign each AI task to a provider and model. Only enabled providers are listed.
       </p>
       <div className="space-y-1.5">
         {agentNames.map((name) => {
           const agent = agents[name] ?? { provider: '', model: '', enabled: false };
-          const provModels = agent.provider && PROVIDERS[agent.provider]
-            ? PROVIDERS[agent.provider].models
+          // Use dynamically fetched models if available, else fall back to hardcoded list
+          const provModels = agent.provider
+            ? (providerConfigs[agent.provider]?.fetchedModels ?? PROVIDERS[agent.provider]?.models ?? [])
             : [];
           return (
-            <div key={name} className="flex items-center gap-2 py-1.5 px-2 rounded-lg border border-card-border/40 bg-bg-primary/10">
-              <span className="text-xs font-medium text-text-secondary w-[72px] shrink-0">
+            <div key={name} className="flex items-center gap-2 py-2 px-3 rounded-lg border border-card-border/40 bg-bg-primary/10">
+              <span className="text-[13px] font-medium text-text-secondary w-[80px] shrink-0">
                 {AGENT_LABELS[name] ?? name}
               </span>
               <div className="relative flex-1">
@@ -60,36 +69,41 @@ export const AgentAssignmentSection: React.FC<AgentAssignmentSectionProps> = ({
                     onAgentChange(name, 'provider', prov);
                     onAgentChange(name, 'model', firstModel);
                   }}
-                  className="w-full bg-bg-primary text-text-primary border border-card-border rounded-lg px-2 py-1.5 text-xs outline-none cursor-pointer focus:border-accent transition-all appearance-none"
-                >
-                  <option value="">-- Disabled --</option>
-                  {enabledProviders.map((p) => (
-                    <option key={p} value={p}>
-                      {PROVIDERS[p]?.name ?? p}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDownIcon className="absolute right-2 top-1/2 -translate-y-1/2 h-2.5 w-2.5 text-text-tertiary pointer-events-none" />
-              </div>
-              {agent.provider && (
-                <div className="relative flex-1">
-                  <select
-                    value={agent.model || ''}
-                    onChange={(e) => onAgentChange(name, 'model', e.target.value)}
-                    className="w-full bg-bg-primary text-text-primary border border-card-border rounded-lg px-2 py-1.5 text-xs outline-none cursor-pointer focus:border-accent transition-all appearance-none"
+                  disabled={disabled}
+					className="w-full bg-bg-primary text-text-primary border border-card-border rounded-md px-3 py-2 text-[13px] outline-none cursor-pointer focus:border-accent transition-all appearance-none disabled:cursor-not-allowed"
                   >
-                    {provModels.map((m) => (
-                      <option key={m.id} value={m.id}>{m.name}</option>
+                    <option value="">-- Disabled --</option>
+                    {enabledProviders.map((p) => (
+                      <option key={p} value={p}>
+                        {PROVIDERS[p]?.name ?? p}
+                      </option>
                     ))}
                   </select>
-                  <ChevronDownIcon className="absolute right-2 top-1/2 -translate-y-1/2 h-2.5 w-2.5 text-text-tertiary pointer-events-none" />
+                  <ChevronDownIcon className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 text-text-tertiary pointer-events-none" />
+                </div>
+                {agent.provider && (
+                  <div className="relative flex-1">
+                    <select
+                      value={agent.model || ''}
+                      onChange={(e) => onAgentChange(name, 'model', e.target.value)}
+                      disabled={disabled}
+className="w-full bg-bg-primary text-text-primary border border-card-border rounded-md px-3 py-2 text-[13px] outline-none cursor-pointer focus:border-accent transition-all appearance-none disabled:cursor-not-allowed"
+                    >
+                      {provModels.map((m) => (
+                        <option key={m.id} value={m.id}>{m.name}</option>
+                      ))}
+                    </select>
+                    <ChevronDownIcon className="absolute right-2 top-1/2 -translate-y-1/2 h-5 w-5 text-text-tertiary pointer-events-none" />
                 </div>
               )}
               <button
                 role="switch"
                 aria-checked={agent.enabled}
+                disabled={disabled}
                 onClick={() => onAgentChange(name, 'enabled', !agent.enabled)}
-                className={`relative inline-flex h-3.5 w-6 shrink-0 cursor-pointer items-center rounded-full border transition-colors duration-200 outline-none ${
+                className={`relative inline-flex h-3.5 w-6 shrink-0 items-center rounded-full border transition-colors duration-200 outline-none ${
+                  disabled ? 'cursor-not-allowed' : 'cursor-pointer'
+                } ${
                   agent.enabled ? 'border-accent bg-accent/20' : 'border-card-border bg-bg-primary/50'
                 }`}
               >
