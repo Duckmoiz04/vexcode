@@ -5,10 +5,11 @@ import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { mkdirSync, copyFileSync, existsSync } from 'node:fs';
 
-import { runPythonAnalysis, cancelActiveScan, runRefreshAi } from './bridge.js';
+import { runPythonAnalysis, cancelActiveScan, runRefreshAi, runConfigCli } from './bridge.js';
 import { isPathSafe, readEnvConfig, writeEnvConfig } from './services/fileService.js';
 
 import { registerConfigRoutes } from './routes/config.js';
+import { registerAiSettingsRoutes } from './routes/ai-settings.js';
 import { registerScanRoutes } from './routes/scan.js';
 import { registerReportRoutes } from './routes/reports.js';
 import { registerApplyRoutes } from './routes/apply.js';
@@ -32,7 +33,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(publicDir));
 
 const deps = {
   workspaceDir,
@@ -47,15 +47,35 @@ const deps = {
   runPythonAnalysis,
   cancelActiveScan,
   runRefreshAi,
+  runConfigCli,
 };
 
 registerConfigRoutes(app, deps);
+registerAiSettingsRoutes(app, deps);
 registerScanRoutes(app, deps);
 registerReportRoutes(app, deps);
 registerApplyRoutes(app, deps);
 registerChatRoutes(app, deps);
 registerFileRoutes(app, deps);
 registerFindingsRoutes(app, deps);
+
+// Catch-all for unmatched /api/* routes — return JSON 404, never HTML
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, error: `Route not found: ${req.method} ${req.path}` });
+});
+
+// Static file serving for the SPA
+app.use(express.static(publicDir));
+
+// Global error handler — catch anything Express would format as HTML and return JSON instead
+app.use((err, req, res, _next) => {
+  console.error('Unhandled error:', err);
+  const status = err.status || err.statusCode || 500;
+  res.status(status).json({
+    success: false,
+    error: err.message || 'Internal server error',
+  });
+});
 
 export function startServer(port = 3000) {
   mkdirSync(vexcodeDir, { recursive: true });

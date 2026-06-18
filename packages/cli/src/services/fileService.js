@@ -68,6 +68,9 @@ export function writeEnvConfig(newConfig, envPath) {
       'NVIDIA_API_KEY', 'NVIDIA_BASE_URL', 'NVIDIA_MODEL',
       'SEMGREP_RULES_PATH',
     ]);
+    // Ensure AI master toggle and agent-to-provider routing keys are
+    // also covered so the web UI never drops them on save.
+    knownKeys.add('AI_ENABLED');
     for (const key of knownKeys) {
       if (!(key in merged)) {
         merged[key] = '';

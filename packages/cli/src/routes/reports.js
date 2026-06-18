@@ -29,11 +29,18 @@ export function registerReportRoutes(app, deps) {
 
   app.get('/api/report/:project/:id', (req, res) => {
     try {
-      const result = getReportContent(req.params.project, req.params.id);
+      const page = parseInt(req.query.page, 10) || 1;
+      const pageSize = parseInt(req.query.pageSize, 10) || 0;
+      const result = getReportContent(req.params.project, req.params.id, page, pageSize);
       if (!result.success) {
         return res.status(404).json(result);
       }
-      res.json(result.report);
+      // Include pagination metadata alongside the report
+      const response = { ...result.report };
+      if (result.pagination) {
+        response._pagination = result.pagination;
+      }
+      res.json(response);
     } catch (error) {
       res.status(500).json({ success: false, error: error.message });
     }
@@ -113,6 +120,45 @@ export function registerReportRoutes(app, deps) {
     } catch (error) {
       const statusCode = error.cancelled ? 400 : 500;
       res.status(statusCode).json({ success: false, error: error.message });
+    }
+  });
+
+  // SSE re-resolve endpoint with progress streaming
+  app.get('/api/re-resolve/stream', async (req, res) => {
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+    });
+
+    try {
+      const { reportPath, mockAi } = req.query;
+
+      if (!reportPath || typeof reportPath !== 'string' || !existsSync(reportPath)) {
+        res.write(`data: ${JSON.stringify({ type: 'error', error: 'Valid reportPath is required.' })}\n\n`);
+        return res.end();
+      }
+
+      res.write(`data: ${JSON.stringify({ type: 'status', message: 'Starting AI re-resolution...' })}\n\n`);
+
+      await runRefreshAi(reportPath, mockAi === 'true', (progress) => {
+        if (progress.type === 'progress') {
+          res.write(`data: ${JSON.stringify(progress)}\n\n`);
+        } else {
+          res.write(`data: ${JSON.stringify({ type: 'status', message: progress.line || progress.message })}\n\n`);
+        }
+      });
+
+      const reportContent = JSON.parse(readFileSync(reportPath, 'utf8'));
+      reportContent._id = basename(reportPath).replace('.json', '');
+      reportContent._project = basename(dirname(reportPath));
+      reportContent._savedAt = reportPath;
+
+      res.write(`data: ${JSON.stringify({ type: 'complete', report: reportContent })}\n\n`);
+      res.end();
+    } catch (error) {
+      res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+      res.end();
     }
   });
 }

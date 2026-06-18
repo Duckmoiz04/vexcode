@@ -84,9 +84,21 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
     child.stdout.on('data', (data) => {
       const text = data.toString();
       stdout += text;
-      if (onProgress) {
+            if (onProgress) {
         const lines = text.split('\n').filter(l => l.trim());
         for (const line of lines) {
+          // Detect structured JSON progress lines from the Python engine
+          if (line.startsWith('{')) {
+            try {
+              const parsed = JSON.parse(line);
+              if (parsed && parsed.type === 'progress') {
+                onProgress(parsed);
+                continue;
+              }
+            } catch {
+              // Not JSON — fall through to plain text
+            }
+          }
           onProgress({ type: 'stdout', line });
         }
       }
@@ -129,6 +141,7 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
       rejectPromise(err);
     });
   });
+  
 }
 
 /**
@@ -142,6 +155,64 @@ export function cancelActiveScan() {
     return true;
   }
   return false;
+}
+
+/**
+ * Run the config_cli.py helper to read/write AI configuration.
+ * @param {'dump'|'update'} command - The config CLI command.
+ * @param {object|null} payload - JSON payload for 'update' (sent via stdin).
+ * @returns {Promise<object>} Parsed JSON from the Python script.
+ */
+export function runConfigCli(command, payload = null) {
+  return new Promise((resolvePromise, rejectPromise) => {
+    let pythonPath;
+    try {
+      pythonPath = ensureVenv();
+    } catch (err) {
+      return rejectPromise(err);
+    }
+
+    const analysisCoreDir = resolve(__dirname, '../../engine');
+    const args = ['config_cli.py', command];
+
+    const child = spawn(pythonPath, args, {
+      cwd: analysisCoreDir,
+      stdio: ['pipe', 'pipe', 'pipe']
+    });
+
+    let stdout = '';
+    let stderr = '';
+
+    child.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+
+    child.on('close', (code) => {
+      if (code !== 0) {
+        return rejectPromise(new Error(`config_cli.py exited with code ${code}.\nStderr: ${stderr}`));
+      }
+      try {
+        const result = JSON.parse(stdout);
+        resolvePromise(result);
+      } catch (err) {
+        rejectPromise(new Error(`Failed to parse config_cli.py output: ${err.message}\nStdout: ${stdout}`));
+      }
+    });
+
+    child.on('error', (err) => {
+      rejectPromise(err);
+    });
+
+    // Send payload via stdin for 'update' command
+    if (payload !== null) {
+      child.stdin.write(JSON.stringify(payload));
+      child.stdin.end();
+    }
+  });
 }
 
 /**
@@ -207,6 +278,17 @@ export function runRefreshAi(reportPath, mockAi = false, onProgress = null) {
       if (onProgress) {
         const lines = text.split('\n').filter(l => l.trim());
         for (const line of lines) {
+          if (line.startsWith('{')) {
+            try {
+              const parsed = JSON.parse(line);
+              if (parsed && parsed.type === 'progress') {
+                onProgress(parsed);
+                continue;
+              }
+            } catch {
+              // Not JSON — fall through to plain text
+            }
+          }
           onProgress({ type: 'stdout', line });
         }
       }

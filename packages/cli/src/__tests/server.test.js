@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import request from 'supertest';
 import { app } from '../server.js';
+import { runConfigCli } from '../bridge.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -1053,6 +1054,50 @@ describe('Express REST Server API', () => {
       expect(res.status).toBe(500);
       expect(res.body.success).toBe(false);
       expect(res.body.error).toContain('Provider request failed');
+    });
+  });
+
+  describe('PUT /api/settings/ai', () => {
+    it('should accept a valid AI settings update', async () => {
+      const res = await request(app)
+        .put('/api/settings/ai')
+        .send({ enabled: true, providers: {}, agents: {} });
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toBe('AI settings updated successfully.');
+    });
+
+    it('should return 400 when body is an array instead of object', async () => {
+      const res = await request(app)
+        .put('/api/settings/ai')
+        .send([]);
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toContain('Invalid request body');
+    });
+
+    it('should return JSON error when update fails', async () => {
+      runConfigCli.mockRejectedValueOnce(new Error('Update failed'));
+      const res = await request(app)
+        .put('/api/settings/ai')
+        .send({ enabled: true });
+      expect(res.status).toBe(500);
+      expect(res.body.success).toBe(false);
+      expect(res.body.error).toBe('Update failed');
+    });
+  });
+
+  describe('Unmatched API routes', () => {
+    it('should return JSON 404 for unmatched GET /api/*', async () => {
+      const res = await request(app).get('/api/nonexistent');
+      expect(res.status).toBe(404);
+      expect(res.body).toEqual({ success: false, error: 'Route not found: GET /nonexistent' });
+    });
+
+    it('should return JSON 404 for unmatched POST /api/*', async () => {
+      const res = await request(app).post('/api/unknown');
+      expect(res.status).toBe(404);
+      expect(res.body).toEqual({ success: false, error: 'Route not found: POST /unknown' });
     });
   });
 });

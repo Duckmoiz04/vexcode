@@ -41,7 +41,12 @@ export function registerScanRoutes(app, deps) {
         mockAi === 'true' || mockAi === true,
         fastScan === 'true' || fastScan === true,
         (progress) => {
-          res.write(`data: ${JSON.stringify({ type: 'status', message: progress.line })}\n\n`);
+          // Forward structured progress events directly; fall back to plain status for text lines
+          if (progress.type === 'progress') {
+            res.write(`data: ${JSON.stringify(progress)}\n\n`);
+          } else {
+            res.write(`data: ${JSON.stringify({ type: 'status', message: progress.line || progress.message })}\n\n`);
+          }
         }
       );
 

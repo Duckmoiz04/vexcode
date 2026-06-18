@@ -83,11 +83,14 @@ export function listProjectReports(projectName) {
 
 /**
  * Get a specific report by project name and report ID.
+ * Supports pagination of findings via page/pageSize parameters.
  * @param {string} projectName
  * @param {string} reportId
- * @returns {{ success: boolean, report?: object, error?: string }}
+ * @param {number} [page=1] - 1-based page number
+ * @param {number} [pageSize=1000] - items per page (0 = no pagination)
+ * @returns {{ success: boolean, report?: object, pagination?: object, error?: string }}
  */
-export function getReportContent(projectName, reportId) {
+export function getReportContent(projectName, reportId, page = 1, pageSize = 1000) {
   const reportPath = join(getProjectReportDir(projectName), `${reportId}.json`);
 
   if (!existsSync(reportPath)) {
@@ -99,6 +102,42 @@ export function getReportContent(projectName, reportId) {
   reportContent._project = projectName;
   reportContent._savedAt = reportPath;
 
+  // Apply pagination to findings if pageSize > 0
+  const allFindings = reportContent.findings || [];
+  const total = allFindings.length;
+
+  if (pageSize > 0 && total > 0) {
+    const startIdx = (page - 1) * pageSize;
+    const endIdx = Math.min(startIdx + pageSize, total);
+    reportContent.findings = allFindings.slice(startIdx, endIdx);
+
+    const result = {
+      success: true,
+      report: reportContent,
+      pagination: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
+
+    // Compute filter counts from the full findings (not the sliced subset)
+    const filterCounts = {};
+    const severityCounts = {};
+    for (const f of allFindings) {
+      const sev = (f.severity || 'unknown').toLowerCase();
+      severityCounts[sev] = (severityCounts[sev] || 0) + 1;
+      const status = f.scan_status || 'new';
+      filterCounts[status] = (filterCounts[status] || 0) + 1;
+    }
+    result.pagination.filterCounts = filterCounts;
+    result.pagination.severityCounts = severityCounts;
+
+    return result;
+  }
+
+  // Return all findings when pageSize is 0 (legacy behavior)
   return { success: true, report: reportContent };
 }
 
