@@ -15,31 +15,33 @@ describe('SettingsDrawer', () => {
   it('renders the modal when open', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
 
-    expect(screen.getByText('Settings')).toBeInTheDocument();
+    expect(screen.getByLabelText('Close settings')).toBeInTheDocument();
   });
 
   it('renders tab headers', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
 
-    expect(screen.getByText('Providers')).toBeInTheDocument();
-    expect(screen.getByText('Model/Agent')).toBeInTheDocument();
+    const providersElements = screen.getAllByText('Providers');
+    expect(providersElements.length).toBeGreaterThan(0);
+    expect(screen.getByText('Models')).toBeInTheDocument();
     expect(screen.getByText('Rules')).toBeInTheDocument();
   });
 
   it('shows Providers tab content by default', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
 
-    expect(screen.getByText('AI Providers')).toBeInTheDocument();
+    expect(screen.getAllByText('Providers').length).toBeGreaterThan(0);
     expect(screen.queryByText('Agent Assignments')).not.toBeInTheDocument();
   });
 
-  it('shows Model/Agent tab content when Model/Agent is clicked', () => {
+  it('shows no-provider message on Models tab when no provider connected', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
 
-    fireEvent.click(screen.getByText('Model/Agent'));
+    fireEvent.click(screen.getByText('Models'));
 
+    expect(screen.getByText('No AI Provider Connected')).toBeInTheDocument();
+    // AgentAssignmentSection still renders but in disabled state
     expect(screen.getByText('Agent Assignments')).toBeInTheDocument();
-    expect(screen.getByText('Advanced Settings')).toBeInTheDocument();
   });
 
   it('shows Rules tab content when Rules is clicked', () => {
@@ -62,11 +64,30 @@ describe('SettingsDrawer', () => {
     expect(screen.getAllByText('NVIDIA NIM').length).toBeGreaterThan(0);
   });
 
-  it('renders agent assignment rows', () => {
-    renderWithProviders(<SettingsDrawer {...defaultProps} />);
+  it('renders agent assignment rows when provider is connected', () => {
+    const connectedConfig: Config = {
+      AI_PROVIDER: 'openai',
+      _aiSettings: {
+        enabled: true,
+        providers: {
+          openai: {
+            enabled: true, model: 'gpt-4o-mini', requires_key: true,
+            api_key: '••••••', base_url: 'https://api.openai.com/v1',
+          },
+        },
+        agents: {
+          suggest: { provider: 'openai', model: 'gpt-4o-mini', enabled: true },
+          bug_scan: { provider: 'openai', model: 'gpt-4o-mini', enabled: false },
+          naming_audit: { provider: 'openai', model: 'gpt-4o-mini', enabled: false },
+        },
+      },
+    };
 
-    fireEvent.click(screen.getByText('Model/Agent'));
+    renderWithProviders(<SettingsDrawer {...defaultProps} initialConfig={connectedConfig} />);
 
+    fireEvent.click(screen.getByText('Models'));
+
+    // Agent rows render because agents exist in config
     expect(screen.getByText('Code Suggest')).toBeInTheDocument();
     expect(screen.getByText('Bug Scan')).toBeInTheDocument();
     expect(screen.getByText('Naming Audit')).toBeInTheDocument();
@@ -120,18 +141,13 @@ describe('SettingsDrawer', () => {
 
     renderWithProviders(<SettingsDrawer {...defaultProps} onSave={onSave} initialConfig={initialConfig as unknown as Config} />);
 
-    const openaiLabel = screen.getAllByText('OpenAI')[0];
-    fireEvent.click(openaiLabel);
-
-    fireEvent.click(screen.getByText('Connect'));
-
     const toggles = await screen.findAllByRole('switch');
     expect(toggles.length).toBeGreaterThan(0);
 
     fireEvent.click(toggles[0]);
 
     await waitFor(() => {
-      expect(onSave.mock.calls.length).toBeGreaterThanOrEqual(2);
+      expect(onSave.mock.calls.length).toBeGreaterThanOrEqual(1);
       const lastCall = onSave.mock.calls[onSave.mock.calls.length - 1][0] as Config;
       expect(lastCall._aiSettings!.providers.openai.enabled).toBe(false);
     });
@@ -170,18 +186,17 @@ describe('SettingsDrawer', () => {
     expect(screen.getAllByText('OpenAI').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Anthropic').length).toBeGreaterThan(0);
 
-    fireEvent.click(screen.getByText('Model/Agent'));
+    fireEvent.click(screen.getByText('Models'));
     expect(screen.getByDisplayValue('Anthropic')).toBeInTheDocument();
   });
 
-  it('toggles advanced settings accordion', () => {
+  it('shows Parameters tab content', () => {
     renderWithProviders(<SettingsDrawer {...defaultProps} />);
-
-    fireEvent.click(screen.getByText('Model/Agent'));
 
     expect(screen.queryByText('Temperature')).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('Advanced Settings'));
+    fireEvent.click(screen.getByText('Parameters'));
+
     expect(screen.getByText('Temperature')).toBeInTheDocument();
     expect(screen.getByText('Max Tokens')).toBeInTheDocument();
     expect(screen.getByText('Max Retries')).toBeInTheDocument();
