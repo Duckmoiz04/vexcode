@@ -19,7 +19,7 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
 }) => {
   if (totalIssues === 0) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <>
         {/* Health Score Circular SVG */}
         <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col items-center">
           <h4 className="text-xs font-bold text-text-secondary mb-4 uppercase tracking-wider self-start">Project Health Score</h4>
@@ -52,12 +52,12 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
           <p className="text-lg font-semibold text-text-primary">No issues found</p>
           <p className="text-sm text-text-secondary">Clean project</p>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <>
       {/* Health Score Circular SVG */}
       <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col items-center">
         <h4 className="text-xs font-bold text-text-secondary mb-4 uppercase tracking-wider self-start">Project Health Score</h4>
@@ -114,6 +114,6 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

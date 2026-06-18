@@ -77,7 +77,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
       </div>
 
       {/* Keyword Search Input */}
-      <div className="mb-6 max-w-5xl">
+      <div className="mb-6 w-full">
         <div className="relative">
           <input
             type="text"
@@ -111,7 +111,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-3 max-w-5xl">
+          <div className="grid grid-cols-1 gap-3 w-full">
             {searchedAndFilteredFindings.map((f: Finding) => {
               const originalIndex = currentReport.findings.indexOf(f);
               const severity = (f.severity || '').toLowerCase();
@@ -222,7 +222,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
 
           {/* Pagination Controls */}
           {pagination && pagination.totalPages > 1 && onPageChange && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-text-tertiary/30 max-w-5xl">
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-text-tertiary/30 w-full">
               <span className="text-xs text-text-tertiary font-mono">
                 Page {currentPage ?? pagination.page} of {pagination.totalPages} ({pagination.total} total findings)
               </span>

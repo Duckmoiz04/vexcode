@@ -143,17 +143,13 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
         </div>
       )}
 
-      <div className="flex-1 flex overflow-y-auto min-h-0 relative">
-        <div className="flex-1 flex flex-col overflow-y-auto min-w-0">
-          {/* Top sections — single page scroll model.
-              The whole center column is one scrollable area, so the top
-              sections take their NATURAL height (no cap, no internal scroll).
-              If the page is taller than the viewport, the column itself
-              scrolls; if the page fits, nothing scrolls. There is intentionally
-              no `overflow-y-auto` on the top sections anymore — that would
-              create a NESTED scrollbar inside the page-level scrollbar, which
-              is exactly what we want to avoid. */}
-          <div className="shrink-0 px-6 pt-6 pb-2 space-y-5">
+      <div className="flex-1 flex overflow-hidden min-h-0 relative">
+        <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
+          {/* Top sections — scrollable header with max height.
+              Capping this area prevents long messages or AI suggestions from
+              pushing the code viewer off the screen, keeping everything clean
+              and docked. */}
+          <div className="shrink-0 px-6 pt-6 pb-4 space-y-4 max-h-[35%] overflow-y-auto border-b border-card-border/30 bg-bg-secondary/10 scrollbar-thin">
             {/* File Metadata */}
             <div className="flex flex-wrap gap-6 p-3 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs">
               <div className="flex flex-col gap-1">
@@ -250,15 +246,10 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             </div>
           </div>
 
-          {/* FileViewer's content area — natural height.
-              We no longer use `flex-1 min-h-0` here because the page-level
-              scroll (on the center column) handles overflow. The FileViewer
-              and the diff/code editor inside it render at their natural
-              content height, so the user can scroll the page to reach the
-              bottom of the file. If a file is very long (500+ lines), the
-              page will be very tall — that's the explicit trade-off for
-              having a single scrollbar. */}
-          <div className="px-6 pt-3 pb-4 flex flex-col">
+          {/* FileViewer's content area — fills the rest of the height.
+              Using flex-1 min-h-0 to make sure the editor container matches
+              the remaining space perfectly and scrolls internally. */}
+          <div className="px-6 py-4 flex flex-col flex-1 min-h-0">
             <FileViewer
               finding={finding} fileContent={fileContent} isLoading={isFileLoading} error={fileError}
               resolution={resolution} activeLineRef={activeLineRef}

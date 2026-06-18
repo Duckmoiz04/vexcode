@@ -438,12 +438,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    // Single page scroll model: no `flex-1 min-h-0 h-full` on the root
-    // (those forced the diff to fit a constrained parent, which created a
-    // nested scrollbar). The diff renders at its natural content height
-    // and the page-level scrollbar (on CodeInspector's center column)
-    // reaches the bottom of the diff.
-    <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f] flex-1 min-h-0 overflow-y-auto scrollbar-thin">
+    <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f] flex-1 min-h-0">
       {/* Header with legend and navigation — sticky so it stays visible
           while the user scrolls the diff inside the FileViewer's 60vh
           content area. z-10 keeps it above the CodeMirror content. */}
@@ -544,7 +539,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
           height. */}
       <div
         ref={containerRef}
-        className="diff-viewer-editor"
+        className="diff-viewer-editor flex-1 min-h-0 flex flex-col"
         style={{
           // `scroll-behavior: smooth` makes all scroll operations animated —
           // including those triggered by `EditorView.scrollIntoView` from

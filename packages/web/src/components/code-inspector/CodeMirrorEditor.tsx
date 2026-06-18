@@ -213,15 +213,9 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
   }, [themeExtension]);
 
   return (
-    // Single page scroll model: no `flex-1 min-h-0 h-full` on the wrapper
-    // (those forced the editor to fit a constrained parent, which created
-    // a nested scrollbar). The editor renders at its natural content
-    // height and the page-level scrollbar (on CodeInspector's center
-    // column) reaches the bottom of the file. The `.cm-scroller` inside
-    // CodeMirror still has its own internal scroll for very long lines.
     <div
       ref={editorRef}
-      className="code-mirror-editor w-full border border-card-border/40 rounded-xl overflow-hidden"
+      className="code-mirror-editor w-full h-full border border-card-border/40 rounded-xl overflow-hidden flex flex-col min-h-0"
     />
   );
 };
