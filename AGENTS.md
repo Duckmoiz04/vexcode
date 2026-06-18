@@ -17,10 +17,10 @@ Prefer updating `.claude/` directly, then mirror the Codex compatibility surface
 
 **AI Code Review** — Hybrid Node.js/Python static code scanner & AI code reviewer.
 
-- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`vexcode` command), Express REST server, and vanilla JS dashboard
+- **CLI + Web UI** (`packages/cli/`): Node.js ESM CLI (`vexcode` command), Express REST server; web dashboard is a React 19 + TypeScript + Vite SPA (`packages/web/`, built into `packages/cli/src/public/`)
 - **Analysis Engine** (`packages/engine/`): Python 3.12 pipeline — Semgrep scanning → GitNexus AST enrichment → 9router AI remediation
 - **Process Framework**: RIPER-5 spec-driven development (agents, protocols, plans in `process/` and `.claude/`)
-- **Stack**: Node.js >= 18.3 (ESM, no TypeScript), Python 3.12 (unittest, no pyproject.toml), Express 4.x, Vitest, vanilla JS/CSS frontend
+- **Stack**: Node.js >= 18.3 (ESM, no TypeScript in CLI), Python 3.12 (unittest, setuptools build), Express 4.x, Vitest, React 19 + TypeScript + Vite SPA (web dashboard)
 
 See `process/context/all-context.md` for full project context and conventions.
 
@@ -147,6 +147,7 @@ Promotion: create feature subdirs → move artifacts from `general-plans/` → u
 | Agent harness, RIPER-5 modes, skills, hooks | `.claude/agents/`, `.claude/skills/`, `process/development-protocols/` |
 | Python analysis engine | `packages/engine/` ([AGENTS.md](packages/engine/AGENTS.md)) |
 | Node.js CLI + Express + Web UI | `packages/cli/` ([AGENTS.md](packages/cli/AGENTS.md)) |
+| React SPA dashboard | `packages/web/` ([AGENTS.md](packages/web/AGENTS.md)) |
 | Project context & conventions | `process/context/all-context.md` |
 | Active plans | `process/general-plans/active/`, `process/features/*/active/` |
 | Test docs | `process/context/tests/all-tests.md` |
@@ -166,17 +167,24 @@ node bin/cli.js scan --target <dir>          # Full scan
 node bin/cli.js scan --target <dir> --mock-scan --mock-ai  # Offline mode
 node bin/cli.js serve --port 3000            # Express dashboard
 
+# --- React SPA dashboard (packages/web) ---
+cd packages/web
+npm install                # Install deps (Node >= 18.3)
+npm run dev                # Vite dev server (HMR at localhost:5173)
+npm run build              # tsc -b && vite build → ../cli/src/public/
+npm test                   # vitest run (31 test files, jsdom)
+
 # --- Python analysis engine (packages/engine) ---
 cd packages/engine
 python -m venv .venv
 .venv/Scripts/python.exe -m pip install -r requirements.txt  # Windows
-pytest                                 # Run Python tests
+pytest                     # pytest (15 test files)
 
 python main.py --target <dir> --output report.json           # Full pipeline
 python main.py --target <dir> --mock-scan --mock-ai          # Offline
 ```
 
-**No CI/CD pipeline configured.** No linter/formatter configured.
+**No CI/CD pipeline configured.** Ruff configured for Python linting (`packages/engine/pyproject.toml`). ESLint + Prettier configured for CLI (`packages/cli/`). No linter/formatter for the web SPA.
 
 ## Anti-Patterns (This Project)
 
