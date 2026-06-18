@@ -15,9 +15,9 @@ export function AIProviderProvider({ config, children }: AIProviderProviderProps
   const value: AIProviderContextType = {
     config,
     selectedProvider,
-    apiKey: providerKey ? (config[`${providerKey}_API_KEY`] || '') : '',
-    apiBaseUrl: providerKey ? (config[`${providerKey}_BASE_URL`] || '') : '',
-    aiModel: providerKey ? (config[`${providerKey}_MODEL`] || '') : '',
+    apiKey: providerKey ? ((config[`${providerKey}_API_KEY`] as string) || '') : '',
+    apiBaseUrl: providerKey ? ((config[`${providerKey}_BASE_URL`] as string) || '') : '',
+    aiModel: providerKey ? ((config[`${providerKey}_MODEL`] as string) || '') : '',
     aiTemperature: parseFloat(config?.AI_TEMPERATURE ?? '0.1') || 0.1,
     aiMaxTokens: parseInt(config?.AI_MAX_TOKENS ?? '4096') || 4096,
     aiSettings: config?._aiSettings ?? null,

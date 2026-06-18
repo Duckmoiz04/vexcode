@@ -141,6 +141,7 @@ export interface AIProviderContextType {
   aiSettings: AiSettings | null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Config {
   AI_PROVIDER?: string;
   AI_TEMPERATURE?: string;
@@ -167,7 +168,7 @@ export interface Config {
   SEMGREP_RULES_PATH?: string;
   /** Structured AI settings from /api/settings/ai (merged at load time). */
   _aiSettings?: AiSettings;
-  [key: string]: string | undefined;
+  [key: string]: unknown;
 }
 
 // ─── Structured AI Settings (from /api/settings/ai) ────────────────────────
