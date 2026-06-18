@@ -4,8 +4,8 @@ from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
 from typing import Dict, Any, List, Tuple, Optional, Literal
 
-from engine.utils.logger import get_logger
-from engine.config.ai_config import _reload_env_file, get_ai_config  # noqa: F401 — re-exported for backward compat
+from engine.utils.logger import get_logger, emit_progress
+from engine.config.ai_config import _reload_env_file, get_ai_config, get_resolved_provider_for_agent  # noqa: F401 — re-exported for backward compat
 from engine.config.ai_prompts import SYSTEM_PROMPT_RESOLVE
 
 logger = get_logger(__name__)
@@ -217,7 +217,15 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
     if isinstance(findings, dict):
         findings = findings.get("findings", [])
 
-    api_key, base_url, model, requires_key = get_ai_config()
+    # Try the new agent-resolved provider first, then fall back to legacy get_ai_config
+    provider_cfg = get_resolved_provider_for_agent("suggest")
+    if provider_cfg is not None:
+        api_key = provider_cfg.api_key
+        base_url = provider_cfg.base_url
+        model = provider_cfg.model
+        requires_key = provider_cfg.requires_key
+    else:
+        api_key, base_url, model, requires_key = get_ai_config()
 
     missing_provider = not os.getenv("AI_PROVIDER")
     no_key = requires_key and not api_key
@@ -298,6 +306,7 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
 
     resolutions: Dict[str, Any] = {}
     total = len(unique_findings)
+    completed = 0
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=AI_PARALLEL_WORKERS) as executor:
         futures = {
@@ -305,9 +314,12 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
             for idx, item in enumerate(unique_findings)
         }
         for future in concurrent.futures.as_completed(futures):
+            completed += 1
             try:
                 result = future.result()
                 resolutions.update(result)
+                emit_progress("ai_resolve", "Resolving findings...",
+                              current=completed, total=total)
             except Exception as e:
                 idx = futures[future]
                 rule_id = unique_findings[idx].get("rule_id", f"unknown-{idx}")
@@ -319,6 +331,8 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                     ai_error=str(e),
                     model=model,
                 )
+                emit_progress("ai_resolve", f"Failed: {rule_id}",
+                              current=completed, total=total)
 
     return resolutions
 

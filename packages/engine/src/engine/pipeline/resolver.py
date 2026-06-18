@@ -1,7 +1,7 @@
 import os
 from typing import Dict, Any, List, Optional, Tuple
 
-from engine.utils.logger import get_logger
+from engine.utils.logger import get_logger, emit_progress
 from engine.core.complexity import analyze_file_complexity
 from engine.core.ai_resolver import resolve_findings
 from engine.core.naming_audit import run_naming_audit
@@ -93,18 +93,21 @@ def resolve_phase(findings: List[dict], target: str, use_mock: bool,
     source_files = _collect_source_files(target, target_files)
     metrics = _compute_metrics(target, source_files)
 
+    emit_progress("naming_audit", "Auditing naming quality...")
     naming_findings, naming_resolutions, files_to_audit = _run_naming_audit(
         findings, target, source_files, use_mock
     )
     findings.extend(naming_findings)
+    emit_progress("naming_audit", f"Naming audit complete. {len(naming_findings)} naming issue(s) found, {len(files_to_audit)} file(s) audited.")
 
     resolutions = {}
     if findings:
-        logger.info("Resolving findings with AI...")
+        emit_progress("ai_resolve", "Resolving findings with AI...")
         resolutions = resolve_findings(
             findings, use_mock=use_mock, target_path=target
         )
         resolutions.update(naming_resolutions)
+        emit_progress("ai_resolve", f"AI resolution complete. {len(resolutions)} finding(s) resolved.")
     else:
         logger.info("No findings to resolve.")
 

@@ -226,8 +226,15 @@ class TestResolveFindings:
 
     @pytest.fixture(autouse=True)
     def _reset_ai_config_cache(self, mocker):
-        """Reset the config cache before each test so env var patches take effect."""
+        """Bypass the new agent-resolved provider so tests fall back to legacy get_ai_config.
+
+        Existing tests configure providers via AI_PROVIDER env var + flat env keys,
+        not via the settings.toml agent→provider routing.  This shim ensures they
+        keep working during the migration.  New tests can exercise
+        ``get_resolved_provider_for_agent()`` by restoring the original function.
+        """
         mocker.patch("engine.config.ai_config._PROVIDERS", None)
+        mocker.patch("engine.core.ai_resolver.get_resolved_provider_for_agent", return_value=None)
 
     def test_with_mocked_ai_response(self, mocker):
         """resolve_findings with mock HTTP response returns parsed resolutions."""

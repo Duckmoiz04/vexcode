@@ -18,6 +18,13 @@ from engine.core.ai_resolver import resolve_findings
 
 class TestASTGraph(unittest.TestCase):
 
+    def setUp(self):
+        """Ensure resolve_findings falls back to legacy get_ai_config() so
+        existing tests that set AI_PROVIDER env var keep working."""
+        patcher = patch("engine.core.ai_resolver.get_resolved_provider_for_agent", return_value=None)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     @patch('subprocess.run')
     def test_is_gitnexus_available_true(self, mock_run):
         mock_result = MagicMock()

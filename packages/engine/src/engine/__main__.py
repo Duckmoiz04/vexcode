@@ -15,7 +15,7 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from engine.utils.logger import get_logger
+from engine.utils.logger import get_logger, emit_progress, PROGRESS_PHASES
 from engine.core.ai_resolver import resolve_findings
 
 logger = get_logger(__name__)
@@ -79,6 +79,9 @@ def _sarif_path_for(vexcode_path: str) -> str:
     return str(Path(vexcode_path).with_suffix(".sarif"))
 
 
+RERESOLVE_PHASES = ["ai_resolve", "report"]
+
+
 def run_refresh_ai(args: argparse.Namespace) -> None:
     """Re-run AI resolution on an existing VexCode report without re-scanning.
 
@@ -102,14 +105,20 @@ def run_refresh_ai(args: argparse.Namespace) -> None:
         sys.exit(0)
 
     logger.info(f"Found {len(findings)} finding(s). Running AI resolution...")
+    emit_progress("ai_resolve", "Re-resolving findings with AI...",
+                  current=0, total=len(findings), phase_order=RERESOLVE_PHASES)
     resolutions = resolve_findings(
         findings, use_mock=args.mock_ai,
         target_path=target_path
     )
+    emit_progress("ai_resolve", f"AI resolution complete for {len(resolutions)} finding(s).",
+                  current=len(findings), total=len(findings), phase_order=RERESOLVE_PHASES)
 
     existing_report["ai_resolutions"] = resolutions
     existing_report["re_resolved_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
+    emit_progress("report", "Saving updated report...",
+                  current=0, total=1, phase_order=RERESOLVE_PHASES)
     with open(report_path, "w", encoding="utf-8") as f:
         json.dump(existing_report, f, indent=2, ensure_ascii=False)
     logger.info(f"AI resolutions updated in: {report_path}")
@@ -135,6 +144,8 @@ def run_refresh_ai(args: argparse.Namespace) -> None:
             json.dump(sarif_doc, f, indent=2, ensure_ascii=False)
         logger.info(f"SARIF sidecar refreshed: {sarif_path}")
 
+    emit_progress("report", "Re-resolution complete.",
+                  current=1, total=1, phase_order=RERESOLVE_PHASES)
     sys.exit(0)
 
 
@@ -152,39 +163,50 @@ def run_analysis(args: argparse.Namespace) -> None:
         from engine.core.dedup import deduplicate_findings
 
         # 1. Scan
+        emit_progress("scan", "Running static analysis (Semgrep)...")
         scan_results, target_files = run_scan_phase(args.target, args.mock_scan, args.fast)
         findings = scan_results.get("findings", [])
+        emit_progress("scan", f"Static analysis complete. Found {len(findings)} finding(s).")
         logger.info(f"Scan complete. Found {len(findings)} finding(s).")
 
         # 2. Enrich
+        emit_progress("enrich", "Enriching findings with AST context (GitNexus)...")
         findings = enrich_findings(findings, args.target, args.mock_scan)
+        emit_progress("enrich", f"AST enrichment complete. Context added to {sum(1 for f in findings if f.get('ast_context'))} finding(s).")
 
-        # 3. Dedup
+        # 3. Complexity
+        emit_progress("complexity", "Calculating complexity metrics (Lizard)...")
+
+        # 4. Dedup
+        emit_progress("dedup", "Deduplicating findings...")
         findings = deduplicate_findings(findings)
+        emit_progress("dedup", f"Deduplication complete. {len(findings)} unique findings.")
 
-        # 4. Cross-scan classification (compare with previous report)
+        # 5. Cross-scan classification (compare with previous report)
+        emit_progress("classify", "Classifying findings against previous report...")
         from engine.pipeline.scanner import get_previous_report_path, classify_findings_against_previous
         previous_report_path = get_previous_report_path(args.target)
         if previous_report_path:
             logger.info(f"Comparing with previous report: {previous_report_path}")
         findings = classify_findings_against_previous(findings, previous_report_path)
+        emit_progress("classify", "Cross-scan classification complete.")
 
-        # 5. Resolve
+        # 6. Resolve (naming audit + AI resolution)
         findings, resolutions, metrics = resolve_phase(
             findings, args.target, args.mock_ai, target_files
         )
 
-        # 6. Git state (used by both formats)
+        # 7. Git state (used by both formats)
         git_state = get_git_state(args.target)
 
-        # 7. Report — write VexCode (primary, consumed by web UI directly)
+        # 8. Report — write VexCode + SARIF
+        emit_progress("report", "Assembling final report...")
         vexcode_report = assemble_report(
             scan_results, findings, resolutions, args.target, metrics, git_state,
         )
         write_report(vexcode_report, args.output)
         logger.info(f"VexCode report written: {args.output}")
 
-        # 8. Report — write SARIF sidecar (boundary format for external tools)
         if not args.no_sarif:
             sarif_report = build_sarif(
                 scan_results=scan_results,
@@ -199,6 +221,7 @@ def run_analysis(args: argparse.Namespace) -> None:
                 json.dump(sarif_report, f, indent=2, ensure_ascii=False)
             logger.info(f"SARIF sidecar written: {sarif_path}")
 
+        emit_progress("report", "Analysis complete. Report saved.")
         logger.info("Analysis engine executed successfully.")
         sys.exit(0)
 
