@@ -2,7 +2,7 @@
 
 **Date**: 15-06-26
 **Complexity**: Complex (Multi-system: Web UI, Python engine, schema evolution)
-**Status**: 🔨 PARTIALLY DONE (Phases A-C, F: ✅ VERIFIED; Phases D, E, G: ⏳ PENDING)
+**Status**: 🔨 PARTIALLY DONE (Phases A-D, F: ✅ VERIFIED; Phases E, G: ⏳ PENDING)
 **Author**: Mavis (KTPM-aware planning)
 **Project**: VexCode - AI Code Review (DATN)
 **Deadline**: 22-06-26 (1 tuần)
@@ -86,7 +86,7 @@ Status meanings:
 | Day 1 | 4h | Schema update (id, applied, category field), ISO 25010 taxonomy Python + test, scanner emit `id` | Python emits new schema, vitest pass | ✅ VERIFIED |
 | Day 1 | 3h | Fix CodeMirrorEditor scroll (useEffect deps), Fix DiffViewer theme (Compartment) | No flicker, scroll đúng | ✅ VERIFIED |
 | Day 2 | 4h | FindingNavigator (prev/next + counter), CodeInspector integrate, multi-finding chips | Group by file works | ✅ VERIFIED (implemented inline in CodeInspector, not as separate component) |
-| Day 2 | 1.5h | Engine fix #1 (error reporting), #2 (bỏ cooldown 15s) | Honest errors | ⏳ PENDING — `ai_status`/`ai_error` chưa implement, `time.sleep(15)` vẫn còn |
+| Day 2 | 1.5h | Engine fix #1 (error reporting), #2 (bỏ cooldown 15s) | Honest errors | ✅ VERIFIED — `ai_status`/`ai_error` implemented, cooldown removed, `useChat.ts` prefixes error in chat context |
 | Day 3 | 1h | Engine fix #3 (parallel AI) | Scan time giảm ~3-4x | ⏳ PENDING — chưa có ThreadPoolExecutor |
 | Day 3 | 0.5h | Run full test suite, manual test E2E | All green | ✅ VERIFIED (Web 209 ✅, CLI 88✅/1❌, Engine 230✅/1❌ — lỗi pre-existing) |
 | Day 3 | 0.5h | Update `.md` files (all-context, AGENTS, architecture) | Docs đồng bộ | ⏳ PENDING — `cli/AGENTS.md` vẫn ghi "vanilla JS", `web/AGENTS.md` chưa có, `all-context.md` thiếu ISO 25010 |
@@ -338,18 +338,18 @@ Status meanings:
   - [ ] `MultiFindingChips.test.tsx` — render, click, no findings cùng line → không render
   - [ ] `IssuesPage.test.tsx` (nếu có) — group logic
 
-#### Phase D: Engine fix #1, #2 (1.5h)
-- [ ] **D1**: Update `packages/engine/src/engine/core/ai_resolver.py`
-  - [ ] Extract `call_ai_for_rule(item: dict) -> tuple[rule_id, Resolution]`
-  - [ ] Thêm `ai_status: "success" | "failed" | "fallback_mock"` cho mỗi resolution
-  - [ ] Thêm `ai_error: <message>` khi fail
-  - [ ] Mock fallback: gắn `ai_status: "fallback_mock"` + `ai_error: "AI not configured"`
-- [ ] **D2**: Update `packages/engine/src/engine/pipeline/resolver.py`
-  - [ ] Bỏ `time.sleep(FAST_SCAN_SLEEP_SECONDS)` ở line 108-109
-  - [ ] Comment giải thích: rate limit đã handle bởi `post_with_retry()`
-- [ ] **D3**: Frontend hiển thị AI error
-  - [ ] `useChat.ts:buildFindingContext` — nếu `ai_status === "failed"`, prefix error
-  - [ ] `CodeInspector.tsx` — nếu `resolution.ai_status === "failed"`, hiển thị banner đỏ
+#### Phase D: Engine fix #1, #2 (1.5h) ✅ VERIFIED
+- [x] **D1**: Update `packages/engine/src/engine/core/ai_resolver.py`
+  - [x] Extract `call_ai_for_rule(item: dict) -> tuple[rule_id, Resolution]`
+  - [x] Thêm `ai_status: "success" | "failed" | "fallback_mock"` cho mỗi resolution
+  - [x] Thêm `ai_error: <message>` khi fail
+  - [x] Mock fallback: gắn `ai_status: "fallback_mock"` + `ai_error: "AI not configured"`
+- [x] **D2**: Update `packages/engine/src/engine/pipeline/resolver.py`
+  - [x] Bỏ `time.sleep(FAST_SCAN_SLEEP_SECONDS)` ở line 108-109
+  - [x] Comment giải thích: rate limit đã handle bởi `post_with_retry()`
+- [x] **D3**: Frontend hiển thị AI error
+  - [x] `useChat.ts:buildFindingContext` — nếu `ai_status === "failed"`, prefix error
+  - [x] `CodeInspector.tsx` — nếu `resolution.ai_status === "failed"`, hiển thị banner đỏ
 
 ### Day 3 — Parallel AI + Tests + Docs
 
