@@ -53,9 +53,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden p-4 pr-2 gap-4 shrink-0 select-none bg-bg-secondary">
+    <div className="flex flex-col h-full overflow-hidden p-4 pr-2 gap-4 shrink-0 select-none bg-bg-primary">
       {/* Floating Card Wrapper for filters (width: 68 / 272px) */}
-      <div className="w-68 min-w-68 flex-1 bg-[#161622] border border-card-border/40 rounded-2xl pt-5 pb-5 pl-5 pr-0 flex flex-col gap-3 overflow-hidden shadow-xl">
+      <div className="w-68 min-w-68 flex-1 bg-bg-tertiary border border-card-border/40 rounded-2xl pt-5 pb-5 pl-5 pr-0 flex flex-col gap-3 overflow-hidden shadow-xl">
         <div className="flex items-center justify-between pr-5 pb-3 border-b border-text-tertiary/30 h-8 box-content">
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-text-primary" />

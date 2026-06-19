@@ -25,7 +25,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   const { stats, display } = useDashboardStats(findings, report);
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin bg-bg-secondary">
+    <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin bg-bg-primary">
       {/* Dashboard Header */}
       <div className="flex items-center justify-between pb-4 border-b border-card-border">
         <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider">Scan Summary</h3>

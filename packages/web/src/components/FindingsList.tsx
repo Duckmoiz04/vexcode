@@ -64,7 +64,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
   onPageChange,
 }) => {
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-bg-secondary p-4 pl-2 overflow-y-auto scrollbar-thin">
+    <div className="flex-1 flex flex-col min-h-0 bg-bg-primary p-4 pl-2 overflow-y-auto scrollbar-thin">
       <div className="flex items-center justify-between pb-4 border-b border-text-tertiary/30 mb-5">
         <div className="flex items-center gap-3">
           <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
@@ -86,7 +86,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
             placeholder="Search findings by rule ID, description message, or file path..."
             autoComplete="off"
             name="searchQuery"
-            className="w-full bg-[#161622] border border-card-border/60 rounded-xl pl-10 pr-10 py-3 text-sm text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium shadow-inner"
+            className="w-full bg-bg-tertiary border border-card-border/60 rounded-xl pl-10 pr-10 py-3 text-sm text-text-primary outline-none focus:border-accent transition-all placeholder:text-text-tertiary font-medium shadow-inner"
           />
           <Search className="absolute left-3.5 top-3.5 h-4.5 w-4.5 text-text-tertiary" />
           {searchQuery && (

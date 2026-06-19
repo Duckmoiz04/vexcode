@@ -46,7 +46,7 @@ export const OnboardingPage: React.FC<OnboardingPageProps> = ({
   };
 
   return (
-    <div className="flex-1 flex items-center justify-center p-6 bg-bg-secondary overflow-y-auto relative scrollbar-thin">
+    <div className="flex-1 flex items-center justify-center p-6 bg-bg-primary overflow-y-auto relative scrollbar-thin">
       {/* Background glow effects */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-accent/5 filter blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-success/5 filter blur-3xl pointer-events-none" />

@@ -94,7 +94,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   }, [findings, searchQuery, filterSeverities, filterCategories, filterStatuses, filterLanguages, filterScanStatuses]);
 
   return (
-    <div className="w-72 min-w-72 bg-[#161622] border-r border-card-border flex flex-col h-full overflow-hidden">
+    <div className="w-72 min-w-72 bg-bg-secondary border-r border-card-border flex flex-col h-full overflow-hidden">
       <SidebarPanel
         sidebarTab={sidebarTab}
         setSidebarTab={setSidebarTab}

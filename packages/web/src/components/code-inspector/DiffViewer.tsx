@@ -438,11 +438,11 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-[#0a0a0f] flex-1 min-h-0">
+    <div className="diff-viewer flex flex-col border border-card-border/40 rounded-xl overflow-hidden bg-bg-primary flex-1 min-h-0">
       {/* Header with legend and navigation — sticky so it stays visible
           while the user scrolls the diff inside the FileViewer's 60vh
           content area. z-10 keeps it above the CodeMirror content. */}
-      <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
+      <div className="sticky top-0 z-10 flex flex-wrap items-center justify-between px-3 py-1.5 border-b border-card-border/30 bg-bg-secondary">
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">
           <span className="flex items-center gap-1">
             <span className="inline-block w-2.5 h-2.5 rounded-sm bg-[hsla(350,85%,55%,0.4)]" />

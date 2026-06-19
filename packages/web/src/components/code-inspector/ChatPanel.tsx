@@ -37,7 +37,7 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
 
   return (
     <div
-      className={`border-l border-card-border bg-[#161622] h-full flex flex-col shadow-2xl transition-all duration-300 ease-in-out shrink-0 overflow-hidden ${
+      className={`border-l border-card-border bg-bg-secondary h-full flex flex-col shadow-2xl transition-all duration-300 ease-in-out shrink-0 overflow-hidden ${
         isOpen ? 'w-[380px] opacity-100' : 'w-0 opacity-0 border-l-0'
       }`}
     >
