@@ -23,8 +23,18 @@ function buildFindingContext(finding: Finding, resolution: AiResolution | undefi
   }
 
   if (resolution) {
-    context += `\nAI Suggestion: ${resolution.suggestion}\n`;
-    if (resolution.remediation_code) context += `Remediation Code:\n\`\`\`\n${resolution.remediation_code}\`\`\`\n`;
+    if (resolution.ai_status === 'failed') {
+      context += `\nAI Resolution Status: FAILED\n`;
+      context += `Error: ${resolution.ai_error || 'Unknown error'}\n`;
+      context += `Suggestion: ${resolution.suggestion || 'No AI suggestion available.'}\n`;
+    } else if (resolution.ai_status === 'fallback_mock') {
+      context += `\nAI Resolution Status: MOCK FALLBACK\n`;
+      context += `Note: AI provider is not configured. The suggestion below is generic and may not be accurate.\n`;
+      context += `AI Suggestion: ${resolution.suggestion}\n`;
+    } else {
+      context += `\nAI Suggestion: ${resolution.suggestion}\n`;
+      if (resolution.remediation_code) context += `Remediation Code:\n\`\`\`\n${resolution.remediation_code}\`\`\`\n`;
+    }
   }
 
   return context;
