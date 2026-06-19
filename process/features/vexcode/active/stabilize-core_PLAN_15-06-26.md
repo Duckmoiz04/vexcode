@@ -2,7 +2,7 @@
 
 **Date**: 15-06-26
 **Complexity**: Complex (Multi-system: Web UI, Python engine, schema evolution)
-**Status**: 🔨 PARTIALLY DONE (Phases A-D, F: ✅ VERIFIED; Phases E, G: ⏳ PENDING)
+**Status**: 🔨 PARTIALLY DONE (Phases A-E, F: ✅ VERIFIED; Phases G: ⏳ PENDING)
 **Author**: Mavis (KTPM-aware planning)
 **Project**: VexCode - AI Code Review (DATN)
 **Deadline**: 22-06-26 (1 tuần)
@@ -353,16 +353,16 @@ Status meanings:
 
 ### Day 3 — Parallel AI + Tests + Docs
 
-#### Phase E: Engine fix #3 — Parallel AI (1h)
-- [ ] **E1**: Update `packages/engine/src/engine/core/ai_resolver.py`
-  - [ ] Add `from concurrent.futures import ThreadPoolExecutor, as_completed`
-  - [ ] Refactor `resolve_findings()`: build tasks list, submit to pool
-  - [ ] `max_workers=3` (conservative, tránh rate limit)
-  - [ ] Maintain thứ tự kết quả (sort by rule_id)
-- [ ] **E2**: Update `packages/engine/src/engine/config/constants.py`
-  - [ ] Thêm `AI_PARALLEL_WORKERS = 3`
-- [ ] **E3**: Test
-  - [ ] `tests/test_ai_resolver_parallel.py` — verify parallel execution, mock 3 rules
+#### Phase E: Engine fix #3 — Parallel AI (1h) ✅ VERIFIED
+- [x] **E1**: Update `packages/engine/src/engine/core/ai_resolver.py`
+  - [x] Add `from concurrent.futures import ThreadPoolExecutor, as_completed`
+  - [x] Refactor `resolve_findings()`: build tasks list, submit to pool
+  - [x] `max_workers=3` (conservative, tránh rate limit)
+  - [x] Maintain thứ tự kết quả (sort by rule_id)
+- [x] **E2**: Update `packages/engine/src/engine/config/constants.py`
+  - [x] Thêm `AI_PARALLEL_WORKERS = 3`
+- [x] **E3**: Test
+  - [x] `tests/test_ai_resolver_parallel.py` — verify parallel execution, mock 3 rules
 
 #### Phase F: Tests + Verification (0.5h) ✅ VERIFIED (current test count: Web 209, CLI 89, Engine 231)
 - [x] **F1**: Run `npm test` ở `packages/web` — **209 tests pass** ✅ (vượt target 138)
