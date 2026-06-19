@@ -1,27 +1,71 @@
 @import "tailwindcss";
 
+:root {
+  /* Default: Dark mode values */
+  --bg-primary: hsl(240, 25%, 3%);
+  --bg-secondary: hsl(240, 20%, 7%);
+  --bg-tertiary: hsl(240, 16%, 12%);
+  --card-bg: hsla(240, 16%, 12%, 0.75);
+  --card-border: hsla(240, 16%, 20%, 0.5);
+  --text-primary: #e4e4ed;
+  --text-secondary: #8888a0;
+  --text-tertiary: #5a5a70;
+  
+  --accent: #f97316; /* Orange 500 */
+  --accent-hover: #fb923c; /* Orange 400 */
+  --success: #22c55e;
+  --success-hover: #4ade80;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #f97316;
+  --danger: #dc2626;
+  --maintainability: #22c55e;
+}
+
+:root.light {
+  /* Light mode values */
+  --bg-primary: hsl(0, 0%, 100%);
+  --bg-secondary: #f8f8f8;
+  --bg-tertiary: hsl(0, 0%, 100%);
+  --card-bg: hsla(0, 0%, 100%, 0.95);
+  --card-border: rgba(0, 0, 0, 0.08);
+  --text-primary: #1c1c24;
+  --text-secondary: #5a5a70;
+  --text-tertiary: #88889e;
+  
+  --accent: #ea580c; /* Orange 600 */
+  --accent-hover: #f97316; /* Orange 500 */
+  --success: #16a34a;
+  --success-hover: #22c55e;
+  --error: #dc2626;
+  --warning: #d97706;
+  --info: #ea580c;
+  --danger: #b91c1c;
+  --maintainability: #16a34a;
+}
+
 @theme {
   /* GitNexus Theme Color Tokens (Blue/Dark Variant) */
-  --color-bg-primary: hsl(240, 25%, 3%);      /* Midnight Void */
-  --color-bg-secondary: hsl(240, 20%, 7%);    /* Deep */
-  --color-bg-tertiary: hsl(240, 16%, 12%);     /* Surface */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
   
-  --color-card-bg: hsla(240, 16%, 12%, 0.75);      /* Elevated card with glass blur */
-  --color-card-border: hsla(240, 16%, 20%, 0.5);   /* Border default */
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
   
-  --color-accent: var(--color-orange-500);            /* Vibrant Orange Accent */
-  --color-accent-hover: var(--color-orange-400);      /* Light accent hover */
-  --color-success: var(--color-green-500);            /* Green Success */
-  --color-success-hover: var(--color-green-400);
-  --color-error: var(--color-red-500);                /* Red Danger/Error */
-  --color-warning: var(--color-amber-500);            /* Yellow Warning */
-  --color-info: var(--color-orange-500);               /* File node */
-  --color-danger: var(--color-red-600);               /* Danger Crimson */
-  --color-maintainability: var(--color-green-500);    /* Maintainability color */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+  --color-error: var(--error);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-danger: var(--danger);
+  --color-maintainability: var(--maintainability);
   
-  --color-text-primary: #e4e4ed;    /* Text primary */
-  --color-text-secondary: #8888a0;  /* Text secondary */
-  --color-text-tertiary: #5a5a70;   /* Text muted */
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
   
   --font-sans: 'Outfit', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
