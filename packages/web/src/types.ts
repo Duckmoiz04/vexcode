@@ -92,6 +92,8 @@ export interface Report {
   ai_resolutions: Record<string, AiResolution>;
   git_state: GitState;
   metrics: Metrics;
+  /** Present when the engine fell back to mock/simulated results. */
+  fallback_reason?: string;
   _id?: string;
   _project?: string;
   _savedAt?: string;

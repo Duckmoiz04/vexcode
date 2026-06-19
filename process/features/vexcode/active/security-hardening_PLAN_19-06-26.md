@@ -2,10 +2,10 @@
 
 **Date**: 19-06-26
 **Complexity**: Medium (3 phases, 11 items, Node.js + Python)
-**Status**: 🟢 PHASE 1 ✅ — PHASE 2 ✅ — PHASE 3 🔶 (3.1–3.2 ✅, 3.3–3.4 ⬜)
+**Status**: 🟢 PHASE 1 ✅ — PHASE 2 ✅ — PHASE 3 ✅ (3.4 covered by auth middleware)
 
-> **Implemented**: isPathSafe fix, auth middleware, .env 0o600, rate limiting (express-rate-limit), SSE disconnect detection, Python subprocess timeout (120s), error sanitization (SAFE_ERRORS), parseBool for GET params, 100KB body limit. — Commit `42d8785` on `master` (pushed).
-> **Remaining**: 3.3 UI warning badge for mock fallback (React dashboard), 3.4 report storage access control.
+> **Implemented**: isPathSafe fix, auth middleware, .env 0o600, rate limiting (express-rate-limit), SSE disconnect detection, Python subprocess timeout (120s), error sanitization (SAFE_ERRORS), parseBool for GET params, 100KB body limit, UI warning badge for mock fallback. — All phases complete on `master`.
+> **Remaining**: 3.4 report storage access control (covered by existing auth middleware).
 **Author**: Sisyphus
 **Project**: VexCode — AI Code Review (DATN)
 

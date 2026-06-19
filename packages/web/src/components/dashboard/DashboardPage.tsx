@@ -1,4 +1,5 @@
 import React from 'react';
+import { AlertTriangle } from 'lucide-react';
 import type { Finding, Report } from '../../types';
 import { useDashboardStats } from './useDashboardStats';
 import { MetricsCards } from './MetricsCards';
@@ -33,6 +34,17 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           {report?._project || currentProject || 'Project'}
         </span>
       </div>
+
+      {/* Mock-fallback warning badge (Phase 3.3) */}
+      {report?.fallback_reason && (
+        <div className="flex items-start gap-3 p-4 rounded-xl border border-warning/25 bg-warning/[0.08] backdrop-blur-md">
+          <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0 text-warning" />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-warning">Using simulated results</p>
+            <p className="mt-1 text-xs text-text-tertiary leading-relaxed">{report.fallback_reason}</p>
+          </div>
+        </div>
+      )}
 
       {/* Metrics Cards Grid */}
       <MetricsCards
