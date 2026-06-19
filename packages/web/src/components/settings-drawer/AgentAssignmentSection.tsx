@@ -36,9 +36,9 @@ export const AgentAssignmentSection: React.FC<AgentAssignmentSectionProps> = ({
   disabled = false,
   onAgentChange,
 }) => {
-  const agentNames = Object.keys(agents).length > 0
-    ? Object.keys(agents)
-    : Object.keys(AGENT_LABELS);
+  // Always show all known agents from AGENT_LABELS. Saved `agents` only
+  // supplies the values (provider, model, enabled) — not which rows to show.
+  const agentNames = Object.keys(AGENT_LABELS);
 
   return (
     <div className={`space-y-2 transition-opacity duration-200 ${disabled ? 'opacity-40 pointer-events-none' : ''}`}>
@@ -61,14 +61,17 @@ export const AgentAssignmentSection: React.FC<AgentAssignmentSectionProps> = ({
                 {AGENT_LABELS[name] ?? name}
               </span>
               <div className="relative flex-1">
-                <select
-                  value={agent.provider || ''}
-                  onChange={(e) => {
-                    const prov = e.target.value;
-                    const firstModel = prov && PROVIDERS[prov]?.models?.[0]?.id || '';
-                    onAgentChange(name, 'provider', prov);
-                    onAgentChange(name, 'model', firstModel);
-                  }}
+                  <select
+                    value={agent.provider || ''}
+                    onChange={(e) => {
+                      const prov = e.target.value;
+                      // Prefer dynamically fetched models; fall back to hardcoded list
+                      const firstModel = prov
+                        ? (providerConfigs[prov]?.fetchedModels?.[0]?.id ?? PROVIDERS[prov]?.models?.[0]?.id ?? '')
+                        : '';
+                      onAgentChange(name, 'provider', prov);
+                      onAgentChange(name, 'model', firstModel);
+                    }}
                   disabled={disabled}
 					className="w-full bg-bg-primary text-text-primary border border-card-border rounded-md px-3 py-2 text-[13px] outline-none cursor-pointer focus:border-accent transition-all appearance-none disabled:cursor-not-allowed"
                   >

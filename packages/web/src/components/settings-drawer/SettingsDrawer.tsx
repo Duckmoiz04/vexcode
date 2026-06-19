@@ -185,26 +185,30 @@ className={`flex items-center gap-2.5 w-full pl-5 pr-4 py-2.5 text-[13px] transi
 
               {activeTab === 'agents' && (
                 <>
-                  {!state.hasConnectedProvider && (
-                    <div className="flex items-start gap-3 p-4 rounded-lg border border-warning/30 bg-warning/5">
-                      <AlertCircle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
-                      <div>
-                          <p className="text-[13px] font-semibold text-warning">No AI Provider Connected</p>
-                        <p className="text-[13px] text-text-tertiary mt-1 leading-relaxed">
-                          Connect an AI provider in the <strong>Providers</strong> tab first.
-                          Once connected, you can assign models to AI agents here.
-                        </p>
+                  {!state.hasConnectedProvider ? (
+                    <div className="flex flex-col items-center justify-center py-12 px-8 mx-4 my-8 rounded-lg border border-warning/20 bg-warning/5 text-center">
+                      <div className="h-14 w-14 rounded-full bg-warning/10 flex items-center justify-center mb-4">
+                        <Sparkles className="h-7 w-7 text-warning/70" />
                       </div>
+                      <h3 className="text-[14px] font-semibold text-warning">No AI Provider Connected</h3>
+                      <p className="text-[13px] text-text-tertiary/80 mt-1.5 max-w-[280px] leading-relaxed">
+                        Connect an AI provider first, then assign models to agents here.
+                      </p>
+                      <button
+                        onClick={() => setActiveTab('providers')}
+                        className="mt-5 px-5 py-2 bg-accent hover:bg-accent-hover text-white text-[13px] font-medium rounded-md transition-colors cursor-pointer"
+                      >
+                        Go to Providers
+                      </button>
                     </div>
+                  ) : (
+                    <AgentAssignmentSection
+                      agents={state.agentMappings}
+                      enabledProviders={state.enabledProviders}
+                      providerConfigs={state.providerConfigs}
+                      onAgentChange={state.handleAgentChange}
+                    />
                   )}
-
-                  <AgentAssignmentSection
-                    agents={state.agentMappings}
-                    enabledProviders={state.enabledProviders}
-                    providerConfigs={state.providerConfigs}
-                    disabled={!state.hasConnectedProvider}
-                    onAgentChange={state.handleAgentChange}
-                  />
                 </>
               )}
 

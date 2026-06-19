@@ -44,8 +44,13 @@ function defaultProviderForm(
     || provSettings?.base_url
     || PROVIDERS[pk]?.defaultBaseUrl
     || '';
-  const enabled = provSettings?.enabled ?? true;
   const hasRealKey = (flatKey || structuredKey) !== '';
+  // Providers that require an API key but have no saved credentials should
+  // not inherit `enabled: true` from old saves — that would be stale data.
+  const requiresApiKey = ['openai', 'anthropic', 'google', 'nvidia'].includes(pk);
+  const enabled = requiresApiKey && !hasRealKey
+    ? false
+    : (provSettings?.enabled ?? hasRealKey);
   const testStatus: TestStatus = hasRealKey
     ? { text: 'Connected (saved)', type: 'success' }
     : { text: '', type: 'idle' };
@@ -59,7 +64,22 @@ function buildDefaultAgents(): Record<string, AiAgentConfig> {
 
 function initAllProviderConfigs(aiSettings?: AiSettings | null, initialConfig?: Config | null): Record<string, ProviderFormState> {
   const configs: Record<string, ProviderFormState> = {};
-  for (const pk of Object.keys(PROVIDERS)) {
+  // When server-side config exists, only include providers that have actual
+  // credentials or are explicitly enabled — filters out stale/dirty entries
+  // from older saves that included unconfigured providers.
+  // On first-run (no server config yet), fall back to the hardcoded PROVIDERS
+  // list so the user can configure them from scratch.
+  let providerKeys: string[];
+  if (aiSettings?.providers && Object.keys(aiSettings.providers).length > 0) {
+    // Include all known providers so users can still configure them,
+    // but filter out stale keys that no longer exist in the hardcoded PROVIDERS map.
+    providerKeys = Object.entries(aiSettings.providers)
+      .filter(([pk]) => PROVIDERS[pk] !== undefined)
+      .map(([pk]) => pk);
+  } else {
+    providerKeys = Object.keys(PROVIDERS);
+  }
+  for (const pk of providerKeys) {
     configs[pk] = defaultProviderForm(pk, aiSettings, initialConfig);
   }
   return configs;
@@ -152,7 +172,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
   );
 
   const hasConnectedProvider = useMemo(
-    () => Object.values(providerConfigs).some((cfg) => cfg.testStatus.type === 'success'),
+    () => Object.values(providerConfigs).some((cfg) => cfg.enabled && !!cfg.apiKey),
     [providerConfigs],
   );
 
@@ -185,10 +205,21 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     config._aiSettings = {
       enabled: aiEnabled,
       providers: Object.fromEntries(
-        Object.entries(providerConfigs).map(([k, v]) => [
-          k,
-          { enabled: v.enabled, requires_key: true, api_key: v.apiKey, base_url: v.baseUrl, model: PROVIDERS[k]?.models?.[0]?.id ?? '' },
-        ]),
+        Object.entries(providerConfigs)
+          .filter(([, v]) => v.apiKey || v.enabled) // Only persist configured/enabled providers
+          .map(([k, v]) => [
+            k,
+            {
+              enabled: v.enabled,
+              requires_key: true,
+              api_key: v.apiKey,
+              base_url: v.baseUrl,
+              model: v.fetchedModels?.[0]?.id
+                ?? initialConfig?._aiSettings?.providers?.[k]?.model
+                ?? PROVIDERS[k]?.models?.[0]?.id
+                ?? '',
+            },
+          ]),
       ),
       agents: agentMappings,
     };

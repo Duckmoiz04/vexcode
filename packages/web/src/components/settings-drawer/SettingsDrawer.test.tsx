@@ -40,8 +40,8 @@ describe('SettingsDrawer', () => {
     fireEvent.click(screen.getByText('Models'));
 
     expect(screen.getByText('No AI Provider Connected')).toBeInTheDocument();
-    // AgentAssignmentSection still renders but in disabled state
-    expect(screen.getByText('Agent Assignments')).toBeInTheDocument();
+    expect(screen.getByText('Go to Providers')).toBeInTheDocument();
+    expect(screen.queryByText('Agent Assignments')).not.toBeInTheDocument();
   });
 
   it('shows Rules tab content when Rules is clicked', () => {
@@ -67,12 +67,13 @@ describe('SettingsDrawer', () => {
   it('renders agent assignment rows when provider is connected', () => {
     const connectedConfig: Config = {
       AI_PROVIDER: 'openai',
+      OPENAI_API_KEY: 'sk-connected',
       _aiSettings: {
         enabled: true,
         providers: {
           openai: {
             enabled: true, model: 'gpt-4o-mini', requires_key: true,
-            api_key: '••••••', base_url: 'https://api.openai.com/v1',
+            api_key: 'sk-connected', base_url: 'https://api.openai.com/v1',
           },
         },
         agents: {
@@ -182,9 +183,9 @@ describe('SettingsDrawer', () => {
 
     renderWithProviders(<SettingsDrawer {...defaultProps} initialConfig={initialConfig} />);
 
-    // Provider cards still render
-    expect(screen.getAllByText('OpenAI').length).toBeGreaterThan(0);
+    // Only providers present in _aiSettings.providers render on the Providers tab
     expect(screen.getAllByText('Anthropic').length).toBeGreaterThan(0);
+    expect(screen.queryByText('OpenAI')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByText('Models'));
     expect(screen.getByDisplayValue('Anthropic')).toBeInTheDocument();
