@@ -23,6 +23,7 @@ describe('Header', () => {
     const onStartScan = vi.fn();
     const onReResolve = vi.fn();
     const onSelectReportId = vi.fn();
+    const onToggleTheme = vi.fn();
 
     renderWithProviders(
       <Header
@@ -35,6 +36,8 @@ describe('Header', () => {
         reports={mockReports}
         currentReportId="report_2026-06-10-12-00-00"
         onSelectReportId={onSelectReportId}
+        theme="dark"
+        onToggleTheme={onToggleTheme}
       />
     );
 
@@ -47,9 +50,9 @@ describe('Header', () => {
     expect(screen.getByRole('button', { name: /Scan Project/i })).toBeInTheDocument();
 
     // Verify HeaderActions elements
-    const buttons = screen.getAllByRole('button');
-    // buttons[0] is project dropdown, buttons[1] is version dropdown, buttons[2] is settings, buttons[3] is scan project, buttons[4] is scan dropdown
-    fireEvent.click(buttons[2]); // Settings button
+    const settingsBtn = screen.getByTitle('Settings');
+    expect(settingsBtn).toBeInTheDocument();
+    fireEvent.click(settingsBtn);
     expect(onOpenSettings).toHaveBeenCalled();
   });
 });

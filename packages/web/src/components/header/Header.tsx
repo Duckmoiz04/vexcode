@@ -14,6 +14,8 @@ export interface HeaderProps {
   reports: ReportListItem[];
   currentReportId: string | null;
   onSelectReportId: (id: string) => void;
+  theme: 'dark' | 'light';
+  onToggleTheme: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,6 +28,8 @@ export const Header: React.FC<HeaderProps> = ({
   reports,
   currentReportId,
   onSelectReportId,
+  theme,
+  onToggleTheme,
 }) => {
   if (!projectName) {
     return (
@@ -42,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
   }
 
   return (
-    <header className="flex items-center justify-between px-6 py-3 bg-[#161622] border-b border-card-border z-40">
+    <header className="flex items-center justify-between px-6 py-3 bg-bg-secondary border-b border-card-border z-40">
       <HeaderNav
         projectName={projectName}
         projects={projects}
@@ -52,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({
         onSelectReportId={onSelectReportId}
       />
       <div className="flex items-center gap-3">
-        <HeaderActions onOpenSettings={onOpenSettings} />
+        <HeaderActions onOpenSettings={onOpenSettings} theme={theme} onToggleTheme={onToggleTheme} />
         <ScanButton
           onStartScan={onStartScan}
           onReResolve={onReResolve}
