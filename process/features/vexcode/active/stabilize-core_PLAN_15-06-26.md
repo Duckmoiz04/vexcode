@@ -266,14 +266,14 @@ Status meanings:
   - [x] Thêm `category` (gọi `classify_finding`)
   - [x] Thêm `cwe_id?` parse từ Semgrep metadata (nếu có)
   - [x] Thêm `language?` từ extension
-- [ ] **A3**: Update `packages/engine/src/engine/core/ai_resolver.py` — ⏳ CHUYỂN SANG PHASE D
-  - [ ] Thêm `ai_status?` và `ai_error?` cho mỗi resolution
-  - [ ] Thêm `remediation_target_file?` (file đầu tiên áp dụng được)
-  - [ ] Thêm `model?`, `generated_at?` cho provenance
-  - [ ] Refactor: extract `call_ai_for_rule()` function (dùng cho parallel sau)
-- [ ] **A4**: Update `packages/engine/src/engine/pipeline/resolver.py` — ⏳ CHUYỂN SANG PHASE D
-  - [ ] Bỏ `time.sleep(FAST_SCAN_SLEEP_SECONDS)` ở line 108-109
-  - [ ] Refactor để support parallel (prepare data, chưa parallel hóa)
+- [x] **A3**: Update `packages/engine/src/engine/core/ai_resolver.py` — ✅ DONE in Phase D+E
+  - [x] Thêm `ai_status?` và `ai_error?` cho mỗi resolution
+  - [x] Thêm `remediation_target_file?` (field tồn tại nhưng chưa populate thực tế — deferred)
+  - [x] Thêm `model?`, `generated_at?` cho provenance
+  - [x] Refactor: extract `call_ai_for_rule()` function (dùng cho parallel sau)
+- [x] **A4**: Update `packages/engine/src/engine/pipeline/resolver.py` — ✅ DONE in Phase D
+  - [x] Bỏ `time.sleep(FAST_SCAN_SLEEP_SECONDS)` ở line 108-109
+  - [x] Refactor để support parallel (prepare data, chưa parallel hóa)
 - [x] **A5**: Update `packages/engine/src/engine/pipeline/reporter.py`
   - [x] Đổi tên `ai_resolutions` → `resolutions` (vẫn giữ alias khi load cũ) — lưu ý: code frontend vẫn dùng `ai_resolutions`, cần backward compat
   - [x] Thêm `applied: []` vào report
