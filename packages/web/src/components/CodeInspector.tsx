@@ -19,6 +19,7 @@ interface CodeInspectorProps {
   /** All findings in the report — used to highlight sibling error lines
    *  in the same file when viewing one finding. */
   allFindings?: Finding[];
+  theme: 'dark' | 'light';
 }
 
 function getRelativePath(absolutePath: string, targetPath: string | null): string {
@@ -49,7 +50,7 @@ async function openInIDE(filePath: string, line: number, baseDir: string | null)
 }
 
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
-  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings,
+  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings, theme,
 }) => {
   // Guard: parent may pass an out-of-range index, in which case `finding` is
   // undefined. Render a minimal empty state instead of crashing on
@@ -57,7 +58,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   // (reading 'file')` when navigating past the last finding.)
   if (!finding) {
     return (
-      <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg-secondary relative">
+      <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg-primary relative">
         <div className="flex-1 flex items-center justify-center text-text-tertiary text-sm">
           No finding selected.
           {onSelectFindingIndex && (
@@ -104,7 +105,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const hasMultipleInFile = sameFileFindings.length > 1;
 
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg-secondary relative">
+    <div className="flex-1 flex flex-col h-full overflow-hidden bg-bg-primary relative">
       <CodeInspectorHeader
         finding={finding} isChatOpen={isChatOpen}
         onToggleChat={() => setIsChatOpen(!isChatOpen)}
@@ -114,7 +115,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
 
       {/* Sibling finding navigation bar — shows when file has multiple findings */}
       {hasMultipleInFile && onSelectFindingIndex && currentPosInFile >= 0 && (
-        <div className="flex items-center justify-between px-6 py-1.5 border-b border-card-border/50 bg-bg-secondary/80 shrink-0">
+        <div className="flex items-center justify-between px-6 py-1.5 border-b border-card-border/50 bg-bg-primary/80 shrink-0">
           <span className="text-xs text-text-tertiary font-mono">
             Finding {currentPosInFile + 1} of {sameFileFindings.length} in this file
           </span>
@@ -254,6 +255,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
               finding={finding} fileContent={fileContent} isLoading={isFileLoading} error={fileError}
               resolution={resolution} activeLineRef={activeLineRef}
               allFindings={allFindings}
+              theme={theme}
             />
           </div>
         </div>

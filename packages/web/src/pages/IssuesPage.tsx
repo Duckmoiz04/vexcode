@@ -40,6 +40,7 @@ interface IssuesPageProps {
   pagination?: PaginationInfo | null;
   currentPage?: number;
   onPageChange?: (page: number) => void;
+  theme: 'dark' | 'light';
 }
 
 export const IssuesPage: React.FC<IssuesPageProps> = ({
@@ -71,12 +72,13 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
   pagination,
   currentPage,
   onPageChange,
+  theme,
 }) => {
   if (!currentReport || !currentReport.findings) return null;
 
   if (selectedFindingIndex === null) {
     return (
-      <div className="flex-1 flex overflow-hidden min-h-0 bg-bg-secondary animate-slide-left">
+      <div className="flex-1 flex overflow-hidden min-h-0 bg-bg-primary animate-slide-left">
         {/* Left Column: Search & Filters */}
         <FilterPanel
           searchQuery={searchQuery}
@@ -97,7 +99,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
 
         {/* Right Column: List of Findings */}
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="shrink-0 flex items-center justify-between gap-4 px-4 py-3 bg-bg-secondary border-b border-card-border/55">
+          <div className="shrink-0 flex items-center justify-between gap-4 px-4 py-3 bg-bg-primary border-b border-card-border/55">
             <div className="min-w-0">
               <h2 className="text-xs font-bold uppercase tracking-wider text-text-primary">
                 Code & Issues
@@ -141,7 +143,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
   }
 
   return (
-    <div className="flex-1 flex overflow-hidden min-h-0 bg-bg-secondary animate-slide-left">
+    <div className="flex-1 flex overflow-hidden min-h-0 bg-bg-primary animate-slide-left">
       <CodeInspector
         finding={currentReport.findings[selectedFindingIndex]}
         aiResolutions={currentReport.ai_resolutions || {}}
@@ -150,6 +152,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
         metrics={currentReport.metrics}
         onSelectFindingIndex={onSelectFindingIndex}
         allFindings={currentReport.findings}
+        theme={theme}
       />
     </div>
   );

@@ -22,6 +22,7 @@ describe('FileViewer', () => {
         isLoading={true}
         error={null}
         resolution={undefined}
+        theme="dark"
       />
     );
 
@@ -36,6 +37,7 @@ describe('FileViewer', () => {
         isLoading={false}
         error="Failed to load file"
         resolution={undefined}
+        theme="dark"
       />
     );
 
@@ -50,6 +52,7 @@ describe('FileViewer', () => {
         isLoading={false}
         error={null}
         resolution={undefined}
+        theme="dark"
       />
     );
 
@@ -64,6 +67,7 @@ describe('FileViewer', () => {
         isLoading={false}
         error={null}
         resolution={undefined}
+        theme="dark"
       />
     );
 
@@ -91,6 +95,7 @@ describe('FileViewer', () => {
         isLoading={false}
         error={null}
         resolution={resolution}
+        theme="dark"
       />
     );
 
@@ -118,6 +123,7 @@ describe('FileViewer', () => {
         isLoading={false}
         error={null}
         resolution={resolution}
+        theme="dark"
       />
     );
 
@@ -135,6 +141,7 @@ describe('FileViewer', () => {
         isLoading={false}
         error={null}
         resolution={resolution}
+        theme="dark"
       />
     );
 
@@ -168,6 +175,7 @@ describe('FileViewer', () => {
         error={null}
         resolution={undefined}
         allFindings={[active, ...siblings]}
+        theme="dark"
       />
     );
 

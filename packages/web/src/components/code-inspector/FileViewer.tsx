@@ -1,9 +1,9 @@
-import React, { useState, useMemo, type RefObject } from 'react';
+import React, { useState, useMemo, useEffect, type RefObject } from 'react';
 import type { Finding, AiResolution } from '../../types';
 import { CodeMirrorEditor } from './CodeMirrorEditor.tsx';
 import { DiffViewer } from './DiffViewer.tsx';
 import { ThemePicker } from './ThemePicker.tsx';
-import { defaultTheme, type ThemeDefinition } from '../../utils/themes.ts';
+import { defaultTheme, themeRegistry, type ThemeDefinition } from '../../utils/themes.ts';
 
 interface FileViewerProps {
   finding: Finding;
@@ -14,6 +14,7 @@ interface FileViewerProps {
   activeLineRef?: RefObject<HTMLDivElement | null>;
   /** All findings in the same file — used to highlight sibling error lines. */
   allFindings?: Finding[];
+  theme: 'dark' | 'light';
 }
 
 /**
@@ -136,8 +137,19 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   resolution,
   activeLineRef,
   allFindings,
+  theme,
 }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeDefinition>(defaultTheme);
+
+  useEffect(() => {
+    if (theme === 'light') {
+      const lightTheme = themeRegistry.find(t => !t.dark);
+      if (lightTheme) setCurrentTheme(lightTheme);
+    } else {
+      const darkTheme = themeRegistry.find(t => t.id === 'vexcodeMidnight');
+      if (darkTheme) setCurrentTheme(darkTheme);
+    }
+  }, [theme]);
 
   // Sibling error lines in the same file (excluding the current finding's line).
   // Used to highlight ALL findings in the file so the user sees the full picture.
@@ -200,7 +212,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
             />
           </div>
           <div className="flex flex-col border-t border-card-border/30 h-[200px] shrink-0">
-            <div className="text-xs text-text-tertiary uppercase font-bold tracking-wider px-3 py-1.5 border-b border-card-border/30 bg-[#0c0c14]">
+            <div className="text-xs text-text-tertiary uppercase font-bold tracking-wider px-3 py-1.5 border-b border-card-border/30 bg-bg-secondary">
               Suggested Fix (snippet)
             </div>
             <div className="flex-1 min-h-0 flex flex-col">
@@ -238,7 +250,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
         </div>
       </div>
       {/* Content area — fits the viewport exactly and scrolls internally. */}
-      <div className="font-mono leading-[1.5] scrollbar-thin select-text bg-[#0a0a0f] border-t border-card-border/40 flex-1 min-h-0 overflow-hidden flex flex-col">
+      <div className="font-mono leading-[1.5] scrollbar-thin select-text bg-bg-primary border-t border-card-border/40 flex-1 min-h-0 overflow-hidden flex flex-col">
         {renderContent()}
       </div>
     </div>
