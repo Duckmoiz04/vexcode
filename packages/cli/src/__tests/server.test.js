@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeAll, afterAll, beforeEach, afterEach } 
 import request from 'supertest';
 import { app } from '../server.js';
 import { runConfigCli } from '../bridge.js';
+import { getApiKey } from '../middleware/auth.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as os from 'node:os';
@@ -9,6 +10,18 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const authToken = getApiKey();
+
+// Thin wrapper — injects the auth header so every test request passes authMiddleware
+const api = new Proxy(request(app), {
+  get(target, method) {
+    if (['get', 'post', 'put', 'patch', 'delete'].includes(method)) {
+      return (url) => target[method](url).set('Authorization', `Bearer ${authToken}`);
+    }
+    return target[method];
+  },
+});
 
 const envPath = path.join(os.homedir(), '.vexcode', '.env');
 process.env.TEST_SKIP_GITNEXUS = 'true';
@@ -89,7 +102,7 @@ describe('Express REST Server API', () => {
 
   describe('Static Files Endpoint', () => {
     it('should serve index.html on GET /', async () => {
-      const res = await request(app).get('/');
+      const res = await api.get('/');
       expect(res.status).toBe(200);
       expect(res.text).toContain('AI Code Review');
       expect(res.headers['content-type']).toContain('text/html');
@@ -98,7 +111,7 @@ describe('Express REST Server API', () => {
 
   describe('Config Endpoints', () => {
     it('should read and write env config', async () => {
-      const postRes = await request(app)
+      const postRes = await api
         .post('/api/config')
         .send({
           NINEROUTER_API_KEY: 'test-key-123',
@@ -108,7 +121,7 @@ describe('Express REST Server API', () => {
       expect(postRes.status).toBe(200);
       expect(postRes.body.success).toBe(true);
 
-      const getRes = await request(app).get('/api/config');
+      const getRes = await api.get('/api/config');
       expect(getRes.status).toBe(200);
       expect(getRes.body.NINEROUTER_API_KEY).toBe('test-key-123');
       expect(getRes.body.TEST_VAR).toBe('test-value');
@@ -117,7 +130,7 @@ describe('Express REST Server API', () => {
 
   describe('Scan Endpoint', () => {
     it('should trigger a scan and return success', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/scan')
         .send({
           targetPath: path.resolve(__dirname, '../..'),
@@ -131,7 +144,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should trigger a fast scan and return success', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/scan')
         .send({
           targetPath: path.resolve(__dirname, '../..'),
@@ -146,7 +159,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should reject unsafe target path', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/scan')
         .send({
           targetPath: 'C:\\Windows'
@@ -158,7 +171,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should support scan cancellation', async () => {
-      const cancelRes = await request(app)
+      const cancelRes = await api
         .post('/api/scan/cancel')
         .send();
 
@@ -166,7 +179,7 @@ describe('Express REST Server API', () => {
       expect(cancelRes.body.success).toBe(true);
       expect(cancelRes.body.cancelled).toBe(true);
 
-      const scanRes = await request(app)
+      const scanRes = await api
         .post('/api/scan')
         .send({
           targetPath: path.resolve(__dirname, '../..'),
@@ -180,9 +193,10 @@ describe('Express REST Server API', () => {
     });
 
     it('should support real-time scan streaming (SSE)', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/scan/stream')
         .query({
+          token: authToken,
           targetPath: path.resolve(__dirname, '../..'),
           mockScan: true,
           mockAi: true
@@ -209,7 +223,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return report content', async () => {
-      const res = await request(app)
+      const res = await api
         .get(`/api/report?path=${encodeURIComponent(tempReportPath)}`);
 
       expect(res.status).toBe(200);
@@ -217,7 +231,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should error if report does not exist', async () => {
-      const res = await request(app)
+      const res = await api
         .get(`/api/report?path=${encodeURIComponent(path.resolve(__dirname, 'non_existent.json'))}`);
 
       expect(res.status).toBe(404);
@@ -225,7 +239,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should reject unsafe report path', async () => {
-      const res = await request(app)
+      const res = await api
         .get(`/api/report?path=${encodeURIComponent('C:\\Windows\\system32\\config.json')}`);
 
       expect(res.status).toBe(400);
@@ -233,7 +247,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should reject path traversal attempt', async () => {
-      const res = await request(app)
+      const res = await api
         .get(`/api/report?path=${encodeURIComponent('C:\\outside.json')}`);
 
       expect(res.status).toBe(400);
@@ -263,7 +277,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should successfully apply remediation', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/apply')
         .send({
           filePath: tempFilePath,
@@ -281,7 +295,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should reject remediation if targetContent mismatch', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/apply')
         .send({
           filePath: tempFilePath,
@@ -296,7 +310,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should reject remediation if path is outside workspace', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/apply')
         .send({
           filePath: 'C:\\Windows\\system32\\drivers\\etc\\hosts',
@@ -332,7 +346,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should resolve line mapping with exact match at original line', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/line-map')
         .query({
           path: tempMapFilePath,
@@ -356,7 +370,7 @@ describe('Express REST Server API', () => {
         'utf8'
       );
 
-      const res = await request(app)
+      const res = await api
         .get('/api/line-map')
         .query({
           path: tempMapFilePath,
@@ -380,7 +394,7 @@ describe('Express REST Server API', () => {
         'utf8'
       );
 
-      const res = await request(app)
+      const res = await api
         .post('/api/apply')
         .send({
           filePath: tempMapFilePath,
@@ -399,7 +413,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when missing required parameters', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/line-map')
         .query({
           path: tempMapFilePath
@@ -411,7 +425,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 for unsafe path', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/line-map')
         .query({
           path: 'C:\\Windows\\system32\\config\\SAM',
@@ -425,7 +439,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 404 when file not found', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/line-map')
         .query({
           path: path.resolve(__dirname, 'nonexistent_file.py'),
@@ -453,7 +467,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return file content on success', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/file-content')
         .query({ path: tempFilePath });
 
@@ -463,7 +477,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when path parameter is missing', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/file-content');
 
       expect(res.status).toBe(400);
@@ -472,7 +486,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 for unsafe path outside workspace', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/file-content')
         .query({ path: 'C:\\Windows\\system32\\config\\SAM' });
 
@@ -482,7 +496,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 404 when file does not exist', async () => {
-      const res = await request(app)
+      const res = await api
         .get('/api/file-content')
         .query({ path: path.resolve(__dirname, 'nonexistent_file.txt') });
 
@@ -509,7 +523,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should re-resolve successfully with valid reportPath', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/re-resolve')
         .send({
           reportPath: tempReportPath,
@@ -524,7 +538,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when reportPath is missing', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/re-resolve')
         .send({ mockAi: true });
 
@@ -534,7 +548,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when reportPath does not exist', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/re-resolve')
         .send({
           reportPath: path.resolve(__dirname, 'nonexistent_report.json'),
@@ -571,7 +585,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should list all projects with reports', async () => {
-      const res = await request(app).get('/api/reports');
+      const res = await api.get('/api/reports');
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -588,7 +602,7 @@ describe('Express REST Server API', () => {
       fs.mkdirSync(emptyDir, { recursive: true });
 
       try {
-        const res = await request(app).get('/api/reports');
+        const res = await api.get('/api/reports');
         expect(res.status).toBe(200);
         expect(res.body.success).toBe(true);
         expect(Array.isArray(res.body.projects)).toBe(true);
@@ -619,7 +633,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should list reports for an existing project', async () => {
-      const res = await request(app).get('/api/reports/__test_project_reports__');
+      const res = await api.get('/api/reports/__test_project_reports__');
 
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
@@ -630,7 +644,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 404 for non-existent project', async () => {
-      const res = await request(app).get('/api/reports/__nonexistent_project_xyz__');
+      const res = await api.get('/api/reports/__nonexistent_project_xyz__');
 
       expect(res.status).toBe(404);
       expect(res.body.success).toBe(false);
@@ -658,7 +672,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return a specific report by project and id', async () => {
-      const res = await request(app).get(`/api/report/__test_specific_report__/${reportId}`);
+      const res = await api.get(`/api/report/__test_specific_report__/${reportId}`);
 
       expect(res.status).toBe(200);
       expect(res.body._id).toBe(reportId);
@@ -668,7 +682,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 404 for non-existent report', async () => {
-      const res = await request(app).get('/api/report/__test_specific_report__/nonexistent_id');
+      const res = await api.get('/api/report/__test_specific_report__/nonexistent_id');
 
       expect(res.status).toBe(404);
       expect(res.body.success).toBe(false);
@@ -700,7 +714,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return the latest report across all projects', async () => {
-      const res = await request(app).get('/api/report');
+      const res = await api.get('/api/report');
 
       expect(res.status).toBe(200);
       expect(res.body._project).toBeDefined();
@@ -716,7 +730,7 @@ describe('Express REST Server API', () => {
       }
 
       try {
-        const res = await request(app).get('/api/report');
+        const res = await api.get('/api/report');
         expect(res.status).toBe(404);
         expect(res.body.success).toBe(false);
         expect(res.body.error).toContain('No reports found');
@@ -730,7 +744,7 @@ describe('Express REST Server API', () => {
 
   describe('Open in IDE Endpoint', () => {
     it('should return 400 when filePath is missing', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/open-in-ide')
         .send({ line: 10 });
 
@@ -740,7 +754,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 for unsafe path outside workspace', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/open-in-ide')
         .send({ filePath: 'C:\\Windows\\system32\\notepad.exe' });
 
@@ -752,7 +766,7 @@ describe('Express REST Server API', () => {
 
   describe('Rollback Endpoint', () => {
     it('should return 400 when filePath is missing', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/rollback')
         .send({});
 
@@ -762,7 +776,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 for unsafe path outside workspace', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/rollback')
         .send({ filePath: 'C:\\Windows\\system32\\drivers\\etc\\hosts' });
 
@@ -776,7 +790,7 @@ describe('Express REST Server API', () => {
       fs.writeFileSync(tempFile, '# test\n', 'utf8');
 
       try {
-        const res = await request(app)
+        const res = await api
           .post('/api/rollback')
           .send({ filePath: tempFile });
 
@@ -803,7 +817,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when baseUrl is missing', async () => {
-      const res = await request(app).get('/api/models');
+      const res = await api.get('/api/models');
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
@@ -821,7 +835,7 @@ describe('Express REST Server API', () => {
         })
       });
 
-      const res = await request(app)
+      const res = await api
         .get('/api/models')
         .query({ baseUrl: 'https://api.openai.com/v1', apiKey: 'sk-test' });
 
@@ -839,7 +853,7 @@ describe('Express REST Server API', () => {
         status: 404
       });
 
-      const res = await request(app)
+      const res = await api
         .get('/api/models')
         .query({ baseUrl: 'https://api.example.com/v1' });
 
@@ -851,7 +865,7 @@ describe('Express REST Server API', () => {
     it('should return empty models when fetch throws', async () => {
       globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
 
-      const res = await request(app)
+      const res = await api
         .get('/api/models')
         .query({ baseUrl: 'https://offline.example.com/v1' });
 
@@ -873,7 +887,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when messages is missing', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({ provider: 'openai' });
 
@@ -883,7 +897,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when messages is empty array', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({ messages: [], provider: 'openai' });
 
@@ -893,7 +907,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when provider is missing', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({ messages: [{ role: 'user', content: 'Hello' }] });
 
@@ -903,7 +917,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when baseUrl is missing', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -916,7 +930,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when model is missing', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -930,7 +944,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when apiKey is missing for non-9router provider', async () => {
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -952,7 +966,7 @@ describe('Express REST Server API', () => {
         })).buffer
       });
 
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({
           messages: [{ role: 'user', content: 'Hi' }],
@@ -975,7 +989,7 @@ describe('Express REST Server API', () => {
         })).buffer
       });
 
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({
           messages: [{ role: 'user', content: 'Test' }],
@@ -997,7 +1011,7 @@ describe('Express REST Server API', () => {
         })).buffer
       });
 
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({
           messages: [
@@ -1023,7 +1037,7 @@ describe('Express REST Server API', () => {
         })).buffer
       });
 
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -1041,7 +1055,7 @@ describe('Express REST Server API', () => {
     it('should return 500 when provider fetch fails', async () => {
       globalThis.fetch = vi.fn().mockRejectedValue(new Error('Connection refused'));
 
-      const res = await request(app)
+      const res = await api
         .post('/api/chat')
         .send({
           messages: [{ role: 'user', content: 'Hello' }],
@@ -1059,7 +1073,7 @@ describe('Express REST Server API', () => {
 
   describe('PUT /api/settings/ai', () => {
     it('should accept a valid AI settings update', async () => {
-      const res = await request(app)
+      const res = await api
         .put('/api/settings/ai')
         .send({ enabled: true, providers: {}, agents: {} });
       expect(res.status).toBe(200);
@@ -1068,7 +1082,7 @@ describe('Express REST Server API', () => {
     });
 
     it('should return 400 when body is an array instead of object', async () => {
-      const res = await request(app)
+      const res = await api
         .put('/api/settings/ai')
         .send([]);
       expect(res.status).toBe(400);
@@ -1078,7 +1092,7 @@ describe('Express REST Server API', () => {
 
     it('should return JSON error when update fails', async () => {
       runConfigCli.mockRejectedValueOnce(new Error('Update failed'));
-      const res = await request(app)
+      const res = await api
         .put('/api/settings/ai')
         .send({ enabled: true });
       expect(res.status).toBe(500);
@@ -1089,13 +1103,13 @@ describe('Express REST Server API', () => {
 
   describe('Unmatched API routes', () => {
     it('should return JSON 404 for unmatched GET /api/*', async () => {
-      const res = await request(app).get('/api/nonexistent');
+      const res = await api.get('/api/nonexistent');
       expect(res.status).toBe(404);
       expect(res.body).toEqual({ success: false, error: 'Route not found: GET /nonexistent' });
     });
 
     it('should return JSON 404 for unmatched POST /api/*', async () => {
-      const res = await request(app).post('/api/unknown');
+      const res = await api.post('/api/unknown');
       expect(res.status).toBe(404);
       expect(res.body).toEqual({ success: false, error: 'Route not found: POST /unknown' });
     });

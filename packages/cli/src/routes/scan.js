@@ -2,6 +2,8 @@ import { readFileSync, mkdirSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { getProjectName, getProjectReportDir, getReportFilename, updateLatestReportPath } from '../utils.js';
 
+import { getApiKey } from '../middleware/auth.js';
+
 export function registerScanRoutes(app, deps) {
   const { isPathSafe, workspaceDir, runPythonAnalysis, cancelActiveScan } = deps;
 
@@ -11,6 +13,14 @@ export function registerScanRoutes(app, deps) {
   });
 
   app.get('/api/scan/stream', async (req, res) => {
+    // SSE can't send Authorization headers; accept token via query param instead.
+    const sseToken = req.query.token || '';
+    if (sseToken !== getApiKey()) {
+      res.writeHead(401, { 'Content-Type': 'text/event-stream' });
+      res.write(`data: ${JSON.stringify({ type: 'error', error: 'Authentication required.', code: 'AUTH_REQUIRED' })}\n\n`);
+      return res.end();
+    }
+
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',

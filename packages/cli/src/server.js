@@ -7,6 +7,7 @@ import { mkdirSync, copyFileSync, existsSync } from 'node:fs';
 
 import { runPythonAnalysis, cancelActiveScan, runRefreshAi, runConfigCli } from './bridge.js';
 import { isPathSafe, readEnvConfig, writeEnvConfig } from './services/fileService.js';
+import { authMiddleware, getApiKey } from './middleware/auth.js';
 
 import { registerConfigRoutes } from './routes/config.js';
 import { registerAiSettingsRoutes } from './routes/ai-settings.js';
@@ -34,6 +35,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Auth middleware for all API routes (exempt SSE stream and static files).
+app.use('/api', (req, res, next) => {
+  // SSE stream endpoint uses ?token= query param (EventSource lacks header support).
+  if (req.path === '/scan/stream' && req.method === 'GET') {
+    return next();
+  }
+  // Expose the API key to the frontend (unauthenticated — needed for initial handshake).
+  if (req.path === '/auth/key' && req.method === 'GET') {
+    return next();
+  }
+  authMiddleware(req, res, next);
+});
+
 const deps = {
   workspaceDir,
   analysisCoreDir,
@@ -58,6 +72,11 @@ registerApplyRoutes(app, deps);
 registerChatRoutes(app, deps);
 registerFileRoutes(app, deps);
 registerFindingsRoutes(app, deps);
+
+// Expose the generated API key so the frontend can include it in requests.
+app.get('/api/auth/key', (req, res) => {
+  res.json({ apiKey: getApiKey() });
+});
 
 // Catch-all for unmatched /api/* routes — return JSON 404, never HTML
 app.use('/api', (req, res) => {

@@ -1,15 +1,25 @@
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
-import { resolve, join } from 'node:path';
+import { readFileSync, writeFileSync, existsSync, chmodSync } from 'node:fs';
+import { resolve, join, sep, relative, isAbsolute } from 'node:path';
 
 /**
  * Check if a path is within the base directory (prevent directory traversal).
+ *
+ * Uses path.relative() which correctly handles edge cases like
+ * ``/workspace-evil`` passing ``startsWith('/workspace')``.
+ *
  * @param {string} targetPath
  * @param {string} baseDir
  * @returns {boolean}
  */
 export function isPathSafe(targetPath, baseDir) {
   const resolved = resolve(targetPath);
-  return resolved.toLowerCase().startsWith(baseDir.toLowerCase());
+  const normalizedBase = resolve(baseDir);
+  // path.relative returns a path without leading '..' only when
+  // the target is truly inside the base directory.
+  const rel = relative(normalizedBase, resolved);
+  // Absolute result means cross-drive on Windows (e.g., C:\ vs D:\).
+  // Boolean(rel) false means same path (workspace root itself).
+  return Boolean(rel) && !isAbsolute(rel) && !rel.startsWith('..');
 }
 
 /**
@@ -81,6 +91,7 @@ export function writeEnvConfig(newConfig, envPath) {
       .map(([k, v]) => `${k}=${v}`)
       .join('\n') + '\n';
     writeFileSync(envPath, content, 'utf8');
+    try { chmodSync(envPath, 0o600); } catch { /* best-effort on platforms that don't support chmod */ }
   } catch (error) {
     console.error('Error writing env config:', error);
     throw error;
