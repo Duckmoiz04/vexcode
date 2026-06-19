@@ -167,7 +167,7 @@ describe('Express REST Server API', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.success).toBe(false);
-      expect(res.body.error).toContain('outside the workspace directory');
+      expect(res.body.error).toBe('Invalid target path.');
     });
 
     it('should support scan cancellation', async () => {
@@ -189,7 +189,7 @@ describe('Express REST Server API', () => {
 
       expect(scanRes.status).toBe(400);
       expect(scanRes.body.success).toBe(false);
-      expect(scanRes.body.error).toBe('Scan cancelled by user');
+      expect(scanRes.body.error).toBe('Scan was cancelled.');
     });
 
     it('should support real-time scan streaming (SSE)', async () => {

@@ -4,6 +4,7 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 import { mkdirSync, copyFileSync, existsSync } from 'node:fs';
+import { rateLimit } from 'express-rate-limit';
 
 import { runPythonAnalysis, cancelActiveScan, runRefreshAi, runConfigCli } from './bridge.js';
 import { isPathSafe, readEnvConfig, writeEnvConfig } from './services/fileService.js';
@@ -33,7 +34,27 @@ const backupsBaseDir = join(homedir(), '.vexcode', 'backups');
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '100kb' })); // Phase 3.2 — body size limit
+
+// ── Rate limiting (Phase 2.1) ──────────────────────────────────────────────
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many requests. Please try again later.', code: 'RATE_LIMITED' },
+});
+
+const scanLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { success: false, error: 'Too many scan requests. Please try again later.', code: 'RATE_LIMITED' },
+});
+
+// Apply global rate limiter to /api routes before auth.
+app.use('/api', globalLimiter);
 
 // Auth middleware for all API routes (exempt SSE stream and static files).
 app.use('/api', (req, res, next) => {
@@ -62,6 +83,7 @@ const deps = {
   cancelActiveScan,
   runRefreshAi,
   runConfigCli,
+  scanLimiter,
 };
 
 registerConfigRoutes(app, deps);

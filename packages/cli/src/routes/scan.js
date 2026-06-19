@@ -4,8 +4,33 @@ import { getProjectName, getProjectReportDir, getReportFilename, updateLatestRep
 
 import { getApiKey } from '../middleware/auth.js';
 
+// Phase 2.4 — safe error messages that never leak internals
+const SAFE_ERRORS = {
+  SCAN_CANCELLED: 'Scan was cancelled.',
+  SCAN_FAILED:     'Scan failed to complete. Please try again.',
+  PATH_INVALID:    'Invalid target path.',
+  AUTH_REQUIRED:   'Authentication required.',
+  RATE_LIMITED:    'Too many requests. Please try again later.',
+};
+
+function toSafeError(originalMessage) {
+  if (originalMessage === 'Scan cancelled by user') {
+    return { code: 'SCAN_CANCELLED', message: SAFE_ERRORS.SCAN_CANCELLED };
+  }
+  if (originalMessage && originalMessage.includes('outside the workspace')) {
+    return { code: 'PATH_INVALID', message: SAFE_ERRORS.PATH_INVALID };
+  }
+  return { code: 'SCAN_FAILED', message: SAFE_ERRORS.SCAN_FAILED };
+}
+
+function parseBool(val) {
+  if (val === 'true' || val === true)  return true;
+  if (val === 'false' || val === false) return false;
+  return undefined;
+}
+
 export function registerScanRoutes(app, deps) {
-  const { isPathSafe, workspaceDir, runPythonAnalysis, cancelActiveScan } = deps;
+  const { isPathSafe, workspaceDir, runPythonAnalysis, cancelActiveScan, scanLimiter } = deps;
 
   app.post('/api/scan/cancel', (req, res) => {
     const cancelled = cancelActiveScan();
@@ -21,6 +46,15 @@ export function registerScanRoutes(app, deps) {
       return res.end();
     }
 
+    // Phase 2.2 — detect client disconnect and cancel the Python process
+    let clientCancelled = false;
+    req.on('close', () => {
+      if (!res.writableEnded) {
+        clientCancelled = true;
+        cancelActiveScan();
+      }
+    });
+
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
@@ -29,10 +63,21 @@ export function registerScanRoutes(app, deps) {
 
     try {
       const { targetPath, mockScan, mockAi, fastScan } = req.query;
+
+
+      const mockScanBool  = parseBool(mockScan);
+      const mockAiBool    = parseBool(mockAi);
+      const fastScanBool  = parseBool(fastScan);
+      if (mockScan !== undefined && mockScanBool === undefined) {
+        const err = SAFE_ERRORS.PATH_INVALID;
+        res.write(`data: ${JSON.stringify({ type: 'error', error: err, code: 'SCAN_FAILED' })}\n\n`);
+        return res.end();
+      }
+
       const finalTarget = targetPath ? resolve(targetPath) : workspaceDir;
 
       if (!isPathSafe(finalTarget, workspaceDir)) {
-        res.write(`data: ${JSON.stringify({ type: 'error', error: 'Target path is outside the workspace directory.' })}\n\n`);
+        res.write(`data: ${JSON.stringify({ type: 'error', error: SAFE_ERRORS.PATH_INVALID, code: 'PATH_INVALID' })}\n\n`);
         return res.end();
       }
 
@@ -44,14 +89,17 @@ export function registerScanRoutes(app, deps) {
 
       res.write(`data: ${JSON.stringify({ type: 'status', message: 'Starting scan...' })}\n\n`);
 
+      // Guard against write-after-end if client disconnected during setup
+      if (clientCancelled || res.writableEnded) return;
+
       await runPythonAnalysis(
         finalTarget,
         reportPath,
-        mockScan === 'true' || mockScan === true,
-        mockAi === 'true' || mockAi === true,
-        fastScan === 'true' || fastScan === true,
+        mockScanBool === true,
+        mockAiBool === true,
+        fastScanBool === true,
         (progress) => {
-          // Forward structured progress events directly; fall back to plain status for text lines
+          if (res.writableEnded) return;
           if (progress.type === 'progress') {
             res.write(`data: ${JSON.stringify(progress)}\n\n`);
           } else {
@@ -59,6 +107,8 @@ export function registerScanRoutes(app, deps) {
           }
         }
       );
+
+      if (res.writableEnded) return;
 
       // Track latest report path
       updateLatestReportPath(reportPath);
@@ -71,12 +121,14 @@ export function registerScanRoutes(app, deps) {
       res.write(`data: ${JSON.stringify({ type: 'complete', report: reportContent })}\n\n`);
       res.end();
     } catch (error) {
-      res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
+      if (res.writableEnded) return;
+      const safe = toSafeError(error.message);
+      res.write(`data: ${JSON.stringify({ type: 'error', error: safe.message, code: safe.code })}\n\n`);
       res.end();
     }
   });
 
-  app.post('/api/scan', async (req, res) => {
+  app.post('/api/scan', scanLimiter, async (req, res) => {
     try {
       const { targetPath, mockScan, mockAi, fastScan } = req.body;
 
@@ -87,7 +139,7 @@ export function registerScanRoutes(app, deps) {
       const finalTarget = targetPath ? resolve(targetPath) : workspaceDir;
 
       if (!isPathSafe(finalTarget, workspaceDir)) {
-        return res.status(400).json({ success: false, error: 'Target path is outside the workspace directory.' });
+        return res.status(400).json({ success: false, error: SAFE_ERRORS.PATH_INVALID, code: 'PATH_INVALID' });
       }
 
       const projectName = getProjectName(finalTarget);
@@ -112,8 +164,9 @@ export function registerScanRoutes(app, deps) {
         reportPath: reportPath
       });
     } catch (error) {
+      const safe = toSafeError(error.message);
       const statusCode = error.cancelled ? 400 : 500;
-      res.status(statusCode).json({ success: false, error: error.message });
+      res.status(statusCode).json({ success: false, error: safe.message, code: safe.code });
     }
   });
 }

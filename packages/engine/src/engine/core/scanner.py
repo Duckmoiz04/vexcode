@@ -200,7 +200,7 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             print(f"Running Opengrep scan on target: {target_path}...", file=sys.stderr)
             cmd = [opengrep_bin, "scan", "--json", "--quiet"] + exclude_args + [target_path]
 
-        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=120)
 
         if result.returncode != 0 and not result.stdout.strip():
             raise RuntimeError(f"Opengrep execution failed (exit code {result.returncode}): {result.stderr}")
@@ -230,14 +230,15 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             "findings": findings
         }
 
-    except (FileNotFoundError, RuntimeError) as e:
+    except (FileNotFoundError, RuntimeError, subprocess.TimeoutExpired) as e:
         print(f"Opengrep unavailable or failed: {e}", file=sys.stderr)
         print("Falling back to mock scan findings.", file=sys.stderr)
         return {
             "scanner": "opengrep-mock-fallback",
             "timestamp": scan_time,
             "target_path": target_path,
-            "findings": MOCK_FINDINGS
+            "findings": MOCK_FINDINGS,
+            "fallback_reason": str(e)
         }
     except Exception as e:
         print(f"Error running Opengrep: {e}", file=sys.stderr)
@@ -246,7 +247,8 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             "scanner": "opengrep-mock-fallback",
             "timestamp": scan_time,
             "target_path": target_path,
-            "findings": MOCK_FINDINGS
+            "findings": MOCK_FINDINGS,
+            "fallback_reason": str(e)
         }
 
 if __name__ == "__main__":
