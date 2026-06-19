@@ -14,6 +14,28 @@ import { useScan } from './hooks/useScan';
 import { AIProviderProvider } from './context/AIProviderContext';
 
 export const App: React.FC = () => {
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('vexcode-theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'dark';
+  });
+
+  const handleToggleTheme = useCallback(() => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('vexcode-theme', next);
+      return next;
+    });
+  }, []);
+
+  React.useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.add('light');
+    } else {
+      root.classList.remove('light');
+    }
+  }, [theme]);
+
   const { toast, showToast } = useToast();
   const { config, isSettingsOpen, setIsSettingsOpen, handleSaveConfig } = useConfig(showToast);
   const {
@@ -329,6 +351,8 @@ export const App: React.FC = () => {
         reports={reports}
         currentReportId={currentReportId}
         onSelectReportId={handleSelectReportIdWithReset}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Main Content Area */}
@@ -368,7 +392,7 @@ export const App: React.FC = () => {
             {/* Central Panels with Tab Controllers */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
               {/* Tabs list */}
-              <div className="flex px-6 pt-3 border-b border-card-border bg-[#161622] gap-4">
+              <div className="flex px-6 pt-3 border-b border-card-border bg-bg-secondary gap-4">
                 <button
                   onClick={() => setActiveTab('dashboard')}
                   className={`pb-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
@@ -431,6 +455,7 @@ export const App: React.FC = () => {
                     pagination={pagination}
                     currentPage={currentPage}
                     onPageChange={handlePageChangeWithReset}
+                    theme={theme}
                   />
                 )}
               </div>
