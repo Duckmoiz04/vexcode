@@ -1,7 +1,9 @@
 """Shared constants and configuration loader.
 
-All non-secret defaults live in ``conf/settings.toml``.
-Environment variables override settings values at runtime.
+Precedence (highest to lowest):
+1. Environment variables
+2. ``~/.vexcode/settings.toml`` (user overrides)
+3. ``conf/settings.toml`` (repo defaults)
 Secrets (API keys) remain in ``.env`` — see ``ai_config.py``.
 """
 
@@ -16,10 +18,43 @@ from typing import Any, Dict
 
 _SETTINGS: Dict[str, Any] | None = None
 
+_USER_CONFIG_PATH: Path = Path.home() / ".vexcode" / "settings.toml"
+
 
 def _get_engine_root() -> Path:
     """Return the absolute path to ``packages/engine/`` (project root)."""
     return Path(__file__).resolve().parents[3]
+
+
+def _deep_merge(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+    """Recursively merge *override* into *base* and return a new dict.
+
+    For nested dict values, recurse.  For all other types (including lists),
+    the override value replaces the base value.  Keys only present in *base*
+    are preserved.
+    """
+    merged = base.copy()
+    for key, val in override.items():
+        if key in merged and isinstance(merged[key], dict) and isinstance(val, dict):
+            merged[key] = _deep_merge(merged[key], val)
+        else:
+            merged[key] = val
+    return merged
+
+
+def _load_toml(path: Path) -> Dict[str, Any]:
+    """Parse a TOML file and return as a dict, or empty dict on failure."""
+    if not path.exists():
+        return {}
+    try:
+        import tomllib
+    except ImportError:
+        return {}
+    try:
+        with path.open("rb") as f:
+            return tomllib.load(f)
+    except Exception:
+        return {}
 
 
 def _nested_get(d: Dict[str, Any], keys: list[str], default: Any = None) -> Any:
@@ -33,30 +68,27 @@ def _nested_get(d: Dict[str, Any], keys: list[str], default: Any = None) -> Any:
 
 
 def load_settings() -> Dict[str, Any]:
-    """Load ``conf/settings.toml`` and return as a dict (cached).
+    """Load and merge config with user overrides (cached).
 
-    Returns an empty dict if the file does not exist — enables graceful
+    Merge order (higher wins):
+    1. ``conf/settings.toml`` — repo defaults
+    2. ``~/.vexcode/settings.toml`` — user overrides (if exists)
+
+    Returns an empty dict if the default file does not exist — enables graceful
     degradation when running in environments without the config tree.
     """
     global _SETTINGS
     if _SETTINGS is not None:
         return _SETTINGS
 
-    settings_path = _get_engine_root() / "conf" / "settings.toml"
-    if settings_path.exists():
-        try:
-            import tomllib
-        except ImportError:
-            # Python < 3.11 fallback (unlikely — we target 3.12+)
-            tomllib = None  # type: ignore[assignment]
+    defaults_path = _get_engine_root() / "conf" / "settings.toml"
+    defaults = _load_toml(defaults_path)
 
-        if tomllib is not None:
-            with settings_path.open("rb") as f:
-                _SETTINGS = tomllib.load(f)
-        else:
-            _SETTINGS = {}
+    user_cfg = _load_toml(_USER_CONFIG_PATH)
+    if user_cfg:
+        _SETTINGS = _deep_merge(defaults, user_cfg)
     else:
-        _SETTINGS = {}
+        _SETTINGS = defaults
 
     return _SETTINGS
 
