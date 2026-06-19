@@ -22,10 +22,10 @@
   --maintainability: #22c55e;
 }
 
-:root.light {
+.light {
   /* Light mode values */
-  --bg-primary: hsl(0, 0%, 100%);
-  --bg-secondary: #f8f8f8;
+  --bg-primary: #f1f3f5;
+  --bg-secondary: hsl(0, 0%, 100%);
   --bg-tertiary: hsl(0, 0%, 100%);
   --card-bg: hsla(0, 0%, 100%, 0.95);
   --card-border: rgba(0, 0, 0, 0.08);
