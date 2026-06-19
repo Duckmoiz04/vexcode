@@ -42,7 +42,7 @@ base_url = "https://generativelanguage.googleapis.com"
 
 [ai.providers.9router]
 enabled = false
-requires_key = true
+requires_key = false
 model = "openai/gpt-4o-mini"
 base_url = "http://localhost:20128/v1"
 

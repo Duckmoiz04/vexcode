@@ -47,7 +47,11 @@ def enrich_findings(findings: List[dict], target_path: str, use_mock: bool) -> L
                 continue
 
             rel_file = get_relative_repo_path(file_path, target_path, repo_path)
-            symbol = resolve_location_to_symbol(repo_name, rel_file, int(line_number))
+            try:
+                line_int = int(line_number)
+            except (ValueError, TypeError):
+                continue
+            symbol = resolve_location_to_symbol(repo_name, rel_file, line_int)
 
             if symbol:
                 symbol_id = symbol.get("id")
@@ -93,14 +97,20 @@ def enrich_findings(findings: List[dict], target_path: str, use_mock: bool) -> L
                 }
             else:
                 if use_mock:
-                    key = (file_path, int(line_number))
+                    try:
+                        key = (file_path, int(line_number))
+                    except (ValueError, TypeError):
+                        continue
                     if key in MOCK_AST_CONTEXTS:
                         finding["ast_context"] = MOCK_AST_CONTEXTS[key]
 
     elif use_mock:
         logger.info("GitNexus not available/mapped, but using mock AST context for mock scan.")
         for finding in findings:
-            key = (finding.get("file"), int(finding.get("line", 0)))
+            try:
+                key = (finding.get("file"), int(finding.get("line", 0)))
+            except (ValueError, TypeError):
+                continue
             if key in MOCK_AST_CONTEXTS:
                 finding["ast_context"] = MOCK_AST_CONTEXTS[key]
 

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timezone
 import os
 import time
 import requests
@@ -11,7 +12,7 @@ from engine.config.constants import (
     NAMING_AUDIT_SLEEP,
     AI_NAMING_TIMEOUT_SECONDS,
 )
-from engine.config.ai_config import get_ai_config
+from engine.config.ai_config import get_ai_config, get_resolved_provider_for_agent
 from engine.core.ai_resolver import (
     MOCK_AI_RESOLUTIONS,
     post_with_retry,
@@ -35,12 +36,19 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
     if not files_to_audit:
         return findings, resolutions
         
-    api_key, base_url, model, requires_key = get_ai_config()
+    # Try new agent-based provider resolution first, fall back to legacy
+    _provider = get_resolved_provider_for_agent("naming")
+    if _provider:
+        api_key = _provider.api_key
+        base_url = _provider.base_url
+        model = _provider.model
+        requires_key = _provider.requires_key
+    else:
+        api_key, base_url, model, requires_key = get_ai_config()
     fallback_due_to_key = requires_key and not api_key
     fallback_due_to_config = not base_url or not model
-    fallback_due_to_missing_provider = not os.getenv("AI_PROVIDER")
 
-    if use_mock or fallback_due_to_key or fallback_due_to_config or fallback_due_to_missing_provider:
+    if use_mock or fallback_due_to_key or fallback_due_to_config:
         if not use_mock:
             logger.info("AI config is incomplete. Using mock naming audit.")
         
@@ -145,7 +153,12 @@ def run_naming_audit(files_to_audit: List[str], target_path: str, use_mock: bool
                     
                     resolutions[rule_id] = {
                         "suggestion": sug,
-                        "remediation_code": rem
+                        "remediation_code": rem,
+                        "ai_status": "success",
+                        "ai_error": "",
+                        "model": model,
+                        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                        "remediation_target_file": rel_path,
                     }
                     
         except (requests.RequestException, json.JSONDecodeError, ValueError, KeyError, IndexError, TypeError) as e:

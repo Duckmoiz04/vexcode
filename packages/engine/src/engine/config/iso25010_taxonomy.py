@@ -112,7 +112,6 @@ CWE_TO_ISO25010: Dict[str, str] = {
     "CWE-362": RELIABILITY,  # Race Condition
     "CWE-366": RELIABILITY,  # Race Condition Within a Thread
     "CWE-364": RELIABILITY,  # Signal Handler Race Condition
-    "CWE-209": RELIABILITY,  # (also info exposure; primary here is error handling)
     "CWE-1284": RELIABILITY, # Improper Validation of Specified Quantity in Input
     "CWE-190": RELIABILITY,  # Integer Overflow (when not exploitable)
     "CWE-191": RELIABILITY,  # Integer Underflow
@@ -280,6 +279,11 @@ RULE_TO_ISO25010: Dict[str, str] = {
 # Pre-sorted keyword list (longest first) to avoid short keyword false positives.
 SORTED_KEYWORDS: List[str] = sorted(RULE_TO_ISO25010.keys(), key=len, reverse=True)
 
+# Regex to detect style/naming/convention/lint hints in rule IDs.
+CONTEXT_HINT_PATTERN = re.compile(
+    r"(?:^|[._-])(style|naming|convention|lint)(?:[._-]|$)"
+)
+
 
 # ---------------------------------------------------------------------------
 # Public API
@@ -330,9 +334,6 @@ def classify_finding(finding: dict) -> str:
     # precedence over inner keywords. Use word-boundary match to avoid
     # false positives like "formatted" matching "format".
     rule_id_raw = (finding.get("rule_id") or "").lower()
-    CONTEXT_HINT_PATTERN = re.compile(
-        r"(?:^|[._-])(style|naming|convention|lint)(?:[._-]|$)"
-    )
     if CONTEXT_HINT_PATTERN.search(rule_id_raw):
         return MAINTAINABILITY
 

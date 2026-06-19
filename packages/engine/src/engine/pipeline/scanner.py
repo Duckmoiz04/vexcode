@@ -49,7 +49,7 @@ def get_git_state(target_dir: str) -> Optional[Dict[str, Any]]:
             "commit": commit_hash,
             "is_dirty": is_dirty
         }
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
         return None
 
 
@@ -90,6 +90,9 @@ def _detect_fast_scan_files(target: str, use_mock: bool) -> Optional[List[str]]:
         parts = line.split(None, 1)
         if len(parts) > 1:
             rel_file = parts[1].strip('"').strip()
+            # Handle renamed files: "old_name -> new_name"
+            if ' -> ' in rel_file:
+                rel_file = rel_file.split(' -> ')[-1].strip('"').strip()
             abs_file = os.path.abspath(os.path.join(target, rel_file))
             if os.path.isfile(abs_file):
                 changed_files.append(abs_file)

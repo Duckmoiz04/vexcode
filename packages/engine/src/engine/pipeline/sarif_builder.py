@@ -2,7 +2,7 @@
 
 Reference: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
 """
-import hashlib
+from engine.config.iso25010_taxonomy import compute_finding_id
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -111,9 +111,16 @@ def _build_results(findings: List[dict], resolutions: dict) -> List[dict]:
 
 
 def _compute_finding_id(f: dict) -> str:
-    """Compute a stable hash ID from (file, line, rule_id)."""
-    raw = f"{f.get('file', '')}:{f.get('line', 0)}:{f.get('rule_id', '')}"
-    return hashlib.sha256(raw.encode()).hexdigest()[:12]
+    """Compute a stable hash ID from (file, line, rule_id).
+
+    Delegates to the canonical ``compute_finding_id`` in iso25010_taxonomy
+    so that VexCode internal IDs and SARIF IDs are always consistent.
+    """
+    return compute_finding_id(
+        str(f.get('file', '')),
+        int(f.get('line', 0)),
+        str(f.get('rule_id', '')),
+    )
 
 
 def _build_location(f: dict) -> dict:

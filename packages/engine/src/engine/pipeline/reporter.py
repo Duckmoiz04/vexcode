@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 
@@ -38,7 +39,25 @@ def assemble_report(scan_results: Dict[str, Any], findings: List[dict],
 
 
 def write_report(report: Dict[str, Any], output_path: str) -> None:
-    """Write the report dict as JSON to output_path."""
+    """Write the report dict as JSON to output_path.
+
+    Uses atomic write (temp file + os.replace) so a crash mid-write
+    never leaves a corrupted/truncated report on disk.
+    """
+    import tempfile
+
     logger.info(f"Writing report to {output_path}...")
-    with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(report, f, indent=2, ensure_ascii=False)
+    output_dir = os.path.dirname(output_path) or "."
+    os.makedirs(output_dir, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=output_dir, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+        os.replace(tmp_path, output_path)
+    except BaseException:
+        # Clean up temp file on failure
+        try:
+            os.unlink(tmp_path)
+        except OSError:
+            pass
+        raise

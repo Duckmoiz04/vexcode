@@ -219,8 +219,10 @@ def get_resolved_provider_for_agent(agent_name: str) -> ProviderConfig | None:
             agent_name, agent.provider,
         )
         return None
-    # Agent-level model override
+    # Agent-level model override — return a copy to avoid mutating the cached object
     if agent.model:
+        import copy
+        provider = copy.copy(provider)
         provider.model = agent.model
     return provider
 

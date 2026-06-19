@@ -26,12 +26,19 @@ def deduplicate_findings(findings: list) -> list:
     if not findings:
         return []
 
-    seen: set[tuple[str, str, int]] = set()
+    seen: set = set()
     unique: list = []
     dupes = 0
 
     for f in findings:
-        key = (f["rule_id"], f["file"], f["line"])
+        rule_id = f.get("rule_id")
+        file = f.get("file")
+        line = f.get("line")
+        if rule_id is None or file is None or line is None:
+            # Malformed finding — keep it but don't dedup
+            unique.append(f)
+            continue
+        key = (str(rule_id), str(file), line)
         if key in seen:
             dupes += 1
         else:

@@ -26,7 +26,7 @@ def is_gitnexus_available() -> bool:
             shell=shell
         )
         return result.returncode == 0
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, FileNotFoundError, OSError):
         return False
 
 def get_repo_info_for_path(target_path: str) -> Tuple[Optional[str], Optional[str]]:
@@ -173,9 +173,12 @@ def resolve_location_to_symbol(repo_name: str, file_path: str, line_number: int)
     """
     # Normalize path to forward slashes
     file_path = file_path.replace('\\', '/')
+    # Escape single quotes to prevent Cypher injection
+    safe_file_path = file_path.replace("'", "\\'")
+    safe_line = int(line_number)  # ensure integer
     query = (
-        f"MATCH (n) WHERE n.filePath = '{file_path}' "
-        f"AND n.startLine <= {line_number} AND n.endLine >= {line_number} "
+        f"MATCH (n) WHERE n.filePath = '{safe_file_path}' "
+        f"AND n.startLine <= {safe_line} AND n.endLine >= {safe_line} "
         f"RETURN n.id, n.name, n.startLine, n.endLine, labels(n)"
     )
     

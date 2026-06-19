@@ -151,7 +151,7 @@ class TestASTGraph(unittest.TestCase):
         self.assertEqual(rel2, "packages/engine/main.py")
 
     @patch('requests.post')
-    @patch.dict(os.environ, {"AI_PROVIDER": "9router", "9ROUTER_API_KEY": "fake_key", "9ROUTER_BASE_URL": "http://localhost:20128/v1", "9ROUTER_MODEL": "test-model"})
+    @patch.dict(os.environ, {"AI_PROVIDER": "9router", "NINEROUTER_API_KEY": "fake_key", "NINEROUTER_BASE_URL": "http://localhost:20128/v1", "NINEROUTER_MODEL": "test-model"})
     def test_ai_resolver_prompt_assembly(self, mock_post):
         # We test that resolve_findings formats user prompt with the detailed AST context
         mock_response = MagicMock()

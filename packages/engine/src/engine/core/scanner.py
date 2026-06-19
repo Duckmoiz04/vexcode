@@ -119,6 +119,14 @@ def _normalize_severity(raw: str) -> str:
     return "warning"
 
 
+def _safe_int(value, default: int = 0) -> int:
+    """Convert value to int, returning default if conversion fails."""
+    try:
+        return int(value) if value is not None else default
+    except (ValueError, TypeError):
+        return default
+
+
 def _enrich_finding(finding: Dict[str, Any]) -> Dict[str, Any]:
     """Add stable id, category, language, normalized severity to a finding.
 
@@ -128,7 +136,7 @@ def _enrich_finding(finding: Dict[str, Any]) -> Dict[str, Any]:
     if "id" not in finding:
         finding["id"] = compute_finding_id(
             str(finding.get("file") or ""),
-            int(finding.get("line") or 0),
+            _safe_int(finding.get("line")),
             str(finding.get("rule_id") or ""),
         )
 
@@ -237,7 +245,7 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             "scanner": "opengrep-mock-fallback",
             "timestamp": scan_time,
             "target_path": target_path,
-            "findings": MOCK_FINDINGS,
+            "findings": [_enrich_finding(dict(f)) for f in MOCK_FINDINGS],
             "fallback_reason": str(e)
         }
     except Exception as e:
@@ -247,7 +255,7 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             "scanner": "opengrep-mock-fallback",
             "timestamp": scan_time,
             "target_path": target_path,
-            "findings": MOCK_FINDINGS,
+            "findings": [_enrich_finding(dict(f)) for f in MOCK_FINDINGS],
             "fallback_reason": str(e)
         }
 
