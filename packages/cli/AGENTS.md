@@ -38,7 +38,7 @@ node bin/cli.js   # Run directly (also: vexcode via npm link)
 - **Reports**: stored at `~/.vexcode/reports/{projectName}/`
 - **AI providers**: multi-provider (OpenAI, Anthropic, Google, 9router); config keys follow `{PROVIDER}_API_KEY`, `{PROVIDER}_BASE_URL`, `{PROVIDER}_MODEL`
 - **Error handling**: try/catch with Express error middleware, structured JSON error responses
-- **Frontend**: vanilla JS (no framework), custom CSS with dark theme
+- **Frontend**: React 19 + TypeScript 5 + Vite 6 (built from `packages/web/` into `src/public/`, styled with Tailwind v4 + CSS variables for dark/light theming)
 
 ## Anti-Patterns
 

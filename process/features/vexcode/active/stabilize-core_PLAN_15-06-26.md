@@ -2,7 +2,7 @@
 
 **Date**: 15-06-26
 **Complexity**: Complex (Multi-system: Web UI, Python engine, schema evolution)
-**Status**: 🔨 PARTIALLY DONE (Phases A-E, F: ✅ VERIFIED; Phases G: ⏳ PENDING)
+**Status**: ✅ COMPLETE (All 7 phases A-G verified. Stabilize-core implementation done.)
 **Author**: Mavis (KTPM-aware planning)
 **Project**: VexCode - AI Code Review (DATN)
 **Deadline**: 22-06-26 (1 tuần)
@@ -374,21 +374,21 @@ Status meanings:
   - [ ] Verify category hiển thị đúng
   - [ ] Verify AI error message rõ ràng (test với API key sai)
 
-#### Phase G: Documentation sync (0.5h)
-- [ ] **G1**: Update `process/context/all-context.md`
-  - [ ] Sửa "Web monolith vanilla JS" → "React 19 + TypeScript 5"
-  - [ ] Thêm schema mới: `id`, `category`, `resolutions` rename
-  - [ ] Thêm ISO 25010 taxonomy reference
-  - [ ] Thêm parallel AI note
-- [ ] **G2**: Update `process/context/architecture-overview.md`
-  - [ ] Sơ đồ AI flow: parallel + error reporting
-  - [ ] Cache `resolutions` map theo `rule_id` giải thích rõ
-- [ ] **G3**: Update `packages/cli/AGENTS.md`
-  - [ ] Sửa "vanilla JS SPA" → "Express + React 19 (built từ packages/web/)"
-- [ ] **G4**: Tạo `packages/web/AGENTS.md` (NEW)
-  - [ ] Document stack React 19, TS 5, Vite 6, CodeMirror 6
-  - [ ] Document conventions (functional components, Tailwind tokens, etc.)
-- [ ] **G5**: Update `process/features/vexcode/active/_GUIDE.md` (nếu có)
+#### Phase G: Documentation sync (0.5h) ✅ VERIFIED
+- [x] **G1**: Update `process/context/all-context.md`
+  - [x] Sửa "Web monolith vanilla JS" → "React 19 + TypeScript 5" (đã fix từ trước)
+  - [x] Thêm schema mới: `id`, `category`, `resolutions` rename
+  - [x] Thêm ISO 25010 taxonomy reference (fix ref từ `rule_categories.yaml` → `iso25010_taxonomy.py`)
+  - [x] Thêm parallel AI note (đã có từ trước)
+- [x] **G2**: Update `process/context/architecture-overview.md`
+  - [x] Sơ đồ AI flow: parallel + error reporting (sequential→parallel, bỏ cooldown 15s)
+  - [x] Cache `resolutions` map theo `rule_id` giải thích rõ
+- [x] **G3**: Update `packages/cli/AGENTS.md`
+  - [x] Sửa "vanilla JS SPA" → "Express + React 19 (built từ packages/web/)"
+- [x] **G4**: Tạo `packages/web/AGENTS.md` (đã tồn tại từ session trước)
+  - [x] Document stack React 19, TS 5, Vite 6, CodeMirror 6
+  - [x] Document conventions (functional components, Tailwind tokens, etc.)
+- [-] **G5**: Update `process/features/vexcode/active/_GUIDE.md` — skipped (file không tồn tại)
 
 ---
 

@@ -217,6 +217,34 @@ interface AiResolution {
 
 The frontend `CodeInspector.tsx` renders an error banner when `ai_status === "failed"` and a mock-fallback notice when `ai_status === "fallback_mock"`.
 
+## Finding Schema
+
+Each Semgrep finding emitted by the engine includes:
+
+```typescript
+interface Finding {
+  id: string;                  // Deterministic ID: hash(file + line + rule_id)
+  rule_id: string;             // Semgrep rule identifier
+  file: string;                // Relative file path
+  line: number;                // 1-based line number
+  message: string;             // Human-readable description
+  severity: string;            // ERROR | WARNING | INFO
+  category: Category;          // ISO 25010 classification (8 categories)
+  code_text?: string;          // The offending source line
+  cwe_id?: string;             // CWE identifier from Semgrep metadata
+  owasp_id?: string;           // OWASP category
+  confidence?: string;         // Semgrep confidence level
+  language?: string;           // Detected from file extension
+  ast_context?: AstContext;    // GitNexus-enriched symbol context
+}
+```
+
+The `id` field enables cross-scan finding persistence — findings retain the same ID across scans so the frontend can show `NEW` / `PERSISTING` / `RESOLVED` / `REGRESSED` status.
+
+## Report Resolutions Key
+
+The report JSON uses `resolutions` (renamed from legacy `ai_resolutions`). Both keys are supported for backward compatibility when loading old reports.
+
 ## AI Resolution Parallelism
 
 The engine now uses `ThreadPoolExecutor` with `AI_PARALLEL_WORKERS` (default: 3) to resolve findings concurrently. Rate limiting is handled by `post_with_retry()` exponential backoff. The previous 15-second cooldown before AI resolution has been removed.
@@ -236,7 +264,7 @@ The Python engine classifies findings using ISO 25010 quality dimensions. Each f
 | `usability` | Appropriateness recognisability | Poor error messages |
 | `functional_correctness` | Functional correctness | Logic bugs |
 
-The `Category` type is defined in `packages/engine/src/engine/core/category.py` and mapped to Semgrep rule IDs in `packages/engine/src/engine/core/rule_categories.yaml`.
+The `Category` type is defined in `packages/engine/src/engine/core/category.py` and mapped to Semgrep rule IDs in `packages/engine/src/engine/config/iso25010_taxonomy.py`.
 
 ## Current Project Status (2026-06-17)
 
