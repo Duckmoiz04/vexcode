@@ -1,503 +1,3 @@
-{"ts":"2026-06-18T13:11:49.940Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:11:50.561Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":46,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:11:50.739Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:13:34.814Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T13:13:34.958Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:13:35.670Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":17,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:13:35.821Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:15:53.897Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T13:15:54.105Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:15:54.984Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":23,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:15:55.221Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:17:34.331Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T13:17:34.520Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:17:35.969Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":31,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:17:36.160Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:19:11.954Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T13:19:12.163Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:19:13.129Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":20,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:19:13.297Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:23:58.687Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T13:23:58.874Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:24:00.349Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":39,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:24:00.584Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:25:34.768Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T13:25:34.907Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:25:35.525Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":17,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:25:35.711Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T13:25:43.022Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T13:25:43.159Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T14:51:09.146Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T14:51:09.261Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T14:51:10.531Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":24,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T14:51:10.684Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":16,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:11:34.887Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T15:11:35.016Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:11:36.318Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":31,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:11:36.544Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:11:44.145Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T15:11:44.252Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:11:44.879Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":27,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:11:45.035Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:11:51.114Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T15:11:51.245Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:22:39.010Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T15:22:39.138Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:22:47.897Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer\""}
-{"ts":"2026-06-18T15:22:48.008Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:22:57.702Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T15:22:57.823Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:22:59.127Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":19,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:22:59.268Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:05.933Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:23:06.038Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:06.584Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":16,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:06.715Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:12.923Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx\""}
-{"ts":"2026-06-18T15:23:13.025Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:13.621Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":17,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:13.752Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:19.715Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SemgrepSection.tsx\""}
-{"ts":"2026-06-18T15:23:19.814Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:20.297Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":15,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:20.420Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:23:26.263Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T15:23:26.394Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:24:42.226Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:24:42.357Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:24:42.955Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":25,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:24:43.097Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:24:50.582Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx\""}
-{"ts":"2026-06-18T15:24:50.723Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:24:51.668Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":28,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:24:51.909Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:24:59.295Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SemgrepSection.tsx\""}
-{"ts":"2026-06-18T15:24:59.426Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:25:00.212Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":60,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:25:00.505Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:06.426Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:32:06.542Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:07.520Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":21,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:07.686Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:14.218Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx\""}
-{"ts":"2026-06-18T15:32:14.330Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:15.082Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":25,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:15.218Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:22.081Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SemgrepSection.tsx\""}
-{"ts":"2026-06-18T15:32:22.193Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:22.801Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":18,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:32:22.930Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:43:44.419Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:43:44.604Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:43:51.810Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T15:43:51.924Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:43:58.999Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/constants.ts\""}
-{"ts":"2026-06-18T15:43:59.114Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:44:22.321Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T15:44:22.437Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:44:30.157Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/useSettingsDrawer.ts\""}
-{"ts":"2026-06-18T15:44:30.287Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:45:29.813Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T15:45:29.925Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:45:49.655Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:45:49.766Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T15:45:49.876Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:45:50.941Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":15,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:45:51.085Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"reminder-injected","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:14.777Z","hook":"descriptive-name","event":"PreToolUse","tool":"Write","target":"","note":"","dur":1,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:14.901Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:46:15.018Z","hook":"privacy-block","event":"PreToolUse","tool":"Write","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:15.630Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":25,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:15.795Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Write","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:38.568Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T15:46:38.706Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:39.338Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":19,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:39.494Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:51.565Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T15:46:51.724Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:52.468Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":42,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:46:52.670Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:47:10.917Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T15:47:11.036Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:47:20.428Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T15:47:20.586Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:55:05.836Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer\""}
-{"ts":"2026-06-18T15:55:05.985Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:55:22.000Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T15:55:22.144Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:55:23.255Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":24,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:55:23.439Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:55:56.295Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T15:55:56.520Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:55:57.485Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":23,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:55:57.682Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:06.192Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T15:56:06.334Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:07.093Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":23,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:07.285Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:15.150Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T15:56:15.290Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:16.501Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":49,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:16.697Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:24.712Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:56:24.851Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:25.624Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":43,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:25.815Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:33.381Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:56:33.505Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:34.125Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":21,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:34.340Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":19,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:41.368Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:56:41.494Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:42.125Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":19,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:42.253Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:56:53.386Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:56:53.526Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:01.357Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:57:01.586Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:09.927Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:57:10.072Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:10.828Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":34,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:11.040Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:20.456Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SemgrepSection.tsx\""}
-{"ts":"2026-06-18T15:57:20.660Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:21.915Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":33,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:22.139Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:31.618Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx\""}
-{"ts":"2026-06-18T15:57:31.871Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:32.980Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":30,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:33.167Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:41.502Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer\""}
-{"ts":"2026-06-18T15:57:41.655Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:57:54.811Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx\""}
-{"ts":"2026-06-18T15:57:54.983Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:02.626Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx\""}
-{"ts":"2026-06-18T15:58:02.874Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:12.023Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx\""}
-{"ts":"2026-06-18T15:58:12.176Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:12.861Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":30,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:13.052Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:22.304Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AdvancedSettings.tsx\""}
-{"ts":"2026-06-18T15:58:22.442Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:23.192Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":22,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:23.363Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:32.115Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/AiProviderSelector.tsx\""}
-{"ts":"2026-06-18T15:58:32.259Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:32.995Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":22,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:33.164Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:44.338Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ModelSelector.tsx\""}
-{"ts":"2026-06-18T15:58:44.482Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:45.198Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":33,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:45.421Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:58:55.715Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer\""}
-{"ts":"2026-06-18T15:58:55.883Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:05.870Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:59:06.008Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:14.767Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T15:59:14.924Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:15.784Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":25,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:15.935Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:23.138Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ApiConfigSection.tsx\""}
-{"ts":"2026-06-18T15:59:23.283Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:31.247Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ApiConfigSection.tsx\""}
-{"ts":"2026-06-18T15:59:31.368Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:32.074Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":32,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:32.369Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:41.706Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ApiConfigSection.tsx\""}
-{"ts":"2026-06-18T15:59:41.868Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:42.600Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":28,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:42.797Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T15:59:51.357Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer\""}
-{"ts":"2026-06-18T15:59:51.483Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:00:01.472Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:00:01.688Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:00:13.023Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:00:13.154Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:05:46.340Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T16:05:46.476Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:05:55.136Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:05:55.271Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:05:55.366Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T16:05:55.971Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:06:06.659Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/index.css\""}
-{"ts":"2026-06-18T16:06:06.824Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:09:14.011Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:09:14.151Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:09:14.891Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T16:09:15.551Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":14,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:09:15.604Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":44,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:09:16.356Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:09:16.412Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":30,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:09:17.165Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:09:30.567Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:09:30.709Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:09:31.537Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:09:31.691Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:13:01.243Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/index.css\""}
-{"ts":"2026-06-18T16:13:01.394Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:13:11.204Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:13:11.340Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:13:12.007Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T16:13:12.080Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":24,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:13:12.190Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:13:12.245Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:13:13.456Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":29,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:13:13.657Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:13:21.368Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:13:21.543Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:14:24.485Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:14:24.657Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:14:25.391Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T16:14:26.182Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:14:26.215Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":31,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:14:27.107Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:14:27.163Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":30,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:14:28.068Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:15:21.967Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:15:22.145Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:15:22.995Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T16:15:23.037Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":34,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:15:23.225Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:15:23.289Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:15:24.593Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":28,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:15:24.814Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:15:33.040Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:15:33.222Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:19:48.528Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:19:48.678Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:19:50.148Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":25,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:19:50.370Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:22:17.752Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:22:17.926Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:24:43.722Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:24:43.876Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:24:44.693Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":37,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:24:44.920Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:24:52.702Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:24:52.830Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:25:12.241Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T16:25:12.391Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:25:19.843Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T16:25:20.032Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:25:21.184Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":26,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:25:21.379Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:25:30.088Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:25:30.313Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:27:16.333Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:27:16.489Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:27:23.993Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:27:24.110Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:29:04.952Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:29:05.090Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:29:12.565Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:29:12.701Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:29:13.549Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:29:13.628Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":33,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:29:13.740Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:29:13.839Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:29:15.295Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":24,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:29:15.444Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:29:22.113Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:29:22.277Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:32:32.436Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:32:32.593Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:18.310Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:36:18.443Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:28.800Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:36:28.927Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:30.923Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":28,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:31.080Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:39.863Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:36:39.984Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:40.709Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":22,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:40.855Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:47.210Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:36:47.350Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:36:55.039Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:36:55.160Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:12.779Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:39:12.912Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:13.844Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":25,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:14.023Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:20.816Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:39:20.931Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:31.369Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:39:31.473Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:32.283Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":22,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:32.407Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:39.164Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:39:39.280Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:45.554Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:39:45.673Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:53.880Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:39:54.015Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:54.872Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":27,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:39:55.051Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:40:06.690Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:40:06.826Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:40:16.367Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:40:16.479Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:40:29.290Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:40:29.402Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:40:45.209Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:40:45.310Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:41:19.865Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:41:19.984Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:41:52.736Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:41:52.891Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:42:07.579Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:42:07.706Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:42:19.187Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:42:19.299Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:42:34.253Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:42:34.425Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:43:09.238Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:43:09.365Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:43:21.604Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:43:21.737Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:43:22.670Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":33,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:43:22.820Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:43:30.831Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:43:31.032Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:52:36.858Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:52:37.055Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:52:39.243Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":41,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:52:39.407Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:52:47.326Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T16:52:47.484Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:54:53.386Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:54:53.510Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:54:54.350Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":28,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:54:54.541Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:58:39.879Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T16:58:40.064Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:58:41.908Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":42,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T16:58:42.136Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":13,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:01:53.985Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T17:01:54.184Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:04:51.492Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T17:04:51.605Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:04:52.695Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":23,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:04:52.853Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:04:58.473Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T17:04:58.574Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:11:14.865Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:11:14.970Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:12:15.336Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:12:15.439Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:12:16.622Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":23,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:12:16.791Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:12:23.336Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T17:12:23.479Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:16:06.098Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T17:16:06.230Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:16:06.979Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":23,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:16:07.130Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:17:27.090Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T17:17:27.305Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:17:30.088Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":64,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:17:30.354Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":29,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:26:19.585Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T17:26:19.775Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:26:22.680Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":47,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:26:22.976Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":15,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:34:10.988Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderCard.tsx\""}
-{"ts":"2026-06-18T17:34:11.098Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:34:48.982Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:34:49.092Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:34:58.026Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:34:58.144Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:34:59.562Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":39,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:34:59.746Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:08.578Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:35:08.750Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:09.770Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":39,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:09.961Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:21.325Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:35:21.458Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:22.490Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":30,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:22.669Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:34.235Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:35:34.374Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:35.308Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":25,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:35.493Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:42.754Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:35:42.891Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:51.278Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/ProviderSection.tsx\""}
-{"ts":"2026-06-18T17:35:51.423Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:52.385Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":22,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:52.554Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:35:59.450Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T17:35:59.574Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:25.508Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:25.721Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:26.446Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":590,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:27.011Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:27.020Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:27.888Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":654,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:29.105Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":811,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:29.377Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:52.687Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:52.687Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:52.733Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:52.866Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:52.874Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:52.911Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:56.781Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":533,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:56.782Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":604,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:57.087Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:57.151Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":16,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:57.153Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":18,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:39:57.411Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":21,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:19.346Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:19.724Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":14,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:19.921Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:21.555Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:21.633Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":26,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:22.031Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":18,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:22.123Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":19,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:25.836Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":1455,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:48.819Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:40:48.958Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:41:23.994Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:41:24.165Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:41:48.245Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:41:48.396Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:42:06.376Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:42:06.527Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:42:25.692Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:42:25.851Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:42:44.033Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:42:44.175Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:42:54.842Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:42:54.976Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:43:05.565Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:43:05.779Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:43:05.856Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:43:06.892Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:47:01.989Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T17:47:02.158Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:47:16.212Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T17:47:16.352Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:47:25.709Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T17:47:25.834Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:47:35.075Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T17:47:35.209Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:48:20.820Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web\""}
-{"ts":"2026-06-18T17:48:20.954Z","hook":"privacy-block","event":"PreToolUse","tool":"Grep","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:48:29.542Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T17:48:29.675Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:48:43.818Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.tsx\""}
-{"ts":"2026-06-18T17:48:43.937Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:48:45.653Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":28,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:48:45.855Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"reminder-injected","dur":8,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:48:55.331Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T17:48:55.458Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:48:56.282Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":23,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:48:56.424Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":4,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:49:07.044Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/components/settings-drawer/SettingsDrawer.test.tsx\""}
-{"ts":"2026-06-18T17:49:07.224Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
-{"ts":"2026-06-18T17:49:08.252Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":36,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-18T17:49:08.578Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":7,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-18T17:49:18.026Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"allowed-command","dur":1,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-18T17:49:18.155Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
@@ -966,3 +466,91 @@
 {"ts":"2026-06-19T02:21:05.508Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-19T02:21:12.166Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
 {"ts":"2026-06-19T02:21:12.285Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T02:21:19.341Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T02:21:19.453Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T02:21:26.300Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T02:21:26.408Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T02:22:40.141Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T02:22:40.264Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:38:04.677Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/src/engine/core/ai_resolver.py\""}
+{"ts":"2026-06-19T04:38:05.009Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":15,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:38:22.957Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/src/engine/core/ai_resolver.py\""}
+{"ts":"2026-06-19T04:38:23.193Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:39:02.599Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/engine/src/engine/pipeline/resolver.py\""}
+{"ts":"2026-06-19T04:39:02.777Z","hook":"privacy-block","event":"PreToolUse","tool":"Read","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:03.123Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/packages/web/src/hooks/useChat.ts\""}
+{"ts":"2026-06-19T04:40:03.533Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:04.416Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":37,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:04.729Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":30,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:34.357Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/features/vexcode/active/stabilize-core_PLAN_15-06-26.md\""}
+{"ts":"2026-06-19T04:40:36.172Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:38.231Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":122,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:39.010Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:54.367Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/features/vexcode/active/stabilize-core_PLAN_15-06-26.md\""}
+{"ts":"2026-06-19T04:40:54.613Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:55.114Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":38,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:40:55.495Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:41:13.622Z","hook":"scout-block","event":"PreToolUse","tool":"","target":"","note":"","dur":0,"status":"crash","exit":0,"error":"path should be a `path.relative()`d string, but got \"D:/DATN2/process/features/vexcode/active/stabilize-core_PLAN_15-06-26.md\""}
+{"ts":"2026-06-19T04:41:13.815Z","hook":"privacy-block","event":"PreToolUse","tool":"Edit","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:41:14.121Z","hook":"session-state","event":"PostToolUse","tool":"","target":"","note":"handled","dur":13,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:41:14.342Z","hook":"post-edit-simplify-reminder","event":"PostToolUse","tool":"Edit","target":"","note":"tracked-edit","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:41:50.700Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:41:51.001Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:42:47.818Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T04:42:48.258Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":19,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:14.734Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:14.894Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:38.759Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:38.918Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:38.940Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:39.428Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:55.454Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:55.615Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:56.101Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:56.312Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:56.340Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":7,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:14:56.861Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:18.698Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:18.894Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":13,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:19.504Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:19.742Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":14,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:19.742Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:20.349Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:27.794Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":19,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:28.192Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":14,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:28.267Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:28.686Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:28.696Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:29.226Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:29.249Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":9,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:15:29.759Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:05.914Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:06.063Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:06.185Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:06.607Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:06.616Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:07.247Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":20,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:16.037Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:16.184Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:16.665Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:16:16.841Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:18:58.802Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:18:59.018Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:19:17.826Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":10,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:19:18.198Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":26,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:19:37.872Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":14,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:19:38.207Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":17,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:19:59.551Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:19:59.867Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":20,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:20:12.093Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":12,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:20:12.480Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":35,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:20:32.623Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":15,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:20:33.075Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":23,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:20:57.361Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":15,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:20:57.733Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":18,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:21:07.724Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:21:08.019Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":16,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:21:19.064Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:21:19.249Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":11,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:21:28.175Z","hook":"scout-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":8,"status":"ok","exit":0,"error":""}
+{"ts":"2026-06-19T05:21:28.364Z","hook":"privacy-block","event":"PreToolUse","tool":"Bash","target":"","note":"","dur":6,"status":"ok","exit":0,"error":""}
