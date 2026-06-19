@@ -310,14 +310,24 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=AI_PARALLEL_WORKERS) as executor:
         futures = {
-            executor.submit(_call_ai_for_rule, item, url, headers, model, idx, total): idx
+            executor.submit(
+                call_ai_for_rule,
+                {
+                    **item,
+                    "url": url,
+                    "headers": headers,
+                    "model": model,
+                    "idx": idx,
+                    "total": total,
+                },
+            ): idx
             for idx, item in enumerate(unique_findings)
         }
         for future in concurrent.futures.as_completed(futures):
             completed += 1
             try:
-                result = future.result()
-                resolutions.update(result)
+                rule_id, resolution = future.result()
+                resolutions[rule_id] = resolution
                 emit_progress("ai_resolve", "Resolving findings...",
                               current=completed, total=total)
             except Exception as e:
@@ -334,11 +344,16 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                 emit_progress("ai_resolve", f"Failed: {rule_id}",
                               current=completed, total=total)
 
-    return resolutions
+    return dict(sorted(resolutions.items()))
 
 
-def _call_ai_for_rule(item: Dict[str, Any], url: str, headers: dict, model: str, idx: int, total: int) -> Dict[str, Any]:
+def call_ai_for_rule(item: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     rule_id = item["rule_id"]
+    url = item["url"]
+    headers = item["headers"]
+    model = item["model"]
+    idx = item["idx"]
+    total = item["total"]
     alias = f"r{idx}"
 
     user_prompt = (
@@ -386,19 +401,17 @@ def _call_ai_for_rule(item: Dict[str, Any], url: str, headers: dict, model: str,
                 f"(finish_reason={finish}) for {rule_id}. "
                 f"Model may have refused or returned non-text."
             )
-            return {
-                rule_id: _make_resolution(
-                    suggestion=(
-                        f"False positive: AI returned no text content for {rule_id} "
-                        f"(finish_reason={finish}). The model may have refused, used tool calls, "
-                        f"or returned a non-text/multimodal response."
-                    ),
-                    remediation_code="",
-                    ai_status="failed",
-                    ai_error=f"model returned empty content (finish_reason={finish})",
-                    model=model,
-                )
-            }
+            return rule_id, _make_resolution(
+                suggestion=(
+                    f"False positive: AI returned no text content for {rule_id} "
+                    f"(finish_reason={finish}). The model may have refused, used tool calls, "
+                    f"or returned a non-text/multimodal response."
+                ),
+                remediation_code="",
+                ai_status="failed",
+                ai_error=f"model returned empty content (finish_reason={finish})",
+                model=model,
+            )
         result = safe_json_parse(content)
         if isinstance(result, dict):
             out: Dict[str, Any] = {}
@@ -424,31 +437,36 @@ def _call_ai_for_rule(item: Dict[str, Any], url: str, headers: dict, model: str,
                         model=model,
                     )
             logger.info(f"  [{idx+1}/{total}] Resolved: {rule_id}")
-            return out
+            resolution = out.get(rule_id) or out.get(alias) or next(iter(out.values()), None)
+            if resolution is None:
+                resolution = _make_resolution(
+                    suggestion="",
+                    remediation_code="",
+                    ai_status="failed",
+                    ai_error="AI returned empty result map",
+                    model=model,
+                )
+            return rule_id, resolution
 
         logger.info(
             f"  [{idx+1}/{total}] AI response for {rule_id} was not JSON; using raw text as suggestion."
         )
-        return {
-            rule_id: _make_resolution(
-                suggestion=content[:500],
-                remediation_code="",
-                ai_status="failed",
-                ai_error="response was not valid JSON",
-                model=model,
-            )
-        }
+        return rule_id, _make_resolution(
+            suggestion=content[:500],
+            remediation_code="",
+            ai_status="failed",
+            ai_error="response was not valid JSON",
+            model=model,
+        )
     except (requests.RequestException, json.JSONDecodeError, ValueError, KeyError, IndexError, TypeError) as e:
         logger.info(f"  [{idx+1}/{total}] Error resolving {rule_id}: {e}")
-        return {
-            rule_id: _make_resolution(
-                suggestion=f"False positive: AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection, or pick a faster model.",
-                remediation_code="",
-                ai_status="failed",
-                ai_error=str(e),
-                model=model,
-            )
-        }
+        return rule_id, _make_resolution(
+            suggestion=f"False positive: AI resolution failed for {rule_id}: {e}. Re-run AI after checking the provider connection, or pick a faster model.",
+            remediation_code="",
+            ai_status="failed",
+            ai_error=str(e),
+            model=model,
+        )
 
 if __name__ == "__main__":
     print(json.dumps(resolve_findings([{"rule_id": "python.lang.security.audit.dangerous-exec", "file": "example.py", "line": 12}], use_mock=True), indent=2))
