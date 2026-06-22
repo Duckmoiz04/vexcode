@@ -41,9 +41,13 @@ let activeScan = null;
  * @param {string} reportOutputPath - The path where the scanner JSON report should be saved.
  * @param {boolean} [mockScan=false] - Use mock scan findings.
  * @param {boolean} [mockAi=false] - Use mock AI suggestions.
+ * @param {boolean} [fastScan=false] - Run incremental scan on changed files (git).
+ * @param {boolean} [noSarif=false] - Skip SARIF 2.1.0 sidecar report.
+ * @param {function} [onProgress=null] - Optional progress callback.
+ * @param {object} [extra={}] - Additional flags: format, thresholdsPath, explain, failOnThreshold.
  * @returns {Promise<{stdout: string, stderr: string}>}
  */
-export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false, mockAi = false, fastScan = false, onProgress = null) {
+export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false, mockAi = false, fastScan = false, noSarif = false, onProgress = null, extra = {}) {
   return new Promise((resolvePromise, rejectPromise) => {
     let pythonPath;
     try {
@@ -66,6 +70,21 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
     }
     if (fastScan) {
       args.push('--fast');
+    }
+    if (noSarif) {
+      args.push('--no-sarif');
+    }
+    if (extra.format && extra.format !== 'json') {
+      args.push('--format', extra.format);
+    }
+    if (extra.thresholdsPath) {
+      args.push('--thresholds', extra.thresholdsPath);
+    }
+    if (extra.explain) {
+      args.push('--explain');
+    }
+    if (extra.failOnThreshold) {
+      args.push('--fail-on-threshold');
     }
 
     console.log(`Spawning Python process: ${pythonPath} ${args.join(' ')}`);
@@ -224,8 +243,8 @@ export function runConfigCli(command, payload = null) {
  * @param {boolean} [fastScan=false]
  * @returns {Promise<object>} Parsed report JSON
  */
-export async function runScanAndReadReport(targetPath, reportOutputPath, mockScan = false, mockAi = false, fastScan = false) {
-  await runPythonAnalysis(targetPath, reportOutputPath, mockScan, mockAi, fastScan);
+export async function runScanAndReadReport(targetPath, reportOutputPath, mockScan = false, mockAi = false, fastScan = false, noSarif = false) {
+  await runPythonAnalysis(targetPath, reportOutputPath, mockScan, mockAi, fastScan, noSarif);
 
   if (!existsSync(reportOutputPath)) {
     throw new Error(`Report file not found at ${reportOutputPath} after scan.`);

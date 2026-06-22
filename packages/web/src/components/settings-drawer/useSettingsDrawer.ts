@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { apiFetch } from '../../utils/apiClient';
 import type { Config, AiSettings, AiAgentConfig } from '../../types';
 import { PROVIDERS } from './constants';
 
@@ -140,7 +141,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     handleProviderConfigChange(pk, 'testStatus', { text: 'Testing...', type: 'loading' });
     try {
       const url = `/api/models?baseUrl=${encodeURIComponent(cfg.baseUrl)}&apiKey=${encodeURIComponent(cfg.apiKey)}`;
-      const response = await fetch(url);
+      const response = await apiFetch(url);
       const data = await response.json();
       if (data.success) {
         if (data.models && data.models.length > 0) {

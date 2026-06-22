@@ -3,6 +3,11 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useScan } from './useScan';
 import type { Report } from '../types';
 
+vi.mock('../utils/apiClient', () => ({
+  apiFetch: vi.fn((input: RequestInfo | URL, init?: RequestInit) => init ? fetch(input, init) : fetch(input)),
+  getApiKey: () => Promise.resolve('test-key'),
+}));
+
 const mockShowToast = vi.fn();
 const mockLoadProjects = vi.fn();
 const mockLoadHistory = vi.fn();

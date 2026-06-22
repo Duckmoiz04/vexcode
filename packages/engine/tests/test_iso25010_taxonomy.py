@@ -22,10 +22,16 @@ from engine.config.iso25010_taxonomy import (  # noqa: E402
     PHASE_1_CATEGORIES,
     RELIABILITY,
     SECURITY,
+    FUNCTIONAL_SUITABILITY,
+    OPERABILITY,
+    COMPATIBILITY,
+    TRANSFERABILITY,
     classify_finding,
     compute_finding_id,
     get_phase_1_categories,
     is_valid_category,
+    normalize_owasp_id,
+    OWASP_TO_SUBCATEGORY,
 )
 
 
@@ -125,6 +131,92 @@ class TestClassifySecurity:
         assert classify_finding({"cwe_id": "89", "rule_id": "x"}) == SECURITY
         assert classify_finding({"cwe_id": "CWE-89: SQL Injection", "rule_id": "x"}) == SECURITY
         assert classify_finding({"cwe_id": "cwe-79", "rule_id": "x"}) == SECURITY
+
+
+# ---------------------------------------------------------------------------
+# OWASP mapping
+# ---------------------------------------------------------------------------
+
+class TestOwaspMapping:
+    """OWASP Top 10 → Security category mapping."""
+
+    @pytest.mark.parametrize("owasp_input,expected_canonical", [
+        ("A03", "OWASP-A03"),
+        ("A3", "OWASP-A03"),
+        ("A03:2021 - Injection", "OWASP-A03"),
+        ("OWASP-A03", "OWASP-A03"),
+        ("owasp-a3", "OWASP-A03"),
+        ("OWASP_A3", "OWASP-A03"),
+        ("A10:2021 - SSRF", "OWASP-A10"),
+        ("A1: Identification and Authentication Failures", "OWASP-A01"),
+    ])
+    def test_normalize_owasp_id(self, owasp_input, expected_canonical):
+        assert normalize_owasp_id(owasp_input) == expected_canonical
+
+    @pytest.mark.parametrize("invalid_input", [
+        "",
+        None,
+        "B03",
+        "CWE-89",
+        "random text",
+        "A0",
+        "A11",
+    ])
+    def test_normalize_owasp_id_invalid(self, invalid_input):
+        assert normalize_owasp_id(invalid_input) is None
+
+    @pytest.mark.parametrize("owasp_id", [
+        "OWASP-A01", "OWASP-A02", "OWASP-A03", "OWASP-A04",
+        "OWASP-A05", "OWASP-A06", "OWASP-A07", "OWASP-A08",
+        "OWASP-A09", "OWASP-A10",
+    ])
+    def test_all_owasp_categories_map_to_security(self, owasp_id):
+        """Every OWASP category must be classified as Security."""
+        assert classify_finding({
+            "owasp_id": owasp_id,
+            "rule_id": "some.rule",
+        }) == SECURITY
+
+    @pytest.mark.parametrize("owasp_id,expected_subcategory", [
+        ("OWASP-A01", "authenticity"),      # Broken Access Control
+        ("OWASP-A02", "confidentiality"),   # Cryptographic Failures
+        ("OWASP-A03", "integrity"),         # Injection
+        ("OWASP-A04", "security"),          # Insecure Design
+        ("OWASP-A05", "authenticity"),      # Security Misconfiguration
+        ("OWASP-A06", "integrity"),         # Vulnerable Components
+        ("OWASP-A07", "authenticity"),      # Auth Failures
+        ("OWASP-A08", "integrity"),         # Integrity Failures
+        ("OWASP-A09", "accountability"),    # Logging Failures
+        ("OWASP-A10", "integrity"),         # SSRF
+    ])
+    def test_owasp_subcategory_mapping(self, owasp_id, expected_subcategory):
+        assert OWASP_TO_SUBCATEGORY[owasp_id] == expected_subcategory
+
+    def test_owasp_priority_over_rule_id(self):
+        """OWASP should win over a non-security rule_id keyword."""
+        # rule_id "style.unused-import" would normally be MAINTAINABILITY
+        # but OWASP-A03 forces SECURITY
+        assert classify_finding({
+            "owasp_id": "OWASP-A03",
+            "rule_id": "python.lang.style.unused-import",
+        }) == SECURITY
+
+    def test_cwe_still_beats_owasp(self):
+        """CWE has higher priority than OWASP in the resolution order."""
+        # CWE-561 (Dead Code) → MAINTAINABILITY, even though OWASP says SECURITY
+        result = classify_finding({
+            "cwe_id": "CWE-561",
+            "owasp_id": "OWASP-A03",
+            "rule_id": "x",
+        })
+        assert result == MAINTAINABILITY
+
+    def test_owasp_handles_short_form_in_finding(self):
+        """Scanner emits OWASP-AXX canonical form, but short AXX should also work."""
+        assert classify_finding({
+            "owasp_id": "A03",
+            "rule_id": "x",
+        }) == SECURITY
 
 
 # ---------------------------------------------------------------------------
@@ -295,15 +387,16 @@ class TestPhase1Contract:
         assert isinstance(cats, set)
         assert len(cats) == 4
 
-    @pytest.mark.parametrize("cat", [SECURITY, RELIABILITY, MAINTAINABILITY, PERFORMANCE])
+    @pytest.mark.parametrize("cat", [
+        SECURITY, RELIABILITY, MAINTAINABILITY, PERFORMANCE,
+        FUNCTIONAL_SUITABILITY, OPERABILITY, COMPATIBILITY, TRANSFERABILITY
+    ])
     def test_is_valid_category_true(self, cat):
         assert is_valid_category(cat) is True
 
     @pytest.mark.parametrize("cat", [
-        "functional_suitability",  # Phase 2 — not yet valid
-        "compatibility",           # Phase 2
-        "usability",               # Phase 2
-        "portability",             # Phase 2
+        "usability",               # not supported directly (we use operability)
+        "portability",             # not supported directly (we use transferability)
         "unknown",
         "",
         "SECURITY",  # case-sensitive

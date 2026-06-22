@@ -25,10 +25,12 @@ def _make_resolution(
     ai_error: str = "",
     model: str = "",
     remediation_target_file: str = "",
+    classification: str = "vulnerability",
 ) -> Dict[str, Any]:
     return {
         "suggestion": suggestion,
         "remediation_code": remediation_code,
+        "classification": classification,
         "ai_status": ai_status,
         "ai_error": ai_error,
         "model": model,
@@ -43,16 +45,19 @@ MOCK_AI_RESOLUTIONS = {
         suggestion="Avoid using exec(). Use structured functions or parse inputs securely.",
         remediation_code="import subprocess\n# Avoid exec(user_input)\n# Use safe subprocess with arguments\nsubprocess.run(['echo', user_input])",
         model="mock",
+        classification="vulnerability",
     ),
     "python.lang.security.audit.hardcoded-password": _make_resolution(
         suggestion="Load password from environment variables instead of hardcoding it in the connection string.",
         remediation_code="import os\npassword = os.environ.get('DB_PASSWORD')\n# conn = connect(password=password)",
         model="mock",
+        classification="vulnerability",
     ),
     "maintainability.naming.obscure": _make_resolution(
         suggestion="Đổi tên hàm 'do_it' thành 'process_user_data' và tham số 'x' thành 'user_input' để tăng tính rõ nghĩa và dễ bảo trì.",
         remediation_code="def process_user_data(user_input):",
         model="mock",
+        classification="vulnerability",
     ),
 }
 
@@ -253,6 +258,7 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                     remediation_code=f"# Remediation for {rule_id}\n# Please review and replace dangerous code patterns.",
                     ai_status="fallback_mock",
                     model="mock",
+                    classification="vulnerability",
                 )
         return resolutions
 
@@ -274,7 +280,8 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                 "rule_id": r_id,
                 "file": f.get("file", "unknown"),
                 "line": f.get("line", "?"),
-                "message": f.get("message", "")
+                "message": f.get("message", ""),
+                "owasp_id": f.get("owasp_id", ""),
             }
             if "ast_context" in f:
                 ac = f["ast_context"]
@@ -340,6 +347,7 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                     ai_status="failed",
                     ai_error=str(e),
                     model=model,
+                    classification="false_positive",
                 )
                 emit_progress("ai_resolve", f"Failed: {rule_id}",
                               current=completed, total=total)
@@ -363,6 +371,9 @@ def call_ai_for_rule(item: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
         f"Code: {item.get('code_text', 'N/A')}\n"
         f"Message: {item['message']}\n"
     )
+    owasp_id = item.get("owasp_id", "")
+    if owasp_id:
+        user_prompt += f"OWASP: {owasp_id}\n"
     surrounding = item.get("surrounding_code")
     if surrounding:
         user_prompt += f"Surrounding code (target line marked with >>>>):\n{surrounding}\n"
@@ -411,6 +422,7 @@ def call_ai_for_rule(item: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
                 ai_status="failed",
                 ai_error=f"model returned empty content (finish_reason={finish})",
                 model=model,
+                classification="false_positive",
             )
         result = safe_json_parse(content)
         if isinstance(result, dict):
@@ -421,11 +433,19 @@ def call_ai_for_rule(item: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
                     suggestion = (value.get("suggestion") or "").strip()
                     remediation = (value.get("remediation_code") or "").strip()
                     remediation = sanitize_remediation_code(remediation)
-                    if not remediation and suggestion and not suggestion.lower().startswith("false positive"):
-                        suggestion = f"False positive: {suggestion}"
+                    classification = value.get("classification")
+                    # Infer classification if AI didn't provide one (backward compat)
+                    if not classification:
+                        if not remediation and suggestion.lower().startswith("false positive"):
+                            classification = "false_positive"
+                        elif not remediation:
+                            classification = "hotspot"
+                        else:
+                            classification = "vulnerability"
                     out[real_key] = _make_resolution(
                         suggestion=suggestion,
                         remediation_code=remediation,
+                        classification=classification,
                         ai_status="success",
                         model=model,
                     )
@@ -466,6 +486,7 @@ def call_ai_for_rule(item: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
             ai_status="failed",
             ai_error=str(e),
             model=model,
+            classification="false_positive",
         )
 
 if __name__ == "__main__":

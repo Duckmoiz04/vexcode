@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { apiFetch } from '../utils/apiClient';
 
 interface FileContentResult {
   content: string;
@@ -40,7 +41,7 @@ export function useFileContent(filePath: string | null, baseDir: string | null =
         if (baseDir) {
           params.set('baseDir', baseDir);
         }
-        const response = await fetch(
+        const response = await apiFetch(
           `/api/file-content?${params.toString()}`,
           { signal: controller.signal }
         );

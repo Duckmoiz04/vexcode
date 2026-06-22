@@ -2,6 +2,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
 import { listProjects, listProjectReports, getReportContent, getLatestReportContent } from '../services/reportService.js';
 import { readSarifSidecar } from '../services/formatDetector.js';
+import { getApiKey } from '../middleware/auth.js';
 
 export function registerReportRoutes(app, deps) {
   const { isPathSafe, workspaceDir, reportsBaseDir, runRefreshAi } = deps;
@@ -125,6 +126,14 @@ export function registerReportRoutes(app, deps) {
 
   // SSE re-resolve endpoint with progress streaming
   app.get('/api/re-resolve/stream', async (req, res) => {
+    // SSE can't send Authorization headers; accept token via query param instead.
+    const sseToken = req.query.token || '';
+    if (sseToken !== getApiKey()) {
+      res.writeHead(401, { 'Content-Type': 'text/event-stream' });
+      res.write(`data: ${JSON.stringify({ type: 'error', error: 'Authentication required.', code: 'AUTH_REQUIRED' })}\n\n`);
+      return res.end();
+    }
+
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',

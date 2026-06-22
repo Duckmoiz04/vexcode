@@ -1,0 +1,14 @@
+rules:
+  - id: check-unchecked-return
+    pattern-either:
+      - pattern: 'os.system(...)'
+      - pattern: 'subprocess.call(...)'
+    message: "Unchecked return value. Ignoring the result may silently hide failures."
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: correctness
+      cwe: "CWE-252"
+      iso_25010: functional_suitability
+      iso_subcategory: functional_correctness

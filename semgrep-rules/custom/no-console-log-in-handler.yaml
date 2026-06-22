@@ -1,0 +1,56 @@
+rules:
+  - id: no-console-log-in-handler
+    patterns:
+      - pattern: console.log(...)
+      - pattern-either:
+          - pattern-inside: |
+              $APP.get($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.post($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.put($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.delete($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.patch($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.all($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.get($PATH, function($REQ, $RES) {
+                ...
+              })
+          - pattern-inside: |
+              $APP.post($PATH, function($REQ, $RES) {
+                ...
+              })
+          - pattern-inside: |
+              $APP.put($PATH, function($REQ, $RES) {
+                ...
+              })
+          - pattern-inside: |
+              $APP.delete($PATH, function($REQ, $RES) {
+                ...
+              })
+    message: "console.log() used inside Express route handler. Use a proper logger (e.g., winston, pino) to avoid information leakage in production."
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: maintainability
+      iso_25010: maintainability
+      iso_subcategory: analyzability
+      technology:
+        - express

@@ -1,0 +1,20 @@
+rules:
+  - id: no-hardcoded-creds
+    pattern-either:
+      - pattern: 'password = "..."'
+      - pattern: 'passwd = "..."'
+      - pattern: 'secret = "..."'
+      - pattern: 'api_key = "..."'
+      - pattern: 'API_KEY = "..."'
+      - pattern: 'token = "..."'
+      - pattern: 'SECRET_KEY = "..."'
+    message: "Hardcoded credential detected. Use environment variables or a secrets manager."
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-798"
+      owasp: "A07:2021 - Identification and Authentication Failures"
+      iso_25010: security
+      iso_subcategory: confidentiality

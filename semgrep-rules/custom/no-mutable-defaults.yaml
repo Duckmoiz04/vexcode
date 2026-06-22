@@ -1,0 +1,14 @@
+rules:
+  - id: no-mutable-defaults
+    pattern-either:
+      - pattern: "def $FUNC(..., $PARAM=[], ...): ..."
+      - pattern: "def $FUNC(..., $PARAM={}, ...): ..."
+    message: "Mutable default argument in function. This is evaluated once at definition time and shared across all calls. Use None and initialize inside the function."
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: correctness
+      cwe: "CWE-665"
+      iso_25010: functional_suitability
+      iso_subcategory: functional_correctness

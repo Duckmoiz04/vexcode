@@ -4,9 +4,16 @@ import os
 import sys
 from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
+from pathlib import Path
 
 from engine.opengrep_installer import ensure_opengrep, resolve_opengrep_path
 from engine.config.iso25010_taxonomy import classify_finding, compute_finding_id
+
+
+def _get_project_root() -> str:
+    """Return the monorepo root (d:/DATN2) from this file's location."""
+    return str(Path(__file__).resolve().parents[5])
+
 
 # Standard mock findings to return when use_mock=True or when scanning fails.
 MOCK_FINDINGS = [
@@ -16,7 +23,9 @@ MOCK_FINDINGS = [
         "rule_id": "python.lang.security.audit.dangerous-exec",
         "message": "Found use of exec() with user input, which presents a remote code execution vulnerability.",
         "severity": "ERROR",
-        "code_text": "    exec(user_input)"
+        "code_text": "    exec(user_input)",
+        "cwe_id": "CWE-94",
+        "owasp_id": "OWASP-A03",
     },
     {
         "file": "db.py",
@@ -24,7 +33,9 @@ MOCK_FINDINGS = [
         "rule_id": "python.lang.security.audit.hardcoded-password",
         "message": "Hardcoded password variable found in connection string.",
         "severity": "WARNING",
-        "code_text": "        password = \"admin123\""
+        "code_text": "        password = \"admin123\"",
+        "cwe_id": "CWE-798",
+        "owasp_id": "OWASP-A02",
     }
 ]
 
@@ -106,6 +117,109 @@ def _extract_cwe_id(item: Dict[str, Any]) -> Optional[str]:
     return None
 
 
+def _extract_owasp_id(item: Dict[str, Any]) -> Optional[str]:
+    """Extract an OWASP Top 10 identifier from a Semgrep finding if present.
+
+    Semgrep / OpenGrep registry rules store OWASP in ``extra.metadata.owasp``
+    as a string (e.g. ``"A03:2021 - Injection"``) or a list, or in
+    ``extra.metadata.tags`` as ``"owasp-a1"`` ... ``"owasp-a10"``.
+
+    Returns a canonical ``OWASP-AXX`` form, or None if absent.
+    """
+    metadata = item.get("extra", {}).get("metadata", {}) or {}
+    import re
+
+    # 1. Direct 'owasp' field (string or list)
+    owasp_val = metadata.get("owasp") or metadata.get("OWASP")
+    candidates: List[str] = []
+    if isinstance(owasp_val, str):
+        candidates.append(owasp_val)
+    elif isinstance(owasp_val, list):
+        candidates.extend(str(c) for c in owasp_val)
+
+    for raw in candidates:
+        # "A03:2021 - Injection" -> "A03"
+        # "A1: Injection"        -> "A01" (normalize to 2-digit)
+        m = re.search(r"A(\d+)(?::|\b)", raw, re.IGNORECASE)
+        if m:
+            num = int(m.group(1))
+            return f"OWASP-A{num:02d}"
+
+    # 2. 'tags' list with "owasp-a1" ... "owasp-a10"
+    tags = metadata.get("tags")
+    if isinstance(tags, list):
+        for tag in tags:
+            m = re.search(r"owasp[_-]?a(\d+)", str(tag), re.IGNORECASE)
+            if m:
+                num = int(m.group(1))
+                return f"OWASP-A{num:02d}"
+
+    return None
+
+
+def _extract_dataflow_trace(extra: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Extract taint dataflow trace from --dataflow-traces output.
+
+    Returns a dict with source, sink, and propagators showing how
+    tainted data flows from origin to dangerous usage.
+    Returns None if no trace is present.
+    """
+    trace = extra.get("dataflow_trace")
+    if not trace or not isinstance(trace, dict):
+        return None
+
+    def _extract_location(loc_data: dict) -> Optional[Dict[str, Any]]:
+        if not loc_data or not isinstance(loc_data, dict):
+            return None
+        location = loc_data.get("location", {})
+        start = location.get("start", {})
+        return {
+            "file": location.get("path", ""),
+            "line": start.get("line", 0),
+            "col": start.get("col", 0),
+            "content": loc_data.get("content", "").strip(),
+        }
+
+    result = {}
+    source = _extract_location(trace.get("taint_source"))
+    if source:
+        result["source"] = source
+    sink = _extract_location(trace.get("taint_sink"))
+    if sink:
+        result["sink"] = sink
+    propagators = trace.get("taint_propagator") or trace.get("taint_propagators")
+    if propagators and isinstance(propagators, list):
+        result["propagators"] = [
+            _extract_location(p) for p in propagators if p
+        ]
+    return result if result else None
+
+
+def _extract_enclosing_context(extra: Dict[str, Any]) -> Dict[str, str]:
+    """Extract enclosing function/class from --output-enclosing-context output.
+
+    Returns dict with 'function' and/or 'class' keys.
+    """
+    contexts = extra.get("enclosing_context")
+    result: Dict[str, str] = {}
+    if not contexts or not isinstance(contexts, list):
+        return result
+    for ctx in contexts:
+        if not isinstance(ctx, dict):
+            continue
+        kind = ctx.get("kind", "")
+        name = ctx.get("name", "")
+        if not name:
+            continue
+        if kind == "function":
+            result["function"] = name
+        elif kind == "class":
+            result["class"] = name
+        elif kind == "method":
+            result["function"] = name
+    return result
+
+
 def _normalize_severity(raw: str) -> str:
     """Normalize Semgrep severity to lowercase VexCode convention.
 
@@ -131,17 +245,26 @@ def _enrich_finding(finding: Dict[str, Any]) -> Dict[str, Any]:
     """Add stable id, category, language, normalized severity to a finding.
 
     Mutates and returns the finding dict. Idempotent (safe to re-run).
-    """
-    # Stable id — derived from (file, line, rule_id)
-    if "id" not in finding:
-        finding["id"] = compute_finding_id(
-            str(finding.get("file") or ""),
-            _safe_int(finding.get("line")),
-            str(finding.get("rule_id") or ""),
-        )
 
-    # ISO/IEC 25010 category
-    if "category" not in finding:
+    Category resolution order:
+    1. Existing ``category`` field (already set by caller)
+    2. ``metadata.category`` from OpenGrep/Semgrep rule output (e.g. "security")
+    3. ISO 25010 classification via ``classify_finding()`` (CWE/rule_id fallback)
+    """
+    # Stable id — prefer OpenGrep fingerprint, fallback to hash
+    if "id" not in finding:
+        fp = finding.get("fingerprint")
+        if fp:
+            finding["id"] = fp
+        else:
+            finding["id"] = compute_finding_id(
+                str(finding.get("file") or ""),
+                _safe_int(finding.get("line")),
+                str(finding.get("rule_id") or ""),
+            )
+
+    # ISO/IEC 25010 category — use metadata.category if present, else classify
+    if "category" not in finding or not finding["category"]:
         finding["category"] = classify_finding(finding)
 
     # Language (from file extension)
@@ -208,6 +331,26 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             print(f"Running Opengrep scan on target: {target_path}...", file=sys.stderr)
             cmd = [opengrep_bin, "scan", "--json", "--quiet"] + exclude_args + [target_path]
 
+        # OpenGrep-specific engine features (not available in Semgrep CE free tier)
+        cmd.extend([
+            "--taint-intrafile",              # Cross-function taint analysis within a file
+            "--dynamic-timeout",              # Scale timeout by file size (prevents large file hangs)
+            "--dataflow-traces",              # Include taint flow path (source → sink) in output
+            "--experimental",                 # Required for --output-enclosing-context
+            "--output-enclosing-context",     # Include function/class context in findings
+            "--force-exclude",                # Apply --exclude to explicitly passed files (fast scan)
+        ])
+
+        # auto mode: Semgrep community registry (includes p/owasp-top-ten, p/default, etc.)
+        cmd.extend(["--config", "auto"])
+        from engine.config.constants import SEMGREP_CUSTOM_RULES_PATH
+        custom_rules_dir = os.path.join(_get_project_root(), SEMGREP_CUSTOM_RULES_PATH)
+        if os.path.isdir(custom_rules_dir):
+            cmd.extend(["--config", custom_rules_dir])
+            print(f"Custom rules loaded from: {custom_rules_dir}", file=sys.stderr)
+        else:
+            print("Running auto mode (Semgrep registry rules)", file=sys.stderr)
+
         result = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=120)
 
         if result.returncode != 0 and not result.stdout.strip():
@@ -218,15 +361,26 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
         findings: List[Dict[str, Any]] = []
 
         for item in output_data.get("results", []):
+            extra = item.get("extra", {}) or {}
+            metadata = extra.get("metadata", {}) or {}
+            enclosing = _extract_enclosing_context(extra)
             finding: Dict[str, Any] = {
                 "file": item.get("path"),
                 "line": item.get("start", {}).get("line"),
                 "end_line": item.get("end", {}).get("line"),
                 "rule_id": item.get("check_id"),
-                "message": item.get("extra", {}).get("message"),
-                "severity": item.get("extra", {}).get("severity", "WARNING"),
-                "code_text": item.get("extra", {}).get("lines", ""),
+                "message": extra.get("message"),
+                "severity": extra.get("severity", "WARNING"),
+                "code_text": extra.get("lines", ""),
                 "cwe_id": _extract_cwe_id(item),
+                "owasp_id": _extract_owasp_id(item),
+                "iso_25010": metadata.get("iso_25010"),
+                "iso_subcategory": metadata.get("iso_subcategory"),
+                "dataflow_trace": _extract_dataflow_trace(extra),
+                "enclosing_function": enclosing.get("function"),
+                "enclosing_class": enclosing.get("class"),
+                "fingerprint": extra.get("fingerprint"),
+                "category": metadata.get("category"),
             }
             # Enrich: id, category, language, normalized severity
             findings.append(_enrich_finding(finding))

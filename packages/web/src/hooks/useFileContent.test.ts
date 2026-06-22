@@ -2,6 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { useFileContent } from './useFileContent';
 
+vi.mock('../utils/apiClient', () => ({
+  apiFetch: vi.fn((input: RequestInfo | URL, init?: RequestInit) => init ? fetch(input, init) : fetch(input)),
+  getApiKey: () => Promise.resolve('test-key'),
+}));
+
 describe('useFileContent', () => {
   beforeEach(() => {
     vi.restoreAllMocks();

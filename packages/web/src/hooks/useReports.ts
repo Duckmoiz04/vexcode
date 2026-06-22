@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { apiFetch } from '../utils/apiClient';
 import type { Project, ReportListItem, Report, PaginationInfo } from '../types';
 
 const DEFAULT_PAGE_SIZE = 50;
@@ -15,7 +16,7 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
 
   const loadProjects = useCallback(async () => {
     try {
-      const res = await fetch('/api/reports');
+      const res = await apiFetch('/api/reports');
       const data = await res.json();
       if (data.success) {
         setProjects(data.projects || []);
@@ -35,7 +36,7 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
 
   const loadHistory = useCallback(async (project: string, autoSelectLatest = true) => {
     try {
-      const res = await fetch(`/api/reports/${project}`);
+      const res = await apiFetch(`/api/reports/${project}`);
       const data = await res.json();
       if (data.success) {
         const reportList = data.reports || [];
@@ -60,7 +61,7 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
       const url = pageSize > 0
         ? `/api/report/${project}/${reportId}?page=${pageNum}&pageSize=${pageSize}`
         : `/api/report/${project}/${reportId}`;
-      const res = await fetch(url);
+      const res = await apiFetch(url);
       const data = await res.json() as Report & { _pagination?: PaginationInfo };
       setCurrentReport(data ?? null);
       if (data?._pagination) {

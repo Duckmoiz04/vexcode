@@ -1,0 +1,16 @@
+rules:
+  - id: no-insecure-http
+    pattern-either:
+      - pattern: 'requests.get("http://...")'
+      - pattern: 'requests.post("http://...")'
+      - pattern: 'urllib.request.urlopen("http://...")'
+    message: "Insecure HTTP request detected. Use HTTPS instead."
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-319"
+      owasp: "A02:2021 - Cryptographic Failures"
+      iso_25010: security
+      iso_subcategory: integrity

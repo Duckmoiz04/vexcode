@@ -33,12 +33,10 @@ export function registerFileRoutes(app, deps) {
     }
 
     // 2. Relative to the scan target (baseDir).
-    //    If baseDir itself is outside the workspace, treat it as invalid.
+    //    baseDir can be any directory (including outside the workspace)
+    //    — the route handler validates the final path against baseDir.
     if (baseDir) {
       const resolvedBase = resolve(baseDir);
-      if (!isPathSafe(resolvedBase, workspaceDir)) {
-        return null; // caller will emit 'Invalid base directory.'
-      }
       const candidate = resolve(resolvedBase, filePath);
       if (existsSync(candidate)) return candidate;
     }

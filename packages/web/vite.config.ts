@@ -10,6 +10,12 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    // Ensure React is always resolved from the hoisted root node_modules
+    // in this npm workspace setup (prevents ENOENT on react/index.js).
+    dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'recharts'],
   },
   server: {
     port: 5173,

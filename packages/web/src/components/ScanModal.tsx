@@ -30,7 +30,7 @@ const PHASE_MAP: Record<string, number> = {
 };
 
 const scanSteps = [
-  { label: 'Static Security Scan (Semgrep)', desc: 'Identify vulnerabilities & secrets' },
+  { label: 'Static Security Scan (OpenGrep + Semgrep CE)', desc: 'Identify vulnerabilities & secrets' },
   { label: 'AST Structural Analysis (GitNexus)', desc: 'Construct call graph & blast radius' },
   { label: 'Calculate Complexity Metrics (Lizard)', desc: 'Measure Cyclomatic complexity & LOC' },
   { label: 'Audit Obscure Naming (AI)', desc: 'Evaluate symbol naming semantics' },

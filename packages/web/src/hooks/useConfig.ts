@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { apiFetch } from '../utils/apiClient';
 import type { Config, AiSettings } from '../types';
 
 export function useConfig(showToast: (message: string, type?: 'success' | 'error') => void) {
@@ -8,8 +9,8 @@ export function useConfig(showToast: (message: string, type?: 'success' | 'error
   const loadConfig = useCallback(async () => {
     try {
       const [envRes, aiRes] = await Promise.all([
-        fetch('/api/config'),
-        fetch('/api/settings/ai'),
+        apiFetch('/api/config'),
+        apiFetch('/api/settings/ai'),
       ]);
       const envData: Config = (await envRes.json()) || {};
       const aiData = await aiRes.json();
@@ -31,13 +32,13 @@ export function useConfig(showToast: (message: string, type?: 'success' | 'error
       const { _aiSettings, ...envPart } = newConfig;
 
       const results = await Promise.allSettled([
-        fetch('/api/config', {
+        apiFetch('/api/config', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(envPart),
         }),
         _aiSettings
-          ? fetch('/api/settings/ai', {
+          ? apiFetch('/api/settings/ai', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(_aiSettings),

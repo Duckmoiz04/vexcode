@@ -111,7 +111,7 @@ describe('bridge.js unit tests (mock subprocess)', () => {
       const onProgress = vi.fn();
 
       const promise = bridge.runPythonAnalysis(
-        '/fake/target', '/fake/report.json', true, true, false, onProgress
+        '/fake/target', '/fake/report.json', true, true, false, false, onProgress
       );
 
       child.stdout.emit('data', Buffer.from('line1\nline2\n'));
@@ -128,7 +128,7 @@ describe('bridge.js unit tests (mock subprocess)', () => {
       const onProgress = vi.fn();
 
       const promise = bridge.runPythonAnalysis(
-        '/fake/target', '/fake/report.json', true, true, false, onProgress
+        '/fake/target', '/fake/report.json', true, true, false, false, onProgress
       );
 
       child.stderr.emit('data', Buffer.from('warning: deprecated\n'));

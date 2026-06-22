@@ -56,18 +56,21 @@ const scanLimiter = rateLimit({
 // Apply global rate limiter to /api routes before auth.
 app.use('/api', globalLimiter);
 
-// Auth middleware for all API routes (exempt SSE stream and static files).
-app.use('/api', (req, res, next) => {
-  // SSE stream endpoint uses ?token= query param (EventSource lacks header support).
-  if (req.path === '/scan/stream' && req.method === 'GET') {
-    return next();
-  }
-  // Expose the API key to the frontend (unauthenticated — needed for initial handshake).
-  if (req.path === '/auth/key' && req.method === 'GET') {
-    return next();
-  }
-  authMiddleware(req, res, next);
-});
+  // Auth middleware for all API routes (exempt SSE streams and static files).
+  app.use('/api', (req, res, next) => {
+    // SSE stream endpoints use ?token= query param (EventSource lacks header support).
+    if (req.path === '/scan/stream' && req.method === 'GET') {
+      return next();
+    }
+    if (req.path === '/re-resolve/stream' && req.method === 'GET') {
+      return next();
+    }
+    // Expose the API key to the frontend (unauthenticated — needed for initial handshake).
+    if (req.path === '/auth/key' && req.method === 'GET') {
+      return next();
+    }
+    authMiddleware(req, res, next);
+  });
 
 const deps = {
   workspaceDir,

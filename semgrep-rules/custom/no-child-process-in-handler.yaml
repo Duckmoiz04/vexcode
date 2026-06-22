@@ -1,0 +1,66 @@
+rules:
+  - id: no-child-process-in-handler
+    patterns:
+      - pattern-either:
+          - pattern: exec(...)
+          - pattern: execSync(...)
+          - pattern: spawn(...)
+          - pattern: spawnSync(...)
+          - pattern: child_process.exec(...)
+          - pattern: child_process.execSync(...)
+          - pattern: child_process.spawn(...)
+          - pattern: child_process.spawnSync(...)
+      - pattern-either:
+          - pattern-inside: |
+              $APP.get($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.post($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.put($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.delete($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.patch($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.all($PATH, ($REQ, $RES) => {
+                ...
+              })
+          - pattern-inside: |
+              $APP.get($PATH, function($REQ, $RES) {
+                ...
+              })
+          - pattern-inside: |
+              $APP.post($PATH, function($REQ, $RES) {
+                ...
+              })
+          - pattern-inside: |
+              $APP.put($PATH, function($REQ, $RES) {
+                ...
+              })
+          - pattern-inside: |
+              $APP.delete($PATH, function($REQ, $RES) {
+                ...
+              })
+    message: "child_process usage inside Express route handler. Executing system commands from request handlers is a Remote Code Execution (RCE) risk. Move to a background worker or queue."
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-78"
+      owasp: "A03:2021 - Injection"
+      iso_25010: security
+      iso_subcategory: integrity
+      technology:
+        - express

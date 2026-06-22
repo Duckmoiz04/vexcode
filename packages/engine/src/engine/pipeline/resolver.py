@@ -31,7 +31,12 @@ def _collect_source_files(target: str, target_files: Optional[List[str]]) -> Lis
     source_files = []
     ignored_dirs = {".git", "node_modules", ".venv", "__pycache__", "dist", "build",
                     "public", ".gemini", ".gitnexus"}
-    valid_exts = {".py", ".js", ".jsx", ".ts", ".tsx"}
+    valid_exts = {
+        ".py", ".js", ".jsx", ".ts", ".tsx",  # existing code
+        ".java", ".go", ".rs", ".rb",          # backend languages — Compatibility
+        ".yaml", ".yml", ".toml", ".json",     # config formats — Compatibility
+        ".md", ".rst",                          # documentation formats — Compatibility
+    }
 
     for root, dirs, files in os.walk(target):
         dirs[:] = [d for d in dirs if d not in ignored_dirs]

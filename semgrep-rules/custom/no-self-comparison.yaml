@@ -1,0 +1,22 @@
+rules:
+  - id: no-self-comparison
+    pattern-either:
+      - pattern: '$X == $X'
+      - pattern: '$X != $X'
+      - pattern: '$X > $X'
+      - pattern: '$X < $X'
+      - pattern: '$X >= $X'
+      - pattern: '$X <= $X'
+    message: "Self-comparison detected: expression is always true or false. Verify intended behavior."
+    severity: ERROR
+    languages:
+      - python
+      - javascript
+      - typescript
+      - java
+      - go
+    metadata:
+      category: correctness
+      cwe: "CWE-570"
+      iso_25010: functional_suitability
+      iso_subcategory: functional_correctness

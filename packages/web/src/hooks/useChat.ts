@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { apiFetch } from '../utils/apiClient';
 import type { Finding, CallerInfo, BlastRadiusItem, AiResolution, ChatMessage } from '../types';
 
 function buildFindingContext(finding: Finding, resolution: AiResolution | undefined): string {
@@ -94,7 +95,7 @@ export function useChat({
     ];
 
     try {
-      const response = await fetch('/api/chat', {
+      const response = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

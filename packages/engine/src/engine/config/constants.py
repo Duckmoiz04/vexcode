@@ -147,3 +147,20 @@ AI_PARALLEL_WORKERS = get_int_env(
     "AI_PARALLEL_WORKERS",
     _nested_get(_settings, ["ai_settings", "parallel_workers"], 3),
 )
+
+# -- Gitleaks settings ----------------------------------------------------
+GITLEAKS_ENABLED = _nested_get(_settings, ["gitleaks", "enabled"], True)
+GITLEAKS_TIMEOUT = _nested_get(_settings, ["gitleaks", "timeout_seconds"], 120)
+
+# -- Ruff settings --------------------------------------------------------
+RUFF_ENABLED = _nested_get(_settings, ["ruff", "enabled"], True)
+RUFF_TIMEOUT = _nested_get(_settings, ["ruff", "timeout_seconds"], 60)
+
+# -- OSV / SCA settings ---------------------------------------------------
+OSV_ENABLED = _nested_get(_settings, ["osv", "enabled"], True)
+OSV_TIMEOUT = _nested_get(_settings, ["osv", "timeout_seconds"], 30)
+
+# -- Semgrep custom rules -------------------------------------------------
+SEMGREP_CUSTOM_RULES_PATH = _nested_get(
+    _settings, ["semgrep", "custom_rules_path"], "semgrep-rules/custom"
+)

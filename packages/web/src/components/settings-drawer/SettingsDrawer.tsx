@@ -1,11 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { X, Cloud, Sparkles, FileCode, AlertCircle, Sliders, Ban, Palette } from 'lucide-react';
+import { X, Cloud, Sparkles, FileCode, AlertCircle, Sliders, Ban, Palette, ShieldCheck } from 'lucide-react';
 import type { Config } from '../../types';
 import { useSettingsDrawer } from './useSettingsDrawer';
 import { ProviderSection } from './ProviderSection';
 import { AgentAssignmentSection } from './AgentAssignmentSection';
 import { AdvancedSettings } from './AdvancedSettings';
 import { SemgrepSection } from './SemgrepSection';
+import { QualityGateSection, type ThresholdConfig } from './QualityGateSection';
 
 interface SettingsDrawerProps {
   isOpen: boolean;
@@ -29,6 +30,7 @@ const TAB_GROUPS = [
     label: 'Scanning',
     items: [
       { id: 'rules', label: 'Rules', icon: FileCode },
+      { id: 'quality-gate', label: 'Quality Gate', icon: ShieldCheck },
       { id: 'exclusions', label: 'Exclusions', icon: Ban },
     ],
   },
@@ -68,6 +70,28 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
 }) => {
   const state = useSettingsDrawer(isOpen, initialConfig);
   const [activeTab, setActiveTab] = useState<TabId>('providers');
+
+  // Quality Gate thresholds state (local, persisted via onSave)
+  const [thresholds, setThresholds] = useState<ThresholdConfig>(() => {
+    const cfg = initialConfig as Config & { thresholds?: ThresholdConfig } | null;
+    return cfg?.thresholds ?? {
+      max_critical: 0,
+      max_high: 10,
+      max_total: 100,
+      max_files_with_errors: 20,
+      min_rating: 'C',
+    };
+  });
+
+  const handleThresholdChange = useCallback((key: keyof ThresholdConfig, value: number | string) => {
+    setThresholds(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const handleThresholdSave = useCallback(async () => {
+    const config = state.buildConfig();
+    (config as Config & { thresholds?: ThresholdConfig }).thresholds = thresholds;
+    await onSave(config);
+  }, [thresholds, state, onSave]);
 
   const getActiveTabLabel = (): string => {
     for (const group of TAB_GROUPS) {
@@ -235,6 +259,14 @@ className={`flex items-center gap-2.5 w-full pl-5 pr-4 py-2.5 text-[13px] transi
                 <SemgrepSection
                   semgrepRules={state.semgrepRules}
                   onSemgrepRulesChange={state.setSemgrepRules}
+                />
+              )}
+
+              {activeTab === 'quality-gate' && (
+                <QualityGateSection
+                  thresholds={thresholds}
+                  onChange={handleThresholdChange}
+                  onSave={handleThresholdSave}
                 />
               )}
 

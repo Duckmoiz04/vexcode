@@ -152,6 +152,11 @@ export const FindingsList: React.FC<FindingsListProps> = ({
                       }`}>
                         {cat === 'security' ? '🛡️ Security' : cat === 'maintainability' ? '⚙️ Maintainability' : cat === 'architecture' ? '🏗️ Architecture' : '🐞 Quality'}
                       </span>
+                      {f.owasp_id && (
+                        <span className="text-[9.5px] px-2 py-0.5 rounded-full font-bold border border-orange-500/40 bg-orange-500/10 text-orange-400 uppercase tracking-wider font-sans">
+                          {f.owasp_id}
+                        </span>
+                      )}
                       {(() => {
                         const getDisplayPath = (filePath: string, targetPath?: string) => {
                           if (!targetPath) return filePath.split(/[\\/]/).pop() || filePath;

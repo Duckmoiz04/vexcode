@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2d30c51a-e0d6-43e5-a742-e5369ad6954a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-cli/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-cli/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-debugging/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-debugging/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-exploring/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-exploring/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-guide/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-guide/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/hooks/.logs/hook-log.jsonl" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/hooks/.logs/hook-log.jsonl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-cli/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-cli/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-debugging/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-debugging/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-exploring/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-exploring/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-guide/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-guide/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/AGENTS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/logo-current.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/bin/cli.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/bin/cli.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/__tests/bridge.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/__tests/bridge.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/bridge.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/bridge.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-Di3GA7Nl.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-DxH4aSx-.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/images/favicon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/public/images/favicon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/files.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/files.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/reports.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/reports.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/conf/settings.toml" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/conf/settings.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_prompts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/iso25010_taxonomy.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/iso25010_taxonomy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/ai_resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/ai_resolver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/dedup.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/dedup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/scanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/reporter.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/reporter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/resolver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/scanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_iso25010_taxonomy.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_iso25010_taxonomy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/public/images/favicon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/public/images/favicon.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/CodeInspector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/CodeInspector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/FindingsList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/FindingsList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/ScanModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/ScanModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/DashboardPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/dashboard/DashboardPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/SettingsDrawer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/SettingsDrawer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/useSettingsDrawer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/useSettingsDrawer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useChat.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useConfig.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useConfig.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useConfig.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useFileContent.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useFileContent.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useFileContent.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useFileContent.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useReports.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useReports.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useReports.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useReports.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useScan.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useScan.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useScan.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useScan.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/vite.config.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="1323" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.3554915436734745" />
+      <entry key="MS500" value="4.157428296054842" />
+      <entry key="S2" value="11.361545720804186" />
+      <entry key="S5" value="24.993724563895864" />
+      <entry key="S10" value="39.23895497949944" />
+      <entry key="S30" value="57.414617664370226" />
+      <entry key="S60" value="64.0650346136822" />
+      <entry key="M2" value="68.91624236120568" />
+      <entry key="M5" value="80.59851818084792" />
+      <entry key="M10" value="130.29228857925017" />
+      <entry key="M15" value="202.7739063941063" />
+      <entry key="M30" value="417.03918369112637" />
+      <entry key="H1" value="729.6341715816292" />
+      <entry key="H2" value="1205.2844846016565" />
+      <entry key="H4" value="2057.067657395231" />
+      <entry key="D1" value="7182.579524919056" />
+      <entry key="W1" value="13833.098595827303" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="0.0" />
+      <entry key="S5" value="0.0" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="1.29290443835694" />
+      <entry key="MS500" value="4.115520323095602" />
+      <entry key="S2" value="11.326291291905774" />
+      <entry key="S5" value="24.96073422808387" />
+      <entry key="S10" value="39.212310175603356" />
+      <entry key="S30" value="57.40129198095431" />
+      <entry key="S60" value="64.05754901081703" />
+      <entry key="M2" value="68.91220178870768" />
+      <entry key="M5" value="80.59657593274113" />
+      <entry key="M10" value="130.29056761338757" />
+      <entry key="M15" value="202.77206119807678" />
+      <entry key="M30" value="417.03727003804585" />
+      <entry key="H1" value="729.6325277596717" />
+      <entry key="H2" value="1205.283210645792" />
+      <entry key="H4" value="2057.066678510064" />
+      <entry key="D1" value="7182.579044924065" />
+      <entry key="W1" value="13833.098460074672" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3FFPmlTJmD7bKJDcEpcEWFFA1eQ" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/DATN2&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;D:\\DATN2\\node_modules\\prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="ReactDesignerToolWindowState">
+    <option name="myId2Visible">
+      <map>
+        <entry key="com.intellij.reactbuddy.reactComponents" value="false" />
+        <entry key="com.intellij.reactbuddy.reactInspector" value="false" />
+        <entry key="com.intellij.reactbuddy.storybook" value="false" />
+      </map>
+    </option>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-c59985aa861c-c2ffad84badb-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-261.24374.152" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2d30c51a-e0d6-43e5-a742-e5369ad6954a" name="Changes" comment="" />
+      <created>1781668004339</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1781668004339</updated>
+      <workItem from="1781668005584" duration="563000" />
+      <workItem from="1781668663142" duration="768000" />
+      <workItem from="1781669457775" duration="759000" />
+      <workItem from="1781672216122" duration="136000" />
+      <workItem from="1781673118102" duration="134000" />
+      <workItem from="1781673274634" duration="25000" />
+      <workItem from="1781673324478" duration="44000" />
+      <workItem from="1781673603028" duration="8325000" />
+      <workItem from="1781686489130" duration="18160000" />
+      <workItem from="1781762885989" duration="115000" />
+      <workItem from="1781763023327" duration="32000" />
+      <workItem from="1781764467174" duration="24921000" />
+      <workItem from="1781863469097" duration="82639000" />
+      <workItem from="1782054154220" duration="8107000" />
+      <workItem from="1782096539217" duration="19643000" />
+      <workItem from="1782129261357" duration="216000" />
+      <workItem from="1782129496413" duration="20435000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

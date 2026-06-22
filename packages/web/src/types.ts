@@ -25,6 +25,9 @@ export type FindingStatus = 'open' | 'applied' | 'false_positive' | 'ignored';
 /** Cross-scan classification: compares current scan with previous report. */
 export type ScanStatus = 'new' | 'persisting' | 'resolved' | 'regressed';
 
+/** AI-powered classification: how the AI triaged this finding. */
+export type FindingType = 'vulnerability' | 'hotspot' | 'false_positive';
+
 export interface Finding {
   id?: string;                   // Stable hash of (file, line, rule_id) - set by scanner
   rule_id: string;
@@ -34,10 +37,14 @@ export interface Finding {
   message: string;
   code_text?: string;
   ast_context?: AstContext;
+  /** OWASP Top 10 category (e.g. "OWASP-A03", "OWASP-A07"). Present for security findings when metadata is available. */
+  owasp_id?: string;
   /** Per-finding status. Opt-in: missing is treated as 'open'. */
   status?: FindingStatus;
   /** Cross-scan classification from engine comparison with previous report. */
   scan_status?: ScanStatus;
+  /** AI triage classification: vulnerability/hotspot/false_positive. Populated by engine after AI resolution. */
+  finding_type?: FindingType;
   /** @deprecated Use status === 'applied' instead. Kept for backward compat. */
   _applied?: boolean;
 }

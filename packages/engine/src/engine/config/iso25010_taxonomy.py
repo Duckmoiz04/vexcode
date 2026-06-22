@@ -41,12 +41,68 @@ RELIABILITY: str = "reliability"
 MAINTAINABILITY: str = "maintainability"
 PERFORMANCE: str = "performance"
 
-# All Phase 1 categories
+# Phase 2 categories (ISO 25010 Sprint expansion)
+FUNCTIONAL_SUITABILITY: str = "functional_suitability"
+OPERABILITY: str = "operability"
+COMPATIBILITY: str = "compatibility"
+TRANSFERABILITY: str = "transferability"
+
+# All Phase 1 categories (backward-compat alias)
 PHASE_1_CATEGORIES: Set[str] = {
     SECURITY,
     RELIABILITY,
     MAINTAINABILITY,
     PERFORMANCE,
+}
+
+# Full ISO 25010 categories (Phase 1 + Phase 2)
+ALL_CATEGORIES: Set[str] = PHASE_1_CATEGORIES | {
+    FUNCTIONAL_SUITABILITY,
+    OPERABILITY,
+    COMPATIBILITY,
+    TRANSFERABILITY,
+}
+
+# Human-readable display names for all categories
+ISO_METADATA_KEYS: Dict[str, str] = {
+    # Phase 1 — existing
+    "security": "Security",
+    "reliability": "Reliability",
+    "maintainability": "Maintainability",
+    "performance": "Performance Efficiency",
+    # Phase 2 — added for ISO 25010 Sprint
+    "functional_suitability": "Functional Suitability",
+    "operability": "Operability",
+    "compatibility": "Compatibility",
+    "transferability": "Transferability",
+}
+
+# Subcategory display names for all categories
+ISO_SUBCATEGORIES: Dict[str, str] = {
+    # Security subcategories
+    "confidentiality": "Confidentiality",
+    "integrity": "Integrity",
+    "availability": "Availability",
+    "accountability": "Accountability",
+    "authenticity": "Authenticity",
+    # Functional Suitability subcategories
+    "functional_completeness": "Functional Completeness",
+    "functional_correctness": "Functional Correctness",
+    "functional_appropriateness": "Functional Appropriateness",
+    # Operability subcategories
+    "appropriateness_recognizability": "Appropriateness Recognizability",
+    "learnability": "Learnability",
+    "ease_of_use": "Ease of Use",
+    "helpfulness": "Helpfulness",
+    "error_handling": "Error Handling",
+    # Compatibility subcategories
+    "co_existence": "Co-existence",
+    "interoperability": "Interoperability",
+    # Transferability subcategories
+    "portability": "Portability",
+    "adaptability": "Adaptability",
+    "installability": "Installability",
+    "replaceability": "Replaceability",
 }
 
 DEFAULT_CATEGORY: str = MAINTAINABILITY
@@ -58,6 +114,45 @@ DEFAULT_CATEGORY: str = MAINTAINABILITY
 # CWE = Common Weakness Enumeration (https://cwe.mitre.org/)
 # Subset chosen for the Semgrep rules VexCode actually loads.
 # Priority: CWE > rule_id keyword > message keyword > default
+
+# ---------------------------------------------------------------------------
+# OWASP Top 10 (2021) → ISO 25010 mapping
+# ---------------------------------------------------------------------------
+# Semgrep / OpenGrep registry rules carry OWASP metadata.  All OWASP
+# categories map to Security — the subcategory gives finer granularity.
+# Format: "OWASP-AXX" (canonical) or "AXX" (short form accepted).
+
+OWASP_AXX_PATTERN = re.compile(r"(?:OWASP[_-]?)?A(\d+)(?::|\b|-)?", re.IGNORECASE)
+
+OWASP_TO_SUBCATEGORY: Dict[str, str] = {
+    "OWASP-A01": "authenticity",      # Broken Access Control
+    "OWASP-A02": "confidentiality",   # Cryptographic Failures
+    "OWASP-A03": "integrity",         # Injection
+    "OWASP-A04": "security",          # Insecure Design (general)
+    "OWASP-A05": "authenticity",      # Security Misconfiguration
+    "OWASP-A06": "integrity",         # Vulnerable & Outdated Components
+    "OWASP-A07": "authenticity",      # Identification & Auth Failures
+    "OWASP-A08": "integrity",         # Software & Data Integrity Failures
+    "OWASP-A09": "accountability",    # Security Logging & Monitoring Failures
+    "OWASP-A10": "integrity",         # Server-Side Request Forgery
+}
+
+
+def normalize_owasp_id(raw: str) -> Optional[str]:
+    """Normalize any OWASP format to canonical ``OWASP-AXX``.
+
+    Accepts: ``"A03"``, ``"A3"``, ``"A03:2021 - Injection"``,
+    ``"OWASP-A03"``, ``"owasp-a3"``, ``"A03-Injection"``.
+    Returns ``None`` if the input is not an OWASP reference.
+    """
+    if not raw:
+        return None
+    m = OWASP_AXX_PATTERN.search(raw.strip())
+    if m:
+        num = int(m.group(1))
+        if 1 <= num <= 10:
+            return f"OWASP-A{num:02d}"
+    return None
 
 CWE_TO_ISO25010: Dict[str, str] = {
     # ── Security (injection, auth, crypto, leak) ──
@@ -304,9 +399,10 @@ def compute_finding_id(file: str, line: int, rule_id: str) -> str:
 
 
 def classify_finding(finding: dict) -> str:
-    """Classify a finding into an ISO/IEC 25010 Phase 1 category.
+    """Classify a finding into an ISO/IEC 25010 category.
 
     Resolution order (deterministic):
+        0. Direct metadata assignment from the Semgrep rule (if present)
         1. CWE ID (most reliable — semantically grounded)
         2. Context override: if rule_id contains a strong "category hint"
            like "style", "naming", "format", "convention", force that
@@ -318,6 +414,11 @@ def classify_finding(finding: dict) -> str:
 
     The function NEVER raises. Unknown inputs return the default category.
     """
+    # 0. Direct metadata assignment from rule (if present and valid)
+    meta_cat = finding.get("iso_25010")
+    if meta_cat and meta_cat in ALL_CATEGORIES:
+        return meta_cat
+
     # 1. CWE ID (highest priority)
     cwe = (finding.get("cwe_id") or "").strip().upper()
     if cwe:
@@ -328,6 +429,11 @@ def classify_finding(finding: dict) -> str:
         cwe = cwe.split()[0].split(":")[0].strip()
         if cwe in CWE_TO_ISO25010:
             return CWE_TO_ISO25010[cwe]
+
+    # 1.5 OWASP ID — all OWASP categories map to Security
+    owasp = normalize_owasp_id(finding.get("owasp_id") or "")
+    if owasp:
+        return SECURITY
 
     # 2. Context override — Semgrep uses paths like "lang.style.*" or
     # "lang.naming.*" that signal style/naming audits. These take
@@ -358,5 +464,5 @@ def get_phase_1_categories() -> Set[str]:
 
 
 def is_valid_category(category: str) -> bool:
-    """True if *category* is a valid Phase 1 ISO/IEC 25010 category."""
-    return category in PHASE_1_CATEGORIES
+    """True if *category* is a valid ISO/IEC 25010 category."""
+    return category in ALL_CATEGORIES

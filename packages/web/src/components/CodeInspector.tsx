@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import type { Finding, Metrics, CallerInfo, AiResolution } from '../types';
+import { apiFetch } from '../utils/apiClient';
 import { useFileContent } from '../hooks/useFileContent';
 import { useAutoScroll } from '../hooks/useAutoScroll';
 import { useChat } from '../hooks/useChat';
@@ -37,7 +38,7 @@ function getRelativePath(absolutePath: string, targetPath: string | null): strin
 
 async function openInIDE(filePath: string, line: number, baseDir: string | null): Promise<void> {
   try {
-    const r = await fetch('/api/open-in-ide', {
+    const r = await apiFetch('/api/open-in-ide', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filePath, line, baseDir }),
     });

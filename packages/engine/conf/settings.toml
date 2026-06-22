@@ -52,3 +52,28 @@ requires_key = true
 model = "minimaxai/minimax-m2.7"
 base_url = "https://integrate.api.nvidia.com/v1"
 
+[gitleaks]
+enabled = true
+timeout_seconds = 120
+
+[ruff]
+enabled = true
+timeout_seconds = 60
+# Optional: comma-separated rule selectors (e.g., ["S", "B", "N"] for security, bug, naming)
+select = []
+# Optional: comma-separated rule codes to ignore
+ignore = []
+
+[osv]
+enabled = true
+timeout_seconds = 30
+
+[semgrep]
+custom_rules_path = "semgrep-rules/custom"
+
+[thresholds]
+max_critical = 0
+max_high = 10
+max_total = 100
+max_files_with_errors = 20
+min_rating = "C"

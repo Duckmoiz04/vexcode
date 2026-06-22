@@ -3,6 +3,11 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useReports } from './useReports';
 import type { Project, ReportListItem, Report } from '../types';
 
+vi.mock('../utils/apiClient', () => ({
+  apiFetch: vi.fn((input: RequestInfo | URL, init?: RequestInit) => init ? fetch(input, init) : fetch(input)),
+  getApiKey: () => Promise.resolve('test-key'),
+}));
+
 const mockShowToast = vi.fn();
 
 const mockProjects: Project[] = [

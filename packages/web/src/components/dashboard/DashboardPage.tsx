@@ -1,17 +1,19 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
-import type { Finding, Report } from '../../types';
+import type { Finding, Report, ReportListItem } from '../../types';
 import { useDashboardStats } from './useDashboardStats';
 import { MetricsCards } from './MetricsCards';
 import { HealthScoreChart } from './HealthScoreChart';
 import { CategoryBreakdown } from './CategoryBreakdown';
 import { Leaderboards } from './Leaderboards';
 import { CrossScanSummary } from './CrossScanSummary';
+import { QualityTrendChart } from './QualityTrendChart';
 
 interface DashboardPageProps {
   report: Report | null;
   currentProject: string | null;
   findings: Finding[];
+  reports: ReportListItem[];
   onSelectFilePath: (path: string | null) => void;
   onSelectFindingIndex: (index: number | null) => void;
 }
@@ -20,6 +22,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
   report,
   currentProject,
   findings,
+  reports,
   onSelectFilePath,
   onSelectFindingIndex,
 }) => {
@@ -74,6 +77,9 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({
           totalFindings={findings.length}
         />
       </div>
+
+      {/* Quality Trend Chart */}
+      <QualityTrendChart reports={reports} />
 
       {/* Cross-Scan Comparison */}
       <CrossScanSummary findings={findings} />

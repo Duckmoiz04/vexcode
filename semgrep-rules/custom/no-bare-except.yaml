@@ -1,0 +1,16 @@
+rules:
+  - id: no-bare-except
+    pattern: |
+      try:
+          ...
+      except:
+          ...
+    message: "Bare except detected (will catch KeyboardInterrupt+SystemExit). Use 'except Exception as e:' and handle the error."
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: operability
+      cwe: "CWE-391"
+      iso_25010: operability
+      iso_subcategory: error_handling

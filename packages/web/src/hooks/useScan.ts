@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { apiFetch, getApiKey } from '../utils/apiClient';
 import type { Report } from '../types';
 
 interface ScanProgress {
@@ -19,7 +20,7 @@ interface UseScanDeps {
 }
 
 const PHASE_LABELS: Record<string, string> = {
-  scan: 'Static Security Scan (Semgrep)',
+  scan: 'Static Security Scan (OpenGrep + Semgrep CE)',
   enrich: 'AST Structural Analysis (GitNexus)',
   complexity: 'Calculate Complexity Metrics (Lizard)',
   dedup: 'Deduplicating Findings',
@@ -67,7 +68,7 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
         eventSourceRef.current.close();
         eventSourceRef.current = null;
       }
-      await fetch('/api/scan/cancel', { method: 'POST' });
+      await apiFetch('/api/scan/cancel', { method: 'POST' });
       setIsScanning(false);
       showToast('Scan cancelled by user', 'error');
     } catch (err: unknown) {
@@ -80,11 +81,13 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
     setScanStatus('Starting scan connection...');
     setScanLogs(['[SYSTEM] Starting scan process...']);
 
+    const key = await getApiKey();
     const params = new URLSearchParams({
       targetPath: targetPath || '',
       mockScan: mockScan.toString(),
       mockAi: mockAi.toString(),
       fastScan: fastScan.toString(),
+      token: key,
     });
 
     if (eventSourceRef.current) {
@@ -172,9 +175,11 @@ export function useScan({ showToast, loadProjects, loadHistory, currentReport, s
     setScanStatus('Starting AI re-resolution...');
     setScanLogs((prev) => [...prev, '[SYSTEM] Starting AI re-resolution via SSE...']);
 
+    const key = await getApiKey();
     const params = new URLSearchParams({
       reportPath: report._savedAt,
       mockAi: 'false',
+      token: key,
     });
 
     if (eventSourceRef.current) {

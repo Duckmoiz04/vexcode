@@ -1,0 +1,16 @@
+rules:
+  - id: no-silent-except
+    pattern: |
+      try:
+          ...
+      except ...:
+          pass
+    message: "Silent exception handler detected (except: pass). Log or handle the error."
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: operability
+      cwe: "CWE-391"
+      iso_25010: operability
+      iso_subcategory: error_handling

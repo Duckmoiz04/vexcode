@@ -1,0 +1,20 @@
+rules:
+  - id: no-print-statements
+    patterns:
+      - pattern: print(...)
+      - pattern-not: print(..., file=sys.stderr)
+      - pattern-not: print(..., file=sys.stdout)
+      - pattern-not: print()
+    message: "print() statement found in non-main code. Use logger instead."
+    severity: WARNING
+    languages:
+      - python
+    paths:
+      exclude:
+        - "*/__main__.py"
+        - "*_test.py"
+        - "test_*.py"
+    metadata:
+      category: maintainability
+      iso_25010: maintainability
+      iso_subcategory: analyzability

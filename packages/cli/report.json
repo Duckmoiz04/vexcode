@@ -1,0 +1,3335 @@
+{
+  "scanner": "opengrep-mock",
+  "timestamp": "2026-06-22T09:53:27.302575Z",
+  "target_path": "D:\\DATN2\\packages\\engine",
+  "findings": [
+    {
+      "file": "example.py",
+      "line": 12,
+      "rule_id": "python.lang.security.audit.dangerous-exec",
+      "message": "Found use of exec() with user input, which presents a remote code execution vulnerability.",
+      "severity": "error",
+      "code_text": "    exec(user_input)",
+      "cwe_id": "CWE-94",
+      "owasp_id": "OWASP-A03",
+      "id": "3e246e43c8d7",
+      "category": "security",
+      "language": "python",
+      "ast_context": {
+        "symbol_id": "Function:example.py:run_dangerous_code",
+        "symbol_name": "run_dangerous_code",
+        "kind": "Function",
+        "source_code": "def run_dangerous_code(user_input):\n    exec(user_input)\n",
+        "callers": [
+          {
+            "uid": "Function:main.py:process_request",
+            "name": "process_request",
+            "filePath": "main.py",
+            "relation": "calls"
+          }
+        ],
+        "impact": {
+          "target": {
+            "id": "Function:example.py:run_dangerous_code",
+            "name": "run_dangerous_code",
+            "type": "Function",
+            "filePath": "example.py"
+          },
+          "direction": "upstream",
+          "impactedCount": 1,
+          "risk": "MEDIUM",
+          "summary": {
+            "direct": 1,
+            "processes_affected": 0,
+            "modules_affected": 0
+          },
+          "affected_processes": [],
+          "affected_modules": [],
+          "byDepth": {
+            "1": [
+              {
+                "depth": 1,
+                "id": "Function:main.py:process_request",
+                "name": "process_request",
+                "filePath": "main.py",
+                "relationType": "CALLS",
+                "confidence": 0.95
+              }
+            ]
+          }
+        },
+        "blast_radius": [
+          {
+            "uid": "Function:main.py:process_request",
+            "name": "process_request",
+            "filePath": "main.py",
+            "depth": 1,
+            "relation": "CALLS"
+          }
+        ]
+      },
+      "scan_status": "persisting"
+    },
+    {
+      "file": "db.py",
+      "line": 45,
+      "rule_id": "python.lang.security.audit.hardcoded-password",
+      "message": "Hardcoded password variable found in connection string.",
+      "severity": "warning",
+      "code_text": "        password = \"admin123\"",
+      "cwe_id": "CWE-798",
+      "owasp_id": "OWASP-A02",
+      "id": "b2f323848215",
+      "category": "security",
+      "language": "python",
+      "ast_context": {
+        "symbol_id": "Method:db.py:DatabaseConnection.connect",
+        "symbol_name": "DatabaseConnection.connect",
+        "kind": "Method",
+        "source_code": "    def connect(self):\n        password = \"admin123\"\n        self.conn = pg.connect(user=\"admin\", password=password)\n",
+        "callers": [
+          {
+            "uid": "Function:db.py:get_user_data",
+            "name": "get_user_data",
+            "filePath": "db.py",
+            "relation": "calls"
+          }
+        ],
+        "impact": {
+          "target": {
+            "id": "Method:db.py:DatabaseConnection.connect",
+            "name": "DatabaseConnection.connect",
+            "type": "Method",
+            "filePath": "db.py"
+          },
+          "direction": "upstream",
+          "impactedCount": 1,
+          "risk": "LOW",
+          "summary": {
+            "direct": 1,
+            "processes_affected": 0,
+            "modules_affected": 0
+          },
+          "affected_processes": [],
+          "affected_modules": [],
+          "byDepth": {
+            "1": [
+              {
+                "depth": 1,
+                "id": "Function:db.py:get_user_data",
+                "name": "get_user_data",
+                "filePath": "db.py",
+                "relationType": "CALLS",
+                "confidence": 0.95
+              }
+            ]
+          }
+        },
+        "blast_radius": [
+          {
+            "uid": "Function:db.py:get_user_data",
+            "name": "get_user_data",
+            "filePath": "db.py",
+            "depth": 1,
+            "relation": "CALLS"
+          }
+        ]
+      },
+      "scan_status": "persisting"
+    },
+    {
+      "rule_id": "gitleaks/mock-secret",
+      "message": "[Mock] Hardcoded credential detected",
+      "severity": "error",
+      "file": "example.py",
+      "line": 10,
+      "category": "security",
+      "scanner": "gitleaks",
+      "cwe_id": "CWE-798",
+      "id": "5904aebee235",
+      "scan_status": "new"
+    },
+    {
+      "file": "example.py",
+      "line": 8,
+      "rule_id": "maintainability.naming.obscure",
+      "message": "Tên hàm 'do_it' và tham số 'x' quá chung chung và tối nghĩa. Đề xuất đổi tên để phản ánh rõ chức năng xử lý dữ liệu người dùng.",
+      "severity": "WARNING",
+      "code_text": "def do_it(x):",
+      "scan_status": "resolved"
+    },
+    {
+      "file": "example.py",
+      "line": 8,
+      "rule_id": "maintainability.naming.obscure",
+      "message": "Tên hàm 'do_it' và tham số 'x' quá chung chung và tối nghĩa. Đề xuất đổi tên để phản ánh rõ chức năng xử lý dữ liệu người dùng.",
+      "severity": "WARNING",
+      "code_text": "def do_it(x):"
+    }
+  ],
+  "ai_resolutions": {
+    "python.lang.security.audit.dangerous-exec": {
+      "suggestion": "Avoid using exec(). Use structured functions or parse inputs securely.",
+      "remediation_code": "import subprocess\n# Avoid exec(user_input)\n# Use safe subprocess with arguments\nsubprocess.run(['echo', user_input])",
+      "ai_status": "success",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-22T09:53:27.268945+00:00",
+      "remediation_target_file": ""
+    },
+    "python.lang.security.audit.hardcoded-password": {
+      "suggestion": "Load password from environment variables instead of hardcoding it in the connection string.",
+      "remediation_code": "import os\npassword = os.environ.get('DB_PASSWORD')\n# conn = connect(password=password)",
+      "ai_status": "success",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-22T09:53:27.268945+00:00",
+      "remediation_target_file": ""
+    },
+    "gitleaks/mock-secret": {
+      "suggestion": "Avoid this pattern for rule gitleaks/mock-secret. Ensure input validation and standard security practices.",
+      "remediation_code": "# Remediation for gitleaks/mock-secret\n# Please review and replace dangerous code patterns.",
+      "ai_status": "fallback_mock",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-22T09:53:34.493781+00:00",
+      "remediation_target_file": ""
+    },
+    "maintainability.naming.obscure": {
+      "suggestion": "Đổi tên hàm 'do_it' thành 'process_user_data' và tham số 'x' thành 'user_input' để tăng tính rõ nghĩa và dễ bảo trì.",
+      "remediation_code": "def process_user_data(user_input):",
+      "ai_status": "success",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-22T09:53:27.268945+00:00",
+      "remediation_target_file": ""
+    }
+  },
+  "git_state": {
+    "commit": "baf1d864090c1f885dcfa9f311fd8dbd0171b82a",
+    "is_dirty": true
+  },
+  "metrics": {
+    "files": {
+      "analysis_report.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 1221,
+        "level": "LOW",
+        "functions": []
+      },
+      "config_cli.py": {
+        "complexity": 45,
+        "cognitive_complexity": 36,
+        "loc": 161,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "_cmd_dump",
+            "start_line": 39,
+            "end_line": 43,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "_env_prefix",
+            "start_line": 50,
+            "end_line": 54,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 4
+          },
+          {
+            "name": "_load_existing_env",
+            "start_line": 57,
+            "end_line": 69,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 12
+          },
+          {
+            "name": "_write_env",
+            "start_line": 72,
+            "end_line": 76,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 4
+          },
+          {
+            "name": "_load_existing_toml",
+            "start_line": 79,
+            "end_line": 88,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 9
+          },
+          {
+            "name": "_toml_value",
+            "start_line": 91,
+            "end_line": 99,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 7
+          },
+          {
+            "name": "_write_toml",
+            "start_line": 102,
+            "end_line": 155,
+            "complexity": 12,
+            "cognitive_complexity": 11,
+            "loc": 44
+          },
+          {
+            "name": "_cmd_update",
+            "start_line": 158,
+            "end_line": 221,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 48
+          },
+          {
+            "name": "main",
+            "start_line": 228,
+            "end_line": 240,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 12
+          }
+        ]
+      },
+      "main.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 8,
+        "level": "LOW",
+        "functions": []
+      },
+      "pyproject.toml": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 23,
+        "level": "LOW",
+        "functions": []
+      },
+      "test_ai_output.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 144,
+        "level": "LOW",
+        "functions": []
+      },
+      ".pytest_cache/README.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 4,
+        "level": "LOW",
+        "functions": []
+      },
+      "conf/settings.toml": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 52,
+        "level": "LOW",
+        "functions": []
+      },
+      "scripts/install_opengrep.py": {
+        "complexity": 2,
+        "cognitive_complexity": 1,
+        "loc": 29,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "main",
+            "start_line": 19,
+            "end_line": 41,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 22
+          }
+        ]
+      },
+      "src/engine/opengrep_installer.py": {
+        "complexity": 20,
+        "cognitive_complexity": 14,
+        "loc": 108,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "_get_binary_name",
+            "start_line": 33,
+            "end_line": 35,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 2
+          },
+          {
+            "name": "_get_asset_name",
+            "start_line": 38,
+            "end_line": 48,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 10
+          },
+          {
+            "name": "resolve_opengrep_path",
+            "start_line": 51,
+            "end_line": 76,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 11
+          },
+          {
+            "name": "_download_progress_hook",
+            "start_line": 79,
+            "end_line": 87,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 8
+          },
+          {
+            "name": "ensure_opengrep",
+            "start_line": 90,
+            "end_line": 144,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 32
+          },
+          {
+            "name": "main",
+            "start_line": 147,
+            "end_line": 170,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 22
+          }
+        ]
+      },
+      "src/engine/__init__.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 0,
+        "level": "LOW",
+        "functions": []
+      },
+      "src/engine/__main__.py": {
+        "complexity": 42,
+        "cognitive_complexity": 35,
+        "loc": 263,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "create_parser",
+            "start_line": 31,
+            "end_line": 57,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 26
+          },
+          {
+            "name": "validate_args",
+            "start_line": 60,
+            "end_line": 89,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 28
+          },
+          {
+            "name": "_sarif_path_for",
+            "start_line": 92,
+            "end_line": 94,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "print_explain",
+            "start_line": 97,
+            "end_line": 139,
+            "complexity": 12,
+            "cognitive_complexity": 11,
+            "loc": 35
+          },
+          {
+            "name": "run_refresh_ai",
+            "start_line": 145,
+            "end_line": 209,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 51
+          },
+          {
+            "name": "run_analysis",
+            "start_line": 212,
+            "end_line": 346,
+            "complexity": 14,
+            "cognitive_complexity": 13,
+            "loc": 100
+          },
+          {
+            "name": "main",
+            "start_line": 349,
+            "end_line": 358,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 8
+          }
+        ]
+      },
+      "src/engine/config/ai_config.py": {
+        "complexity": 50,
+        "cognitive_complexity": 36,
+        "loc": 171,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "_reload_env_file",
+            "start_line": 33,
+            "end_line": 49,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 16
+          },
+          {
+            "name": "_env_prefix",
+            "start_line": 61,
+            "end_line": 63,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "_load_all",
+            "start_line": 102,
+            "end_line": 136,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 29
+          },
+          {
+            "name": "_ensure_loaded",
+            "start_line": 139,
+            "end_line": 142,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 3
+          },
+          {
+            "name": "reset_config",
+            "start_line": 145,
+            "end_line": 153,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "is_ai_enabled",
+            "start_line": 161,
+            "end_line": 167,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "get_provider_config",
+            "start_line": 170,
+            "end_line": 174,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "get_agent_config",
+            "start_line": 177,
+            "end_line": 181,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "get_enabled_providers",
+            "start_line": 184,
+            "end_line": 188,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 4
+          },
+          {
+            "name": "get_enabled_agents",
+            "start_line": 191,
+            "end_line": 195,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 4
+          },
+          {
+            "name": "is_agent_enabled",
+            "start_line": 198,
+            "end_line": 203,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 5
+          },
+          {
+            "name": "get_resolved_provider_for_agent",
+            "start_line": 206,
+            "end_line": 227,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 16
+          },
+          {
+            "name": "dump_ai_config",
+            "start_line": 230,
+            "end_line": 261,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 25
+          },
+          {
+            "name": "get_ai_config",
+            "start_line": 272,
+            "end_line": 304,
+            "complexity": 9,
+            "cognitive_complexity": 8,
+            "loc": 16
+          }
+        ]
+      },
+      "src/engine/config/ai_prompts.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 46,
+        "level": "LOW",
+        "functions": []
+      },
+      "src/engine/config/constants.py": {
+        "complexity": 19,
+        "cognitive_complexity": 13,
+        "loc": 96,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "_get_engine_root",
+            "start_line": 24,
+            "end_line": 26,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "_deep_merge",
+            "start_line": 29,
+            "end_line": 42,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 8
+          },
+          {
+            "name": "_load_toml",
+            "start_line": 45,
+            "end_line": 57,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 12
+          },
+          {
+            "name": "_nested_get",
+            "start_line": 60,
+            "end_line": 67,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 7
+          },
+          {
+            "name": "load_settings",
+            "start_line": 70,
+            "end_line": 93,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 12
+          },
+          {
+            "name": "get_int_env",
+            "start_line": 96,
+            "end_line": 101,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          }
+        ]
+      },
+      "src/engine/config/iso25010_taxonomy.py": {
+        "complexity": 23,
+        "cognitive_complexity": 18,
+        "loc": 304,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "normalize_owasp_id",
+            "start_line": 141,
+            "end_line": 155,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 9
+          },
+          {
+            "name": "compute_finding_id",
+            "start_line": 387,
+            "end_line": 398,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "classify_finding",
+            "start_line": 401,
+            "end_line": 458,
+            "complexity": 16,
+            "cognitive_complexity": 15,
+            "loc": 25
+          },
+          {
+            "name": "get_phase_1_categories",
+            "start_line": 461,
+            "end_line": 463,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "is_valid_category",
+            "start_line": 466,
+            "end_line": 468,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          }
+        ]
+      },
+      "src/engine/config/__init__.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 0,
+        "level": "LOW",
+        "functions": []
+      },
+      "src/engine/core/ai_resolver.py": {
+        "complexity": 100,
+        "cognitive_complexity": 89,
+        "loc": 407,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "_now_iso",
+            "start_line": 16,
+            "end_line": 17,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "_make_resolution",
+            "start_line": 20,
+            "end_line": 37,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 18
+          },
+          {
+            "name": "sanitize_remediation_code",
+            "start_line": 69,
+            "end_line": 80,
+            "complexity": 9,
+            "cognitive_complexity": 8,
+            "loc": 11
+          },
+          {
+            "name": "decode_response_text",
+            "start_line": 82,
+            "end_line": 88,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 6
+          },
+          {
+            "name": "safe_json_parse",
+            "start_line": 90,
+            "end_line": 110,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 19
+          },
+          {
+            "name": "parse_api_response",
+            "start_line": 112,
+            "end_line": 123,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 11
+          },
+          {
+            "name": "_extract_message_content",
+            "start_line": 126,
+            "end_line": 160,
+            "complexity": 11,
+            "cognitive_complexity": 10,
+            "loc": 21
+          },
+          {
+            "name": "post_with_retry",
+            "start_line": 162,
+            "end_line": 196,
+            "complexity": 10,
+            "cognitive_complexity": 9,
+            "loc": 34
+          },
+          {
+            "name": "read_surrounding_code",
+            "start_line": 198,
+            "end_line": 213,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 15
+          },
+          {
+            "name": "resolve_findings",
+            "start_line": 215,
+            "end_line": 347,
+            "complexity": 29,
+            "cognitive_complexity": 28,
+            "loc": 118
+          },
+          {
+            "name": "call_ai_for_rule",
+            "start_line": 350,
+            "end_line": 469,
+            "complexity": 22,
+            "cognitive_complexity": 21,
+            "loc": 116
+          }
+        ]
+      },
+      "src/engine/core/ast_graph.py": {
+        "complexity": 61,
+        "cognitive_complexity": 52,
+        "loc": 311,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "is_gitnexus_available",
+            "start_line": 12,
+            "end_line": 30,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 15
+          },
+          {
+            "name": "get_repo_info_for_path",
+            "start_line": 32,
+            "end_line": 80,
+            "complexity": 9,
+            "cognitive_complexity": 8,
+            "loc": 37
+          },
+          {
+            "name": "get_repo_name_for_path",
+            "start_line": 82,
+            "end_line": 88,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "parse_markdown_table",
+            "start_line": 90,
+            "end_line": 150,
+            "complexity": 28,
+            "cognitive_complexity": 27,
+            "loc": 50
+          },
+          {
+            "name": "get_relative_repo_path",
+            "start_line": 152,
+            "end_line": 167,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 11
+          },
+          {
+            "name": "resolve_location_to_symbol.sort_key",
+            "start_line": 213,
+            "end_line": 224,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 10
+          },
+          {
+            "name": "resolve_location_to_symbol",
+            "start_line": 169,
+            "end_line": 230,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 38
+          },
+          {
+            "name": "get_symbol_context",
+            "start_line": 232,
+            "end_line": 245,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 11
+          },
+          {
+            "name": "get_symbol_impact",
+            "start_line": 247,
+            "end_line": 260,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 11
+          }
+        ]
+      },
+      "src/engine/core/complexity.py": {
+        "complexity": 13,
+        "cognitive_complexity": 10,
+        "loc": 73,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "_is_text_file",
+            "start_line": 9,
+            "end_line": 28,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 7
+          },
+          {
+            "name": "get_complexity_level",
+            "start_line": 30,
+            "end_line": 39,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 7
+          },
+          {
+            "name": "analyze_file_complexity",
+            "start_line": 41,
+            "end_line": 116,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 45
+          }
+        ]
+      },
+      "src/engine/core/dedup.py": {
+        "complexity": 8,
+        "cognitive_complexity": 7,
+        "loc": 27,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "deduplicate_findings",
+            "start_line": 13,
+            "end_line": 54,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 25
+          }
+        ]
+      },
+      "src/engine/core/finding_status.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 6,
+        "level": "LOW",
+        "functions": []
+      },
+      "src/engine/core/naming_audit.py": {
+        "complexity": 24,
+        "cognitive_complexity": 23,
+        "loc": 131,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "run_naming_audit",
+            "start_line": 28,
+            "end_line": 170,
+            "complexity": 24,
+            "cognitive_complexity": 23,
+            "loc": 108
+          }
+        ]
+      },
+      "src/engine/core/scanner.py": {
+        "complexity": 52,
+        "cognitive_complexity": 44,
+        "loc": 221,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "_get_project_root",
+            "start_line": 13,
+            "end_line": 15,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "_detect_language",
+            "start_line": 85,
+            "end_line": 90,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          },
+          {
+            "name": "_extract_cwe_id",
+            "start_line": 93,
+            "end_line": 117,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 14
+          },
+          {
+            "name": "_extract_owasp_id",
+            "start_line": 120,
+            "end_line": 157,
+            "complexity": 11,
+            "cognitive_complexity": 10,
+            "loc": 22
+          },
+          {
+            "name": "_normalize_severity",
+            "start_line": 160,
+            "end_line": 170,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 5
+          },
+          {
+            "name": "_safe_int",
+            "start_line": 173,
+            "end_line": 178,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 5
+          },
+          {
+            "name": "_enrich_finding",
+            "start_line": 181,
+            "end_line": 206,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 14
+          },
+          {
+            "name": "run_scan",
+            "start_line": 211,
+            "end_line": 324,
+            "complexity": 18,
+            "cognitive_complexity": 17,
+            "loc": 82
+          }
+        ]
+      },
+      "src/engine/core/__init__.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 0,
+        "level": "LOW",
+        "functions": []
+      },
+      "src/engine/pipeline/enricher.py": {
+        "complexity": 27,
+        "cognitive_complexity": 26,
+        "loc": 98,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "enrich_findings",
+            "start_line": 18,
+            "end_line": 117,
+            "complexity": 27,
+            "cognitive_complexity": 26,
+            "loc": 85
+          }
+        ]
+      },
+      "src/engine/pipeline/reporter.py": {
+        "complexity": 29,
+        "cognitive_complexity": 26,
+        "loc": 125,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "assemble_report",
+            "start_line": 11,
+            "end_line": 38,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 14
+          },
+          {
+            "name": "write_report",
+            "start_line": 41,
+            "end_line": 63,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 16
+          },
+          {
+            "name": "export_markdown",
+            "start_line": 66,
+            "end_line": 182,
+            "complexity": 20,
+            "cognitive_complexity": 19,
+            "loc": 89
+          }
+        ]
+      },
+      "src/engine/pipeline/resolver.py": {
+        "complexity": 20,
+        "cognitive_complexity": 15,
+        "loc": 86,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "_collect_source_files",
+            "start_line": 22,
+            "end_line": 53,
+            "complexity": 9,
+            "cognitive_complexity": 8,
+            "loc": 24
+          },
+          {
+            "name": "_compute_metrics",
+            "start_line": 56,
+            "end_line": 63,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 7
+          },
+          {
+            "name": "_run_naming_audit.is_user_code",
+            "start_line": 74,
+            "end_line": 77,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 4
+          },
+          {
+            "name": "_run_naming_audit",
+            "start_line": 66,
+            "end_line": 89,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 16
+          },
+          {
+            "name": "resolve_phase",
+            "start_line": 92,
+            "end_line": 119,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 21
+          }
+        ]
+      },
+      "src/engine/pipeline/sarif_builder.py": {
+        "complexity": 34,
+        "cognitive_complexity": 25,
+        "loc": 157,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "build_sarif",
+            "start_line": 23,
+            "end_line": 52,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 29
+          },
+          {
+            "name": "_build_rules",
+            "start_line": 58,
+            "end_line": 66,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 9
+          },
+          {
+            "name": "_build_results",
+            "start_line": 69,
+            "end_line": 110,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 33
+          },
+          {
+            "name": "_compute_finding_id",
+            "start_line": 113,
+            "end_line": 123,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "_build_location",
+            "start_line": 126,
+            "end_line": 139,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 14
+          },
+          {
+            "name": "_build_related_locations",
+            "start_line": 142,
+            "end_line": 155,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 14
+          },
+          {
+            "name": "_build_fixes",
+            "start_line": 158,
+            "end_line": 179,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 22
+          },
+          {
+            "name": "_build_invocation",
+            "start_line": 182,
+            "end_line": 190,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 9
+          },
+          {
+            "name": "_build_version_control",
+            "start_line": 193,
+            "end_line": 201,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 8
+          }
+        ]
+      },
+      "src/engine/pipeline/scanner.py": {
+        "complexity": 55,
+        "cognitive_complexity": 49,
+        "loc": 256,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "run_gitleaks_scan",
+            "start_line": 14,
+            "end_line": 93,
+            "complexity": 9,
+            "cognitive_complexity": 8,
+            "loc": 66
+          },
+          {
+            "name": "get_git_state",
+            "start_line": 96,
+            "end_line": 135,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 37
+          },
+          {
+            "name": "_detect_fast_scan_files",
+            "start_line": 138,
+            "end_line": 187,
+            "complexity": 10,
+            "cognitive_complexity": 9,
+            "loc": 40
+          },
+          {
+            "name": "run_scan_phase",
+            "start_line": 190,
+            "end_line": 213,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 17
+          },
+          {
+            "name": "get_previous_report_path",
+            "start_line": 216,
+            "end_line": 245,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 15
+          },
+          {
+            "name": "classify_findings_against_previous",
+            "start_line": 248,
+            "end_line": 353,
+            "complexity": 18,
+            "cognitive_complexity": 17,
+            "loc": 72
+          }
+        ]
+      },
+      "src/engine/pipeline/thresholds.py": {
+        "complexity": 18,
+        "cognitive_complexity": 16,
+        "loc": 91,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "load_thresholds",
+            "start_line": 32,
+            "end_line": 51,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 15
+          },
+          {
+            "name": "evaluate_thresholds",
+            "start_line": 54,
+            "end_line": 142,
+            "complexity": 12,
+            "cognitive_complexity": 11,
+            "loc": 65
+          }
+        ]
+      },
+      "src/engine/pipeline/__init__.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 0,
+        "level": "LOW",
+        "functions": []
+      },
+      "src/engine/utils/logger.py": {
+        "complexity": 6,
+        "cognitive_complexity": 4,
+        "loc": 49,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "get_logger",
+            "start_line": 9,
+            "end_line": 24,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 8
+          },
+          {
+            "name": "emit_progress",
+            "start_line": 56,
+            "end_line": 99,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 27
+          }
+        ]
+      },
+      "src/engine/utils/__init__.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 0,
+        "level": "LOW",
+        "functions": []
+      },
+      "tests/conftest.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 3,
+        "level": "LOW",
+        "functions": []
+      },
+      "tests/test_ai_resolver.py": {
+        "complexity": 48,
+        "cognitive_complexity": 0,
+        "loc": 468,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "test_string_content",
+            "start_line": 23,
+            "end_line": 25,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_string_content_with_whitespace",
+            "start_line": 27,
+            "end_line": 29,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_multimodal_list_with_text_part",
+            "start_line": 31,
+            "end_line": 35,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_multimodal_list_with_multiple_text_parts",
+            "start_line": 37,
+            "end_line": 42,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_multimodal_list_with_reasoning_part",
+            "start_line": 44,
+            "end_line": 49,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_multimodal_list_skips_non_text_parts",
+            "start_line": 51,
+            "end_line": 56,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_null_content",
+            "start_line": 58,
+            "end_line": 60,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_missing_choices",
+            "start_line": 62,
+            "end_line": 64,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_missing_message",
+            "start_line": 66,
+            "end_line": 68,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_dict_content_treated_as_empty",
+            "start_line": 70,
+            "end_line": 72,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_does_not_raise_on_garbage",
+            "start_line": 74,
+            "end_line": 77,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_valid_json_object",
+            "start_line": 83,
+            "end_line": 84,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_valid_json_array",
+            "start_line": 86,
+            "end_line": 87,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_json_with_markdown_fences",
+            "start_line": 89,
+            "end_line": 90,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_json_with_trailing_garbage",
+            "start_line": 92,
+            "end_line": 93,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_malformed_json_raises_valueerror",
+            "start_line": 95,
+            "end_line": 97,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_empty_string_raises_valueerror",
+            "start_line": 99,
+            "end_line": 101,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_whitespace_only_raises_valueerror",
+            "start_line": 103,
+            "end_line": 105,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_empty_string_returns_empty",
+            "start_line": 111,
+            "end_line": 112,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_none_equivalent_returns_empty",
+            "start_line": 114,
+            "end_line": 115,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_all_comment_lines_returns_empty",
+            "start_line": 117,
+            "end_line": 119,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_all_comment_lines_mixed_prefixes_returns_empty",
+            "start_line": 121,
+            "end_line": 123,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_valid_code_preserved",
+            "start_line": 125,
+            "end_line": 127,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_code_with_some_comments_preserved",
+            "start_line": 129,
+            "end_line": 131,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_trailing_newlines_stripped",
+            "start_line": 133,
+            "end_line": 135,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "_reset_ai_config_cache",
+            "start_line": 142,
+            "end_line": 144,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_no_provider_returns_empty",
+            "start_line": 146,
+            "end_line": 153,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "test_9router_provider_returns_correct_config",
+            "start_line": 155,
+            "end_line": 167,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_openai_provider_returns_correct_config",
+            "start_line": 169,
+            "end_line": 181,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_google_provider_returns_correct_config",
+            "start_line": 183,
+            "end_line": 195,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_anthropic_provider_returns_correct_config",
+            "start_line": 197,
+            "end_line": 209,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_unknown_provider_returns_empty",
+            "start_line": 211,
+            "end_line": 221,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 11
+          },
+          {
+            "name": "_reset_ai_config_cache",
+            "start_line": 228,
+            "end_line": 237,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_with_mocked_ai_response",
+            "start_line": 239,
+            "end_line": 279,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 37
+          },
+          {
+            "name": "test_with_nvidia_multimodal_content_list",
+            "start_line": 281,
+            "end_line": 325,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 38
+          },
+          {
+            "name": "test_with_null_content_records_fallback",
+            "start_line": 327,
+            "end_line": 362,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 32
+          },
+          {
+            "name": "test_with_malformed_response_does_not_crash",
+            "start_line": 364,
+            "end_line": 391,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 22
+          },
+          {
+            "name": "test_handles_http_error_gracefully",
+            "start_line": 393,
+            "end_line": 418,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 23
+          },
+          {
+            "name": "test_falls_back_to_mock_when_no_provider",
+            "start_line": 420,
+            "end_line": 435,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_with_explicit_mock",
+            "start_line": 437,
+            "end_line": 449,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 11
+          },
+          {
+            "name": "test_empty_list_returns_empty_dict",
+            "start_line": 451,
+            "end_line": 452,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_unknown_rule_gets_generic_mock",
+            "start_line": 454,
+            "end_line": 465,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 10
+          },
+          {
+            "name": "test_500_returns_immediately_no_retry",
+            "start_line": 471,
+            "end_line": 486,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_429_retries_then_succeeds",
+            "start_line": 488,
+            "end_line": 507,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 17
+          },
+          {
+            "name": "test_429_retry_after_header_seconds",
+            "start_line": 509,
+            "end_line": 532,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 20
+          },
+          {
+            "name": "test_429_no_retry_after_uses_exponential_backoff",
+            "start_line": 534,
+            "end_line": 558,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 21
+          },
+          {
+            "name": "test_timeout_retries_then_succeeds",
+            "start_line": 560,
+            "end_line": 580,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 18
+          },
+          {
+            "name": "test_timeout_exhausts_retries_raises",
+            "start_line": 582,
+            "end_line": 599,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 14
+          }
+        ]
+      },
+      "tests/test_ai_resolver_parallel.py": {
+        "complexity": 8,
+        "cognitive_complexity": 2,
+        "loc": 126,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "_extract_rule_id_from_prompt",
+            "start_line": 15,
+            "end_line": 21,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 6
+          },
+          {
+            "name": "_reset_ai_config_cache",
+            "start_line": 28,
+            "end_line": 30,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_returns_tuple",
+            "start_line": 32,
+            "end_line": 86,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 51
+          },
+          {
+            "name": "_reset_ai_config_cache",
+            "start_line": 93,
+            "end_line": 95,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_resolves_multiple_rules_in_parallel_and_sorts_by_rule_id._mock_post",
+            "start_line": 112,
+            "end_line": 137,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 25
+          },
+          {
+            "name": "test_resolves_multiple_rules_in_parallel_and_sorts_by_rule_id",
+            "start_line": 97,
+            "end_line": 154,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 27
+          }
+        ]
+      },
+      "tests/test_ast_graph.py": {
+        "complexity": 13,
+        "cognitive_complexity": 2,
+        "loc": 172,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "setUp",
+            "start_line": 21,
+            "end_line": 26,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_is_gitnexus_available_true",
+            "start_line": 29,
+            "end_line": 33,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_is_gitnexus_available_false",
+            "start_line": 36,
+            "end_line": 40,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_parse_markdown_table_empty",
+            "start_line": 42,
+            "end_line": 45,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_parse_markdown_table_valid",
+            "start_line": 47,
+            "end_line": 66,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 19
+          },
+          {
+            "name": "test_get_repo_name_for_path_matched",
+            "start_line": 69,
+            "end_line": 87,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 15
+          },
+          {
+            "name": "test_resolve_location_to_symbol_sorting",
+            "start_line": 90,
+            "end_line": 108,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 17
+          },
+          {
+            "name": "test_get_symbol_context",
+            "start_line": 111,
+            "end_line": 124,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_get_symbol_impact",
+            "start_line": 127,
+            "end_line": 141,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 14
+          },
+          {
+            "name": "test_get_relative_repo_path",
+            "start_line": 143,
+            "end_line": 151,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_ai_resolver_prompt_assembly",
+            "start_line": 155,
+            "end_line": 206,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 44
+          }
+        ]
+      },
+      "tests/test_complexity.py": {
+        "complexity": 12,
+        "cognitive_complexity": 4,
+        "loc": 85,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "test_low_boundary",
+            "start_line": 14,
+            "end_line": 18,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_medium_boundary",
+            "start_line": 20,
+            "end_line": 24,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_high_boundary",
+            "start_line": 26,
+            "end_line": 30,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_analyze_self",
+            "start_line": 36,
+            "end_line": 61,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 20
+          },
+          {
+            "name": "test_nonexistent_file_returns_fallback",
+            "start_line": 63,
+            "end_line": 70,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "test_empty_file_returns_fallback",
+            "start_line": 72,
+            "end_line": 86,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 13
+          },
+          {
+            "name": "test_binary_file_returns_fallback",
+            "start_line": 88,
+            "end_line": 102,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 13
+          },
+          {
+            "name": "test_large_file_returns_fallback",
+            "start_line": 104,
+            "end_line": 120,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 14
+          }
+        ]
+      },
+      "tests/test_cross_scan_tracking.py": {
+        "complexity": 28,
+        "cognitive_complexity": 15,
+        "loc": 176,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "test_returns_none_when_no_reports_dir",
+            "start_line": 17,
+            "end_line": 23,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_returns_none_when_no_reports_for_project",
+            "start_line": 25,
+            "end_line": 33,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_returns_latest_report",
+            "start_line": 35,
+            "end_line": 56,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 14
+          },
+          {
+            "name": "test_no_previous_report_all_new",
+            "start_line": 62,
+            "end_line": 73,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 9
+          },
+          {
+            "name": "test_previous_report_not_found_all_new",
+            "start_line": 75,
+            "end_line": 83,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_finding_in_both_reports_persisting",
+            "start_line": 85,
+            "end_line": 104,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 16
+          },
+          {
+            "name": "test_new_finding_not_in_previous",
+            "start_line": 106,
+            "end_line": 127,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 17
+          },
+          {
+            "name": "test_previous_finding_not_in_current_resolved",
+            "start_line": 129,
+            "end_line": 153,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 20
+          },
+          {
+            "name": "test_regressed_finding_was_applied",
+            "start_line": 155,
+            "end_line": 174,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 16
+          },
+          {
+            "name": "test_regressed_finding_was_applied_flag",
+            "start_line": 176,
+            "end_line": 195,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 16
+          },
+          {
+            "name": "test_false_positive_not_resolved",
+            "start_line": 197,
+            "end_line": 216,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 15
+          },
+          {
+            "name": "test_empty_previous_report_all_new",
+            "start_line": 218,
+            "end_line": 233,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 12
+          },
+          {
+            "name": "test_computes_id_when_missing",
+            "start_line": 235,
+            "end_line": 256,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 17
+          }
+        ]
+      },
+      "tests/test_dedup.py": {
+        "complexity": 8,
+        "cognitive_complexity": 0,
+        "loc": 73,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "_finding",
+            "start_line": 12,
+            "end_line": 22,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 10
+          },
+          {
+            "name": "test_dedup_removes_exact_duplicates",
+            "start_line": 28,
+            "end_line": 38,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "test_dedup_keeps_different_rules_same_line",
+            "start_line": 44,
+            "end_line": 56,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "test_dedup_empty_list",
+            "start_line": 62,
+            "end_line": 66,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_dedup_same_rule_different_files",
+            "start_line": 72,
+            "end_line": 83,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "test_dedup_same_rule_same_file_different_lines",
+            "start_line": 85,
+            "end_line": 97,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "test_dedup_mixed_duplicates",
+            "start_line": 99,
+            "end_line": 114,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 12
+          },
+          {
+            "name": "test_dedup_input_order_preserved",
+            "start_line": 116,
+            "end_line": 132,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          }
+        ]
+      },
+      "tests/test_finding_status.py": {
+        "complexity": 3,
+        "cognitive_complexity": 0,
+        "loc": 12,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "test_default_status_is_open",
+            "start_line": 8,
+            "end_line": 9,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_valid_statuses_has_all_four",
+            "start_line": 11,
+            "end_line": 16,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_valid_statuses_is_frozenset",
+            "start_line": 18,
+            "end_line": 19,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          }
+        ]
+      },
+      "tests/test_gitleaks.py": {
+        "complexity": 6,
+        "cognitive_complexity": 0,
+        "loc": 65,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "test_run_gitleaks_scan_mock",
+            "start_line": 9,
+            "end_line": 15,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_run_gitleaks_scan_not_git_repo",
+            "start_line": 18,
+            "end_line": 22,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_run_gitleaks_scan_gitleaks_missing",
+            "start_line": 26,
+            "end_line": 31,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_run_gitleaks_scan_success",
+            "start_line": 35,
+            "end_line": 63,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 23
+          },
+          {
+            "name": "test_get_git_state_success",
+            "start_line": 66,
+            "end_line": 76,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "test_get_git_state_non_git",
+            "start_line": 79,
+            "end_line": 84,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          }
+        ]
+      },
+      "tests/test_iso25010_taxonomy.py": {
+        "complexity": 45,
+        "cognitive_complexity": 3,
+        "loc": 287,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "test_returns_12_hex_chars",
+            "start_line": 45,
+            "end_line": 49,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          },
+          {
+            "name": "test_same_inputs_produce_same_id",
+            "start_line": 51,
+            "end_line": 54,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_different_line_produces_different_id",
+            "start_line": 56,
+            "end_line": 59,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_different_file_produces_different_id",
+            "start_line": 61,
+            "end_line": 64,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_different_rule_produces_different_id",
+            "start_line": 66,
+            "end_line": 69,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_handles_unicode_path",
+            "start_line": 71,
+            "end_line": 74,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_stable_across_runs",
+            "start_line": 76,
+            "end_line": 80,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_realistic_semgrep_rule",
+            "start_line": 82,
+            "end_line": 91,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "test_security_keyword",
+            "start_line": 113,
+            "end_line": 114,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_security_cwe",
+            "start_line": 126,
+            "end_line": 127,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_cwe_normalization",
+            "start_line": 129,
+            "end_line": 133,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_normalize_owasp_id",
+            "start_line": 153,
+            "end_line": 154,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_normalize_owasp_id_invalid",
+            "start_line": 165,
+            "end_line": 166,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_all_owasp_categories_map_to_security",
+            "start_line": 173,
+            "end_line": 178,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_owasp_subcategory_mapping",
+            "start_line": 192,
+            "end_line": 193,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_owasp_priority_over_rule_id",
+            "start_line": 195,
+            "end_line": 202,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_cwe_still_beats_owasp",
+            "start_line": 204,
+            "end_line": 212,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "test_owasp_handles_short_form_in_finding",
+            "start_line": 214,
+            "end_line": 219,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_reliability_keyword",
+            "start_line": 238,
+            "end_line": 239,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_reliability_cwe",
+            "start_line": 248,
+            "end_line": 249,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_performance_keyword",
+            "start_line": 266,
+            "end_line": 267,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_complexity_keyword",
+            "start_line": 269,
+            "end_line": 271,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_nested_keyword",
+            "start_line": 273,
+            "end_line": 275,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_maintainability_keyword",
+            "start_line": 296,
+            "end_line": 297,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_maintainability_cwe",
+            "start_line": 303,
+            "end_line": 304,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_default_when_empty",
+            "start_line": 314,
+            "end_line": 315,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_default_when_no_rule_id",
+            "start_line": 317,
+            "end_line": 318,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_default_when_unrecognized",
+            "start_line": 320,
+            "end_line": 321,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_default_when_unicode_message",
+            "start_line": 323,
+            "end_line": 328,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_handles_none_fields",
+            "start_line": 330,
+            "end_line": 332,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_handles_missing_fields",
+            "start_line": 334,
+            "end_line": 336,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_cwe_priority_over_rule_id",
+            "start_line": 338,
+            "end_line": 348,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "test_rule_id_priority_over_message",
+            "start_line": 350,
+            "end_line": 358,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_longest_keyword_match_wins",
+            "start_line": 360,
+            "end_line": 364,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_phase_1_has_exactly_4_categories",
+            "start_line": 374,
+            "end_line": 375,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_phase_1_categories_exact_set",
+            "start_line": 377,
+            "end_line": 380,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_default_is_maintainability",
+            "start_line": 382,
+            "end_line": 383,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_get_phase_1_categories_returns_set",
+            "start_line": 385,
+            "end_line": 388,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_is_valid_category_true",
+            "start_line": 394,
+            "end_line": 395,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_is_valid_category_false",
+            "start_line": 404,
+            "end_line": 405,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_classify_is_deterministic",
+            "start_line": 415,
+            "end_line": 424,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 10
+          },
+          {
+            "name": "test_id_is_deterministic",
+            "start_line": 426,
+            "end_line": 429,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 4
+          }
+        ]
+      },
+      "tests/test_main.py": {
+        "complexity": 17,
+        "cognitive_complexity": 4,
+        "loc": 160,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "_find_python",
+            "start_line": 19,
+            "end_line": 26,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 7
+          },
+          {
+            "name": "_run_main",
+            "start_line": 29,
+            "end_line": 34,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "_assert_vexcode_report",
+            "start_line": 37,
+            "end_line": 45,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 8
+          },
+          {
+            "name": "_assert_sarif_report",
+            "start_line": 48,
+            "end_line": 60,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 12
+          },
+          {
+            "name": "test_scan_mock_writes_dual_reports",
+            "start_line": 66,
+            "end_line": 88,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 20
+          },
+          {
+            "name": "test_scan_fast_mock",
+            "start_line": 90,
+            "end_line": 105,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 15
+          },
+          {
+            "name": "test_no_sarif_flag",
+            "start_line": 107,
+            "end_line": 119,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 12
+          },
+          {
+            "name": "test_refresh_ai_mock",
+            "start_line": 121,
+            "end_line": 147,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 23
+          },
+          {
+            "name": "test_refresh_ai_missing_file",
+            "start_line": 149,
+            "end_line": 153,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_refresh_ai_empty_findings",
+            "start_line": 155,
+            "end_line": 170,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 15
+          },
+          {
+            "name": "test_default_output_contains_vexcode_dir",
+            "start_line": 176,
+            "end_line": 183,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "test_output_auto_creates_parent_dir",
+            "start_line": 185,
+            "end_line": 195,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 10
+          },
+          {
+            "name": "test_output_invalid_path_fails_gracefully",
+            "start_line": 197,
+            "end_line": 208,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 11
+          }
+        ]
+      },
+      "tests/test_markdown_export.py": {
+        "complexity": 4,
+        "cognitive_complexity": 0,
+        "loc": 86,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "setUp",
+            "start_line": 9,
+            "end_line": 11,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "tearDown",
+            "start_line": 13,
+            "end_line": 14,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_export_markdown_basic",
+            "start_line": 16,
+            "end_line": 91,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 61
+          },
+          {
+            "name": "test_export_markdown_empty",
+            "start_line": 93,
+            "end_line": 110,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 14
+          }
+        ]
+      },
+      "tests/test_naming_audit.py": {
+        "complexity": 6,
+        "cognitive_complexity": 0,
+        "loc": 81,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "nvidia_env",
+            "start_line": 13,
+            "end_line": 21,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "_mock_response",
+            "start_line": 24,
+            "end_line": 28,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_handles_multimodal_list_content",
+            "start_line": 34,
+            "end_line": 57,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 21
+          },
+          {
+            "name": "test_handles_null_content_without_crashing",
+            "start_line": 59,
+            "end_line": 76,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 14
+          },
+          {
+            "name": "test_handles_empty_choices_list",
+            "start_line": 78,
+            "end_line": 90,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "test_handles_string_content_normal_path",
+            "start_line": 92,
+            "end_line": 110,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 16
+          }
+        ]
+      },
+      "tests/test_pipeline.py": {
+        "complexity": 12,
+        "cognitive_complexity": 0,
+        "loc": 266,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "test_run_scan_phase_mock_full_scan",
+            "start_line": 11,
+            "end_line": 31,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 17
+          },
+          {
+            "name": "test_run_scan_phase_fast_with_changed_files",
+            "start_line": 33,
+            "end_line": 55,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 19
+          },
+          {
+            "name": "test_run_scan_phase_fast_clean_repo",
+            "start_line": 57,
+            "end_line": 66,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "test_enrich_findings_empty_list",
+            "start_line": 72,
+            "end_line": 80,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_enrich_findings_mock_fallback",
+            "start_line": 82,
+            "end_line": 107,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 22
+          },
+          {
+            "name": "test_enrich_findings_no_gitnexus_no_mock",
+            "start_line": 109,
+            "end_line": 122,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 10
+          },
+          {
+            "name": "test_resolve_phase_with_findings",
+            "start_line": 128,
+            "end_line": 157,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 26
+          },
+          {
+            "name": "test_resolve_phase_no_findings",
+            "start_line": 159,
+            "end_line": 175,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 14
+          },
+          {
+            "name": "test_resolve_phase_with_target_files",
+            "start_line": 177,
+            "end_line": 193,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_run_analysis_writes_both_json_and_sarif",
+            "start_line": 199,
+            "end_line": 256,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 50
+          },
+          {
+            "name": "test_run_analysis_no_sarif_flag_skips_sidecar",
+            "start_line": 258,
+            "end_line": 290,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 29
+          },
+          {
+            "name": "test_refresh_ai_updates_vexcode_and_sidecar",
+            "start_line": 292,
+            "end_line": 346,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 46
+          }
+        ]
+      },
+      "tests/test_pipeline_reporter.py": {
+        "complexity": 6,
+        "cognitive_complexity": 0,
+        "loc": 93,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "test_assemble_report_vexcode_structure",
+            "start_line": 7,
+            "end_line": 43,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 32
+          },
+          {
+            "name": "test_assemble_report_uses_target_arg_when_scan_lacks_path",
+            "start_line": 45,
+            "end_line": 57,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 11
+          },
+          {
+            "name": "test_assemble_report_generates_fallback_timestamp",
+            "start_line": 59,
+            "end_line": 72,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 12
+          },
+          {
+            "name": "test_assemble_report_default_git_state",
+            "start_line": 74,
+            "end_line": 87,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 12
+          },
+          {
+            "name": "test_assemble_report_passes_through_provided_git_state",
+            "start_line": 89,
+            "end_line": 103,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "test_assemble_report_empty_metrics_fallback",
+            "start_line": 105,
+            "end_line": 118,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 12
+          }
+        ]
+      },
+      "tests/test_sarif_builder.py": {
+        "complexity": 23,
+        "cognitive_complexity": 1,
+        "loc": 141,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "test_empty_findings_produces_valid_sarif",
+            "start_line": 17,
+            "end_line": 25,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "test_metrics_in_properties",
+            "start_line": 27,
+            "end_line": 31,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_invocation_uses_scan_timestamp",
+            "start_line": 33,
+            "end_line": 37,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_original_uri_base_ids",
+            "start_line": 39,
+            "end_line": 42,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "_make_result",
+            "start_line": 48,
+            "end_line": 51,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_error_maps_to_error",
+            "start_line": 53,
+            "end_line": 54,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_warning_maps_to_warning",
+            "start_line": 56,
+            "end_line": 57,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_info_maps_to_note",
+            "start_line": 59,
+            "end_line": 60,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_duplicate_rules_deduplicated",
+            "start_line": 66,
+            "end_line": 75,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 10
+          },
+          {
+            "name": "test_cwe_id_present",
+            "start_line": 81,
+            "end_line": 86,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_cwe_id_absent",
+            "start_line": 88,
+            "end_line": 92,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_ast_context_creates_related_locations",
+            "start_line": 98,
+            "end_line": 109,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 12
+          },
+          {
+            "name": "test_no_ast_context_no_related_locations",
+            "start_line": 111,
+            "end_line": 115,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_remediation_code_creates_fixes",
+            "start_line": 121,
+            "end_line": 130,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 10
+          },
+          {
+            "name": "test_ai_resolution_in_properties",
+            "start_line": 132,
+            "end_line": 137,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_git_state_present",
+            "start_line": 143,
+            "end_line": 150,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "test_git_state_none",
+            "start_line": 152,
+            "end_line": 155,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_default_status_is_open",
+            "start_line": 161,
+            "end_line": 165,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_status_preserved_from_finding",
+            "start_line": 167,
+            "end_line": 172,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_finding_id_is_present",
+            "start_line": 174,
+            "end_line": 179,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_finding_id_is_stable",
+            "start_line": 181,
+            "end_line": 185,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_finding_id_differs_for_different_findings",
+            "start_line": 187,
+            "end_line": 190,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          }
+        ]
+      },
+      "tests/test_scanner.py": {
+        "complexity": 17,
+        "cognitive_complexity": 8,
+        "loc": 61,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "test_run_scan_mock_returns_expected_keys",
+            "start_line": 11,
+            "end_line": 16,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_run_scan_mock_scanner_field",
+            "start_line": 18,
+            "end_line": 20,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_run_scan_mock_target_path_preserved",
+            "start_line": 22,
+            "end_line": 24,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_run_scan_mock_returns_mock_findings",
+            "start_line": 26,
+            "end_line": 39,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 13
+          },
+          {
+            "name": "test_mock_findings_structure",
+            "start_line": 41,
+            "end_line": 50,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 10
+          },
+          {
+            "name": "test_run_scan_mock_with_files_filter",
+            "start_line": 52,
+            "end_line": 55,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_run_scan_mock_with_files_no_match",
+            "start_line": 57,
+            "end_line": 59,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_run_scan_mock_timestamp_is_iso_format",
+            "start_line": 61,
+            "end_line": 65,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_exclude_dirs_present_in_scan_cmd",
+            "start_line": 71,
+            "end_line": 81,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 10
+          }
+        ]
+      },
+      "tests/test_thresholds.py": {
+        "complexity": 11,
+        "cognitive_complexity": 1,
+        "loc": 132,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "setUp",
+            "start_line": 8,
+            "end_line": 9,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "tearDown",
+            "start_line": 11,
+            "end_line": 12,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "test_load_thresholds_default",
+            "start_line": 14,
+            "end_line": 22,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "test_load_thresholds_toml",
+            "start_line": 24,
+            "end_line": 39,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 14
+          },
+          {
+            "name": "test_evaluate_thresholds_pass",
+            "start_line": 41,
+            "end_line": 63,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 21
+          },
+          {
+            "name": "test_evaluate_thresholds_fail_max_critical",
+            "start_line": 65,
+            "end_line": 83,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 17
+          },
+          {
+            "name": "test_evaluate_thresholds_fail_max_high",
+            "start_line": 85,
+            "end_line": 102,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 16
+          },
+          {
+            "name": "test_evaluate_thresholds_fail_max_total",
+            "start_line": 104,
+            "end_line": 120,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 15
+          },
+          {
+            "name": "test_evaluate_thresholds_fail_files_with_errors",
+            "start_line": 122,
+            "end_line": 140,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 17
+          },
+          {
+            "name": "test_evaluate_thresholds_fail_min_rating",
+            "start_line": 142,
+            "end_line": 159,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 16
+          }
+        ]
+      },
+      "tests/__init__.py": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 0,
+        "level": "LOW",
+        "functions": []
+      }
+    }
+  },
+  "thresholds": {
+    "passed": false,
+    "violations": [
+      {
+        "threshold": "max_critical",
+        "actual": 2,
+        "limit": 0,
+        "message": "Exceeded max critical findings: 2 > 0"
+      },
+      {
+        "threshold": "max_high",
+        "actual": 3,
+        "limit": 1,
+        "message": "Exceeded max high-severity findings: 3 > 1"
+      },
+      {
+        "threshold": "max_total",
+        "actual": 5,
+        "limit": 2,
+        "message": "Exceeded max total findings: 5 > 2"
+      }
+    ],
+    "config": {
+      "max_critical": 0,
+      "max_high": 1,
+      "max_total": 2,
+      "max_files_with_errors": 20,
+      "min_rating": "C"
+    }
+  }
+}

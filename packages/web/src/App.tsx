@@ -7,6 +7,7 @@ import { OnboardingPage } from './pages/OnboardingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { IssuesPage } from './pages/IssuesPage';
 import type { Finding, FindingStatus, Report, Config, ScanStatus } from './types';
+import { apiFetch } from './utils/apiClient';
 import { useToast } from './hooks/useToast';
 import { useConfig } from './hooks/useConfig';
 import { useReports } from './hooks/useReports';
@@ -197,7 +198,7 @@ export const App: React.FC = () => {
 
   const handleApplyFix = async (finding: Finding, remediationCode: string) => {
     try {
-      const response = await fetch('/api/apply', {
+      const response = await apiFetch('/api/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -256,7 +257,7 @@ export const App: React.FC = () => {
       const reportPath = currentReport?._savedAt;
       const findingId = finding.id;
       if (reportPath && findingId) {
-        const response = await fetch(`/api/finding/${encodeURIComponent(reportPath)}/${encodeURIComponent(findingId)}/status`, {
+        const response = await apiFetch(`/api/finding/${encodeURIComponent(reportPath)}/${encodeURIComponent(findingId)}/status`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status }),
@@ -401,7 +402,7 @@ export const App: React.FC = () => {
                       : 'border-transparent text-text-secondary hover:text-text-primary'
                   }`}
                 >
-                  Overview Dashboard
+                  Overview
                 </button>
                 <button
                   onClick={() => setActiveTab('issues')}
@@ -411,7 +412,7 @@ export const App: React.FC = () => {
                       : 'border-transparent text-text-secondary hover:text-text-primary'
                   }`}
                 >
-                  Code & Issues
+                  Issues
                 </button>
               </div>
 
@@ -422,6 +423,7 @@ export const App: React.FC = () => {
                     report={currentReport}
                     currentProject={currentProject}
                     findings={currentReport?.findings || []}
+                    reports={reports}
                     onSelectFilePath={handleSelectFilePath}
                     onSelectFindingIndex={handleSelectFindingIndex}
                   />

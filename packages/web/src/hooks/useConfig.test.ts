@@ -3,6 +3,11 @@ import { renderHook, act, waitFor } from '@testing-library/react';
 import { useConfig } from './useConfig';
 import type { Config } from '../types';
 
+vi.mock('../utils/apiClient', () => ({
+  apiFetch: vi.fn((input: RequestInfo | URL, init?: RequestInit) => init ? fetch(input, init) : fetch(input)),
+  getApiKey: () => Promise.resolve('test-key'),
+}));
+
 const mockShowToast = vi.fn();
 
 describe('useConfig', () => {
