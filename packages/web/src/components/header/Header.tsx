@@ -16,6 +16,8 @@ export interface HeaderProps {
   onSelectReportId: (id: string) => void;
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
+  activeTab?: 'dashboard' | 'issues';
+  onTabChange?: (tab: 'dashboard' | 'issues') => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -30,6 +32,8 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectReportId,
   theme,
   onToggleTheme,
+  activeTab,
+  onTabChange,
 }) => {
   if (!projectName) {
     return (
@@ -55,6 +59,32 @@ export const Header: React.FC<HeaderProps> = ({
         currentReportId={currentReportId}
         onSelectReportId={onSelectReportId}
       />
+
+      {activeTab && onTabChange && (
+        <div className="flex bg-bg-tertiary p-0.5 rounded-lg border border-card-border">
+          <button
+            onClick={() => onTabChange('dashboard')}
+            className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'dashboard'
+                ? 'bg-accent text-white shadow-sm'
+                : 'text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            Overview
+          </button>
+          <button
+            onClick={() => onTabChange('issues')}
+            className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+              activeTab === 'issues'
+                ? 'bg-accent text-white shadow-sm'
+                : 'text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            Issues
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center gap-3">
         <HeaderActions onOpenSettings={onOpenSettings} theme={theme} onToggleTheme={onToggleTheme} />
         <ScanButton

@@ -24,6 +24,7 @@ describe('Header', () => {
     const onReResolve = vi.fn();
     const onSelectReportId = vi.fn();
     const onToggleTheme = vi.fn();
+    const onTabChange = vi.fn();
 
     renderWithProviders(
       <Header
@@ -38,6 +39,8 @@ describe('Header', () => {
         onSelectReportId={onSelectReportId}
         theme="dark"
         onToggleTheme={onToggleTheme}
+        activeTab="dashboard"
+        onTabChange={onTabChange}
       />
     );
 
@@ -45,6 +48,12 @@ describe('Header', () => {
     expect(screen.getByText('Vexcode')).toBeInTheDocument();
     expect(screen.getByText('project-1')).toBeInTheDocument();
     expect(screen.getByText('2026 06 10-12:00:00')).toBeInTheDocument();
+
+    // Verify Tab Switcher renders and works
+    const issuesTab = screen.getByRole('button', { name: /Issues/i });
+    expect(issuesTab).toBeInTheDocument();
+    fireEvent.click(issuesTab);
+    expect(onTabChange).toHaveBeenCalledWith('issues');
 
     // Verify ScanButton elements
     expect(screen.getByRole('button', { name: /Scan Project/i })).toBeInTheDocument();

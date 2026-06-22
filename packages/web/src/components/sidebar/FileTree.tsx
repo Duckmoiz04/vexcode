@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { ChevronDown, Folder, File } from 'lucide-react';
 import type { Finding } from '../../types';
 import { getRelativePath } from './utils';
@@ -18,6 +18,8 @@ interface FileTreeProps {
   selectedFilePath: string | null;
   onSelectFilePath: (path: string | null) => void;
   targetPath: string | null;
+  expandedFolders?: Record<string, boolean>;
+  onToggleFolder?: (path: string) => void;
 }
 
 export const FileTree: React.FC<FileTreeProps> = ({
@@ -27,16 +29,9 @@ export const FileTree: React.FC<FileTreeProps> = ({
   selectedFilePath,
   onSelectFilePath,
   targetPath,
+  expandedFolders = {},
+  onToggleFolder = () => {},
 }) => {
-  const [expandedFolders, setExpandedFolders] = useState<Record<string, boolean>>({});
-
-  const toggleFolder = (path: string) => {
-    setExpandedFolders((prev) => {
-      const currentVal = prev[path] !== false;
-      return { ...prev, [path]: !currentVal };
-    });
-  };
-
   const fileTree = useMemo(() => {
     const root: TreeNode = {
       name: projectName || 'Project',
@@ -85,11 +80,46 @@ export const FileTree: React.FC<FileTreeProps> = ({
     return root;
   }, [searchedAndFilteredFindings, projectName, targetPath, findings]);
 
+  const getHighestSeverity = (node: TreeNode): 'error' | 'warning' | 'info' | null => {
+    if (node.type === 'file') {
+      let highest: 'error' | 'warning' | 'info' | null = null;
+      node.indices?.forEach(idx => {
+        const f = findings[idx];
+        if (!f) return;
+        const sev = (f.severity || '').toLowerCase();
+        if (sev === 'error') highest = 'error';
+        else if (sev === 'warning' && highest !== 'error') highest = 'warning';
+        else if (sev === 'info' && !highest) highest = 'info';
+      });
+      return highest;
+    }
+    
+    let highest: 'error' | 'warning' | 'info' | null = null;
+    if (node.children) {
+      Object.values(node.children).forEach(child => {
+        const childSev = getHighestSeverity(child);
+        if (childSev === 'error') highest = 'error';
+        else if (childSev === 'warning' && highest !== 'error') highest = 'warning';
+        else if (childSev === 'info' && !highest) highest = 'info';
+      });
+    }
+    return highest;
+  };
+
   const renderTreeNode = (node: TreeNode, depth = 0): React.ReactNode => {
     const indent = depth * 12;
+    const severity = getHighestSeverity(node);
+
     if (node.type === 'file') {
       const findingsCount = node.indices?.length || 0;
       const isActive = selectedFilePath && node.path.replace(/\\/g, '/') === selectedFilePath.replace(/\\/g, '/');
+      
+      const badgeClass = severity === 'error'
+        ? 'bg-danger/10 text-danger border-danger/30'
+        : severity === 'warning'
+        ? 'bg-warning/10 text-warning border-warning/30'
+        : 'bg-bg-tertiary text-text-tertiary border-card-border';
+
       return (
         <div
           key={node.path}
@@ -104,7 +134,7 @@ export const FileTree: React.FC<FileTreeProps> = ({
           <div className="w-4 h-4 shrink-0" />
           <File className="h-4 w-4 shrink-0 text-info" />
           <span className="truncate flex-1">{node.name}</span>
-          <span className="px-1.5 py-0.2 bg-bg-tertiary text-text-tertiary rounded text-xs font-sans border border-card-border">
+          <span className={`px-1.5 py-0.2 rounded text-xs font-sans border ${badgeClass}`}>
             {findingsCount}
           </span>
         </div>
@@ -121,15 +151,21 @@ export const FileTree: React.FC<FileTreeProps> = ({
         return a.localeCompare(b);
       });
 
+      const folderColorClass = severity === 'error'
+        ? 'text-danger/70'
+        : severity === 'warning'
+        ? 'text-warning/80'
+        : 'text-text-tertiary/60';
+
       const folderElement = !isRoot && (
         <div
           key={node.path}
           style={{ paddingLeft: `${indent + 8}px` }}
-          onClick={() => toggleFolder(node.path)}
+          onClick={() => onToggleFolder(node.path)}
           className="flex items-center gap-1.5 py-1 pr-1 text-[13px] font-medium rounded cursor-pointer text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/50 transition-all"
         >
           <ChevronDown className={`h-4 w-4 shrink-0 text-text-tertiary transition-transform duration-150 ${isExpanded ? '' : '-rotate-90'}`} />
-          <Folder className="h-4 w-4 shrink-0 text-warning/80" />
+          <Folder className={`h-4 w-4 shrink-0 ${folderColorClass}`} />
           <span className="truncate flex-1">{node.name}</span>
         </div>
       );

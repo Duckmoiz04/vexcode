@@ -354,6 +354,8 @@ export const App: React.FC = () => {
         onSelectReportId={handleSelectReportIdWithReset}
         theme={theme}
         onToggleTheme={handleToggleTheme}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
 
       {/* Main Content Area */}
@@ -392,29 +394,6 @@ export const App: React.FC = () => {
 
             {/* Central Panels with Tab Controllers */}
             <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-              {/* Tabs list */}
-              <div className="flex px-6 pt-3 border-b border-card-border bg-bg-secondary gap-4">
-                <button
-                  onClick={() => setActiveTab('dashboard')}
-                  className={`pb-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
-                    activeTab === 'dashboard'
-                      ? 'border-accent text-accent'
-                      : 'border-transparent text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  Overview
-                </button>
-                <button
-                  onClick={() => setActiveTab('issues')}
-                  className={`pb-2.5 text-xs font-semibold border-b-2 transition-all cursor-pointer ${
-                    activeTab === 'issues'
-                      ? 'border-accent text-accent'
-                      : 'border-transparent text-text-secondary hover:text-text-primary'
-                  }`}
-                >
-                  Issues
-                </button>
-              </div>
 
               {/* Tab Panel contents */}
               <div className="flex-1 flex overflow-hidden min-h-0">
