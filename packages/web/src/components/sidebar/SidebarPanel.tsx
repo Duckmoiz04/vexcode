@@ -1,13 +1,11 @@
 import React from 'react';
-import { Folder, ShieldAlert, FolderOpen, FolderClosed } from 'lucide-react';
+import { Folder, ShieldAlert } from 'lucide-react';
 
 interface SidebarPanelProps {
   sidebarTab: 'explorer' | 'findings';
   setSidebarTab: (tab: 'explorer' | 'findings') => void;
   searchedAndFilteredCount: number;
   totalCount: number;
-  onExpandAll?: () => void;
-  onCollapseAll?: () => void;
 }
 
 export const SidebarPanel: React.FC<SidebarPanelProps> = ({
@@ -15,8 +13,6 @@ export const SidebarPanel: React.FC<SidebarPanelProps> = ({
   setSidebarTab,
   searchedAndFilteredCount,
   totalCount,
-  onExpandAll,
-  onCollapseAll,
 }) => {
   return (
     <>
@@ -52,24 +48,6 @@ export const SidebarPanel: React.FC<SidebarPanelProps> = ({
           {sidebarTab === 'explorer' ? 'File Structure' : 'Project Issues'}
         </h3>
         <div className="flex items-center gap-2">
-          {sidebarTab === 'explorer' && onExpandAll && onCollapseAll && (
-            <div className="flex items-center gap-1 border-r border-card-border/50 pr-2 mr-1">
-              <button
-                onClick={onExpandAll}
-                title="Expand All Folders"
-                className="p-1 hover:bg-bg-tertiary rounded text-text-secondary hover:text-text-primary transition-all cursor-pointer"
-              >
-                <FolderOpen className="h-3.5 w-3.5" />
-              </button>
-              <button
-                onClick={onCollapseAll}
-                title="Collapse All Folders"
-                className="p-1 hover:bg-bg-tertiary rounded text-text-secondary hover:text-text-primary transition-all cursor-pointer"
-              >
-                <FolderClosed className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
           <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-secondary px-2 py-0.5 rounded border border-card-border/40">
             {searchedAndFilteredCount} / {totalCount}
           </span>

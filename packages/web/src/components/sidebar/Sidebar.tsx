@@ -53,41 +53,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     });
   };
 
-  const expandAll = () => {
-    const paths = new Set<string>();
-    findings.forEach(finding => {
-      const relPath = getRelativePath(finding.file, targetPath);
-      const parts = relPath.split('/');
-      let current = '';
-      for (let i = 0; i < parts.length - 1; i++) {
-        current = current ? `${current}/${parts[i]}` : parts[i];
-        paths.add(current);
-      }
-    });
-    const nextState: Record<string, boolean> = {};
-    paths.forEach(p => {
-      nextState[p] = true;
-    });
-    setExpandedFolders(nextState);
-  };
-
-  const collapseAll = () => {
-    const paths = new Set<string>();
-    findings.forEach(finding => {
-      const relPath = getRelativePath(finding.file, targetPath);
-      const parts = relPath.split('/');
-      let current = '';
-      for (let i = 0; i < parts.length - 1; i++) {
-        current = current ? `${current}/${parts[i]}` : parts[i];
-        paths.add(current);
-      }
-    });
-    const nextState: Record<string, boolean> = {};
-    paths.forEach(p => {
-      nextState[p] = false;
-    });
-    setExpandedFolders(nextState);
-  };
 
   const searchedAndFilteredFindings = useMemo(() => {
     return findings.filter((finding) => {
@@ -144,8 +109,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         setSidebarTab={setSidebarTab}
         searchedAndFilteredCount={searchedAndFilteredFindings.length}
         totalCount={findings.length}
-        onExpandAll={expandAll}
-        onCollapseAll={collapseAll}
       />
       <div className={`flex-1 overflow-y-auto scrollbar-thin ${sidebarTab === 'explorer' ? 'py-2 px-1' : 'p-3'}`}>
         {findings.length === 0 ? (

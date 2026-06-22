@@ -4,68 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2d30c51a-e0d6-43e5-a742-e5369ad6954a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-cli/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-cli/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-debugging/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-debugging/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-exploring/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-exploring/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-guide/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-guide/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.agents/skills/gitnexus/gitnexus-refactoring/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/hooks/.logs/hook-log.jsonl" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/hooks/.logs/hook-log.jsonl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-cli/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-cli/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-debugging/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-debugging/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-exploring/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-exploring/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-guide/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-guide/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/AGENTS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logo-current.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/bin/cli.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/bin/cli.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/__tests/bridge.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/__tests/bridge.test.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/bridge.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/bridge.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-Di3GA7Nl.css" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-DxH4aSx-.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/images/favicon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/public/images/favicon.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/files.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/files.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/reports.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/reports.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/conf/settings.toml" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/conf/settings.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_prompts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/iso25010_taxonomy.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/iso25010_taxonomy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/ai_resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/ai_resolver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/dedup.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/dedup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/scanner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/reporter.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/reporter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/resolver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/scanner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_iso25010_taxonomy.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_iso25010_taxonomy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/public/images/favicon.svg" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/public/images/favicon.svg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/CodeInspector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/CodeInspector.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/FindingsList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/FindingsList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/ScanModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/ScanModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/DashboardPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/dashboard/DashboardPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/SettingsDrawer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/SettingsDrawer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/useSettingsDrawer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/useSettingsDrawer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useChat.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useConfig.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useConfig.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useConfig.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useFileContent.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useFileContent.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useFileContent.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useFileContent.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useReports.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useReports.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useReports.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useReports.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useScan.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useScan.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useScan.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useScan.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/vite.config.ts" afterDir="false" />
-    </list>
+    <list default="true" id="2d30c51a-e0d6-43e5-a742-e5369ad6954a" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -214,7 +153,7 @@
       <workItem from="1782054154220" duration="8107000" />
       <workItem from="1782096539217" duration="19643000" />
       <workItem from="1782129261357" duration="216000" />
-      <workItem from="1782129496413" duration="20435000" />
+      <workItem from="1782129496413" duration="21064000" />
     </task>
     <servers />
   </component>
