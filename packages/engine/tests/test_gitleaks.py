@@ -3,7 +3,8 @@ from unittest.mock import patch, MagicMock
 import subprocess
 import json
 
-from engine.pipeline.scanner import run_gitleaks_scan, get_git_state
+from engine.pipeline.gitleaks_scanner import run_gitleaks_scan
+from engine.pipeline.scanner import get_git_state
 
 class TestGitleaksScan(unittest.TestCase):
     def test_run_gitleaks_scan_mock(self):
@@ -15,14 +16,14 @@ class TestGitleaksScan(unittest.TestCase):
         self.assertEqual(findings[0]["cwe_id"], "CWE-798")
         self.assertEqual(findings[0]["owasp_id"], "OWASP-A07")
 
-    @patch("engine.pipeline.scanner.get_git_state")
+    @patch("engine.pipeline.gitleaks_scanner.get_git_state")
     def test_run_gitleaks_scan_not_git_repo(self, mock_get_git_state):
         """Not a git repo returns empty findings gracefully."""
         mock_get_git_state.return_value = None
         findings = run_gitleaks_scan("/fake/path", use_mock=False)
         self.assertEqual(findings, [])
 
-    @patch("engine.pipeline.scanner.get_git_state")
+    @patch("engine.pipeline.gitleaks_scanner.get_git_state")
     @patch("subprocess.run")
     def test_run_gitleaks_scan_gitleaks_missing(self, mock_run, mock_get_git_state):
         """If gitleaks is not on the system PATH, fail gracefully."""
@@ -31,7 +32,7 @@ class TestGitleaksScan(unittest.TestCase):
         findings = run_gitleaks_scan("/fake/path", use_mock=False)
         self.assertEqual(findings, [])
 
-    @patch("engine.pipeline.scanner.get_git_state")
+    @patch("engine.pipeline.gitleaks_scanner.get_git_state")
     @patch("subprocess.run")
     def test_run_gitleaks_scan_success(self, mock_run, mock_get_git_state):
         """Parse gitleaks JSON output and format findings correctly."""

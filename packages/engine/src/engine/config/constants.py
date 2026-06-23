@@ -152,10 +152,6 @@ AI_PARALLEL_WORKERS = get_int_env(
 GITLEAKS_ENABLED = _nested_get(_settings, ["gitleaks", "enabled"], True)
 GITLEAKS_TIMEOUT = _nested_get(_settings, ["gitleaks", "timeout_seconds"], 120)
 
-# -- Ruff settings --------------------------------------------------------
-RUFF_ENABLED = _nested_get(_settings, ["ruff", "enabled"], True)
-RUFF_TIMEOUT = _nested_get(_settings, ["ruff", "timeout_seconds"], 60)
-
 # -- OSV / SCA settings ---------------------------------------------------
 OSV_ENABLED = _nested_get(_settings, ["osv", "enabled"], True)
 OSV_TIMEOUT = _nested_get(_settings, ["osv", "timeout_seconds"], 30)

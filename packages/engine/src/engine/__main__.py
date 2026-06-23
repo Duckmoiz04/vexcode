@@ -217,7 +217,9 @@ def run_analysis(args: argparse.Namespace) -> None:
 
     try:
         # Lazy imports: only load pipeline modules when scan path is taken
-        from engine.pipeline.scanner import run_scan_phase, get_git_state, run_gitleaks_scan, run_ruff_scan, run_osv_scan
+        from engine.pipeline.scanner import run_scan_phase, get_git_state
+        from engine.pipeline.gitleaks_scanner import run_gitleaks_scan
+        from engine.pipeline.osv_scanner import run_osv_scan
         from engine.pipeline.enricher import enrich_findings
         from engine.pipeline.resolver import resolve_phase
         from engine.pipeline.reporter import assemble_report, write_report, export_markdown
@@ -243,18 +245,7 @@ def run_analysis(args: argparse.Namespace) -> None:
                 logger.info(f"Gitleaks added {len(gitleaks_findings)} secret finding(s).")
             emit_progress("scan", f"Secret scan complete. Total: {len(findings)} finding(s).", current=3, total=5)
 
-        # 1c. Ruff lint scan (additive — merge findings)
-        from engine.config.constants import RUFF_ENABLED
-        if RUFF_ENABLED:
-            emit_progress("scan", "Running Ruff lint scan...", current=4, total=5)
-            ruff_findings = run_ruff_scan(args.target, args.mock_scan)
-            if ruff_findings:
-                findings.extend(ruff_findings)
-                scan_results["findings"] = findings
-                logger.info(f"Ruff added {len(ruff_findings)} lint finding(s).")
-            emit_progress("scan", f"Ruff scan complete. Total: {len(findings)} finding(s).", current=4, total=5)
-
-        # 1d. OSV dependency vulnerability scan (additive — merge findings)
+        # 1c. OSV dependency vulnerability scan (additive — merge findings)
         from engine.config.constants import OSV_ENABLED
         if OSV_ENABLED:
             emit_progress("scan", "Running OSV dependency vulnerability scan...", current=5, total=5)
