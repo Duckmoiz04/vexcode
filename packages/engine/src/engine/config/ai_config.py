@@ -209,8 +209,8 @@ def is_agent_enabled(name: str) -> bool:
 def get_resolved_provider_for_agent(agent_name: str) -> ProviderConfig | None:
     """Resolve the provider config that *agent_name* is assigned to.
 
-    Returns ``None`` if the agent is unknown, its provider is unknown, or the
-    provider is disabled.
+    Returns ``None`` if the agent is unknown, its provider is unknown, the
+    provider is disabled, or the provider requires an API key but lacks one.
     """
     agent = get_agent_config(agent_name)
     if agent is None or not agent.enabled:
@@ -222,6 +222,10 @@ def get_resolved_provider_for_agent(agent_name: str) -> ProviderConfig | None:
             agent_name, agent.provider,
         )
         return None
+
+    if provider.requires_key and not provider.api_key:
+        return None
+
     # Agent-level model override — return a copy to avoid mutating the cached object
     if agent.model:
         import copy

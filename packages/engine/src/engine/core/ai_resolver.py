@@ -135,8 +135,8 @@ def _cache_put(
 
 # --- Smart AI trigger: severity + confidence gate ---
 
-_AI_WORTHY_SEVERITIES = frozenset({"ERROR", "WARNING"})
-_AI_WORTHY_CONFIDENCES = frozenset({"HIGH"})
+_AI_WORTHY_SEVERITIES = frozenset({"ERROR", "WARNING", "HIGH", "CRITICAL"})
+_AI_WORTHY_CONFIDENCES = frozenset({"HIGH", "MEDIUM"})
 
 
 def _should_skip_ai_call(finding: Dict[str, Any]) -> bool:
