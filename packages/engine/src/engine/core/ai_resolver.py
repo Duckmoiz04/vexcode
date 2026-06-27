@@ -140,11 +140,8 @@ _AI_WORTHY_CONFIDENCES = frozenset({"HIGH", "MEDIUM"})
 
 
 def _should_skip_ai_call(finding: Dict[str, Any]) -> bool:
-    severity = str(finding.get("severity", "")).upper()
-    confidence = str(finding.get("confidence", "")).upper()
-    if severity in _AI_WORTHY_SEVERITIES and confidence in _AI_WORTHY_CONFIDENCES:
-        return False
-    return True
+    # Temporarily disabled smart gate filter so that all findings are resolved via AI
+    return False
 
 # --- Pipeline metrics ---
 
