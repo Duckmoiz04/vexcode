@@ -4,14 +4,84 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2d30c51a-e0d6-43e5-a742-e5369ad6954a" name="Changes" comment="" />
+    <list default="true" id="2d30c51a-e0d6-43e5-a742-e5369ad6954a" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.claude/hooks/.logs/hook-log.jsonl" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/hooks/.logs/hook-log.jsonl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/AGENTS.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/__tests/server.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/__tests/server.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/bridge.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/bridge.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-DHjvRfEO.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-D_G1Rcyp.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/reports.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/reports.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/scan.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/scan.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/services/reportService.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/services/reportService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/conf/settings.toml" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/conf/settings.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/config_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/config_cli.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_prompts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/constants.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/iso25010_taxonomy.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/iso25010_taxonomy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/ai_resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/ai_resolver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/ast_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/ast_graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/complexity.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/complexity.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/scanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/enricher.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/enricher.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/gitleaks_scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/gitleaks_scanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/osv_scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/osv_scanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/resolver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/sarif_builder.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/sarif_builder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_ai_resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_ai_resolver.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_ai_resolver_parallel.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_ai_resolver_parallel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_ast_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_ast_graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_complexity.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_complexity.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_iso25010_taxonomy.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_iso25010_taxonomy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_pipeline.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_scanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/CodeInspector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/CodeInspector.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/IssueList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/IssueList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/ScanModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/ScanModal.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/code-inspector/ChatPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/code-inspector/ChatPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/DashboardPage.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/header/Header.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/header/Header.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/header/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/header/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/header/HeaderNav.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/header/HeaderNav.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/header/HeaderNav.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/header/HeaderNav.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/SettingsDrawer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/SettingsDrawer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/constants.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/useSettingsDrawer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/useSettingsDrawer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/FileTree.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/FindingsList.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/FindingsList.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/FindingsList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/FindingsList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/SidebarPanel.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/SidebarPanel.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/SidebarPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/SidebarPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/context/AIProviderContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/context/AIProviderContext.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useChat.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useReports.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useReports.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useReports.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useReports.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/pages/DashboardPage.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/pages/IssuesPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/pages/IssuesPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/pages/SecurityHotspotsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/pages/SecurityHotspotsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/utils/sarifAdapter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/utils/sarifAdapter.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="1323" />
+    <option name="cachedIndexableFilesCount" value="1360" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -123,6 +193,11 @@
       </map>
     </option>
   </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\DATN2\process\features\vexcode\reports\chuong-3\old-version" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -153,7 +228,11 @@
       <workItem from="1782054154220" duration="8107000" />
       <workItem from="1782096539217" duration="19643000" />
       <workItem from="1782129261357" duration="216000" />
-      <workItem from="1782129496413" duration="21064000" />
+      <workItem from="1782129496413" duration="22672000" />
+      <workItem from="1782286379321" duration="29266000" />
+      <workItem from="1782353271929" duration="42424000" />
+      <workItem from="1782438033274" duration="28315000" />
+      <workItem from="1782526923784" duration="20177000" />
     </task>
     <servers />
   </component>

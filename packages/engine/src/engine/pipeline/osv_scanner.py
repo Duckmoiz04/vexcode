@@ -6,6 +6,7 @@ from typing import Dict, Any, List, Optional
 import requests
 
 from engine.utils.logger import get_logger
+from engine.config.iso25010_taxonomy import compute_finding_id
 
 logger = get_logger(__name__)
 
@@ -106,7 +107,7 @@ def run_osv_scan(target: str, use_mock: bool = False) -> List[Dict[str, Any]]:
                 "category": "security",
                 "scanner": "osv",
                 "cwe_id": "",
-                "finding_type": "vulnerability",
+                "finding_type": "confirmed",
             }
         ]
 
@@ -152,17 +153,24 @@ def run_osv_scan(target: str, use_mock: bool = False) -> List[Dict[str, Any]]:
             db_specific = vuln.get("database_specific", {})
             cwe = db_specific.get("cwe_ids", [""])[0] if isinstance(db_specific, dict) else ""
 
+            dep_manifest = dep["manifest"]
+            dep_name = dep["name"]
+
             finding = {
                 "rule_id": f"osv/{vuln_id}",
-                "message": f"{dep['name']} {dep['version']}: {summary}" if summary else f"{dep['name']} {dep['version']}: {vuln_id}",
+                "message": f"{dep_name} {dep['version']}: {summary}" if summary else f"{dep_name} {dep['version']}: {vuln_id}",
                 "severity": "error" if cve else "warning",
-                "file": dep["manifest"],
+                "file": dep_manifest,
                 "line": 1,
                 "category": "security",
                 "scanner": "osv",
                 "cwe_id": cwe,
                 "owasp_id": "OWASP-A06",
-                "finding_type": "vulnerability",
+                "finding_type": "confirmed",
+                "id": compute_finding_id(
+                    dep_manifest, 1, vuln_id,
+                    content_hint=dep_name,
+                ),
             }
             findings.append(finding)
 

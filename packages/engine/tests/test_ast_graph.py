@@ -179,31 +179,37 @@ class TestASTGraph(unittest.TestCase):
         }).encode("utf-8")
         mock_post.return_value = mock_response
 
-        findings = [
-            {
-                "file": "example.py",
-                "line": 12,
-                "rule_id": "python.lang.security.audit.dangerous-exec",
-                "message": "dangerous exec vulnerability",
-                "ast_context": MOCK_AST_CONTEXTS[("example.py", 12)]
-            }
-        ]
+        # Disable cache so this test sees its own AI response, not a cached stale result
+        from unittest.mock import patch
+        with patch("engine.core.ai_resolver._cache_get", return_value=None):
 
-        resolutions = resolve_findings(findings, use_mock=False)
-        self.assertIn("python.lang.security.audit.dangerous-exec", resolutions)
-        
-        # Verify requests.post payload contains detailed AST text inside messages
-        args, kwargs = mock_post.call_args
-        json_data = kwargs.get('json', {})
-        messages = json_data.get('messages', [])
-        user_message = next(msg['content'] for msg in messages if msg['role'] == 'user')
-        
-        # Verify presence of AST details in the new compact per-rule prompt format
-        self.assertIn("Symbol: run_dangerous_code (Function)", user_message)
-        self.assertIn("File: example.py (Line 12)", user_message)
-        self.assertIn("Callers:", user_message)
-        self.assertIn("process_request", user_message)
-        self.assertIn("Risk:", user_message)
+            findings = [
+                {
+                    "file": "example.py",
+                    "line": 12,
+                    "rule_id": "python.lang.security.audit.dangerous-exec",
+                    "message": "dangerous exec vulnerability",
+                    "severity": "HIGH",
+                    "confidence": "HIGH",
+                    "ast_context": MOCK_AST_CONTEXTS[("example.py", 12)]
+                }
+            ]
+
+            resolutions = resolve_findings(findings, use_mock=False)
+            self.assertIn("python.lang.security.audit.dangerous-exec", resolutions)
+            
+            # Verify requests.post payload contains detailed AST text inside messages
+            args, kwargs = mock_post.call_args
+            json_data = kwargs.get('json', {})
+            messages = json_data.get('messages', [])
+            user_message = next(msg['content'] for msg in messages if msg['role'] == 'user')
+            
+            # Verify presence of AST details in the enhanced GitNexus-RAG prompt format
+            self.assertIn("Full source of 'run_dangerous_code' (Function)", user_message)
+            self.assertIn("File: example.py (Line 12)", user_message)
+            self.assertIn("Callers that depend on this symbol", user_message)
+            self.assertIn("process_request", user_message)
+            self.assertIn("Risk level:", user_message)
 
 if __name__ == '__main__':
     unittest.main()

@@ -53,7 +53,7 @@ export const AgentAssignmentSection: React.FC<AgentAssignmentSectionProps> = ({
           const agent = agents[name] ?? { provider: '', model: '', enabled: false };
           // Use dynamically fetched models if available, else fall back to hardcoded list
           const provModels = agent.provider
-            ? (providerConfigs[agent.provider]?.fetchedModels ?? PROVIDERS[agent.provider]?.models ?? [])
+            ? (providerConfigs[agent.provider]?.fetchedModels ?? [])
             : [];
           return (
             <div key={name} className="flex items-center gap-2 py-2 px-3 rounded-lg border border-card-border/40 bg-bg-primary/10">
@@ -61,17 +61,13 @@ export const AgentAssignmentSection: React.FC<AgentAssignmentSectionProps> = ({
                 {AGENT_LABELS[name] ?? name}
               </span>
               <div className="relative flex-1">
-                  <select
-                    value={agent.provider || ''}
-                    onChange={(e) => {
-                      const prov = e.target.value;
-                      // Prefer dynamically fetched models; fall back to hardcoded list
-                      const firstModel = prov
-                        ? (providerConfigs[prov]?.fetchedModels?.[0]?.id ?? PROVIDERS[prov]?.models?.[0]?.id ?? '')
-                        : '';
-                      onAgentChange(name, 'provider', prov);
-                      onAgentChange(name, 'model', firstModel);
-                    }}
+                    <select
+                      value={agent.provider || ''}
+                      onChange={(e) => {
+                        const prov = e.target.value;
+                        onAgentChange(name, 'provider', prov);
+                        onAgentChange(name, 'model', '');
+                      }}
                   disabled={disabled}
 					className="w-full bg-bg-primary text-text-primary border border-card-border rounded-md px-3 py-2 text-[13px] outline-none cursor-pointer focus:border-accent transition-all appearance-none disabled:cursor-not-allowed"
                   >
@@ -92,6 +88,7 @@ export const AgentAssignmentSection: React.FC<AgentAssignmentSectionProps> = ({
                       disabled={disabled}
 className="w-full bg-bg-primary text-text-primary border border-card-border rounded-md px-3 py-2 text-[13px] outline-none cursor-pointer focus:border-accent transition-all appearance-none disabled:cursor-not-allowed"
                     >
+                      <option value="">-- Select a model --</option>
                       {provModels.map((m) => (
                         <option key={m.id} value={m.id}>{m.name}</option>
                       ))}

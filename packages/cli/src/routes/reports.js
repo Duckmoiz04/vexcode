@@ -1,6 +1,6 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, basename, dirname } from 'node:path';
-import { listProjects, listProjectReports, getReportContent, getLatestReportContent } from '../services/reportService.js';
+import { listProjects, listProjectReports, getReportContent, getLatestReportContent, deleteReport, deleteAllReports } from '../services/reportService.js';
 import { readSarifSidecar } from '../services/formatDetector.js';
 import { getApiKey } from '../middleware/auth.js';
 
@@ -168,6 +168,30 @@ export function registerReportRoutes(app, deps) {
     } catch (error) {
       res.write(`data: ${JSON.stringify({ type: 'error', error: error.message })}\n\n`);
       res.end();
+    }
+  });
+
+  app.delete('/api/report/:project/:id', (req, res) => {
+    try {
+      const result = deleteReport(reportsBaseDir, req.params.project, req.params.id);
+      if (!result.success) {
+        return res.status(404).json(result);
+      }
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  });
+
+  app.delete('/api/reports/:project', (req, res) => {
+    try {
+      const result = deleteAllReports(reportsBaseDir, req.params.project);
+      if (!result.success) {
+        return res.status(404).json(result);
+      }
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
     }
   });
 }

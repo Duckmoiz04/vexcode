@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ChevronDown, Folder, File } from 'lucide-react';
+import { ChevronDown, Folder, FolderOpen, FileCode2 } from 'lucide-react';
 import type { Finding } from '../../types';
 import { getRelativePath } from './utils';
 
@@ -107,34 +107,37 @@ export const FileTree: React.FC<FileTreeProps> = ({
   };
 
   const renderTreeNode = (node: TreeNode, depth = 0): React.ReactNode => {
-    const indent = depth * 12;
+    const indent = depth * 20;
     const severity = getHighestSeverity(node);
 
     if (node.type === 'file') {
       const findingsCount = node.indices?.length || 0;
       const isActive = selectedFilePath && node.path.replace(/\\/g, '/') === selectedFilePath.replace(/\\/g, '/');
-      
-      const badgeClass = severity === 'error'
-        ? 'bg-danger/10 text-danger border-danger/30'
+      const badgeBg = severity === 'error'
+        ? 'bg-error/15 text-error'
         : severity === 'warning'
-        ? 'bg-warning/10 text-warning border-warning/30'
-        : 'bg-bg-tertiary text-text-tertiary border-card-border';
+        ? 'bg-warning/15 text-warning'
+        : null;
 
       return (
         <div
           key={node.path}
-          style={{ paddingLeft: `${indent + 8}px` }}
+          style={{ paddingLeft: `${indent + 18}px` }}
           onClick={() => onSelectFilePath(node.path)}
-          className={`flex items-center gap-1.5 py-1 pr-1 text-[13px] font-medium font-mono rounded cursor-pointer transition-all ${
+          className={`flex items-center gap-4 h-[26px] pr-4 text-[12px] font-mono rounded cursor-pointer transition-all ${
             isActive
               ? 'bg-accent/10 border-l-2 border-accent text-text-primary'
-              : 'hover:bg-bg-tertiary/50 text-text-secondary hover:text-text-primary'
+              : 'hover:bg-bg-tertiary/50 text-text-primary/90 hover:text-text-primary'
           }`}
         >
-          <div className="w-4 h-4 shrink-0" />
-          <File className="h-4 w-4 shrink-0 text-info" />
-          <span className="truncate flex-1">{node.name}</span>
-          <span className={`px-1.5 py-0.2 rounded text-xs font-sans border ${badgeClass}`}>
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <div className="w-[14px] h-[14px] shrink-0" />
+            <div className="flex items-center gap-1 min-w-0">
+              <FileCode2 className="h-4 w-4 shrink-0 text-text-tertiary" />
+              <span className="truncate">{node.name}</span>
+            </div>
+          </div>
+          <span className={`inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 rounded-md text-xs font-mono font-semibold leading-none ${badgeBg || 'text-text-tertiary'}`}>
             {findingsCount}
           </span>
         </div>
@@ -151,22 +154,22 @@ export const FileTree: React.FC<FileTreeProps> = ({
         return a.localeCompare(b);
       });
 
-      const folderColorClass = severity === 'error'
-        ? 'text-danger/70'
-        : severity === 'warning'
-        ? 'text-warning/80'
-        : 'text-text-tertiary/60';
+      const folderColorClass = 'text-warning/80';
 
       const folderElement = !isRoot && (
         <div
           key={node.path}
-          style={{ paddingLeft: `${indent + 8}px` }}
+          style={{ paddingLeft: `${indent + 18}px` }}
           onClick={() => onToggleFolder(node.path)}
-          className="flex items-center gap-1.5 py-1 pr-1 text-[13px] font-medium rounded cursor-pointer text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/50 transition-all"
+          className="flex items-center gap-4 h-[26px] pr-4 text-[12px] font-mono rounded cursor-pointer text-text-primary/90 hover:text-text-primary hover:bg-bg-tertiary/50 transition-all"
         >
-          <ChevronDown className={`h-4 w-4 shrink-0 text-text-tertiary transition-transform duration-150 ${isExpanded ? '' : '-rotate-90'}`} />
-          <Folder className={`h-4 w-4 shrink-0 ${folderColorClass}`} />
-          <span className="truncate flex-1">{node.name}</span>
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <ChevronDown className={`h-[14px] w-[14px] shrink-0 text-text-tertiary transition-transform duration-150 ${isExpanded ? '' : '-rotate-90'}`} />
+            <div className="flex items-center gap-1 min-w-0">
+              {isExpanded ? <FolderOpen className={`h-4 w-4 shrink-0 ${folderColorClass}`} /> : <Folder className={`h-4 w-4 shrink-0 ${folderColorClass}`} />}
+              <span className="truncate">{node.name}</span>
+            </div>
+          </div>
         </div>
       );
 

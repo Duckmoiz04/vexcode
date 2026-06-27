@@ -5,6 +5,7 @@ from typing import Dict, Any, List, Optional
 
 from engine.utils.logger import get_logger
 from engine.pipeline.scanner import get_git_state
+from engine.config.iso25010_taxonomy import compute_finding_id
 
 logger = get_logger(__name__)
 
@@ -74,16 +75,26 @@ def run_gitleaks_scan(target: str, use_mock: bool = False) -> List[Dict[str, Any
             raw = json.loads(raw_output)
             items = raw if isinstance(raw, list) else raw.get("Findings", [])
             for item in items:
+                finding_file = item.get("File", "")
+                finding_rule = f"gitleaks/{item.get('RuleID', 'unknown')}"
+                finding_line = item.get("StartLine", 0)
+                code_text = item.get("Match", "")
+
                 finding = {
-                    "rule_id": f"gitleaks/{item.get('RuleID', 'unknown')}",
+                    "rule_id": finding_rule,
                     "message": f"Secret detected: {item.get('Description', 'potential secret')}",
                     "severity": "error",
-                    "file": item.get("File", ""),
-                    "line": item.get("StartLine", 0),
+                    "file": finding_file,
+                    "line": finding_line,
+                    "code_text": code_text,
                     "category": "security",
                     "scanner": "gitleaks",
                     "cwe_id": "CWE-798",
                     "owasp_id": "OWASP-A07",
+                    "id": compute_finding_id(
+                        finding_file, finding_line, finding_rule,
+                        content_hint=code_text,
+                    ),
                 }
                 findings.append(finding)
         except json.JSONDecodeError:

@@ -96,6 +96,57 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
     }
   }, [loadHistory]);
 
+  const handleDeleteReport = useCallback(async (project: string, reportId: string) => {
+    try {
+      const res = await apiFetch(`/api/report/${project}/${reportId}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Xóa báo cáo thành công', 'success');
+        
+        await loadProjects();
+
+        if (currentReportId === reportId) {
+          const index = reports.findIndex(r => r.id === reportId);
+          if (reports.length > 1) {
+            const nextReport = reports[index === 0 ? 1 : 0];
+            setCurrentReportId(nextReport.id);
+            await loadHistory(project, false);
+          } else {
+            handleSelectProject(null);
+          }
+        } else {
+          await loadHistory(project, false);
+        }
+      } else {
+        showToast(data.error || 'Lỗi khi xóa báo cáo', 'error');
+      }
+    } catch (err) {
+      console.error('Failed to delete report:', err);
+      showToast('Lỗi khi xóa báo cáo', 'error');
+    }
+  }, [currentReportId, reports, loadProjects, loadHistory, handleSelectProject, showToast]);
+
+  const handleDeleteAllReports = useCallback(async (project: string) => {
+    try {
+      const res = await apiFetch(`/api/reports/${project}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Xóa tất cả báo cáo thành công', 'success');
+        handleSelectProject(null);
+        await loadProjects();
+      } else {
+        showToast(data.error || 'Lỗi khi xóa toàn bộ báo cáo', 'error');
+      }
+    } catch (err) {
+      console.error('Failed to delete all reports:', err);
+      showToast('Lỗi khi xóa toàn bộ báo cáo', 'error');
+    }
+  }, [loadProjects, handleSelectProject, showToast]);
+
   // Watch currentReportId or currentPage changes to load report details
   useEffect(() => {
     if (currentProject && currentReportId) {
@@ -122,5 +173,7 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
     handleSelectProject,
     handlePageChange,
     handleSetPageSize,
+    handleDeleteReport,
+    handleDeleteAllReports,
   };
 }

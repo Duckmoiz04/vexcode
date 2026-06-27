@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { HelpCircle, Send, X } from 'lucide-react';
 import type { ChatMessage } from '../../types';
+import { Markdown } from '../Markdown';
+
 
 interface ChatPanelProps {
   isOpen: boolean;
@@ -73,23 +75,23 @@ export const ChatPanel: React.FC<ChatPanelProps> = ({
           messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex flex-col p-3 rounded-xl text-xs max-w-[85%] leading-relaxed shadow-sm ${
+              className={
                 msg.role === 'user'
-                  ? 'bg-accent/10 border border-accent/25 text-text-primary self-end ml-auto rounded-tr-none'
-                  : 'bg-bg-secondary/90 border border-card-border/60 text-text-primary mr-auto rounded-tl-none'
-              }`}
+                  ? 'flex flex-col p-3 rounded-xl text-xs max-w-[85%] leading-relaxed shadow-sm bg-accent/10 border border-accent/25 text-text-primary self-end ml-auto rounded-tr-none'
+                  : 'flex flex-col py-1.5 text-xs w-full leading-relaxed text-text-primary'
+              }
             >
-              <span className="text-[8.5px] font-extrabold uppercase tracking-wider mb-1 text-text-tertiary select-none">
+              <span className="text-[8.5px] font-extrabold uppercase tracking-wider mb-1.5 text-text-tertiary select-none">
                 {msg.role === 'user' ? 'You' : 'AI Assistant'}
               </span>
-              <p className="whitespace-pre-wrap font-sans text-text-primary text-[11.5px]">{msg.content}</p>
+              <Markdown content={msg.content} />
             </div>
           ))
         )}
         {isChatLoading && (
-          <div className="flex items-center gap-2.5 p-3 bg-bg-secondary/90 border border-card-border/60 rounded-xl text-xs text-text-secondary animate-pulse w-max rounded-tl-none mr-auto shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-accent animate-bounce" />
-            <span>AI is thinking...</span>
+          <div className="flex items-center gap-2 py-1 text-xs text-text-secondary animate-pulse w-full">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-bounce" />
+            <span className="text-[9px] uppercase font-bold tracking-wider text-text-tertiary select-none">AI is thinking...</span>
           </div>
         )}
         <div ref={chatEndRef} />

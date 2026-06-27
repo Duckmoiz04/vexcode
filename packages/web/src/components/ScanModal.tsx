@@ -55,11 +55,12 @@ export const ScanModal: React.FC<ScanModalProps> = ({
 }) => {
   if (!isScanning) return null;
 
-  const currentStep = scanProgress ? PHASE_MAP[scanProgress.phase] ?? -1 : -1;
+  // When no progress event has arrived yet (scanProgress is null), show step 0
+  // as active so the UI immediately lights up on scan start.
+  const currentStep = scanProgress ? (PHASE_MAP[scanProgress.phase] ?? 0) : 0;
   const pct = scanProgress?.percentage ?? 0;
 
   const getStepStatus = (stepIndex: number) => {
-    if (currentStep < 0) return 'pending';
     if (stepIndex < currentStep) return 'completed';
     if (stepIndex === currentStep) return 'active';
     return 'pending';

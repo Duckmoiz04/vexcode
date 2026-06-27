@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { apiFetch } from '../utils/apiClient';
+import { apiFetch, getApiKey } from '../utils/apiClient';
 import type { Finding, CallerInfo, BlastRadiusItem, AiResolution, ChatMessage } from '../types';
 
 function buildFindingContext(finding: Finding, resolution: AiResolution | undefined): string {
@@ -50,6 +50,7 @@ interface UseChatOptions {
   aiModel: string;
   aiTemperature: number;
   aiMaxTokens: number;
+  stream: boolean;
 }
 
 interface UseChatResult {
@@ -69,6 +70,7 @@ export function useChat({
   aiModel,
   aiTemperature,
   aiMaxTokens,
+  stream,
 }: UseChatOptions): UseChatResult {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState('');
@@ -88,33 +90,125 @@ export function useChat({
       content: `You are an expert security engineer helping analyze vulnerabilities. You have context about the current vulnerability being reviewed:\n\n${findingContext}\n\nProvide helpful, detailed answers about this vulnerability. Explain why it's dangerous, how it affects the codebase, and best practices for fixing it. Be concise but thorough.`,
     };
 
+    function sanitizeText(text: string): string {
+      return text.replace(/[^\x00-\xFF]/g, (ch) => {
+        const map: Record<string, string> = {
+          '\u2022': '*',   '\u2023': '>',
+          '\u25E6': 'o',   '\u2013': '-',
+          '\u2014': '--',  '\u2018': "'",
+          '\u2019': "'",   '\u201C': '"',
+          '\u201D': '"',   '\u2026': '...',
+          '\u00A0': ' ',
+        };
+        return map[ch] ?? '';
+      });
+    }
+
     const messagesToSend = [
-      systemMessage,
-      ...chatMessages.map((m) => ({ role: m.role, content: m.content })),
-      { role: 'user', content: message },
+      { ...systemMessage, content: sanitizeText(systemMessage.content) },
+      ...chatMessages.map((m) => ({ role: m.role, content: sanitizeText(m.content) })),
+      { role: 'user' as const, content: sanitizeText(message) },
     ];
 
-    try {
-      const response = await apiFetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: messagesToSend,
-          provider: selectedProvider,
-          apiKey,
-          baseUrl: apiBaseUrl,
-          model: aiModel,
-          temperature: aiTemperature,
-          maxTokens: aiMaxTokens,
-        }),
-      });
+    const bodyPayload = {
+      messages: messagesToSend,
+      provider: selectedProvider,
+      apiKey,
+      baseUrl: apiBaseUrl,
+      model: aiModel,
+      temperature: aiTemperature,
+      maxTokens: aiMaxTokens,
+      stream,
+    };
 
-      const data = await response.json();
-      if (data.success && data.response) {
-        setChatMessages((prev) => [...prev, { role: 'assistant', content: data.response }]);
+    try {
+      if (stream) {
+        let accumulatedContent = '';
+        let hasError = false;
+
+        setChatMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
+
+        let streamHeaders: Record<string, string> = { 'Content-Type': 'application/json' };
+        try {
+          const token = await getApiKey();
+          if (token) streamHeaders['Authorization'] = `Bearer ${token}`;
+        } catch {}
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: streamHeaders,
+          body: JSON.stringify(bodyPayload),
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `Request failed (${response.status})`);
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error('Response body is not readable');
+
+        const decoder = new TextDecoder();
+        let buf = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buf += decoder.decode(value, { stream: true });
+          const lines = buf.split('\n');
+          buf = lines.pop() || '';
+
+          for (const ln of lines) {
+            const trimmed = ln.trim();
+            if (trimmed.startsWith('data: ')) {
+              const data = trimmed.slice(6).trim();
+              if (data === '[DONE]') continue;
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.error) {
+                  hasError = true;
+                  accumulatedContent = parsed.error;
+                } else if (parsed.content) {
+                  accumulatedContent += parsed.content;
+                }
+                setChatMessages((prev) => {
+                  const msgs = [...prev];
+                  msgs[msgs.length - 1] = { role: 'assistant', content: accumulatedContent };
+                  return msgs;
+                });
+                // Yield to a macrotask so React flushes batched state updates
+                // and re-renders — otherwise React 18+ batches all SSE events
+                // from a single reader.read() into one render, losing streaming.
+                await new Promise(resolve => setTimeout(resolve, 0));
+              } catch {}
+            }
+          }
+        }
+
+        if (hasError && !accumulatedContent) {
+          setChatMessages((prev) => {
+            const msgs = [...prev];
+            msgs[msgs.length - 1] = {
+              role: 'assistant',
+              content: 'Sorry, I encountered an error. Please check your AI settings and try again.',
+            };
+            return msgs;
+          });
+        }
       } else {
-        const reason = data.error || 'Sorry, I encountered an error. Please check your AI settings and try again.';
-        setChatMessages((prev) => [...prev, { role: 'assistant', content: reason }]);
+        const response = await apiFetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyPayload),
+        });
+
+        const data = await response.json();
+        if (data.success && data.response) {
+          setChatMessages((prev) => [...prev, { role: 'assistant', content: data.response }]);
+        } else {
+          const reason = data.error || 'Sorry, I encountered an error. Please check your AI settings and try again.';
+          setChatMessages((prev) => [...prev, { role: 'assistant', content: reason }]);
+        }
       }
     } catch (err: unknown) {
       const errMsg = err instanceof Error ? err.message : 'Failed to fetch AI response';

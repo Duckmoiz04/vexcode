@@ -26,7 +26,7 @@ export type FindingStatus = 'open' | 'applied' | 'false_positive' | 'ignored';
 export type ScanStatus = 'new' | 'persisting' | 'resolved' | 'regressed';
 
 /** AI-powered classification: how the AI triaged this finding. */
-export type FindingType = 'vulnerability' | 'hotspot' | 'false_positive';
+export type FindingType = 'confirmed' | 'hotspot' | 'false_positive';
 
 export interface Finding {
   id?: string;                   // Stable hash of (file, line, rule_id) - set by scanner
@@ -43,11 +43,21 @@ export interface Finding {
   status?: FindingStatus;
   /** Cross-scan classification from engine comparison with previous report. */
   scan_status?: ScanStatus;
-  /** AI triage classification: vulnerability/hotspot/false_positive. Populated by engine after AI resolution. */
+  /** AI triage classification: confirmed/hotspot/false_positive. Populated by engine after AI resolution. */
   finding_type?: FindingType;
   /** @deprecated Use status === 'applied' instead. Kept for backward compat. */
   _applied?: boolean;
   dataflow_trace?: DataflowTrace;
+  cwe_id?: string;
+  confidence?: string;
+  precision?: string;
+  enclosing_function?: string;
+  enclosing_class?: string;
+  duplicate?: {
+    other_file: string;
+    other_start: number;
+    match_lines: number;
+  };
 }
 
 export interface DataflowLocation {
@@ -218,6 +228,7 @@ export interface AiSettings {
   enabled: boolean;
   providers: Record<string, AiProviderConfig>;
   agents: Record<string, AiAgentConfig>;
+  stream?: boolean;
 }
 
 // ─── UI Component Props ───────────────────────────────────────────────────────

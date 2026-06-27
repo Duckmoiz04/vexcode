@@ -54,6 +54,8 @@ interface SarifResult {
     id?: string;
     status?: string;
     aiResolution?: AiResolution;
+    confidence?: string;
+    precision?: string;
     [key: string]: unknown;
   };
 }
@@ -140,6 +142,16 @@ function resultToFinding(result: SarifResult): Finding {
   const propsStatus = result.properties?.status;
   if (propsStatus && ['open', 'applied', 'false_positive', 'ignored'].includes(propsStatus as string)) {
     finding.status = propsStatus as Finding['status'];
+  }
+
+  const propsConfidence = result.properties?.confidence;
+  if (propsConfidence && typeof propsConfidence === 'string') {
+    finding.confidence = propsConfidence;
+  }
+
+  const propsPrecision = result.properties?.precision;
+  if (propsPrecision && typeof propsPrecision === 'string') {
+    finding.precision = propsPrecision;
   }
 
   return finding;

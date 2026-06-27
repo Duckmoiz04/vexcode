@@ -141,7 +141,10 @@ class TestGetAiConfig:
     @pytest.fixture(autouse=True)
     def _reset_ai_config_cache(self, mocker):
         """Reset the config cache before each test so env var patches take effect."""
+        from pathlib import Path
         mocker.patch("engine.config.ai_config._PROVIDERS", None)
+        mocker.patch("engine.config.constants._SETTINGS", None)
+        mocker.patch("engine.config.constants._USER_CONFIG_PATH", Path("/nonexistent/settings.toml"))
 
     def test_no_provider_returns_empty(self, mocker):
         mocker.patch("engine.config.ai_config._reload_env_file")
@@ -235,9 +238,11 @@ class TestResolveFindings:
         """
         mocker.patch("engine.config.ai_config._PROVIDERS", None)
         mocker.patch("engine.core.ai_resolver.get_resolved_provider_for_agent", return_value=None)
+        mocker.patch("engine.core.ai_resolver._cache_get", return_value=None)
+        mocker.patch("engine.core.ai_resolver._cache_put")
 
     def test_with_mocked_ai_response(self, mocker):
-        """resolve_findings with mock HTTP response returns parsed resolutions."""
+        """resolve_findings runs 3-stage pipeline: analyze → fix → review."""
         mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch("engine.core.ai_resolver.time.sleep")
         mocker.patch.dict(os.environ, {
@@ -247,21 +252,42 @@ class TestResolveFindings:
             "NINEROUTER_MODEL": "test-model",
         }, clear=True)
 
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.content = json.dumps({
-            "choices": [{
-                "message": {
-                    "content": json.dumps({
-                        "r0": {
-                            "suggestion": "Use safe subprocess instead of exec",
-                            "remediation_code": "import subprocess\nsubprocess.run(['echo', user_input])",
-                        },
-                    }),
-                },
-            }],
-        }).encode("utf-8")
-        mocker.patch("engine.core.ai_resolver.requests.post", return_value=mock_response)
+        def _stage_response(classification="confirmed", reasoning="exec with user input is exploitable"):
+            return json.dumps({
+                "choices": [{"message": {"content": json.dumps({
+                    "classification": classification,
+                    "reasoning": reasoning,
+                })}}],
+            })
+
+        def _fix_response(suggestion="Use safe subprocess instead of exec",
+                          remediation_code="import subprocess\nsubprocess.run(['echo', user_input])"):
+            return json.dumps({
+                "choices": [{"message": {"content": json.dumps({
+                    "suggestion": suggestion,
+                    "remediation_code": remediation_code,
+                })}}],
+            })
+
+        def _review_response(decision="approved", suggestion="Use safe subprocess instead of exec",
+                             remediation_code="import subprocess\nsubprocess.run(['echo', user_input])",
+                             review_comment="Fix is correct and minimal"):
+            return json.dumps({
+                "choices": [{"message": {"content": json.dumps({
+                    "decision": decision,
+                    "suggestion": suggestion,
+                    "remediation_code": remediation_code,
+                    "review_comment": review_comment,
+                })}}],
+            })
+
+        mock_responses = [
+            MagicMock(status_code=200, content=_stage_response().encode("utf-8")),
+            MagicMock(status_code=200, content=_fix_response().encode("utf-8")),
+            MagicMock(status_code=200, content=_review_response().encode("utf-8")),
+        ]
+        mocker.patch("engine.core.ai_resolver.requests.post", side_effect=mock_responses)
+        mocker.patch("engine.core.ai_resolver._cache_get", return_value=None)
 
         findings = [{
             "file": "example.py",
@@ -269,6 +295,8 @@ class TestResolveFindings:
             "rule_id": "python.lang.security.audit.dangerous-exec",
             "message": "dangerous exec vulnerability",
             "code_text": "exec(user_input)",
+            "severity": "HIGH",
+            "confidence": "HIGH",
         }]
 
         resolutions = resolve_findings(findings, use_mock=False)
@@ -277,12 +305,10 @@ class TestResolveFindings:
                 == "Use safe subprocess instead of exec")
         assert "subprocess.run" in resolutions[
             "python.lang.security.audit.dangerous-exec"]["remediation_code"]
+        assert resolutions["python.lang.security.audit.dangerous-exec"]["review_decision"] == "approved"
 
     def test_with_nvidia_multimodal_content_list(self, mocker):
-        """NVIDIA NIM multimodal models return content as a list of parts.
-
-        The resolver must flatten the text parts and parse the JSON payload.
-        """
+        """Pipeline handles NVIDIA multimodal content in stage responses."""
         mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch("engine.core.ai_resolver.time.sleep")
         mocker.patch.dict(os.environ, {
@@ -292,31 +318,26 @@ class TestResolveFindings:
             "NVIDIA_MODEL": "minimaxai/minimax-m3",
         }, clear=True)
 
-        mock_response = MagicMock()
-        mock_response.status_code = 200
-        mock_response.content = json.dumps({
-            "choices": [{
-                "finish_reason": "stop",
-                "message": {
-                    "content": [
-                        {"type": "text", "text": json.dumps({
-                            "r0": {
-                                "suggestion": "Use subprocess instead of exec",
-                                "remediation_code": "subprocess.run(['echo', x])",
-                            },
-                        })},
-                    ],
-                },
-            }],
-        }).encode("utf-8")
-        mocker.patch("engine.core.ai_resolver.requests.post", return_value=mock_response)
+        def _multimodal_response(data: dict) -> MagicMock:
+            return MagicMock(status_code=200, content=json.dumps({
+                "choices": [{"finish_reason": "stop", "message": {
+                    "content": [{"type": "text", "text": json.dumps(data)}],
+                }}],
+            }).encode("utf-8"))
+
+        mock_responses = [
+            _multimodal_response({"classification": "confirmed", "reasoning": "exec is reachable"}),
+            _multimodal_response({"suggestion": "use subprocess", "remediation_code": "subprocess.run(['echo', x])"}),
+            _multimodal_response({"decision": "approved", "suggestion": "use subprocess", "remediation_code": "subprocess.run(['echo', x])"}),
+        ]
+        mocker.patch("engine.core.ai_resolver.requests.post", side_effect=mock_responses)
+        mocker.patch("engine.core.ai_resolver._cache_get", return_value=None)
 
         findings = [{
-            "file": "example.py",
-            "line": 12,
+            "file": "example.py", "line": 12,
             "rule_id": "python.lang.security.audit.dangerous-exec",
-            "message": "dangerous exec",
-            "code_text": "exec(user_input)",
+            "message": "dangerous exec", "code_text": "exec(user_input)",
+            "severity": "HIGH", "confidence": "HIGH",
         }]
 
         resolutions = resolve_findings(findings, use_mock=False)
@@ -353,12 +374,14 @@ class TestResolveFindings:
             "line": 12,
             "rule_id": "test.rule",
             "message": "test",
+            "severity": "HIGH",
+            "confidence": "HIGH",
         }]
 
         resolutions = resolve_findings(findings, use_mock=False)
         assert "test.rule" in resolutions
         assert "False positive" in resolutions["test.rule"]["suggestion"]
-        assert "no text content" in resolutions["test.rule"]["suggestion"]
+        assert "empty_content" in resolutions["test.rule"]["ai_error"]
         assert resolutions["test.rule"]["remediation_code"] == ""
 
     def test_with_malformed_response_does_not_crash(self, mocker):
@@ -383,6 +406,8 @@ class TestResolveFindings:
             "line": 12,
             "rule_id": "test.rule",
             "message": "test",
+            "severity": "HIGH",
+            "confidence": "HIGH",
         }]
 
         # Should not raise
@@ -402,6 +427,8 @@ class TestResolveFindings:
         }, clear=True)
         mocker.patch("engine.core.ai_resolver.requests.post",
                       side_effect=requests.exceptions.ConnectionError("Connection refused"))
+        # Prevent cache from returning stale result from prior test
+        mocker.patch("engine.core.ai_resolver._cache_get", return_value=None)
 
         findings = [{
             "file": "example.py",
@@ -409,6 +436,8 @@ class TestResolveFindings:
             "rule_id": "python.lang.security.audit.dangerous-exec",
             "message": "dangerous exec vulnerability",
             "code_text": "exec(user_input)",
+            "severity": "HIGH",
+            "confidence": "HIGH",
         }]
 
         resolutions = resolve_findings(findings, use_mock=False)

@@ -368,6 +368,69 @@ MOCK_AST_CONTEXTS = {
     }
 }
 
+def search_similar_patterns(repo_name: str, code_text: str, rule_id: str, limit: int = 5) -> List[Dict[str, Any]]:
+    """Search the codebase for similar vulnerable patterns using GitNexus semantic search.
+
+    Uses `gitnexus query` to find execution flows and symbols that match the
+    vulnerability pattern, then enriches with source code where available.
+
+    Args:
+        repo_name: GitNexus repository name (e.g., "vexcode")
+        code_text: The vulnerable code snippet to search for
+        rule_id: The Semgrep rule ID (used for context-aware search)
+        limit: Max processes to return (default 5)
+
+    Returns:
+        List of matching results with keys: name, process, symbols_count, file, match_score
+    """
+    if not is_gitnexus_available():
+        return []
+
+    # Normalize rule_id for better query: take the last segment
+    # e.g., "python.lang.security.audit.dangerous-exec" → "dangerous-exec"
+    rule_topic = rule_id.rsplit(".", 1)[-1].replace("-", " ").replace("_", " ")
+    search_query = f"{rule_topic} {code_text[:100]}"
+
+    shell = (sys.platform == 'win32')
+    try:
+        cmd = [
+            "gitnexus", "query", "-r", repo_name,
+            "--limit", str(limit),
+            "--goal", f"Find code similar to this vulnerable pattern near {code_text[:50]}",
+            "--content",
+            search_query,
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False, shell=shell)
+        if result.returncode != 0:
+            logger.info(f"Query failed: {result.stderr[:200]}")
+            return []
+
+        data = json.loads(result.stdout)
+        results = []
+        for proc in data.get("processes", data if isinstance(data, list) else []):
+            entry = {
+                "name": proc.get("name", ""),
+                "process": proc.get("process", ""),
+                "symbols_count": proc.get("symbolCount", proc.get("symbols_count", 0)),
+                "match_score": proc.get("score", proc.get("match_score", 0)),
+                "steps": [],
+            }
+            for step in proc.get("steps", proc.get("symbols", [])):
+                step_info = {
+                    "name": step.get("name", step.get("symbol_name", "")),
+                    "file": step.get("filePath", step.get("file", "")),
+                    "source_code": step.get("sourceCode", step.get("source_code", "")),
+                    "line": step.get("startLine", step.get("line", "")),
+                }
+                entry["steps"].append(step_info)
+            if entry["steps"] or entry["name"]:
+                results.append(entry)
+        return results[:limit]
+    except Exception as e:
+        logger.info(f"Error in search_similar_patterns: {e}")
+        return []
+
+
 if __name__ == "__main__":
     logger.info("Running GitNexus environment checks...")
     available = is_gitnexus_available()

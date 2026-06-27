@@ -1,1 +1,0 @@
-export { DashboardPage, default } from '../components/dashboard/DashboardPage';

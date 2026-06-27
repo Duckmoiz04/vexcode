@@ -79,7 +79,17 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const [isChatOpen, setIsChatOpen] = useState(false);
   const activeLineRef = useRef<HTMLDivElement>(null);
 
-  const { selectedProvider, apiKey, apiBaseUrl, aiModel, aiTemperature, aiMaxTokens } = useAIProvider();
+  const { selectedProvider, apiKey, apiBaseUrl, aiModel, aiTemperature, aiMaxTokens, aiSettings } = useAIProvider();
+
+  // Resolve chat provider & model from agent assignment ("Models" tab → "Chat" agent).
+  // When the chat agent is configured, the server resolves apiKey + baseUrl from its
+  // own .env — the frontend only sends the provider name and model.
+  const chatAgent = aiSettings?.agents?.chat;
+  const useChatAgent = chatAgent?.enabled && chatAgent?.provider;
+  const effectiveProvider = useChatAgent ? chatAgent.provider : selectedProvider;
+  const effectiveApiKey = useChatAgent ? '' : apiKey;
+  const effectiveBaseUrl = useChatAgent ? '' : apiBaseUrl;
+  const effectiveModel = useChatAgent && chatAgent?.model ? chatAgent.model : aiModel;
 
   const { content: fileContent, isLoading: isFileLoading, error: fileError } = useFileContent(finding.file, targetPath);
   useAutoScroll(activeLineRef as React.RefObject<HTMLElement>, finding.line, !isFileLoading);
@@ -87,7 +97,13 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
   const resolution = aiResolutions?.[finding.rule_id];
 
   const { chatMessages, chatInput, setChatInput, isChatLoading, handleSendChat } = useChat({
-    finding, resolution, selectedProvider, apiKey, apiBaseUrl, aiModel, aiTemperature, aiMaxTokens,
+    finding, resolution,
+    selectedProvider: effectiveProvider,
+    apiKey: effectiveApiKey,
+    apiBaseUrl: effectiveBaseUrl,
+    aiModel: effectiveModel,
+    aiTemperature, aiMaxTokens,
+    stream: aiSettings?.stream ?? true,
   });
 
   const relPath = getRelativePath(finding.file, targetPath);
@@ -186,6 +202,27 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
             <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md text-xs leading-relaxed text-text-secondary">
               {finding.message}
             </div>
+
+            {/* Duplicate Code Info */}
+            {finding.duplicate && (
+              <div className="p-4 rounded-lg border border-card-border bg-card-bg backdrop-blur-md space-y-2">
+                <h4 className="text-xs text-text-tertiary uppercase font-bold tracking-wider border-b border-card-border/50 pb-1.5">Duplicate Code</h4>
+                <div className="flex gap-6 text-xs">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-text-tertiary uppercase">Matched Lines</span>
+                    <span className="font-mono text-text-primary font-semibold">{finding.duplicate.match_lines}</span>
+                  </div>
+                  {finding.duplicate.other_file && (
+                    <div className="flex flex-col gap-0.5 min-w-0">
+                      <span className="text-text-tertiary uppercase">Other File</span>
+                      <span className="font-mono text-text-primary truncate" title={finding.duplicate.other_file}>
+                        {getRelativePath(finding.duplicate.other_file, targetPath)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* AST Context */}
             {finding.ast_context && (

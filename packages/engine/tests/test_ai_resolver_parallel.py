@@ -87,7 +87,7 @@ class TestCallAiForRule:
 
 
 class TestResolveFindingsParallel:
-    """Tests for parallel resolution via ThreadPoolExecutor."""
+    """Tests for 3-stage pipeline resolution."""
 
     @pytest.fixture(autouse=True)
     def _reset_ai_config_cache(self, mocker):
@@ -95,7 +95,6 @@ class TestResolveFindingsParallel:
         mocker.patch("engine.core.ai_resolver.get_resolved_provider_for_agent", return_value=None)
 
     def test_resolves_multiple_rules_in_parallel_and_sorts_by_rule_id(self, mocker):
-        """resolve_findings calls AI for 3 unique rules and returns sorted results."""
         mocker.patch("engine.config.ai_config._reload_env_file")
         mocker.patch("engine.core.ai_resolver.time.sleep")
         mocker.patch.dict(
@@ -109,46 +108,44 @@ class TestResolveFindingsParallel:
             clear=True,
         )
 
+        call_count = {"count": 0}
+
         def _mock_post(url, headers, json, timeout):
             import json as json_module
 
             rule_id = _extract_rule_id_from_prompt(json)
-            alias = json["messages"][1]["content"].splitlines()[0].split(":", 1)[1].strip()
+            c = call_count["count"]
+            call_count["count"] = c + 1
+
+            stage_index = c % 3
+            if stage_index == 0:  # analyze
+                content = {"classification": "confirmed", "reasoning": f"exploitable: {rule_id}"}
+            elif stage_index == 1:  # fix
+                content = {"suggestion": f"Fix for {rule_id}", "remediation_code": f"fixed_code_{rule_id.replace('.', '_')} = 1"}
+            else:  # review
+                content = {"decision": "approved", "suggestion": f"Fix for {rule_id}", "remediation_code": f"fixed_code_{rule_id.replace('.', '_')} = 1"}
+
             response = MagicMock()
             response.status_code = 200
             response.content = json_module.dumps(
-                {
-                    "choices": [
-                        {
-                            "message": {
-                                "content": json_module.dumps(
-                                    {
-                                        alias: {
-                                            "suggestion": f"Fix for {rule_id}",
-                                            "remediation_code": f"fixed_code_{rule_id.replace('.', '_')} = 1  # fix",
-                                        },
-                                    }
-                                ),
-                            },
-                        }
-                    ],
-                }
+                {"choices": [{"message": {"content": json_module.dumps(content)}}]}
             ).encode("utf-8")
             return response
 
         mock_post = mocker.patch("engine.core.ai_resolver.requests.post", side_effect=_mock_post)
+        mocker.patch("engine.core.ai_resolver._cache_get", return_value=None)
 
         findings = [
-            {"file": "a.py", "line": 1, "rule_id": "rule.b", "message": "issue b", "code_text": "b"},
-            {"file": "a.py", "line": 2, "rule_id": "rule.a", "message": "issue a", "code_text": "a"},
-            {"file": "a.py", "line": 3, "rule_id": "rule.c", "message": "issue c", "code_text": "c"},
+            {"file": "a.py", "line": 1, "rule_id": "rule.b", "message": "issue b", "code_text": "b", "severity": "HIGH", "confidence": "HIGH"},
+            {"file": "a.py", "line": 2, "rule_id": "rule.a", "message": "issue a", "code_text": "a", "severity": "HIGH", "confidence": "HIGH"},
+            {"file": "a.py", "line": 3, "rule_id": "rule.c", "message": "issue c", "code_text": "c", "severity": "HIGH", "confidence": "HIGH"},
         ]
 
         resolutions = resolve_findings(findings, use_mock=False)
 
         assert set(resolutions.keys()) == {"rule.a", "rule.b", "rule.c"}
         assert list(resolutions.keys()) == ["rule.a", "rule.b", "rule.c"]
-        assert mock_post.call_count == 3
-        assert resolutions["rule.a"]["suggestion"] == "Fix for rule.a"
-        assert resolutions["rule.b"]["suggestion"] == "Fix for rule.b"
-        assert resolutions["rule.c"]["suggestion"] == "Fix for rule.c"
+        assert mock_post.call_count == 9  # 3 findings × 3 stages
+        assert "Fix for rule.a" in resolutions["rule.a"]["suggestion"]
+        assert "Fix for rule.b" in resolutions["rule.b"]["suggestion"]
+        assert "Fix for rule.c" in resolutions["rule.c"]["suggestion"]

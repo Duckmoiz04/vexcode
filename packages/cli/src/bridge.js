@@ -56,7 +56,11 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
       return rejectPromise(err);
     }
 
+    // Use -u flag for unbuffered stdout — critical when piped through Node.js.
+    // Without this, Python buffers stdout and progress lines are never received
+    // by the SSE stream until the buffer fills (causing the UI to hang).
     const args = [
+      '-u',
       'main.py',
       '--target', targetPath,
       '--output', reportOutputPath
@@ -91,7 +95,8 @@ export function runPythonAnalysis(targetPath, reportOutputPath, mockScan = false
 
     const child = spawn(pythonPath, args, {
       cwd: analysisCoreDir,
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, PYTHONUNBUFFERED: '1' }
     });
 
     const scanRecord = { child, cancelled: false };
@@ -270,6 +275,7 @@ export function runRefreshAi(reportPath, mockAi = false, onProgress = null) {
     }
 
     const args = [
+      '-u',
       'main.py',
       '--refresh-ai', reportPath
     ];
@@ -282,7 +288,8 @@ export function runRefreshAi(reportPath, mockAi = false, onProgress = null) {
 
     const child = spawn(pythonPath, args, {
       cwd: analysisCoreDir,
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: { ...process.env, PYTHONUNBUFFERED: '1' }
     });
 
     const scanRecord = { child, cancelled: false };

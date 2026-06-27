@@ -24,6 +24,7 @@ from typing import Any, Dict, List, Optional
 
 from engine.utils.logger import get_logger, emit_progress, PROGRESS_PHASES
 from engine.core.ai_resolver import resolve_findings
+from engine.core.findings import enrich_finding
 
 logger = get_logger(__name__)
 
@@ -54,6 +55,14 @@ def create_parser() -> argparse.ArgumentParser:
                         help="Print a human-readable explanation of findings to STDOUT after scan.")
     parser.add_argument("--fail-on-threshold", action="store_true",
                         help="Exit with code 1 if threshold evaluation fails (quality gate breached).")
+    parser.add_argument("--ccn-threshold", type=int, default=None,
+                        help="Cyclomatic complexity threshold for HIGH level (default: 25).")
+    parser.add_argument("--cognitive-threshold", type=int, default=None,
+                        help="Cognitive complexity threshold for findings (default: 15).")
+    parser.add_argument("--dup-min-lines", type=int, default=None,
+                        help="Minimum matching lines for duplicate detection (default: 6).")
+    parser.add_argument("--dup-min-tokens", type=int, default=None,
+                        help="Minimum tokens for duplicate detection (default: 50).")
     return parser
 
 
@@ -226,6 +235,18 @@ def run_analysis(args: argparse.Namespace) -> None:
         from engine.pipeline.sarif_builder import build_sarif
         from engine.pipeline.thresholds import load_thresholds, evaluate_thresholds
         from engine.core.dedup import deduplicate_findings
+        from engine.core import complexity as _complexity_mod
+        from engine.core import dup_content as _dup_mod
+
+        # Apply CLI threshold overrides before any analysis runs
+        if args.ccn_threshold is not None:
+            _complexity_mod.CCN_HIGH_THRESHOLD = args.ccn_threshold
+        if args.cognitive_threshold is not None:
+            _complexity_mod.COGNITIVE_HIGH_THRESHOLD = args.cognitive_threshold
+        if args.dup_min_lines is not None:
+            _dup_mod.DUP_MIN_LINES = args.dup_min_lines
+        if args.dup_min_tokens is not None:
+            _dup_mod.DUP_MIN_TOKENS = args.dup_min_tokens
 
         # 1. Scan (OpenGrep)
         emit_progress("scan", "Running static analysis (OpenGrep)...", current=1, total=5)
@@ -240,6 +261,7 @@ def run_analysis(args: argparse.Namespace) -> None:
             emit_progress("scan", "Running Gitleaks secret scan...", current=3, total=5)
             gitleaks_findings = run_gitleaks_scan(args.target, args.mock_scan)
             if gitleaks_findings:
+                gitleaks_findings = [enrich_finding(f) for f in gitleaks_findings]
                 findings.extend(gitleaks_findings)
                 scan_results["findings"] = findings
                 logger.info(f"Gitleaks added {len(gitleaks_findings)} secret finding(s).")
@@ -251,6 +273,7 @@ def run_analysis(args: argparse.Namespace) -> None:
             emit_progress("scan", "Running OSV dependency vulnerability scan...", current=5, total=5)
             osv_findings = run_osv_scan(args.target, args.mock_scan)
             if osv_findings:
+                osv_findings = [enrich_finding(f) for f in osv_findings]
                 findings.extend(osv_findings)
                 scan_results["findings"] = findings
                 logger.info(f"OSV added {len(osv_findings)} dependency finding(s).")
@@ -275,14 +298,14 @@ def run_analysis(args: argparse.Namespace) -> None:
         )
 
         # 6b. Propagate finding_type from AI resolutions back to each finding.
-        # The AI classifies each unique rule as vulnerability/hotspot/false_positive.
-        # Findings whose rule wasn't AI-resolved default to "vulnerability".
+        # The AI classifies each unique rule as confirmed/hotspot/false_positive.
+        # Findings whose rule wasn't AI-resolved default to "confirmed".
         for finding in findings:
             rule_id = finding.get("rule_id", "")
             if rule_id in resolutions:
-                classification = resolutions[rule_id].get("classification", "vulnerability")
+                classification = resolutions[rule_id].get("classification", "confirmed")
             else:
-                classification = "vulnerability"
+                classification = "confirmed"
             # Preserve scanner designation for findings that already have scanner set
             finding["finding_type"] = classification
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Loader2, Wand2 } from 'lucide-react';
 import { FilterPanel } from '../components/FilterPanel';
-import { FindingsList } from '../components/FindingsList';
+import { IssueList } from '../components/FindingsList';
 import { CodeInspector } from '../components/CodeInspector';
 import type { Finding, FindingStatus, Report, PaginationInfo } from '../types';
 
@@ -123,12 +123,12 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
               <span>{isReResolving ? 'Asking AI...' : 'Ask AI Again'}</span>
             </button>
           </div>
-          <FindingsList
+          <IssueList
             searchedAndFilteredFindings={searchedAndFilteredFindings}
             currentReport={currentReport}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
-            onSelectFinding={(file, index) => {
+            onSelectFinding={(file: string, index: number) => {
               setSelectedFilePath(file);
               setSelectedFindingIndex(index);
             }}

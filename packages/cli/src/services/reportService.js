@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, renameSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, renameSync, unlinkSync, rmdirSync } from 'node:fs';
 import { join, basename, dirname } from 'node:path';
 import { getProjectReportDir, getLatestReportPath } from '../utils.js';
 
@@ -74,7 +74,8 @@ export function listProjectReports(projectName) {
       id: filename.replace('.json', ''),
       timestamp: report.timestamp || null,
       target: report.target_path || null,
-      findings: (report.findings || []).length
+      findings: (report.findings || []).length,
+      git_state: report.git_state || null
     };
   });
 
@@ -309,3 +310,65 @@ export function updateFindingStatus(reportPath, findingLocator, status) {
   writeReportAtomic(reportPath, report);
   return { success: true, finding: target };
 }
+
+/**
+ * Delete a specific report.
+ * @param {string} reportsBaseDir
+ * @param {string} projectName
+ * @param {string} reportId
+ * @returns {{ success: boolean, error?: string }}
+ */
+export function deleteReport(reportsBaseDir, projectName, reportId) {
+  const projectDir = join(reportsBaseDir, projectName);
+  const reportPath = join(projectDir, `${reportId}.json`);
+
+  if (!existsSync(reportPath)) {
+    return { success: false, error: 'Report not found.' };
+  }
+
+  try {
+    unlinkSync(reportPath);
+
+    // Also delete SARIF sidecar if it exists
+    const sarifPath = reportPath.replace('.json', '.sarif');
+    if (existsSync(sarifPath)) {
+      unlinkSync(sarifPath);
+    }
+
+    // If the project directory is now empty, delete it
+    const files = readdirSync(projectDir);
+    if (files.length === 0) {
+      rmdirSync(projectDir);
+    }
+
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: `Failed to delete report: ${e.message}` };
+  }
+}
+
+/**
+ * Delete all reports for a specific project.
+ * @param {string} reportsBaseDir
+ * @param {string} projectName
+ * @returns {{ success: boolean, error?: string }}
+ */
+export function deleteAllReports(reportsBaseDir, projectName) {
+  const projectDir = join(reportsBaseDir, projectName);
+
+  if (!existsSync(projectDir)) {
+    return { success: false, error: `Project directory "${projectName}" not found.` };
+  }
+
+  try {
+    const files = readdirSync(projectDir);
+    for (const file of files) {
+      unlinkSync(join(projectDir, file));
+    }
+    rmdirSync(projectDir);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: `Failed to delete reports: ${e.message}` };
+  }
+}
+

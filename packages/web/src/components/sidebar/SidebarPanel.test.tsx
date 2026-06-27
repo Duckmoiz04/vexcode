@@ -5,7 +5,7 @@ import { SidebarPanel } from './SidebarPanel';
 import { describe, it, expect, vi } from 'vitest';
 
 describe('SidebarPanel', () => {
-  it('renders tab buttons and title bar with correct counts', () => {
+  it('renders tab buttons and hides stats count on explorer tab', () => {
     const setSidebarTab = vi.fn();
     renderWithProviders(
       <SidebarPanel
@@ -18,14 +18,13 @@ describe('SidebarPanel', () => {
 
     expect(screen.getByText('File Tree')).toBeInTheDocument();
     expect(screen.getByText('Findings')).toBeInTheDocument();
-    expect(screen.getByText('File Structure')).toBeInTheDocument();
-    expect(screen.getByText('5 / 10')).toBeInTheDocument();
+    expect(screen.queryByText('5 / 10')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByText('Findings'));
     expect(setSidebarTab).toHaveBeenCalledWith('findings');
   });
 
-  it('renders Project Issues title when tab is findings', () => {
+  it('renders correct stats count when tab is findings', () => {
     const setSidebarTab = vi.fn();
     renderWithProviders(
       <SidebarPanel
@@ -36,7 +35,6 @@ describe('SidebarPanel', () => {
       />
     );
 
-    expect(screen.getByText('Project Issues')).toBeInTheDocument();
     expect(screen.getByText('3 / 8')).toBeInTheDocument();
   });
 });

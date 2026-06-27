@@ -98,10 +98,12 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
   const [semgrepRules, setSemgrepRules] = useState('');
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [aiEnabled, setAiEnabled] = useState(true);
+  const [chatStream, setChatStream] = useState(true);
 
   useEffect(() => {
     const as = initialConfig?._aiSettings;
     setAiEnabled(as?.enabled ?? true);
+    setChatStream(as?.stream ?? true);
     setProviderConfigs(initAllProviderConfigs(as ?? null, initialConfig));
     setAgentMappings(as?.agents && Object.keys(as.agents).length > 0
       ? structuredClone(as.agents)
@@ -115,6 +117,29 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     setRequestCooldown(parseFloat(initialConfig?.AI_REQUEST_COOLDOWN_SECONDS ?? '8') || 8);
     setSemgrepRules(initialConfig?.SEMGREP_RULES_PATH || '');
   }, [initialConfig, isOpen]);
+
+  // Auto-fetch models for enabled providers when drawer opens
+  useEffect(() => {
+    if (!isOpen) return;
+    const fetchModelsForProvider = async (pk: string) => {
+      const cfg = providerConfigs[pk];
+      if (!cfg || !cfg.enabled || !cfg.apiKey || !cfg.baseUrl) return;
+      if (cfg.fetchedModels && cfg.fetchedModels.length > 0) return; // already fetched
+      try {
+        const url = `/api/models?baseUrl=${encodeURIComponent(cfg.baseUrl)}&apiKey=${encodeURIComponent(cfg.apiKey)}`;
+        const response = await apiFetch(url);
+        const data = await response.json();
+        if (data.success && data.models?.length > 0) {
+          handleProviderConfigChange(pk, 'fetchedModels', data.models);
+        }
+      } catch {
+        // silent — user can manually test connection
+      }
+    };
+    for (const pk of Object.keys(providerConfigs)) {
+      fetchModelsForProvider(pk);
+    }
+  }, [isOpen, providerConfigs]);
 
   const handleProviderConfigChange = useCallback((pk: string, field: string, value: string | boolean | TestStatus | undefined) => {
     setProviderConfigs((prev) => ({
@@ -222,6 +247,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     // Structured multi-provider settings
     config._aiSettings = {
       enabled: aiEnabled,
+      stream: chatStream,
       providers: Object.fromEntries(
         Object.entries(providerConfigs)
           .filter(([k, v]) => {
@@ -239,7 +265,6 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
               base_url: v.baseUrl,
               model: v.fetchedModels?.[0]?.id
                 ?? initialConfig?._aiSettings?.providers?.[k]?.model
-                ?? PROVIDERS[k]?.models?.[0]?.id
                 ?? '',
             },
           ]),
@@ -251,7 +276,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
 
   return {
     providerConfigs,
-    agentMappings,
+    agentMappings, chatStream,
     temperature, maxTokens, resolveTimeout, namingTimeout,
     maxRetries, requestCooldown, semgrepRules,
     isAdvancedOpen, aiEnabled, enabledProviders, hasConnectedProvider,
@@ -261,5 +286,6 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     handleProviderConfigChange, handleAgentChange,
     handleTestConnection, buildConfig,
     handleAiEnabledChange: setAiEnabled,
+    handleChatStreamChange: setChatStream,
   };
 }

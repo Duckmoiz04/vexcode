@@ -297,4 +297,72 @@ describe('useReports', () => {
       });
     });
   });
+
+  describe('handleDeleteReport', () => {
+    it('deletes report successfully and reloads list', async () => {
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: mockProjects }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: mockProjects }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, reports: mockReportList }),
+        } as Response);
+
+      const { result } = renderUseReports();
+
+      await act(async () => {
+        await result.current.handleDeleteReport('project-a', 'rep-1');
+      });
+
+      expect(mockShowToast).toHaveBeenCalledWith('Xóa báo cáo thành công', 'success');
+    });
+
+    it('shows error toast on delete failure', async () => {
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: false, error: 'Cannot delete' }),
+        } as Response);
+
+      const { result } = renderUseReports();
+
+      await act(async () => {
+        await result.current.handleDeleteReport('project-a', 'rep-1');
+      });
+
+      expect(mockShowToast).toHaveBeenCalledWith('Cannot delete', 'error');
+    });
+  });
+
+  describe('handleDeleteAllReports', () => {
+    it('deletes all reports successfully and resets selection', async () => {
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: mockProjects }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true }),
+        } as Response)
+        .mockResolvedValueOnce({
+          json: () => Promise.resolve({ success: true, projects: [] }),
+        } as Response);
+
+      const { result } = renderUseReports();
+
+      await act(async () => {
+        await result.current.handleDeleteAllReports('project-a');
+      });
+
+      expect(mockShowToast).toHaveBeenCalledWith('Xóa tất cả báo cáo thành công', 'success');
+      expect(result.current.currentProject).toBeNull();
+    });
+  });
 });

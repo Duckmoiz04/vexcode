@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Optional
 from pathlib import Path
 
 from engine.opengrep_installer import ensure_opengrep, resolve_opengrep_path
-from engine.config.iso25010_taxonomy import classify_finding, compute_finding_id
+from engine.core.findings import enrich_finding
 
 
 def _get_project_root() -> str:
@@ -26,6 +26,9 @@ MOCK_FINDINGS = [
         "code_text": "    exec(user_input)",
         "cwe_id": "CWE-94",
         "owasp_id": "OWASP-A03",
+        "confidence": "HIGH",
+        "precision": "HIGH",
+        "category": "security",
     },
     {
         "file": "db.py",
@@ -36,6 +39,9 @@ MOCK_FINDINGS = [
         "code_text": "        password = \"admin123\"",
         "cwe_id": "CWE-798",
         "owasp_id": "OWASP-A02",
+        "confidence": "HIGH",
+        "precision": "HIGH",
+        "category": "security",
     }
 ]
 
@@ -43,51 +49,6 @@ MOCK_FINDINGS = [
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-_LANGUAGE_BY_EXT: Dict[str, str] = {
-    ".py":   "python",
-    ".pyx":  "python",
-    ".js":   "javascript",
-    ".jsx":  "javascript",
-    ".mjs":  "javascript",
-    ".cjs":  "javascript",
-    ".ts":   "typescript",
-    ".tsx":  "typescript",
-    ".go":   "go",
-    ".rs":   "rust",
-    ".java": "java",
-    ".kt":   "kotlin",
-    ".rb":   "ruby",
-    ".php":  "php",
-    ".cs":   "csharp",
-    ".cpp":  "cpp",
-    ".cc":   "cpp",
-    ".cxx":  "cpp",
-    ".c":    "c",
-    ".h":    "c",
-    ".hpp":  "cpp",
-    ".swift": "swift",
-    ".scala": "scala",
-    ".sh":   "shell",
-    ".bash": "shell",
-    ".html": "html",
-    ".htm":  "html",
-    ".css":  "css",
-    ".scss": "css",
-    ".sql":  "sql",
-    ".yaml": "yaml",
-    ".yml":  "yaml",
-    ".json": "json",
-    ".md":   "markdown",
-}
-
-
-def _detect_language(file_path: Optional[str]) -> Optional[str]:
-    """Return a language label for *file_path* based on extension, or None."""
-    if not file_path:
-        return None
-    _, ext = os.path.splitext(file_path)
-    return _LANGUAGE_BY_EXT.get(ext.lower())
 
 
 def _extract_cwe_id(item: Dict[str, Any]) -> Optional[str]:
@@ -114,6 +75,30 @@ def _extract_cwe_id(item: Dict[str, Any]) -> Optional[str]:
         m = re.search(r"CWE-(\d+)", raw, re.IGNORECASE)
         if m:
             return f"CWE-{m.group(1)}"
+    return None
+
+
+def _extract_confidence(item: Dict[str, Any]) -> Optional[str]:
+    """Extract Semgrep rule confidence from ``extra.metadata.confidence``.
+
+    Returns an uppercase string (``HIGH``, ``MEDIUM``, ``LOW``) or None.
+    """
+    metadata = item.get("extra", {}).get("metadata", {}) or {}
+    raw = metadata.get("confidence")
+    if raw and isinstance(raw, str):
+        return raw.strip().upper()
+    return None
+
+
+def _extract_precision(item: Dict[str, Any]) -> Optional[str]:
+    """Extract Semgrep rule precision from ``extra.metadata.precision``.
+
+    Returns an uppercase string (``HIGH``, ``MEDIUM``, ``LOW``) or None.
+    """
+    metadata = item.get("extra", {}).get("metadata", {}) or {}
+    raw = metadata.get("precision")
+    if raw and isinstance(raw, str):
+        return raw.strip().upper()
     return None
 
 
@@ -220,62 +205,51 @@ def _extract_enclosing_context(extra: Dict[str, Any]) -> Dict[str, str]:
     return result
 
 
-def _normalize_severity(raw: str) -> str:
-    """Normalize Semgrep severity to lowercase VexCode convention.
 
-    Semgrep uses: INFO, WARNING, ERROR (uppercase).
-    VexCode uses: info, warning, error (lowercase).
-    Unknown values fall back to "warning".
+
+
+def _resolve_to_existing(raw_path: str, abs_target: str, bases: List[str]) -> str:
+    """Return a path for *raw_path* that exists on disk, normalised.
+
+    OpenGrep's actual CWD when launched by the CLI bridge is the engine package
+    dir, but raw paths in its JSON output may use any of: the absolute form,
+    the scan target as base, the engine package as base, or a base further up
+    the tree (so ``..\\..\\file`` resolves under scan target's parent). For each
+    candidate base we join + normpath; the first hit that exists wins. As a
+    final fallback we strip leading ``..`` segments and retry against every
+    base, because some OpenGrep versions emit paths already relative to the
+    scan target's parent.
     """
-    raw = (raw or "").strip().lower()
-    if raw in ("error", "warning", "info"):
-        return raw
-    return "warning"
+    if not raw_path:
+        return ""
 
+    if os.path.isabs(raw_path):
+        normalised = os.path.normpath(raw_path)
+        if os.path.exists(normalised):
+            return normalised
+        return normalised
 
-def _safe_int(value, default: int = 0) -> int:
-    """Convert value to int, returning default if conversion fails."""
-    try:
-        return int(value) if value is not None else default
-    except (ValueError, TypeError):
-        return default
+    def _try(path: str) -> Optional[str]:
+        candidate = os.path.normpath(os.path.join(base, path))
+        return candidate if os.path.exists(candidate) else None
 
+    for base in bases:
+        hit = _try(raw_path)
+        if hit is not None:
+            return hit
 
-def _enrich_finding(finding: Dict[str, Any]) -> Dict[str, Any]:
-    """Add stable id, category, language, normalized severity to a finding.
+    # Some OpenGrep versions emit paths relative to the scan target's parent,
+    # so we strip leading ".." and retry before giving up.
+    stripped = raw_path
+    while stripped.startswith("..\\") or stripped.startswith("../"):
+        stripped = stripped[3:]
+        for base in bases:
+            hit = _try(stripped)
+            if hit is not None:
+                return hit
 
-    Mutates and returns the finding dict. Idempotent (safe to re-run).
+    return os.path.normpath(os.path.join(abs_target, raw_path))
 
-    Category resolution order:
-    1. Existing ``category`` field (already set by caller)
-    2. ``metadata.category`` from OpenGrep/Semgrep rule output (e.g. "security")
-    3. ISO 25010 classification via ``classify_finding()`` (CWE/rule_id fallback)
-    """
-    # Stable id — prefer OpenGrep fingerprint, fallback to hash
-    if "id" not in finding:
-        fp = finding.get("fingerprint")
-        if fp:
-            finding["id"] = fp
-        else:
-            finding["id"] = compute_finding_id(
-                str(finding.get("file") or ""),
-                _safe_int(finding.get("line")),
-                str(finding.get("rule_id") or ""),
-            )
-
-    # ISO/IEC 25010 category — use metadata.category if present, else classify
-    if "category" not in finding or not finding["category"]:
-        finding["category"] = classify_finding(finding)
-
-    # Language (from file extension)
-    if "language" not in finding:
-        finding["language"] = _detect_language(finding.get("file"))
-
-    # Normalize severity to lowercase
-    if "severity" in finding:
-        finding["severity"] = _normalize_severity(finding["severity"])
-
-    return finding
 
 # Directories to exclude from Opengrep scans.
 EXCLUDE_DIRS = [".venv", "node_modules", "__pycache__", ".git", ".agents", ".claude", ".codex"]
@@ -303,7 +277,7 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             normalized_files = {os.path.normcase(os.path.basename(f)) for f in files}
             filtered_mock = [f for f in MOCK_FINDINGS if os.path.normcase(f["file"]) in normalized_files]
         # Enrich mock findings with id + category + language (idempotent)
-        enriched_mock = [_enrich_finding(dict(f)) for f in filtered_mock]
+        enriched_mock = [enrich_finding(dict(f)) for f in filtered_mock]
         return {
             "scanner": "opengrep-mock",
             "timestamp": scan_time,
@@ -360,12 +334,25 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
         output_data = json.loads(result.stdout)
         findings: List[Dict[str, Any]] = []
 
+        abs_target = os.path.abspath(target_path)
+        engine_pkg = os.path.dirname(os.path.abspath(__file__))
+        bases = [abs_target, engine_pkg]
+        walk = engine_pkg
+        for _ in range(4):
+            walk = os.path.dirname(walk)
+            if walk and walk != os.path.dirname(walk):
+                bases.append(walk)
+
         for item in output_data.get("results", []):
             extra = item.get("extra", {}) or {}
             metadata = extra.get("metadata", {}) or {}
             enclosing = _extract_enclosing_context(extra)
+
+            raw_path = item.get("path") or ""
+            raw_path = _resolve_to_existing(raw_path, abs_target, bases)
+
             finding: Dict[str, Any] = {
-                "file": item.get("path"),
+                "file": raw_path,
                 "line": item.get("start", {}).get("line"),
                 "end_line": item.get("end", {}).get("line"),
                 "rule_id": item.get("check_id"),
@@ -374,6 +361,8 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
                 "code_text": extra.get("lines", ""),
                 "cwe_id": _extract_cwe_id(item),
                 "owasp_id": _extract_owasp_id(item),
+                "confidence": _extract_confidence(item),
+                "precision": _extract_precision(item),
                 "iso_25010": metadata.get("iso_25010"),
                 "iso_subcategory": metadata.get("iso_subcategory"),
                 "dataflow_trace": _extract_dataflow_trace(extra),
@@ -383,7 +372,7 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
                 "category": metadata.get("category"),
             }
             # Enrich: id, category, language, normalized severity
-            findings.append(_enrich_finding(finding))
+            findings.append(enrich_finding(finding))
 
         return {
             "scanner": "opengrep",
@@ -399,7 +388,7 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             "scanner": "opengrep-mock-fallback",
             "timestamp": scan_time,
             "target_path": target_path,
-            "findings": [_enrich_finding(dict(f)) for f in MOCK_FINDINGS],
+            "findings": [enrich_finding(dict(f)) for f in MOCK_FINDINGS],
             "fallback_reason": str(e)
         }
     except Exception as e:
@@ -409,7 +398,7 @@ def run_scan(target_path: str, use_mock: bool = False, files: List[str] = None) 
             "scanner": "opengrep-mock-fallback",
             "timestamp": scan_time,
             "target_path": target_path,
-            "findings": [_enrich_finding(dict(f)) for f in MOCK_FINDINGS],
+            "findings": [enrich_finding(dict(f)) for f in MOCK_FINDINGS],
             "fallback_reason": str(e)
         }
 

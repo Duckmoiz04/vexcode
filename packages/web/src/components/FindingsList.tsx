@@ -1,8 +1,8 @@
-import React from 'react';
-import { Search, X, Ban, EyeOff, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, X, File, AlertTriangle, ShieldAlert, CheckSquare, Square, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Finding, FindingStatus, Report, PaginationInfo } from '../types';
 
-interface FindingsListProps {
+interface IssueListProps {
   searchedAndFilteredFindings: Finding[];
   currentReport: Report;
   searchQuery: string;
@@ -14,45 +14,46 @@ interface FindingsListProps {
   onPageChange?: (page: number) => void;
 }
 
-const classifyFinding = (finding: Finding) => {
-  const ruleId = (finding.rule_id || '').toLowerCase();
-  
-  const securityKeywords = [
-    'security', 'vuln', 'injection', 'xss', 'csrf', 'crypt', 'hash', 'permission',
-    'auth', 'token', 'jwt', 'secret', 'key', 'leak', 'owasp', 'cwe'
-  ];
-  if (securityKeywords.some(kw => ruleId.includes(kw))) {
-    return 'security';
+const formatDate = (isoString?: string | null): string => {
+  if (!isoString) return 'N/A';
+  try {
+    const date = new Date(isoString);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    
+    if (diffMs < 0) return 'Just now';
+    
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+    
+    if (diffSecs < 60) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 30) return `${diffDays}d ago`;
+    
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  } catch {
+    return 'N/A';
   }
-  
-  const styleKeywords = [
-    'style', 'naming', 'format', 'lint', 'comment', 'docstring', 'unused',
-    'convention', 'pep8', 'eslint'
-  ];
-  if (styleKeywords.some(kw => ruleId.includes(kw))) {
-    return 'maintainability';
-  }
-  
-  if (ruleId.includes('complexity') || ruleId.includes('long') || ruleId.includes('large') || ruleId.includes('depth')) {
-    return 'architecture';
-  }
-  
-  return 'quality';
 };
 
-const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  open: { label: 'Open', color: 'bg-bg-tertiary border-card-border text-text-secondary' },
-  applied: { label: 'Applied', color: 'bg-success/15 border-success/35 text-success' },
-  false_positive: { label: 'False Positive', color: 'bg-warning/15 border-warning/35 text-warning' },
-  ignored: { label: 'Ignored', color: 'bg-info/15 border-info/35 text-info' },
+const getRelativePath = (filePath: string, targetPath: string | null): string => {
+  if (!targetPath) return filePath.split(/[\\/]/).pop() || filePath;
+  const abs = filePath.replace(/\\/g, '/');
+  const target = targetPath.replace(/\\/g, '/');
+  if (abs.startsWith(target)) {
+    let rel = abs.slice(target.length);
+    if (rel.startsWith('/')) rel = rel.slice(1);
+    return rel || '.';
+  }
+  return abs;
 };
 
-const getStatus = (f: Finding): FindingStatus => {
-  if (f.status) return f.status;
-  return f._applied ? 'applied' : 'open';
-};
-
-export const FindingsList: React.FC<FindingsListProps> = ({
+export const IssueList: React.FC<IssueListProps> = ({
   searchedAndFilteredFindings,
   currentReport,
   searchQuery,
@@ -63,9 +64,49 @@ export const FindingsList: React.FC<FindingsListProps> = ({
   currentPage,
   onPageChange,
 }) => {
+  const [checkedFindings, setCheckedFindings] = useState<Record<number, boolean>>({});
+
+  // Group findings by file path
+  const groupedFindings = useMemo(() => {
+    const groups: Record<string, Finding[]> = {};
+    searchedAndFilteredFindings.forEach((f) => {
+      if (!groups[f.file]) {
+        groups[f.file] = [];
+      }
+      groups[f.file].push(f);
+    });
+    return groups;
+  }, [searchedAndFilteredFindings]);
+
+
+  const getSoftwareCategory = (f: Finding) => {
+    if (f.finding_type === 'confirmed') return 'Security';
+    if (f.finding_type === 'hotspot') return 'Security Hotspot';
+    if (f.severity === 'error') return 'Reliability';
+    return 'Maintainability';
+  };
+
+  const getSeverityLabel = (f: Finding) => {
+    if (f.severity === 'error') return 'High';
+    if (f.severity === 'warning') return 'Medium';
+    return 'Low';
+  };
+
+  const getTags = (f: Finding) => {
+    const parts = f.rule_id.split('.');
+    const tags = parts.filter(p => p !== 'rules' && p !== 'detect' && p !== 'security' && p !== 'javascript' && p !== 'python' && p.length > 2);
+    if (f.owasp_id) tags.push(f.owasp_id.toLowerCase());
+    return tags.slice(0, 3);
+  };
+
+  const getStatus = (f: Finding): FindingStatus => {
+    if (f.status) return f.status;
+    return f._applied ? 'applied' : 'open';
+  };
+
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-bg-primary p-4 pl-2 overflow-y-auto scrollbar-thin">
-      <div className="flex items-center justify-between pb-4 border-b border-text-tertiary/30 mb-5">
+    <div className="flex-1 flex flex-col min-h-0 bg-bg-primary p-6 overflow-y-auto scrollbar-thin">
+      <div className="flex items-center justify-between pb-4 border-b border-card-border/50 mb-5">
         <div className="flex items-center gap-3">
           <h3 className="text-xs font-bold text-text-primary uppercase tracking-wider">
             PROJECT FINDINGS
@@ -110,115 +151,143 @@ export const FindingsList: React.FC<FindingsListProps> = ({
           </span>
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 gap-3 w-full">
-            {searchedAndFilteredFindings.map((f: Finding) => {
-              const originalIndex = currentReport.findings.indexOf(f);
-              const severity = (f.severity || '').toLowerCase();
-              const cat = classifyFinding(f);
-              const status = getStatus(f);
-              const statusStyle = STATUS_LABELS[status] || STATUS_LABELS.open;
+        <div className="flex-1 flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
+            {Object.entries(groupedFindings).map(([filePath, fileFindings]) => {
+              const cleanRelativePath = getRelativePath(filePath, currentReport?.target_path);
 
               return (
-                <div
-                  key={originalIndex}
-                  onClick={() => {
-                    onSelectFinding(f.file, originalIndex);
-                  }}
-                  className="p-4 rounded-xl border border-card-border bg-card-bg hover:border-accent/30 hover:bg-bg-tertiary/20 cursor-pointer transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm group"
-                >
-                  <div className="flex-1 min-w-0 space-y-2">
-                    <div className="flex items-center gap-2.5 flex-wrap">
-                      <span
-                        className={`h-2 w-2 rounded-full shrink-0 ${
-                          severity === 'error'
-                            ? 'bg-error'
-                            : severity === 'warning'
-                            ? 'bg-warning'
-                            : 'bg-info'
-                        }`}
-                      />
-                      <span className="text-[12px] font-mono font-bold text-text-primary group-hover:text-accent transition-colors truncate">
-                        {f.rule_id}
-                      </span>
-                      <span className={`text-[9.5px] px-2 py-0.5 rounded-full font-bold border uppercase tracking-wider font-sans ${
-                        cat === 'security'
-                          ? 'bg-danger/10 border-danger/35 text-danger'
-                          : cat === 'maintainability'
-                          ? 'bg-warning/10 border-warning/35 text-warning'
-                          : cat === 'architecture'
-                          ? 'bg-accent/10 border-accent/35 text-accent'
-                          : 'bg-info/10 border-info/35 text-info'
-                      }`}>
-                        {cat === 'security' ? '🛡️ Security' : cat === 'maintainability' ? '⚙️ Maintainability' : cat === 'architecture' ? '🏗️ Architecture' : '🐞 Quality'}
-                      </span>
-                      {f.owasp_id && (
-                        <span className="text-[9.5px] px-2 py-0.5 rounded-full font-bold border border-orange-500/40 bg-orange-500/10 text-orange-400 uppercase tracking-wider font-sans">
-                          {f.owasp_id}
-                        </span>
-                      )}
-                      {(() => {
-                        const getDisplayPath = (filePath: string, targetPath?: string) => {
-                          if (!targetPath) return filePath.split(/[\\/]/).pop() || filePath;
-                          const abs = filePath.replace(/\\/g, '/');
-                          const target = targetPath.replace(/\\/g, '/');
-                          if (abs.startsWith(target)) {
-                            let rel = abs.slice(target.length);
-                            if (rel.startsWith('/')) rel = rel.slice(1);
-                            return rel || '.';
-                          }
-                          return abs;
-                        };
-                        const displayPath = getDisplayPath(f.file, currentReport?.target_path);
-                        return (
-                          <span className="text-xs text-text-tertiary font-mono font-semibold" title={f.file}>
-                            {displayPath}:{f.line}
-                          </span>
-                        );
-                      })()}
-                    </div>
-                    <p className="text-xs text-text-secondary select-text font-normal leading-relaxed line-clamp-2">
-                      {f.message}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0 self-end md:self-center font-mono text-xs">
-                    <span className={`text-xs px-2.5 py-0.5 rounded border font-semibold font-sans ${statusStyle.color}`}>
-                      {statusStyle.label}
+                <div key={filePath} className="flex flex-col gap-1.5 mb-6 last:mb-0">
+                  {/* File Header */}
+                  <div className="flex items-center gap-1.5 py-1 px-0 select-none">
+                    <File className="h-4 w-4 text-text-tertiary shrink-0" />
+                    <span className="text-[12px] font-mono font-bold text-text-secondary truncate" title={filePath}>
+                      {cleanRelativePath}
                     </span>
-                    {onStatusChange && (
-                      <div className="flex items-center gap-1">
-                        {status === 'open' && (
-                          <>
+                  </div>
+
+                  {/* Findings list inside this file group */}
+                  <div className="flex flex-col gap-3">
+                    {fileFindings.map((f: Finding) => {
+                      const originalIndex = currentReport.findings.indexOf(f);
+                      const severity = (f.severity || '').toLowerCase();
+                      const isChecked = !!checkedFindings[originalIndex];
+                      const currentStatus = getStatus(f);
+
+                      const severityColorClass =
+                        severity === 'error'
+                          ? 'text-danger bg-danger/10 border-danger/20'
+                          : severity === 'warning'
+                          ? 'text-warning bg-warning/10 border-warning/20'
+                          : 'text-info bg-info/10 border-info/20';
+
+                      return (
+                        <div
+                          key={originalIndex}
+                          onClick={() => {
+                            onSelectFinding(f.file, originalIndex);
+                          }}
+                          className="p-4 rounded-xl border border-card-border bg-card-bg hover:border-accent/30 hover:bg-bg-tertiary/20 cursor-pointer transition-all flex flex-col gap-3 shadow-sm group"
+                        >
+                          {/* Tầng 1: Checkbox + Tiêu đề + Clean Code Attribute */}
+                          <div className="flex items-start gap-3">
+                            {/* Checkbox */}
                             <button
                               type="button"
-                              onClick={(e) => { e.stopPropagation(); onStatusChange(f, 'false_positive'); }}
-                              className="p-1 rounded text-text-tertiary hover:text-warning hover:bg-warning/10 transition-colors"
-                              title="Mark as False Positive"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCheckedFindings(prev => ({ ...prev, [originalIndex]: !isChecked }));
+                              }}
+                              className="mt-1 text-text-tertiary hover:text-accent transition-colors shrink-0"
                             >
-                              <Ban className="h-3.5 w-3.5" />
+                              {isChecked ? (
+                                <CheckSquare className="h-5 w-5 text-accent" />
+                              ) : (
+                                <Square className="h-5 w-5" />
+                              )}
                             </button>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); onStatusChange(f, 'ignored'); }}
-                              className="p-1 rounded text-text-tertiary hover:text-info hover:bg-info/10 transition-colors"
-                              title="Ignore finding"
-                            >
-                              <EyeOff className="h-3.5 w-3.5" />
-                            </button>
-                          </>
-                        )}
-                        {status !== 'open' && (
-                          <button
-                            type="button"
-                            onClick={(e) => { e.stopPropagation(); onStatusChange(f, 'open'); }}
-                            className="p-1 rounded text-text-tertiary hover:text-accent hover:bg-accent/10 transition-colors"
-                            title="Reopen finding"
-                          >
-                            <RotateCcw className="h-3.5 w-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    )}
+                            {/* Tiêu đề lỗi (Message) */}
+                            <span className="text-base font-medium text-text-primary group-hover:text-accent transition-colors flex-1 select-text">
+                              {f.message}
+                            </span>
+                          </div>
+
+                          {/* Tầng 2: Phân loại & Gắn thẻ (Badges) */}
+                          <div className="flex items-center justify-between gap-2 flex-wrap pl-7">
+                            {/* Cặp nhãn nền nhạt (Khía cạnh + Mức độ) */}
+                            <div className="flex items-center gap-2">
+                              <span className="text-[11px] font-bold font-sans bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-card-border/40">
+                                {getSoftwareCategory(f)}
+                              </span>
+                              <span className={`text-[11px] font-bold font-sans px-2 py-0.5 rounded border ${severityColorClass}`}>
+                                {getSeverityLabel(f)}
+                              </span>
+                            </div>
+
+                            {/* Hệ thống Tags */}
+                            <div className="flex items-center gap-1.5">
+                              {getTags(f).map(tag => (
+                                <span key={tag} className="text-[10px] font-mono bg-bg-secondary text-text-tertiary px-2 py-0.5 rounded border border-card-border/30">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Tầng 3: Vận hành & Trạng thái (Thanh dưới cùng) */}
+                          <div className="flex items-center justify-between border-t border-card-border/40 pt-3 text-[12px] text-text-tertiary pl-7 flex-wrap gap-y-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {/* Menu Trạng thái xử lý */}
+                              {onStatusChange ? (
+                                <select
+                                  value={currentStatus}
+                                  onChange={(e) => {
+                                    e.stopPropagation();
+                                    onStatusChange(f, e.target.value as FindingStatus);
+                                  }}
+                                  className="bg-transparent border-none text-[12px] font-bold text-text-secondary cursor-pointer focus:outline-none hover:text-text-primary transition-colors pr-1"
+                                >
+                                  <option value="open" className="bg-bg-secondary">Open</option>
+                                  <option value="confirmed" className="bg-bg-secondary">Confirmed</option>
+                                  <option value="resolved" className="bg-bg-secondary">Resolved</option>
+                                  <option value="applied" className="bg-bg-secondary">Applied</option>
+                                  <option value="false_positive" className="bg-bg-secondary">False Positive</option>
+                                </select>
+                              ) : (
+                                <span className="font-bold text-text-secondary capitalize">{currentStatus}</span>
+                              )}
+
+                              <span>•</span>
+
+                              {/* Vị trí dòng */}
+                              <span className="font-mono font-semibold text-text-secondary">L{f.line}</span>
+                            </div>
+
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {/* Bản chất lỗi */}
+                              <div className="flex items-center gap-1.5">
+                                {f.finding_type === 'confirmed' ? (
+                                  <ShieldAlert className="h-3.5 w-3.5 shrink-0 text-danger" />
+                                ) : (
+                                  <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-warning" />
+                                )}
+                                <span className="capitalize">{f.finding_type || 'code smell'}</span>
+                              </div>
+
+                              {currentReport.timestamp && (
+                                <>
+                                  <span>•</span>
+                                  <div className="flex items-center gap-1 text-[11px] text-text-tertiary">
+                                    <Calendar className="h-3.5 w-3.5 shrink-0" />
+                                    <span>Scanned: {formatDate(currentReport.timestamp)}</span>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -227,7 +296,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
 
           {/* Pagination Controls */}
           {pagination && pagination.totalPages > 1 && onPageChange && (
-            <div className="flex items-center justify-between mt-6 pt-4 border-t border-text-tertiary/30 w-full">
+            <div className="flex items-center justify-between mt-6 pt-4 border-t border-card-border/50 w-full">
               <span className="text-xs text-text-tertiary font-mono">
                 Page {currentPage ?? pagination.page} of {pagination.totalPages} ({pagination.total} total findings)
               </span>
@@ -253,7 +322,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
               </div>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

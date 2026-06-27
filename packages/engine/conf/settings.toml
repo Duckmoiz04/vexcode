@@ -9,6 +9,12 @@
 max_code_chars = 3000
 max_naming_audit_files = 3
 max_resolve_findings = 5
+ccn_threshold = 25
+cognitive_threshold = 15
+dup_min_lines = 6
+dup_min_tokens = 50
+max_files_for_complexity = 100
+max_naming_audit_candidates = 5
 
 [ai_settings]
 resolve_max_tokens = 512
@@ -51,6 +57,31 @@ enabled = true
 requires_key = true
 model = "minimaxai/minimax-m2.7"
 base_url = "https://integrate.api.nvidia.com/v1"
+
+# ---- Multi-Agent Pipeline Agents ----
+# Each agent maps to a provider above. Provider can be overridden per agent.
+# Model override (optional): if set, uses this model instead of provider's default.
+
+[ai.agents.analyze]
+enabled = true
+provider = "openai"
+
+[ai.agents.fix]
+enabled = true
+provider = "nvidia"
+
+[ai.agents.review]
+enabled = true
+provider = "openai"
+
+[ai.agents.suggest]
+enabled = false
+provider = "9router"
+model = ""
+
+[ai.agents.naming]
+enabled = true
+provider = "openai"
 
 [gitleaks]
 enabled = true

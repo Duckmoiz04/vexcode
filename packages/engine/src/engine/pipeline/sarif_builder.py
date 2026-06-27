@@ -83,6 +83,8 @@ def _build_results(findings: List[dict], resolutions: dict) -> List[dict]:
                 "_applied": bool(f.get("_applied")),
                 "id": finding_id,
                 "status": f.get("status") or DEFAULT_STATUS,
+                "confidence": f.get("confidence"),
+                "precision": f.get("precision"),
             },
         }
 
@@ -115,11 +117,16 @@ def _compute_finding_id(f: dict) -> str:
 
     Delegates to the canonical ``compute_finding_id`` in iso25010_taxonomy
     so that VexCode internal IDs and SARIF IDs are always consistent.
+
+    When a scanner supplies ``code_text`` (e.g. Gitleaks), it is passed as
+    ``content_hint`` to produce a content-aware hash that survives line
+    shifts.
     """
     return compute_finding_id(
         str(f.get('file', '')),
         int(f.get('line', 0)),
         str(f.get('rule_id', '')),
+        content_hint=str(f.get('code_text', '')),
     )
 
 

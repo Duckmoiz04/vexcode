@@ -97,16 +97,18 @@ class AgentConfig:
 _PROVIDERS: dict[str, ProviderConfig] | None = None
 _AGENTS: dict[str, AgentConfig] | None = None
 _AI_ENABLED: bool | None = None
+_AI_STREAM: bool | None = None
 
 
 def _load_all() -> None:
     """Load (or reload) and merge settings.toml + .env into module globals."""
-    global _PROVIDERS, _AGENTS, _AI_ENABLED
+    global _PROVIDERS, _AGENTS, _AI_ENABLED, _AI_STREAM
     _reload_env_file()
     settings = load_settings()
 
     ai_section = settings.get("ai", {})
     _AI_ENABLED = ai_section.get("enabled", False)
+    _AI_STREAM = ai_section.get("stream", True)
 
     # -- Load providers -----------------------------------------------------
     raw_providers: dict[str, Any] = ai_section.get("providers", {})
@@ -147,10 +149,11 @@ def reset_config() -> None:
 
     Useful for tests that need to control the environment before loading.
     """
-    global _PROVIDERS, _AGENTS, _AI_ENABLED
+    global _PROVIDERS, _AGENTS, _AI_ENABLED, _AI_STREAM
     _PROVIDERS = None
     _AGENTS = None
     _AI_ENABLED = None
+    _AI_STREAM = None
 
 
 # ---------------------------------------------------------------------------
@@ -239,6 +242,7 @@ def dump_ai_config() -> dict[str, Any]:
 
     return {
         "enabled": bool(_AI_ENABLED),
+        "stream": bool(_AI_STREAM),
         "providers": {
             name: {
                 "enabled": p.enabled,

@@ -231,12 +231,38 @@ className={`flex items-center gap-2.5 w-full pl-5 pr-4 py-2.5 text-[13px] transi
                       </button>
                     </div>
                   ) : (
-                    <AgentAssignmentSection
-                      agents={state.agentMappings}
-                      enabledProviders={state.enabledProviders}
-                      providerConfigs={state.providerConfigs}
-                      onAgentChange={state.handleAgentChange}
-                    />
+                    <div className="flex flex-col h-full">
+                      <AgentAssignmentSection
+                        agents={state.agentMappings}
+                        enabledProviders={state.enabledProviders}
+                        providerConfigs={state.providerConfigs}
+                        onAgentChange={state.handleAgentChange}
+                      />
+
+                      <div className="flex items-center justify-between px-2 py-4 mt-4 rounded-lg border border-card-border/50 bg-bg-primary/15">
+                        <div className="flex flex-col gap-0.5">
+                          <span className="text-[13px] font-medium text-text-primary">Streaming Responses</span>
+                          <span className="text-[12px] text-text-tertiary leading-relaxed">
+                            Show AI responses progressively as they are generated
+                          </span>
+                        </div>
+                        <Toggle
+                          id="chat-stream"
+                          checked={state.chatStream}
+                          onChange={state.handleChatStreamChange}
+                          label="Streaming"
+                        />
+                      </div>
+
+                      <div className="mt-auto pt-6 border-t border-card-border flex justify-end">
+                        <button
+                          onClick={handleSave}
+                          className="px-5 py-2 bg-accent hover:bg-accent-hover text-white text-[13px] font-medium rounded-md transition-colors cursor-pointer"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </>
               )}

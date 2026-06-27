@@ -126,6 +126,7 @@ def _write_toml(settings: dict, ai_section: dict) -> None:
     # Write [ai] section
     lines.append("[ai]")
     lines.append(f"enabled = {_toml_value(ai_section.get('enabled', True))}")
+    lines.append(f"stream = {_toml_value(ai_section.get('stream', True))}")
     lines.append("")
 
     # [ai.providers.*]
@@ -209,6 +210,7 @@ def _cmd_update() -> None:
 
     ai_section = {
         "enabled": payload.get("enabled", True),
+        "stream": payload.get("stream", True),
         "providers": toml_providers,
         "agents": toml_agents,
     }

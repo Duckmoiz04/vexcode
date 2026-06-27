@@ -16,7 +16,7 @@ interface HotspotItem {
 
 function isSecurityFinding(f: Finding): boolean {
   // Use AI classification when available
-  if (f.finding_type === 'hotspot' || f.finding_type === 'vulnerability') return true;
+  if (f.finding_type === 'hotspot' || f.finding_type === 'confirmed') return true;
   // Fallback: Direct ISO category
   if (f.rule_id && f.rule_id.includes('gitleaks/')) return true;
   if ((f as Finding & { category?: string }).category === 'security') return true;
@@ -86,7 +86,7 @@ export const SecurityHotspotsPage: React.FC<SecurityHotspotsPageProps> = ({
             <ShieldAlert className="h-5 w-5 text-danger" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider">Security Hotspots</h3>
+            <h3 className="text-base font-semibold text-text-primary uppercase tracking-wider">Security Hotspots</h3>
             <p className="text-xs text-text-tertiary mt-0.5">
               Findings requiring human review before remediation
             </p>

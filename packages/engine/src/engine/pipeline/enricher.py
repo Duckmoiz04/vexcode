@@ -1,5 +1,6 @@
 import sys
 from typing import List
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from engine.utils.logger import get_logger
 from engine.core.ast_graph import (
@@ -13,6 +14,71 @@ from engine.core.ast_graph import (
 )
 
 logger = get_logger(__name__)
+
+
+def _enrich_single_finding(finding: dict, repo_name: str, repo_path: str, target_path: str, use_mock: bool) -> None:
+    file_path = finding.get("file")
+    line_number = finding.get("line")
+    if not file_path or line_number is None:
+        return
+
+    rel_file = get_relative_repo_path(file_path, target_path, repo_path)
+    try:
+        line_int = int(line_number)
+    except (ValueError, TypeError):
+        return
+    symbol = resolve_location_to_symbol(repo_name, rel_file, line_int)
+
+    if symbol:
+        symbol_id = symbol.get("id")
+        symbol_name = symbol.get("name")
+        kind = symbol.get("label")
+
+        context_data = get_symbol_context(repo_name, symbol_id)
+        impact_data = get_symbol_impact(repo_name, symbol_id)
+
+        incoming_data = context_data.get("incoming", {})
+        callers = []
+        for rel_type, nodes in incoming_data.items():
+            if isinstance(nodes, list):
+                for node in nodes:
+                    callers.append({
+                        "uid": node.get("uid") or node.get("id"),
+                        "name": node.get("name"),
+                        "filePath": node.get("filePath"),
+                        "relation": rel_type
+                    })
+
+        blast_radius = []
+        by_depth = impact_data.get("byDepth", {})
+        for depth_str, nodes in by_depth.items():
+            if isinstance(nodes, list):
+                for node in nodes:
+                    blast_radius.append({
+                        "uid": node.get("id") or node.get("uid"),
+                        "name": node.get("name"),
+                        "filePath": node.get("filePath"),
+                        "depth": node.get("depth"),
+                        "relation": node.get("relationType")
+                    })
+
+        finding["ast_context"] = {
+            "symbol_id": symbol_id,
+            "symbol_name": symbol_name,
+            "kind": kind,
+            "source_code": context_data.get("symbol", {}).get("content"),
+            "callers": callers,
+            "impact": impact_data,
+            "blast_radius": blast_radius
+        }
+    else:
+        if use_mock:
+            try:
+                key = (file_path, int(line_number))
+            except (ValueError, TypeError):
+                return
+            if key in MOCK_AST_CONTEXTS:
+                finding["ast_context"] = MOCK_AST_CONTEXTS[key]
 
 
 def enrich_findings(findings: List[dict], target_path: str, use_mock: bool) -> List[dict]:
@@ -39,70 +105,19 @@ def enrich_findings(findings: List[dict], target_path: str, use_mock: bool) -> L
         logger.info("GitNexus is not available on this system. Skipping AST enrichment.")
 
     if gitnexus_ok and repo_name and repo_path:
-        logger.info("Enriching findings with AST context...")
-        for finding in findings:
-            file_path = finding.get("file")
-            line_number = finding.get("line")
-            if not file_path or line_number is None:
-                continue
-
-            rel_file = get_relative_repo_path(file_path, target_path, repo_path)
-            try:
-                line_int = int(line_number)
-            except (ValueError, TypeError):
-                continue
-            symbol = resolve_location_to_symbol(repo_name, rel_file, line_int)
-
-            if symbol:
-                symbol_id = symbol.get("id")
-                symbol_name = symbol.get("name")
-                kind = symbol.get("label")
-
-                context_data = get_symbol_context(repo_name, symbol_id)
-                impact_data = get_symbol_impact(repo_name, symbol_id)
-
-                incoming_data = context_data.get("incoming", {})
-                callers = []
-                for rel_type, nodes in incoming_data.items():
-                    if isinstance(nodes, list):
-                        for node in nodes:
-                            callers.append({
-                                "uid": node.get("uid") or node.get("id"),
-                                "name": node.get("name"),
-                                "filePath": node.get("filePath"),
-                                "relation": rel_type
-                            })
-
-                blast_radius = []
-                by_depth = impact_data.get("byDepth", {})
-                for depth_str, nodes in by_depth.items():
-                    if isinstance(nodes, list):
-                        for node in nodes:
-                            blast_radius.append({
-                                "uid": node.get("id") or node.get("uid"),
-                                "name": node.get("name"),
-                                "filePath": node.get("filePath"),
-                                "depth": node.get("depth"),
-                                "relation": node.get("relationType")
-                            })
-
-                finding["ast_context"] = {
-                    "symbol_id": symbol_id,
-                    "symbol_name": symbol_name,
-                    "kind": kind,
-                    "source_code": context_data.get("symbol", {}).get("content"),
-                    "callers": callers,
-                    "impact": impact_data,
-                    "blast_radius": blast_radius
-                }
-            else:
-                if use_mock:
-                    try:
-                        key = (file_path, int(line_number))
-                    except (ValueError, TypeError):
-                        continue
-                    if key in MOCK_AST_CONTEXTS:
-                        finding["ast_context"] = MOCK_AST_CONTEXTS[key]
+        logger.info("Enriching findings with AST context in parallel...")
+        # Use concurrent ThreadPoolExecutor to run GitNexus CLI commands in parallel.
+        # This dramatically speeds up enrichment when there are many findings.
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            futures = [
+                executor.submit(_enrich_single_finding, finding, repo_name, repo_path, target_path, use_mock)
+                for finding in findings
+            ]
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    logger.info(f"Error enriching finding: {e}")
 
     elif use_mock:
         logger.info("GitNexus not available/mapped, but using mock AST context for mock scan.")

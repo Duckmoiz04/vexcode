@@ -4,8 +4,10 @@ import { Sidebar } from './components/sidebar/Sidebar';
 import { SettingsDrawer } from './components/SettingsDrawer';
 import { ScanModal } from './components/ScanModal';
 import { OnboardingPage } from './pages/OnboardingPage';
-import { DashboardPage } from './pages/DashboardPage';
+import { OverviewPage } from './pages/OverviewPage';
 import { IssuesPage } from './pages/IssuesPage';
+import { GraphPage } from './pages/GraphPage';
+import { ActivityPage } from './pages/ActivityPage';
 import type { Finding, FindingStatus, Report, Config, ScanStatus } from './types';
 import { apiFetch } from './utils/apiClient';
 import { useToast } from './hooks/useToast';
@@ -44,6 +46,7 @@ export const App: React.FC = () => {
     pagination, currentPage, pageSize,
     loadProjects, loadHistory, handleSelectProject, setCurrentReportId,
     handlePageChange, handleSetPageSize,
+    handleDeleteReport, handleDeleteAllReports,
   } = useReports(showToast);
   const {
     isScanning, scanStatus, scanLogs, elapsedTime, isReResolving, scanProgress, PHASE_LABELS,
@@ -53,7 +56,8 @@ export const App: React.FC = () => {
   const [selectedFindingIndex, setSelectedFindingIndex] = useState<number | null>(null);
   const [selectedFilePath, setSelectedFilePath] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'issues'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'overview' | 'issues' | 'graph' | 'activity'>('overview');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Lifted filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -298,7 +302,7 @@ export const App: React.FC = () => {
 
   // Reset view state when switching projects or scans
   const resetView = useCallback(() => {
-    setActiveTab('dashboard');
+    setActiveTab('overview');
     setSelectedFindingIndex(null);
     setSelectedFilePath(null);
     setFilterScanStatuses([]);
@@ -356,6 +360,8 @@ export const App: React.FC = () => {
         onToggleTheme={handleToggleTheme}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        isSidebarCollapsed={isSidebarCollapsed}
+        onToggleSidebar={() => setIsSidebarCollapsed(prev => !prev)}
       />
 
       {/* Main Content Area */}
@@ -390,6 +396,8 @@ export const App: React.FC = () => {
               filterScanStatuses={filterScanStatuses}
               setFilterScanStatuses={setFilterScanStatuses}
               availableLanguages={availableLanguages}
+              isCollapsed={isSidebarCollapsed}
+              reportTimestamp={currentReport?.timestamp || null}
             />
 
             {/* Central Panels with Tab Controllers */}
@@ -397,8 +405,8 @@ export const App: React.FC = () => {
 
               {/* Tab Panel contents */}
               <div className="flex-1 flex overflow-hidden min-h-0">
-                {activeTab === 'dashboard' ? (
-                  <DashboardPage
+                {activeTab === 'overview' && (
+                  <OverviewPage
                     report={currentReport}
                     currentProject={currentProject}
                     findings={currentReport?.findings || []}
@@ -406,7 +414,8 @@ export const App: React.FC = () => {
                     onSelectFilePath={handleSelectFilePath}
                     onSelectFindingIndex={handleSelectFindingIndex}
                   />
-                ) : (
+                )}
+                {activeTab === 'issues' && (
                   <IssuesPage
                     currentReport={currentReport}
                     selectedFindingIndex={selectedFindingIndex}
@@ -437,6 +446,24 @@ export const App: React.FC = () => {
                     currentPage={currentPage}
                     onPageChange={handlePageChangeWithReset}
                     theme={theme}
+                  />
+                )}
+                {activeTab === 'graph' && (
+                  <GraphPage
+                    currentReport={currentReport}
+                    onSelectFindingIndex={handleSelectFindingIndex}
+                    onSelectFilePath={handleSelectFilePath}
+                  />
+                )}
+                {activeTab === 'activity' && (
+                  <ActivityPage
+                    reports={reports}
+                    currentReportId={currentReportId}
+                    onSelectReportId={handleSelectReportIdWithReset}
+                    onSwitchTab={setActiveTab}
+                    currentProject={currentProject}
+                    onDeleteReport={handleDeleteReport}
+                    onDeleteAllReports={handleDeleteAllReports}
                   />
                 )}
               </div>

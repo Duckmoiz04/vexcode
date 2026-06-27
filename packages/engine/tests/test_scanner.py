@@ -2,7 +2,12 @@
 
 from unittest.mock import patch
 
-from engine.core.scanner import run_scan, MOCK_FINDINGS, EXCLUDE_DIRS
+from engine.core.scanner import (
+    run_scan,
+    MOCK_FINDINGS,
+    EXCLUDE_DIRS,
+    _resolve_to_existing,
+)
 
 
 class TestScanner:
@@ -79,3 +84,44 @@ class TestScannerExcludeDirs:
         assert len(exclude_flags) == len(EXCLUDE_DIRS)
         for d in EXCLUDE_DIRS:
             assert d in exclude_flags
+
+
+class TestResolveToExisting:
+    """Tests for _resolve_to_existing (file-path normalisation for OpenGrep output)."""
+
+    TARGET = "D:\\DATN2"
+    BASES = [TARGET, "D:\\DATN2\\packages\\engine", "D:\\DATN2\\packages", "D:\\DATN2"]
+
+    def test_absolute_path_existing_returned_normpath(self):
+        with patch("os.path.exists", return_value=True):
+            result = _resolve_to_existing("D:\\resolve-manifest.mjs", self.TARGET, self.BASES)
+        assert result == "D:\\resolve-manifest.mjs"
+
+    def test_empty_input_returns_empty(self):
+        assert _resolve_to_existing("", self.TARGET, self.BASES) == ""
+
+    def test_relative_path_under_target_base_resolves(self):
+        existing = {"D:\\DATN2\\src\\main.py": True}
+        with patch("os.path.exists", side_effect=lambda p: existing.get(p, False)):
+            result = _resolve_to_existing("src\\main.py", self.TARGET, self.BASES)
+        assert result == "D:\\DATN2\\src\\main.py"
+
+    def test_dotdot_path_resolves_under_engine_base(self):
+        real = "D:\\DATN2\\resolve-manifest.mjs"
+        hit_paths = {real}
+        with patch("os.path.exists", side_effect=lambda p: p in hit_paths):
+            result = _resolve_to_existing("..\\..\\resolve-manifest.mjs", self.TARGET, self.BASES)
+        assert result == real
+
+    def test_dotdot_strip_fallback(self):
+        raw = "..\\foo.py"
+        real = "D:\\DATN2\\foo.py"
+        hit_paths = {real}
+        with patch("os.path.exists", side_effect=lambda p: p in hit_paths):
+            result = _resolve_to_existing(raw, self.TARGET, self.BASES)
+        assert result == real
+
+    def test_unknown_relative_path_falls_back_normpath(self):
+        with patch("os.path.exists", return_value=False):
+            result = _resolve_to_existing("ghost.py", self.TARGET, self.BASES)
+        assert result == "D:\\DATN2\\ghost.py"

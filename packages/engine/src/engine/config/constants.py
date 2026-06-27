@@ -110,6 +110,12 @@ _settings = load_settings()
 MAX_CODE_CHARS = _nested_get(_settings, ["analysis", "max_code_chars"], 3000)
 MAX_NAMING_AUDIT_FILES = _nested_get(_settings, ["analysis", "max_naming_audit_files"], 3)
 MAX_RESOLVE_FINDINGS = _nested_get(_settings, ["analysis", "max_resolve_findings"], 5)
+CCN_THRESHOLD = _nested_get(_settings, ["analysis", "ccn_threshold"], 25)
+COGNITIVE_THRESHOLD = _nested_get(_settings, ["analysis", "cognitive_threshold"], 15)
+DUP_MIN_LINES = _nested_get(_settings, ["analysis", "dup_min_lines"], 6)
+DUP_MIN_TOKENS = _nested_get(_settings, ["analysis", "dup_min_tokens"], 50)
+MAX_FILES_FOR_COMPLEXITY = _nested_get(_settings, ["analysis", "max_files_for_complexity"], 100)
+MAX_NAMING_AUDIT_CANDIDATES = _nested_get(_settings, ["analysis", "max_naming_audit_candidates"], 5)
 
 # -- AI resolution settings (env overrides supported) -----------------------
 AI_RESOLVE_MAX_TOKENS = get_int_env(

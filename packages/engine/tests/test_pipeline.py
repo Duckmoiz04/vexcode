@@ -234,6 +234,10 @@ class TestPipelineDualOutput:
             fast=False,
             refresh_ai=None,
             no_sarif=False,
+            ccn_threshold=None,
+            cognitive_threshold=None,
+            dup_min_lines=None,
+            dup_min_tokens=None,
         )
         with pytest.raises(SystemExit) as exc_info:
             run_analysis(args)
@@ -281,6 +285,10 @@ class TestPipelineDualOutput:
             fast=False,
             refresh_ai=None,
             no_sarif=True,
+            ccn_threshold=None,
+            cognitive_threshold=None,
+            dup_min_lines=None,
+            dup_min_tokens=None,
         )
         with pytest.raises(SystemExit) as exc_info:
             run_analysis(args)

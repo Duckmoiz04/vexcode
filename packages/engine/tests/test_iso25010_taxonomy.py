@@ -1,8 +1,7 @@
-"""Unit tests for ISO/IEC 25010 taxonomy classifier.
+"""Unit tests for ISO/IEC 25010 taxonomy classifier — simplified mapping.
 
-Reference: ISO/IEC 25010:2011 — Systems and software engineering — Systems
-and software Quality Requirements and Evaluation (SQuaRE) — System and
-software quality models.
+The classifier now maps OpenGrep's 4 native categories to ISO 25010
+terms, plus a direct ``iso_25010`` override for internal findings.
 """
 
 import os
@@ -16,22 +15,14 @@ sys.path.insert(
 )
 
 from engine.config.iso25010_taxonomy import (  # noqa: E402
-    DEFAULT_CATEGORY,
     MAINTAINABILITY,
     PERFORMANCE,
     PHASE_1_CATEGORIES,
     RELIABILITY,
     SECURITY,
-    FUNCTIONAL_SUITABILITY,
-    OPERABILITY,
-    COMPATIBILITY,
-    TRANSFERABILITY,
     classify_finding,
     compute_finding_id,
-    get_phase_1_categories,
-    is_valid_category,
-    normalize_owasp_id,
-    OWASP_TO_SUBCATEGORY,
+    SEMGREP_TO_ISO25010,
 )
 
 
@@ -69,299 +60,117 @@ class TestComputeFindingId:
         assert a != b
 
     def test_handles_unicode_path(self):
-        # Vietnamese path with diacritics
         fid = compute_finding_id("src/tiện_ích/hàm.py", 10, "rule.x")
         assert len(fid) == 12
 
     def test_stable_across_runs(self):
-        # Same inputs across two function calls = same output
         a = compute_finding_id("a.py", 1, "x.y.z")
         b = compute_finding_id("a.py", 1, "x.y.z")
         assert a == b
 
     def test_realistic_semgrep_rule(self):
-        # Mimics a real Semgrep rule_id
         fid = compute_finding_id(
             "/home/user/project/src/auth/login.py",
             87,
             "python.lang.security.audit.dangerous-exec",
         )
         assert len(fid) == 12
-        # Should be a real hex string
         int(fid, 16)  # raises if not hex
 
 
 # ---------------------------------------------------------------------------
-# classify_finding — security
+# classify_finding — SEMGREP_TO_ISO25010 mapping
 # ---------------------------------------------------------------------------
 
-class TestClassifySecurity:
-    """Security: injection, XSS, CSRF, crypto, auth, secret."""
+class TestClassifyByCategory:
+    """Mapping through SEMGREP_TO_ISO25010 dict."""
 
-    @pytest.mark.parametrize("rule_id", [
-        "python.lang.security.audit.dangerous-exec",
-        "python.lang.security.audit.formatted-sql-query",
-        "javascript.lang.security.audit.xss",
-        "javascript.express.security.audit.express-open-redirect",
-        "generic.crypto.use_of_hardcoded_key",
-        "python.lang.security.audit.weak-hash",
-        "python.lang.security.audit.hardcoded-password",
-        "python.lang.security.audit.ssrf",
-        "python.flask.security.audit.csrf-disabled",
-        "python.lang.security.audit.dangerous-deserialization",
+    @pytest.mark.parametrize("native_cat,expected", [
+        ("security", SECURITY),
+        ("correctness", RELIABILITY),
+        ("best-practice", MAINTAINABILITY),
+        ("performance", PERFORMANCE),
     ])
-    def test_security_keyword(self, rule_id):
-        assert classify_finding({"rule_id": rule_id}) == SECURITY
+    def test_open_grep_category_maps_correctly(self, native_cat, expected):
+        assert classify_finding({"category": native_cat}) == expected
 
-    @pytest.mark.parametrize("cwe", [
-        "CWE-89",   # SQL injection
-        "CWE-79",   # XSS
-        "CWE-78",   # OS command injection
-        "CWE-918",  # SSRF
-        "CWE-352",  # CSRF
-        "CWE-798",  # Hardcoded credentials
-        "CWE-327",  # Broken crypto
-        "CWE-22",   # Path traversal
+    @pytest.mark.parametrize("native_cat", [
+        "security", "correctness", "best-practice", "performance",
     ])
-    def test_security_cwe(self, cwe):
-        assert classify_finding({"cwe_id": cwe, "rule_id": "unknown.rule"}) == SECURITY
+    def test_mapping_is_contained_in_dict(self, native_cat):
+        assert native_cat in SEMGREP_TO_ISO25010
 
-    def test_cwe_normalization(self):
-        # CWE without prefix, with trailing text
-        assert classify_finding({"cwe_id": "89", "rule_id": "x"}) == SECURITY
-        assert classify_finding({"cwe_id": "CWE-89: SQL Injection", "rule_id": "x"}) == SECURITY
-        assert classify_finding({"cwe_id": "cwe-79", "rule_id": "x"}) == SECURITY
+    def test_case_insensitive_mapping(self):
+        assert classify_finding({"category": "SECURITY"}) == SECURITY
+        assert classify_finding({"category": "Correctness"}) == RELIABILITY
 
+    def test_unknown_category_returns_none(self):
+        assert classify_finding({"category": "unknown"}) is None
+        assert classify_finding({"category": "usability"}) is None
 
-# ---------------------------------------------------------------------------
-# OWASP mapping
-# ---------------------------------------------------------------------------
+    def test_missing_category_returns_none(self):
+        assert classify_finding({}) is None
 
-class TestOwaspMapping:
-    """OWASP Top 10 → Security category mapping."""
+    def test_none_category_returns_none(self):
+        assert classify_finding({"category": None}) is None
 
-    @pytest.mark.parametrize("owasp_input,expected_canonical", [
-        ("A03", "OWASP-A03"),
-        ("A3", "OWASP-A03"),
-        ("A03:2021 - Injection", "OWASP-A03"),
-        ("OWASP-A03", "OWASP-A03"),
-        ("owasp-a3", "OWASP-A03"),
-        ("OWASP_A3", "OWASP-A03"),
-        ("A10:2021 - SSRF", "OWASP-A10"),
-        ("A1: Identification and Authentication Failures", "OWASP-A01"),
-    ])
-    def test_normalize_owasp_id(self, owasp_input, expected_canonical):
-        assert normalize_owasp_id(owasp_input) == expected_canonical
+    def test_empty_string_category_returns_none(self):
+        assert classify_finding({"category": ""}) is None
 
-    @pytest.mark.parametrize("invalid_input", [
-        "",
-        None,
-        "B03",
-        "CWE-89",
-        "random text",
-        "A0",
-        "A11",
-    ])
-    def test_normalize_owasp_id_invalid(self, invalid_input):
-        assert normalize_owasp_id(invalid_input) is None
+    def test_iso_25010_override_wins(self):
+        mapping_under_test = classify_finding({
+            "category": "correctness",   # would normally map to reliability
+            "iso_25010": "performance",  # but override wins
+        })
+        assert mapping_under_test == PERFORMANCE
 
-    @pytest.mark.parametrize("owasp_id", [
-        "OWASP-A01", "OWASP-A02", "OWASP-A03", "OWASP-A04",
-        "OWASP-A05", "OWASP-A06", "OWASP-A07", "OWASP-A08",
-        "OWASP-A09", "OWASP-A10",
-    ])
-    def test_all_owasp_categories_map_to_security(self, owasp_id):
-        """Every OWASP category must be classified as Security."""
-        assert classify_finding({
-            "owasp_id": owasp_id,
-            "rule_id": "some.rule",
-        }) == SECURITY
-
-    @pytest.mark.parametrize("owasp_id,expected_subcategory", [
-        ("OWASP-A01", "authenticity"),      # Broken Access Control
-        ("OWASP-A02", "confidentiality"),   # Cryptographic Failures
-        ("OWASP-A03", "integrity"),         # Injection
-        ("OWASP-A04", "security"),          # Insecure Design
-        ("OWASP-A05", "authenticity"),      # Security Misconfiguration
-        ("OWASP-A06", "integrity"),         # Vulnerable Components
-        ("OWASP-A07", "authenticity"),      # Auth Failures
-        ("OWASP-A08", "integrity"),         # Integrity Failures
-        ("OWASP-A09", "accountability"),    # Logging Failures
-        ("OWASP-A10", "integrity"),         # SSRF
-    ])
-    def test_owasp_subcategory_mapping(self, owasp_id, expected_subcategory):
-        assert OWASP_TO_SUBCATEGORY[owasp_id] == expected_subcategory
-
-    def test_owasp_priority_over_rule_id(self):
-        """OWASP should win over a non-security rule_id keyword."""
-        # rule_id "style.unused-import" would normally be MAINTAINABILITY
-        # but OWASP-A03 forces SECURITY
-        assert classify_finding({
-            "owasp_id": "OWASP-A03",
-            "rule_id": "python.lang.style.unused-import",
-        }) == SECURITY
-
-    def test_cwe_still_beats_owasp(self):
-        """CWE has higher priority than OWASP in the resolution order."""
-        # CWE-561 (Dead Code) → MAINTAINABILITY, even though OWASP says SECURITY
+    def test_iso_25010_override_with_unknown_category(self):
         result = classify_finding({
-            "cwe_id": "CWE-561",
-            "owasp_id": "OWASP-A03",
-            "rule_id": "x",
+            "category": "unknown",
+            "iso_25010": "maintainability",
         })
         assert result == MAINTAINABILITY
 
-    def test_owasp_handles_short_form_in_finding(self):
-        """Scanner emits OWASP-AXX canonical form, but short AXX should also work."""
+    def test_iso_25010_override_invalid_ignored(self):
+        # Invalid iso_25010 value should be ignored, falls through to category
         assert classify_finding({
-            "owasp_id": "A03",
-            "rule_id": "x",
+            "category": "security",
+            "iso_25010": "not_a_real_category",
         }) == SECURITY
-
-
-# ---------------------------------------------------------------------------
-# classify_finding — reliability
-# ---------------------------------------------------------------------------
-
-class TestClassifyReliability:
-    """Reliability: null, exception, race, resource, validation."""
-
-    @pytest.mark.parametrize("rule_id", [
-        "python.lang.correctness.null-check",
-        "python.lang.correctness.unused-loop-variable",
-        "python.lang.correctness.exception-handling",
-        "python.lang.correctness.resource-leak",
-        "javascript.express.correctness.unchecked-return-value",
-        "java.concurrency.race-condition",
-        "generic.error.null-dereference",
-    ])
-    def test_reliability_keyword(self, rule_id):
-        assert classify_finding({"rule_id": rule_id}) == RELIABILITY
-
-    @pytest.mark.parametrize("cwe", [
-        "CWE-476",  # NULL Pointer Dereference
-        "CWE-252",  # Unchecked Return Value
-        "CWE-401",  # Memory Leak
-        "CWE-362",  # Race Condition
-        "CWE-400",  # Uncontrolled Resource Consumption
-    ])
-    def test_reliability_cwe(self, cwe):
-        assert classify_finding({"cwe_id": cwe, "rule_id": "unknown"}) == RELIABILITY
-
-
-# ---------------------------------------------------------------------------
-# classify_finding — performance
-# ---------------------------------------------------------------------------
-
-class TestClassifyPerformance:
-    """Performance: complexity, efficiency, memory, loop."""
-
-    @pytest.mark.parametrize("rule_id", [
-        "python.lang.performance.high-complexity",
-        "python.lang.performance.inefficient-list-comprehension",
-        "generic.performance.quadratic-loop",
-        "javascript.lang.performance.memory-leak",
-        "python.complexity.cyclomatic",
-    ])
-    def test_performance_keyword(self, rule_id):
-        assert classify_finding({"rule_id": rule_id}) == PERFORMANCE
-
-    def test_complexity_keyword(self):
-        # "complexity" alone should map to performance
-        assert classify_finding({"rule_id": "generic.complexity.too-high"}) == PERFORMANCE
-
-    def test_nested_keyword(self):
-        # "nested" → performance
-        assert classify_finding({"rule_id": "generic.complexity.too-nested"}) == PERFORMANCE
-
-
-# ---------------------------------------------------------------------------
-# classify_finding — maintainability
-# ---------------------------------------------------------------------------
-
-class TestClassifyMaintainability:
-    """Maintainability: naming, style, dead code, magic numbers."""
-
-    @pytest.mark.parametrize("rule_id", [
-        "python.lang.style.unused-variable",
-        "python.lang.style.unused-import",
-        "python.lang.style.docstring-missing",
-        "python.lang.maintainability.dead-code",
-        "python.lang.maintainability.duplicate-code",
-        "python.lang.style.magic-number",
-        "python.lang.style.obscure-name",
-        "python.lang.too-many-params",
-        "generic.deprecated.api-usage",
-    ])
-    def test_maintainability_keyword(self, rule_id):
-        assert classify_finding({"rule_id": rule_id}) == MAINTAINABILITY
-
-    @pytest.mark.parametrize("cwe", [
-        "CWE-561",  # Dead Code
-        "CWE-563",  # Unused Variable
-    ])
-    def test_maintainability_cwe(self, cwe):
-        assert classify_finding({"cwe_id": cwe, "rule_id": "x"}) == MAINTAINABILITY
-
-
-# ---------------------------------------------------------------------------
-# classify_finding — default + edge cases
-# ---------------------------------------------------------------------------
-
-class TestClassifyDefaultAndEdgeCases:
-    """Default + edge cases — must never raise."""
-
-    def test_default_when_empty(self):
-        assert classify_finding({}) == DEFAULT_CATEGORY
-
-    def test_default_when_no_rule_id(self):
-        assert classify_finding({"message": "just a message"}) == DEFAULT_CATEGORY
-
-    def test_default_when_unrecognized(self):
-        assert classify_finding({"rule_id": "completely.unknown.rule"}) == DEFAULT_CATEGORY
-
-    def test_default_when_unicode_message(self):
-        # Vietnamese / accented text with no keyword match
         assert classify_finding({
-            "rule_id": "x.y.z",
+            "category": "best-practice",
+            "iso_25010": None,
+        }) == MAINTAINABILITY
+
+
+# ---------------------------------------------------------------------------
+# Edge cases — must never raise
+# ---------------------------------------------------------------------------
+
+class TestEdgeCases:
+    """Edge cases that must never raise."""
+
+    def test_empty_dict(self):
+        assert classify_finding({}) is None
+
+    def test_none_fields(self):
+        assert classify_finding({
+            "rule_id": None, "message": None, "category": None,
+        }) is None
+
+    def test_missing_fields(self):
+        assert classify_finding({"random_field": "value"}) is None
+
+    def test_unicode_message_no_match(self):
+        assert classify_finding({
+            "category": "nonexistent",
             "message": "Lỗi không xác định được nguyên nhân",
-        }) == DEFAULT_CATEGORY
+        }) is None
 
-    def test_handles_none_fields(self):
-        # All fields None
-        assert classify_finding({"rule_id": None, "message": None, "cwe_id": None}) == DEFAULT_CATEGORY
-
-    def test_handles_missing_fields(self):
-        # Fields missing entirely
-        assert classify_finding({"random_field": "value"}) == DEFAULT_CATEGORY
-
-    def test_cwe_priority_over_rule_id(self):
-        # CWE says "reliability" but rule_id keyword says "security" → CWE wins
-        # (CWE-252 is Unchecked Return Value, reliability)
-        # But rule_id "secret" would say security
-        result = classify_finding({
-            "cwe_id": "CWE-252",
-            "rule_id": "python.lang.security.audit.hardcoded-secret",
-            "message": "hardcoded secret detected",
-        })
-        # CWE wins → reliability
-        assert result == RELIABILITY
-
-    def test_rule_id_priority_over_message(self):
-        # rule_id has explicit "maintainability" keyword
-        # message could match other categories
-        result = classify_finding({
-            "rule_id": "python.lang.style.unused-variable",
-            "message": "race condition in loop",  # would say reliability
-        })
-        # rule_id wins → maintainability
-        assert result == MAINTAINABILITY
-
-    def test_longest_keyword_match_wins(self):
-        # "high-complexity" is in map; "complexity" is also in map
-        # Both map to PERFORMANCE, but ensure it doesn't crash
-        assert classify_finding({"rule_id": "x.high-complexity"}) == PERFORMANCE
-        assert classify_finding({"rule_id": "x.complexity"}) == PERFORMANCE
+    def test_handles_all_field_types(self):
+        assert classify_finding({"category": 123}) is None  # not a string
+        assert classify_finding({"category": []}) is None   # not a string
+        assert classify_finding({"category": True}) is None  # not a string
 
 
 # ---------------------------------------------------------------------------
@@ -369,7 +178,7 @@ class TestClassifyDefaultAndEdgeCases:
 # ---------------------------------------------------------------------------
 
 class TestPhase1Contract:
-    """Phase 1 contract: exactly 4 categories, default is maintainability."""
+    """Phase 1 contract: exactly 4 categories."""
 
     def test_phase_1_has_exactly_4_categories(self):
         assert len(PHASE_1_CATEGORIES) == 4
@@ -379,49 +188,25 @@ class TestPhase1Contract:
             SECURITY, RELIABILITY, MAINTAINABILITY, PERFORMANCE,
         }
 
-    def test_default_is_maintainability(self):
-        assert DEFAULT_CATEGORY == MAINTAINABILITY
-
-    def test_get_phase_1_categories_returns_set(self):
-        cats = get_phase_1_categories()
-        assert isinstance(cats, set)
-        assert len(cats) == 4
-
-    @pytest.mark.parametrize("cat", [
-        SECURITY, RELIABILITY, MAINTAINABILITY, PERFORMANCE,
-        FUNCTIONAL_SUITABILITY, OPERABILITY, COMPATIBILITY, TRANSFERABILITY
-    ])
-    def test_is_valid_category_true(self, cat):
-        assert is_valid_category(cat) is True
-
-    @pytest.mark.parametrize("cat", [
-        "usability",               # not supported directly (we use operability)
-        "portability",             # not supported directly (we use transferability)
-        "unknown",
-        "",
-        "SECURITY",  # case-sensitive
-    ])
-    def test_is_valid_category_false(self, cat):
-        assert is_valid_category(cat) is False
+    def test_all_open_grep_categories_are_mapped(self):
+        assert set(SEMGREP_TO_ISO25010.values()) == PHASE_1_CATEGORIES
 
 
 # ---------------------------------------------------------------------------
-# Determinism — same input always produces same output
+# Determinism
 # ---------------------------------------------------------------------------
 
 class TestDeterminism:
-    """Same input must always produce same output (testable, auditable)."""
+    """Same input must always produce same output."""
 
     def test_classify_is_deterministic(self):
         finding = {
+            "category": "security",
             "rule_id": "python.lang.security.audit.dangerous-exec",
             "message": "exec() call with user input",
-            "cwe_id": "CWE-94",
-            "file": "src/x.py",
-            "line": 10,
         }
         results = {classify_finding(finding) for _ in range(100)}
-        assert len(results) == 1  # all calls produce same category
+        assert len(results) == 1
 
     def test_id_is_deterministic(self):
         args = ("src/foo.py", 42, "rule.x")

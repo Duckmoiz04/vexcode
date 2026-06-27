@@ -1052,6 +1052,141 @@ describe('Express REST Server API', () => {
       expect(res.body.response).toBe('Gemini response');
     });
 
+    it('should support streaming with OpenAI-compatible provider', async () => {
+      const chunks = [
+        'data: {"choices": [{"delta": {"content": "Hello"}}]}\n',
+        'data: {"choices": [{"delta": {"content": " world"}}]}\n',
+        'data: [DONE]\n'
+      ];
+      
+      const mockStream = {
+        getReader: () => {
+          let index = 0;
+          return {
+            read: async () => {
+              if (index < chunks.length) {
+                return { done: false, value: new TextEncoder().encode(chunks[index++]) };
+              }
+              return { done: true };
+            },
+            cancel: async () => {}
+          };
+        }
+      };
+
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        body: mockStream
+      });
+
+      const res = await api
+        .post('/api/chat')
+        .send({
+          messages: [{ role: 'user', content: 'Hi' }],
+          provider: 'openai',
+          baseUrl: 'https://api.openai.com/v1',
+          model: 'gpt-4',
+          apiKey: 'sk-test',
+          stream: true
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('text/event-stream');
+      expect(res.text).toContain('data: {"content":"Hello"}');
+      expect(res.text).toContain('data: {"content":" world"}');
+      expect(res.text).toContain('data: [DONE]');
+    });
+
+    it('should support streaming with Anthropic', async () => {
+      const chunks = [
+        'event: content_block_delta\ndata: {"type": "content_block_delta", "delta": {"type": "text_delta", "text": "Claude"}}\n',
+        'event: content_block_delta\ndata: {"type": "content_block_delta", "delta": {"type": "text_delta", "text": " response"}}\n',
+        'data: [DONE]\n'
+      ];
+      
+      const mockStream = {
+        getReader: () => {
+          let index = 0;
+          return {
+            read: async () => {
+              if (index < chunks.length) {
+                return { done: false, value: new TextEncoder().encode(chunks[index++]) };
+              }
+              return { done: true };
+            },
+            cancel: async () => {}
+          };
+        }
+      };
+
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        body: mockStream
+      });
+
+      const res = await api
+        .post('/api/chat')
+        .send({
+          messages: [{ role: 'user', content: 'Hi' }],
+          provider: 'anthropic',
+          baseUrl: 'https://api.anthropic.com',
+          model: 'claude-3',
+          apiKey: 'sk-ant-test',
+          stream: true
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('text/event-stream');
+      expect(res.text).toContain('data: {"content":"Claude"}');
+      expect(res.text).toContain('data: {"content":" response"}');
+      expect(res.text).toContain('data: [DONE]');
+    });
+
+    it('should support streaming with Google Gemini', async () => {
+      const chunks = [
+        'data: {"candidates": [{"content": {"parts": [{"text": "Gemini"}]}}]}\n',
+        'data: {"candidates": [{"content": {"parts": [{"text": " stream"}]}}]}\n',
+        'data: [DONE]\n'
+      ];
+      
+      const mockStream = {
+        getReader: () => {
+          let index = 0;
+          return {
+            read: async () => {
+              if (index < chunks.length) {
+                return { done: false, value: new TextEncoder().encode(chunks[index++]) };
+              }
+              return { done: true };
+            },
+            cancel: async () => {}
+          };
+        }
+      };
+
+      globalThis.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        body: mockStream
+      });
+
+      const res = await api
+        .post('/api/chat')
+        .send({
+          messages: [{ role: 'user', content: 'Hi' }],
+          provider: 'google',
+          baseUrl: 'https://generativelanguage.googleapis.com',
+          model: 'gemini-1.5',
+          apiKey: 'google-key',
+          stream: true
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.headers['content-type']).toContain('text/event-stream');
+      expect(res.text).toContain('data: {"content":"Gemini"}');
+      expect(res.text).toContain('data: {"content":" stream"}');
+      expect(res.text).toContain('data: [DONE]');
+    });
+
     it('should return 500 when provider fetch fails', async () => {
       globalThis.fetch = vi.fn().mockRejectedValue(new Error('Connection refused'));
 

@@ -24,7 +24,7 @@ describe('FindingsList', () => {
     }),
   ];
 
-  it('renders findings list with severity dots, rule IDs, file names, line numbers, messages, and applied badges', () => {
+  it('renders findings list with grouped files, tags, message, line coords, and status dropdown', () => {
     const onSelectFilePath = vi.fn();
     const onSelectFindingIndex = vi.fn();
 
@@ -35,18 +35,28 @@ describe('FindingsList', () => {
         selectedFindingIndex={null}
         onSelectFindingIndex={onSelectFindingIndex}
         onSelectFilePath={onSelectFilePath}
+        targetPath=""
       />
     );
 
-    expect(screen.getByText('injection')).toBeInTheDocument();
-    expect(screen.getByText('naming')).toBeInTheDocument();
-    expect(screen.getByText('applied')).toBeInTheDocument();
+    // Group header file paths
+    expect(screen.getByText('src/auth.ts')).toBeInTheDocument();
+    expect(screen.getByText('src/utils.ts')).toBeInTheDocument();
+
+    // Check message titles
     expect(screen.getByText('SQL Injection vulnerability')).toBeInTheDocument();
     expect(screen.getByText('Bad variable name')).toBeInTheDocument();
-    expect(screen.getByText('Line 10')).toBeInTheDocument();
-    expect(screen.getByText('Line 20')).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText('injection'));
+    // Check tags parsed from rule_ids
+    expect(screen.getByText('injection')).toBeInTheDocument();
+    expect(screen.getByText('naming')).toBeInTheDocument();
+
+    // Check L10 and L20 line coordinates
+    expect(screen.getByText('L10')).toBeInTheDocument();
+    expect(screen.getByText('L20')).toBeInTheDocument();
+
+    // Click on finding title should trigger callbacks
+    fireEvent.click(screen.getByText('SQL Injection vulnerability'));
     expect(onSelectFilePath).toHaveBeenCalledWith('src/auth.ts');
     expect(onSelectFindingIndex).toHaveBeenCalledWith(0);
   });
