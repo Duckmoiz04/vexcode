@@ -167,6 +167,23 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     }
   }, [providerConfigs, handleProviderConfigChange]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    for (const [pk, cfg] of Object.entries(providerConfigs)) {
+      if (cfg.testStatus.type === 'success' && cfg.baseUrl && !cfg.fetchedModels) {
+        const url = `/api/models?baseUrl=${encodeURIComponent(cfg.baseUrl)}&apiKey=${encodeURIComponent(cfg.apiKey)}`;
+        apiFetch(url)
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.success && data.models && data.models.length > 0) {
+              handleProviderConfigChange(pk, 'fetchedModels', data.models);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }, [isOpen, providerConfigs, handleProviderConfigChange]);
+
   const enabledProviders = useMemo(
     () => Object.entries(providerConfigs).filter(([, cfg]) => cfg.enabled).map(([pk]) => pk),
     [providerConfigs],
@@ -207,12 +224,17 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
       enabled: aiEnabled,
       providers: Object.fromEntries(
         Object.entries(providerConfigs)
-          .filter(([, v]) => v.apiKey || v.enabled) // Only persist configured/enabled providers
+          .filter(([k, v]) => {
+            if (v.apiKey) return true;
+            const requiresKey = ['openai', 'anthropic', 'google', 'nvidia'].includes(k);
+            if (requiresKey) return false;
+            return v.enabled;
+          })
           .map(([k, v]) => [
             k,
             {
               enabled: v.enabled,
-              requires_key: true,
+              requires_key: ['openai', 'anthropic', 'google', 'nvidia'].includes(k),
               api_key: v.apiKey,
               base_url: v.baseUrl,
               model: v.fetchedModels?.[0]?.id

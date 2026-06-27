@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { X, Cloud, Sparkles, FileCode, AlertCircle, Sliders, Ban, Palette, ShieldCheck } from 'lucide-react';
+import { X, Cloud, Sparkles, FileCode, AlertCircle, Sliders, Ban, Palette, ShieldCheck, Check } from 'lucide-react';
 import type { Config } from '../../types';
 import { useSettingsDrawer } from './useSettingsDrawer';
 import { ProviderSection } from './ProviderSection';
@@ -92,6 +92,11 @@ export const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
     (config as Config & { thresholds?: ThresholdConfig }).thresholds = thresholds;
     await onSave(config);
   }, [thresholds, state, onSave]);
+
+  const handleSave = useCallback(async () => {
+    const config = state.buildConfig();
+    await onSave(config);
+  }, [state, onSave]);
 
   const getActiveTabLabel = (): string => {
     for (const group of TAB_GROUPS) {
@@ -286,6 +291,16 @@ className={`flex items-center gap-2.5 w-full pl-5 pr-4 py-2.5 text-[13px] transi
                 </div>
               )}
             </div>
+
+              <div className="flex items-center justify-end gap-3 px-6 py-3 border-t border-card-border bg-bg-primary/10 shrink-0">
+                <button
+                  onClick={handleSave}
+                  className="flex items-center gap-2 px-5 py-2 bg-accent hover:bg-accent-hover text-white text-[13px] font-medium rounded-md transition-colors cursor-pointer"
+                >
+                  <Check className="h-4 w-4" />
+                  <span>Save Configuration</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -47,6 +47,22 @@ export interface Finding {
   finding_type?: FindingType;
   /** @deprecated Use status === 'applied' instead. Kept for backward compat. */
   _applied?: boolean;
+  dataflow_trace?: DataflowTrace;
+}
+
+export interface DataflowLocation {
+  file: string;
+  line: number;
+  col?: number;
+  symbol?: string;
+  code_text?: string;
+  message?: string;
+}
+
+export interface DataflowTrace {
+  source: DataflowLocation;
+  sink: DataflowLocation;
+  propagators?: DataflowLocation[];
 }
 
 export type AIStatus = 'success' | 'failed' | 'fallback_mock';
@@ -134,6 +150,7 @@ export interface ReportListItem {
   timestamp: string | null;
   target?: string | null;
   findings: number;
+  git_state?: GitState;
 }
 
 // ─── Configuration ──────────────────────────────────────────────────────────

@@ -101,4 +101,49 @@ describe('AIProviderContext', () => {
     expect(captured!.aiTemperature).toBe(0.1);
     expect(captured!.aiMaxTokens).toBe(4096);
   });
+
+  it('resolves active provider, apiKey, apiBaseUrl, and aiModel from structured config._aiSettings when present', () => {
+    const configWithStructuredSettings: Config = {
+      AI_PROVIDER: 'openai',
+      OPENAI_API_KEY: 'sk-open-old-key',
+      OPENAI_BASE_URL: 'https://api.openai.com/v1',
+      _aiSettings: {
+        enabled: true,
+        providers: {
+          google: {
+            enabled: true,
+            requires_key: true,
+            api_key: 'sk-gemini-new-key',
+            base_url: 'https://generativelanguage.googleapis.com',
+            model: 'gemini-1.5-flash',
+          },
+        },
+        agents: {
+          chat: {
+            provider: 'google',
+            model: 'gemini-2.0-flash',
+            enabled: true,
+          },
+        },
+      },
+    };
+
+    let captured: any = null;
+    function Consumer() {
+      const ctx = useAIProvider();
+      captured = ctx;
+      return null;
+    }
+
+    render(
+      <AIProviderProvider config={configWithStructuredSettings}>
+        <Consumer />
+      </AIProviderProvider>
+    );
+
+    expect(captured!.selectedProvider).toBe('google');
+    expect(captured!.apiKey).toBe('sk-gemini-new-key');
+    expect(captured!.apiBaseUrl).toBe('https://generativelanguage.googleapis.com');
+    expect(captured!.aiModel).toBe('gemini-2.0-flash');
+  });
 });
