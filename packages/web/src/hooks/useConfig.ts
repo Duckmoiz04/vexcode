@@ -31,26 +31,13 @@ export function useConfig(showToast: (message: string, type?: 'success' | 'error
     try {
       const { _aiSettings, ...envPart } = newConfig;
 
-      const results = await Promise.allSettled([
-        apiFetch('/api/config', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(envPart),
-        }),
-        _aiSettings
-          ? apiFetch('/api/settings/ai', {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(_aiSettings),
-            })
-          : Promise.resolve(null),
-      ]);
+      // 1. Save flat configuration first (writes AI_PROVIDER, SEMGREP_RULES_PATH, etc.)
+      const configRes = await apiFetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(envPart),
+      });
 
-      const configResult = results[0];
-      if (configResult.status === 'rejected') {
-        throw configResult.reason;
-      }
-      const configRes = configResult.value;
       const configType = configRes.headers?.get('content-type') || '';
       if (!configType.includes('json')) {
         const text = await configRes.text();
@@ -62,9 +49,15 @@ export function useConfig(showToast: (message: string, type?: 'success' | 'error
         return;
       }
 
-      const aiResult = results[1];
-      if (aiResult.status === 'fulfilled' && aiResult.value) {
-        const aiRes = aiResult.value;
+      // 2. Save structured AI settings (writes TOML settings and API keys to .env)
+      // This runs sequentially so config_cli.py reads the updated .env containing AI_PROVIDER.
+      if (_aiSettings) {
+        const aiRes = await apiFetch('/api/settings/ai', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(_aiSettings),
+        });
+
         const aiType = aiRes.headers?.get('content-type') || '';
         if (!aiType.includes('json')) {
           const text = await aiRes.text();
