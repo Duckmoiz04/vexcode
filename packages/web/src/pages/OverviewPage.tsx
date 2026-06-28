@@ -5,6 +5,7 @@ import { useDashboardStats } from '../components/dashboard/useDashboardStats';
 import { MetricsCards } from '../components/dashboard/MetricsCards';
 import { HealthScoreChart } from '../components/dashboard/HealthScoreChart';
 import { CategoryBreakdown } from '../components/dashboard/CategoryBreakdown';
+import { AiMetricsPanel } from '../components/dashboard/AiMetricsPanel';
 import { Leaderboards } from '../components/dashboard/Leaderboards';
 import { CrossScanSummary } from '../components/dashboard/CrossScanSummary';
 
@@ -74,6 +75,9 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
           architecture={stats.architecture}
           maintainability={stats.maintainability}
           totalFindings={findings.length}
+        />
+        <AiMetricsPanel
+          aiMetrics={report?.metrics?.ai_pipeline_metrics}
         />
       </div>
 

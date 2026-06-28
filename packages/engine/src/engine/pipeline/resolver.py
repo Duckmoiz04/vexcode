@@ -126,6 +126,11 @@ def resolve_phase(findings: List[dict], target: str, use_mock: bool,
         )
         resolutions.update(naming_resolutions)
         emit_progress("ai_resolve", f"AI resolution complete. {len(resolutions)} finding(s) resolved.")
+        try:
+            from engine.core.ai_resolver import get_pipeline_metrics
+            metrics["ai_pipeline_metrics"] = get_pipeline_metrics()
+        except Exception as e:
+            logger.error(f"Failed to fetch AI pipeline metrics: {e}")
     else:
         logger.info("No findings to resolve.")
 

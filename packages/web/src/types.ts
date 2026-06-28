@@ -104,8 +104,27 @@ export interface FileMetrics {
   loc: number;
 }
 
+export interface AiPipelineMetrics {
+  total_findings: number;
+  skipped_by_smart_gate: number;
+  cache_hits: number;
+  ai_calls: number;
+  errors: number;
+  classifications: {
+    confirmed: number;
+    hotspot: number;
+    false_positive: number;
+  };
+  fix_success: number;
+  fix_failure: number;
+  review_approved: number;
+  review_rejected: number;
+  review_corrected: number;
+}
+
 export interface Metrics {
   files: Record<string, FileMetrics>;
+  ai_pipeline_metrics?: AiPipelineMetrics;
 }
 
 export interface PaginationInfo {
