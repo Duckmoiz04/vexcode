@@ -1,6 +1,6 @@
 import { resolve } from 'node:path';
 import { backupFile, applyFixToFile, rollbackFile } from '../services/backupService.js';
-import { markFindingApplied } from '../services/reportService.js';
+import { markFindingApplied, updateFindingStatus } from '../services/reportService.js';
 
 export function registerApplyRoutes(app, deps) {
   const { isPathSafe, workspaceDir, backupsBaseDir } = deps;
@@ -53,7 +53,7 @@ export function registerApplyRoutes(app, deps) {
 
   app.post('/api/rollback', (req, res) => {
     try {
-      const { filePath } = req.body;
+      const { filePath, reportPath, findingId, findingFile, findingLine, findingRuleId } = req.body;
 
       if (!filePath) {
         return res.status(400).json({ success: false, error: 'Missing required parameter: filePath.' });
@@ -67,6 +67,18 @@ export function registerApplyRoutes(app, deps) {
       const result = rollbackFile(resolvedPath, backupsBaseDir);
       if (!result.success) {
         return res.status(404).json(result);
+      }
+
+      // Persist status to report JSON (set back to 'open')
+      if (reportPath && (findingId || (findingFile && findingLine !== undefined && findingRuleId))) {
+        try {
+          const locator = findingId
+            ? { id: findingId }
+            : { file: findingFile, line: findingLine, rule_id: findingRuleId };
+          updateFindingStatus(reportPath, locator, 'open');
+        } catch (persistErr) {
+          console.error('Failed to update finding status on rollback:', persistErr.message);
+        }
       }
 
       res.json({

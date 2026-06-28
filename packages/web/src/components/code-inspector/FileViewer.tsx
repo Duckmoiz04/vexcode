@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, type RefObject } from 'react';
+import { RotateCcw } from 'lucide-react';
 import type { Finding, AiResolution } from '../../types';
 import { CodeMirrorEditor } from './CodeMirrorEditor.tsx';
 import { ThemePicker } from './ThemePicker.tsx';
@@ -16,6 +17,7 @@ interface FileViewerProps {
   allFindings?: Finding[];
   theme: 'dark' | 'light';
   onApplyFix?: (finding: Finding, remediationCode: string) => Promise<boolean>;
+  onRollbackFix?: (finding: Finding) => Promise<boolean>;
 }
 
 /**
@@ -140,15 +142,24 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   allFindings,
   theme,
   onApplyFix,
+  onRollbackFix,
 }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeDefinition>(defaultTheme);
   const [isApplying, setIsApplying] = useState(false);
+  const [isRollingBack, setIsRollingBack] = useState(false);
 
   const handleApply = async () => {
     if (!onApplyFix || !resolution?.remediation_code) return;
     setIsApplying(true);
     await onApplyFix(finding, resolution.remediation_code);
     setIsApplying(false);
+  };
+
+  const handleRollback = async () => {
+    if (!onRollbackFix) return;
+    setIsRollingBack(true);
+    await onRollbackFix(finding);
+    setIsRollingBack(false);
   };
 
   useEffect(() => {
@@ -259,6 +270,16 @@ export const FileViewer: React.FC<FileViewerProps> = ({
               isApplying={isApplying}
               onApply={handleApply}
             />
+          )}
+          {finding.status === 'applied' && onRollbackFix && (
+            <button
+              onClick={handleRollback}
+              disabled={isRollingBack}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-warning hover:bg-warning/80 text-white text-xs font-semibold rounded-lg shadow-md hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>{isRollingBack ? 'Reverting...' : 'Rollback'}</span>
+            </button>
           )}
           <ThemePicker current={currentTheme} onChange={setCurrentTheme} />
         </div>

@@ -15,6 +15,7 @@ interface CodeInspectorProps {
   aiResolutions: Record<string, AiResolution>;
   targetPath: string | null;
   onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
+  onRollbackFix?: (finding: Finding) => Promise<boolean>;
   metrics?: Metrics;
   onSelectFindingIndex?: (index: number | null) => void;
   /** All findings in the report — used to highlight sibling error lines
@@ -51,7 +52,7 @@ async function openInIDE(filePath: string, line: number, baseDir: string | null)
 }
 
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
-  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings, theme, onApplyFix,
+  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings, theme, onApplyFix, onRollbackFix,
 }) => {
   // Guard: parent may pass an out-of-range index, in which case `finding` is
   // undefined. Render a minimal empty state instead of crashing on
@@ -295,6 +296,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
               allFindings={allFindings}
               theme={theme}
               onApplyFix={onApplyFix}
+              onRollbackFix={onRollbackFix}
             />
           </div>
         </div>

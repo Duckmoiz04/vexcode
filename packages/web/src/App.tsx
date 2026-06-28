@@ -243,6 +243,45 @@ export const App: React.FC = () => {
       return false;
     }
   };
+  const handleRollbackFix = async (finding: Finding) => {
+    try {
+      const response = await apiFetch('/api/rollback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filePath: finding.file,
+          reportPath: currentReport?._savedAt,
+          findingId: finding.id,
+          findingFile: finding.file,
+          findingLine: finding.line,
+          findingRuleId: finding.rule_id,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('Fix rolled back successfully!');
+        if (currentReport && currentReport.findings) {
+          const updatedFindings = currentReport.findings.map((f: Finding) => {
+            if (f.file === finding.file && f.line === finding.line && f.rule_id === finding.rule_id) {
+              return { ...f, _applied: false, status: 'open' as FindingStatus };
+            }
+            return f;
+          });
+          setCurrentReport({ ...currentReport, findings: updatedFindings });
+        }
+        return true;
+      } else {
+        showToast(data.error || 'Failed to rollback fix', 'error');
+        return false;
+      }
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      showToast(`Rollback fix failed: ${message}`, 'error');
+      return false;
+    }
+  };
+
 
   const handleStatusChange = async (finding: Finding, status: FindingStatus) => {
     // Optimistic update
@@ -438,6 +477,7 @@ export const App: React.FC = () => {
                     availableLanguages={availableLanguages}
                     searchedAndFilteredFindings={searchedAndFilteredFindings}
                     onApplyFix={handleApplyFix}
+                    onRollbackFix={handleRollbackFix}
                     onStatusChange={handleStatusChange}
                     onReResolve={() => handleReResolve(currentReport)}
                     isReResolving={isReResolving}

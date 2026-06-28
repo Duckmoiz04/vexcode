@@ -33,6 +33,7 @@ interface IssuesPageProps {
   availableLanguages: string[];
   searchedAndFilteredFindings: Finding[];
   onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
+  onRollbackFix?: (finding: Finding) => Promise<boolean>;
   onStatusChange?: (finding: Finding, status: FindingStatus) => void;
   onReResolve: () => Promise<void>;
   isReResolving: boolean;
@@ -65,6 +66,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
   availableLanguages,
   searchedAndFilteredFindings,
   onApplyFix,
+  onRollbackFix,
   onStatusChange,
   onReResolve,
   isReResolving,
@@ -149,6 +151,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
         aiResolutions={currentReport.ai_resolutions || {}}
         targetPath={currentReport.target_path || null}
         onApplyFix={onApplyFix}
+        onRollbackFix={onRollbackFix}
         metrics={currentReport.metrics}
         onSelectFindingIndex={onSelectFindingIndex}
         allFindings={currentReport.findings}
