@@ -351,7 +351,7 @@ export const App: React.FC = () => {
         projects={projects}
         onSelectProject={handleSelectProjectWithReset}
         onOpenSettings={() => setIsSettingsOpen(true)}
-        onStartScan={(fastScan) => handleStartScan('', false, false, fastScan)}
+        onStartScan={(fastScan) => handleStartScan(currentReport?.target_path || '', false, false, fastScan)}
         onReResolve={() => handleReResolve(currentReport)}
         reports={reports}
         currentReportId={currentReportId}
