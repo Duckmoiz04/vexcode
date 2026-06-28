@@ -213,7 +213,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
       return (
         <div className="flex flex-1 min-h-0 w-full gap-4 p-1">
           {/* Left Panel: Original Source */}
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="w-[calc(50%-0.5rem)] min-w-0 flex flex-col min-h-0">
             <div className="text-xs text-text-tertiary uppercase font-bold tracking-wider px-3 py-1.5 border-b border-card-border/30 bg-bg-secondary/30 rounded-t-lg">
               Original Code
             </div>
@@ -227,7 +227,7 @@ export const FileViewer: React.FC<FileViewerProps> = ({
             </div>
           </div>
           {/* Right Panel: Suggested Fix */}
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className="w-[calc(50%-0.5rem)] min-w-0 flex flex-col min-h-0">
             <div className="text-xs text-text-tertiary uppercase font-bold tracking-wider px-3 py-1.5 border-b border-card-border/30 bg-bg-secondary/30 rounded-t-lg">
               {showFullDiff ? 'Suggested Fix' : 'Suggested Fix (snippet)'}
             </div>
