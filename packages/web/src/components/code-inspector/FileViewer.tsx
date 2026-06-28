@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, type RefObject } from 'react';
 import type { Finding, AiResolution } from '../../types';
 import { CodeMirrorEditor } from './CodeMirrorEditor.tsx';
 import { ThemePicker } from './ThemePicker.tsx';
+import { ApplyFixButton } from './ApplyFixButton';
 import { defaultTheme, themeRegistry, type ThemeDefinition } from '../../utils/themes.ts';
 
 interface FileViewerProps {
@@ -14,6 +15,7 @@ interface FileViewerProps {
   /** All findings in the same file — used to highlight sibling error lines. */
   allFindings?: Finding[];
   theme: 'dark' | 'light';
+  onApplyFix?: (finding: Finding, remediationCode: string) => Promise<boolean>;
 }
 
 /**
@@ -137,8 +139,17 @@ export const FileViewer: React.FC<FileViewerProps> = ({
   activeLineRef,
   allFindings,
   theme,
+  onApplyFix,
 }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeDefinition>(defaultTheme);
+  const [isApplying, setIsApplying] = useState(false);
+
+  const handleApply = async () => {
+    if (!onApplyFix || !resolution?.remediation_code) return;
+    setIsApplying(true);
+    await onApplyFix(finding, resolution.remediation_code);
+    setIsApplying(false);
+  };
 
   useEffect(() => {
     if (theme === 'light') {
@@ -238,9 +249,17 @@ export const FileViewer: React.FC<FileViewerProps> = ({
     <div className="flex-1 flex flex-col rounded-lg border border-card-border bg-card-bg backdrop-blur-md min-h-0 overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-3 pb-2 shrink-0 border-b border-card-border/40">
         <span className="text-xs text-text-tertiary uppercase font-bold tracking-wider">
-          {resolution?.remediation_code ? 'Diff View' : 'Source Viewer'}
+          {resolution?.remediation_code ? 'Suggested Fix' : 'Source Viewer'}
         </span>
         <div className="flex items-center gap-3">
+          {resolution?.remediation_code && onApplyFix && (
+            <ApplyFixButton
+              hasRemediation={true}
+              isApplied={finding.status === 'applied'}
+              isApplying={isApplying}
+              onApply={handleApply}
+            />
+          )}
           <ThemePicker current={currentTheme} onChange={setCurrentTheme} />
         </div>
       </div>

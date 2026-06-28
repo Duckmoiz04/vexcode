@@ -51,7 +51,7 @@ async function openInIDE(filePath: string, line: number, baseDir: string | null)
 }
 
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
-  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings, theme,
+  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings, theme, onApplyFix,
 }) => {
   // Guard: parent may pass an out-of-range index, in which case `finding` is
   // undefined. Render a minimal empty state instead of crashing on
@@ -294,6 +294,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
               resolution={resolution} activeLineRef={activeLineRef}
               allFindings={allFindings}
               theme={theme}
+              onApplyFix={onApplyFix}
             />
           </div>
         </div>
