@@ -156,7 +156,10 @@ export function registerFileRoutes(app, deps) {
       const config = readEnvConfig(envPath);
       const ideCommand = config.IDE_COMMAND || 'code';
 
-      const cmd = `"${ideCommand}" --goto "${resolvedPath}${lineSuffix}"`;
+      const cmdHasPath = ideCommand.includes(' ') || ideCommand.includes('\\') || ideCommand.includes('/');
+      const cmd = cmdHasPath
+        ? `"${ideCommand}" --goto "${resolvedPath}${lineSuffix}"`
+        : `${ideCommand} --goto "${resolvedPath}${lineSuffix}"`;
       console.log(`Running open IDE command: ${cmd}`);
 
       exec(cmd, (err) => {
