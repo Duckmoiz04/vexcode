@@ -76,6 +76,7 @@ export function registerScanRoutes(app, deps) {
 
       const finalTarget = targetPath ? resolve(targetPath) : workspaceDir;
       const isWorkspaceRoot = finalTarget.toLowerCase() === workspaceDir.toLowerCase();
+      console.log('SCAN DEBUG STREAM:', { targetPath, finalTarget, workspaceDir, isWorkspaceRoot, isSafe: isPathSafe(finalTarget, workspaceDir) });
 
       if (!isWorkspaceRoot && !isPathSafe(finalTarget, workspaceDir)) {
         res.write(`data: ${JSON.stringify({ type: 'error', error: SAFE_ERRORS.PATH_INVALID, code: 'PATH_INVALID' })}\n\n`);
@@ -139,6 +140,7 @@ export function registerScanRoutes(app, deps) {
 
       const finalTarget = targetPath ? resolve(targetPath) : workspaceDir;
       const isWorkspaceRoot = finalTarget.toLowerCase() === workspaceDir.toLowerCase();
+      console.log('SCAN DEBUG POST:', { targetPath, finalTarget, workspaceDir, isWorkspaceRoot, isSafe: isPathSafe(finalTarget, workspaceDir) });
 
       if (!isWorkspaceRoot && !isPathSafe(finalTarget, workspaceDir)) {
         return res.status(400).json({ success: false, error: SAFE_ERRORS.PATH_INVALID, code: 'PATH_INVALID' });

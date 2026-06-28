@@ -514,17 +514,17 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
         reasoning = analyze_data.get("reasoning", "")
         _record_metric(f"classifications.{classification}")
 
-        # False positives and hotspots stop here
-        if classification in ("false_positive", "hotspot"):
-            resolutions[r_id] = _make_resolution(
-                suggestion=f"{classification.replace('_', ' ').title()}: {reasoning}",
-                remediation_code="",
-                ai_status="success",
-                model=model,
-                classification=classification,
-            )
-            completed += 1
-            continue
+        # False positives and hotspots stop here - TEMPORARILY DISABLED to allow fixes for all findings
+        # if classification in ("false_positive", "hotspot"):
+        #     resolutions[r_id] = _make_resolution(
+        #         suggestion=f"{classification.replace('_', ' ').title()}: {reasoning}",
+        #         remediation_code="",
+        #         ai_status="success",
+        #         model=model,
+        #         classification=classification,
+        #     )
+        #     completed += 1
+        #     continue
 
         # ---- STAGE 2: Fix (strong model, vulnerability only) ----
         _record_metric("ai_calls")
