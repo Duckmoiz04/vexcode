@@ -10,18 +10,19 @@ import { htmlLanguage } from '@codemirror/lang-html';
 import type { Extension } from '@codemirror/state';
 import { baseEditorTheme } from '../../utils/themes.ts';
 
-// ─── Error line decoration (red highlight) ────────────────────────────────────
+// ─── Error / Fix line decoration (red / green highlight) ──────────────────────
 // Multi-line: a file can have many findings, so we track a Set of error lines.
 // The active (selected) finding is shown in a stronger style; sibling lines in
 // the same file are shown in a more subtle style.
 
-const setErrorLines = StateEffect.define<{ active: number | null; all: Set<number> }>();
+const setErrorLines = StateEffect.define<{ active: number | null; all: Set<number>; isFix?: boolean }>();
 interface ErrorLinesState {
   active: number | null;
   all: Set<number>;
+  isFix?: boolean;
 }
 const errorLineField = StateField.define<ErrorLinesState>({
-  create: () => ({ active: null, all: new Set() }),
+  create: () => ({ active: null, all: new Set(), isFix: false }),
   update(value, tr) {
     for (const e of tr.effects) {
       if (e.is(setErrorLines)) return e.value;
@@ -30,14 +31,16 @@ const errorLineField = StateField.define<ErrorLinesState>({
   },
 });
 const errorLineDecorations = EditorView.decorations.compute([errorLineField], (state) => {
-  const { active, all } = state.field(errorLineField);
+  const { active, all, isFix } = state.field(errorLineField);
   if (all.size === 0) return Decoration.none;
   const builder = new RangeSetBuilder<Decoration>();
   for (const line of all) {
     if (line == null || line < 1 || line > state.doc.lines) continue;
     try {
       const range = state.doc.line(line);
-      const cls = line === active ? 'cm-error-line' : 'cm-error-line-sibling';
+      const cls = line === active
+        ? (isFix ? 'cm-fix-line' : 'cm-error-line')
+        : 'cm-error-line-sibling';
       builder.add(range.from, range.from, Decoration.line({ attributes: { class: cls } }));
     } catch {
       // ignore invalid line
@@ -51,6 +54,12 @@ const errorLineTheme = EditorView.theme({
     backgroundColor: 'rgba(239, 68, 68, 0.18)',
     borderLeft: '3px solid rgba(239, 68, 68, 0.9)',
     boxShadow: 'inset 0 0 0 1px rgba(239, 68, 68, 0.25)',
+  },
+  // Suggestion fix line — strong green highlight
+  '.cm-fix-line': {
+    backgroundColor: 'rgba(34, 197, 94, 0.18)',
+    borderLeft: '3px solid rgba(34, 197, 94, 0.9)',
+    boxShadow: 'inset 0 0 0 1px rgba(34, 197, 94, 0.25)',
   },
   // Sibling findings in the same file — subtle marker so they're visible
   // without competing with the active line.
@@ -109,12 +118,13 @@ interface CodeMirrorEditorProps {
    *  the rest are highlighted subtly. */
   errorLines?: number[];
   themeExtension: Extension;
+  isFix?: boolean;
 }
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
-  content, filePath, onChange, goToLine, errorLines, themeExtension,
+  content, filePath, onChange, goToLine, errorLines, themeExtension, isFix,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -178,7 +188,7 @@ export const CodeMirrorEditor: React.FC<CodeMirrorEditorProps> = ({
     const active = typeof goToLine === 'number' && goToLine > 0 ? goToLine : null;
     if (active) allSet.add(active);
     view.dispatch({
-      effects: setErrorLines.of({ active, all: allSet }),
+      effects: setErrorLines.of({ active, all: allSet, isFix }),
     });
 
     // 2. Scroll to the active line (the selected finding)

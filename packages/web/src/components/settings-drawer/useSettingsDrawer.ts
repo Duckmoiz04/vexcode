@@ -244,17 +244,6 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
     config.AI_REQUEST_COOLDOWN_SECONDS = requestCooldown.toString();
     if (semgrepRules) config.SEMGREP_RULES_PATH = semgrepRules;
 
-    // Sync internal engine agent configurations with UI counterparts
-    const syncedAgents = { ...agentMappings };
-    if (syncedAgents.suggest) {
-      syncedAgents.analyze = { ...syncedAgents.suggest };
-      syncedAgents.fix = { ...syncedAgents.suggest };
-      syncedAgents.review = { ...syncedAgents.suggest };
-    }
-    if (syncedAgents.naming_audit) {
-      syncedAgents.naming = { ...syncedAgents.naming_audit };
-    }
-
     // Structured multi-provider settings
     config._aiSettings = {
       enabled: aiEnabled,
@@ -280,7 +269,7 @@ export function useSettingsDrawer(isOpen: boolean, initialConfig: Config | null)
             },
           ]),
       ),
-      agents: syncedAgents,
+      agents: agentMappings,
     };
     return config;
   };

@@ -75,7 +75,7 @@ describe('FileViewer', () => {
     expect(editor).toBeInTheDocument();
   });
 
-  it('renders DiffViewer when both fileContent and remediation_code are present', () => {
+  it('renders split screen when both fileContent and remediation_code are present', () => {
     const findingWithCode = createMockFinding({
       ...baseFinding,
       file: 'src/test.py',
@@ -99,8 +99,9 @@ describe('FileViewer', () => {
       />
     );
 
-    // DiffViewer wraps the editor in .diff-viewer-editor
-    expect(document.querySelector('.diff-viewer-editor')).toBeInTheDocument();
+    // Split screen renders two CodeMirror editors
+    const editors = document.querySelectorAll('.cm-editor');
+    expect(editors.length).toBe(2);
   });
 
   it('falls back to source + snippet view when code_text cannot be located in file', () => {
@@ -129,7 +130,7 @@ describe('FileViewer', () => {
 
     // Fallback renders two CodeMirror editors (source + snippet)
     const editors = document.querySelectorAll('.cm-editor');
-    expect(editors.length).toBeGreaterThanOrEqual(2);
+    expect(editors.length).toBe(2);
   });
 
   it('shows only source viewer when resolution has no remediation_code', () => {
@@ -147,7 +148,6 @@ describe('FileViewer', () => {
 
     // Only one editor, no diff wrapper
     expect(document.querySelectorAll('.cm-editor').length).toBe(1);
-    expect(document.querySelector('.diff-viewer-editor')).not.toBeInTheDocument();
   });
 
   // NOTE: Full DOM-rendered multi-error decoration tests can't run in jsdom

@@ -351,9 +351,9 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
     #   analyze → cheap model (classification)
     #   fix     → strong model (code generation)
     #   review  → balanced model (QA)
-    cfg_analyze = get_resolved_provider_for_agent("analyze") or get_resolved_provider_for_agent("suggest")
-    cfg_fix = get_resolved_provider_for_agent("fix") or get_resolved_provider_for_agent("suggest")
-    cfg_review = get_resolved_provider_for_agent("review") or get_resolved_provider_for_agent("suggest")
+    cfg_analyze = get_resolved_provider_for_agent("suggest") or get_resolved_provider_for_agent("bug_scan") or get_resolved_provider_for_agent("analyze")
+    cfg_fix = get_resolved_provider_for_agent("suggest") or get_resolved_provider_for_agent("bug_scan") or get_resolved_provider_for_agent("fix")
+    cfg_review = get_resolved_provider_for_agent("suggest") or get_resolved_provider_for_agent("bug_scan") or get_resolved_provider_for_agent("review")
 
     if cfg_analyze is not None:
         api_key = cfg_analyze.api_key
