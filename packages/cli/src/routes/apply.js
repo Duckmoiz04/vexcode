@@ -1,9 +1,10 @@
 import { resolve } from 'node:path';
 import { backupFile, applyFixToFile, rollbackFile } from '../services/backupService.js';
 import { markFindingApplied, updateFindingStatus } from '../services/reportService.js';
+import { getKnownProjectPaths, isPathUnderKnownProjects } from '../utils.js';
 
 export function registerApplyRoutes(app, deps) {
-  const { isPathSafe, workspaceDir, backupsBaseDir } = deps;
+  const { isPathSafe, workspaceDir, backupsBaseDir, reportsBaseDir } = deps;
 
   app.post('/api/apply', (req, res) => {
     try {
@@ -18,7 +19,9 @@ export function registerApplyRoutes(app, deps) {
       }
 
       const resolvedPath = resolve(filePath);
-      if (!isPathSafe(resolvedPath, workspaceDir)) {
+      const knownPaths = getKnownProjectPaths(reportsBaseDir);
+      const isSafe = isPathSafe(resolvedPath, workspaceDir) || isPathUnderKnownProjects(resolvedPath, knownPaths);
+      if (!isSafe) {
         return res.status(400).json({ success: false, error: 'File path is outside the workspace directory.' });
       }
 
@@ -60,7 +63,9 @@ export function registerApplyRoutes(app, deps) {
       }
 
       const resolvedPath = resolve(filePath);
-      if (!isPathSafe(resolvedPath, workspaceDir)) {
+      const knownPaths = getKnownProjectPaths(reportsBaseDir);
+      const isSafe = isPathSafe(resolvedPath, workspaceDir) || isPathUnderKnownProjects(resolvedPath, knownPaths);
+      if (!isSafe) {
         return res.status(400).json({ success: false, error: 'File path is outside the workspace directory.' });
       }
 
