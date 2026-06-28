@@ -3,7 +3,8 @@ import type { Finding } from '../../types';
 import { SidebarPanel } from './SidebarPanel';
 import { FileTree } from './FileTree';
 import { FindingsList } from './FindingsList';
-import { getFileLanguage, classifyFinding, getRelativePath } from './utils';
+import { getFileLanguage, getRelativePath } from './utils';
+import { classifyFinding } from '../../utils/categories';
 
 interface SidebarProps {
   projectName: string | null;

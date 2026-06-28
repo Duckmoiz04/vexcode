@@ -5,7 +5,7 @@ import { useDashboardStats } from '../components/dashboard/useDashboardStats';
 import { MetricsCards } from '../components/dashboard/MetricsCards';
 import { HealthScoreChart } from '../components/dashboard/HealthScoreChart';
 import { CategoryBreakdown } from '../components/dashboard/CategoryBreakdown';
-import { AiMetricsPanel } from '../components/dashboard/AiMetricsPanel';
+import { AiFixQualityCard } from '../components/dashboard/AiFixQualityCard';
 import { Leaderboards } from '../components/dashboard/Leaderboards';
 import { CrossScanSummary } from '../components/dashboard/CrossScanSummary';
 
@@ -53,15 +53,15 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
       <MetricsCards
         totalFindings={findings.length}
         security={stats.security}
-        quality={stats.quality}
-        architecture={stats.architecture}
+        reliability={stats.reliability}
+        performance={stats.performance}
         maintainability={stats.maintainability}
         avgComplexity={stats.avgComplexity}
         avgCognitive={stats.avgCognitive}
       />
 
-      {/* Graphs & breakdown row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Top row: Health Score (1/3) + AI Fix Quality (2/3) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <HealthScoreChart
           healthScore={stats.healthScore}
           healthDashOffset={display.healthDashOffset}
@@ -69,17 +69,23 @@ export const OverviewPage: React.FC<OverviewPageProps> = ({
           donutSegments={display.donutSegments}
           totalIssues={stats.errors + stats.warnings + stats.infos}
         />
+        <div className="lg:col-span-2">
+          <AiFixQualityCard
+            findings={findings}
+          />
+      </div>
+    </div>
+
+      {/* Category breakdown — sits below the AI Fix Quality card */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <CategoryBreakdown
           security={stats.security}
-          quality={stats.quality}
-          architecture={stats.architecture}
+          reliability={stats.reliability}
+          performance={stats.performance}
           maintainability={stats.maintainability}
           totalFindings={findings.length}
         />
-        <AiMetricsPanel
-          aiMetrics={report?.metrics?.ai_pipeline_metrics}
-        />
-      </div>
+     </div>
 
       {/* Cross-Scan Comparison */}
       <CrossScanSummary findings={findings} />

@@ -1,36 +1,8 @@
 import type { Finding, Report } from '../../types';
 import type { DashboardStats } from './dashboardTypes';
+import { classifyFinding } from '../../utils/categories';
 
-export const classifyFinding = (finding: Finding): string => {
-  const ruleId = (finding.rule_id || '').toLowerCase();
-
-  // 1. Security
-  const securityKeywords = [
-    'security', 'vuln', 'injection', 'xss', 'csrf', 'secret', 'key',
-    'token', 'jwt', 'crypto', 'auth', 'password', 'credential', 'ssrf',
-    'overflow', 'leak', 'private', 'cert', 'hash', 'ssl', 'tls'
-  ];
-  if (securityKeywords.some(kw => ruleId.includes(kw))) {
-    return 'security';
-  }
-
-  // 2. AST & Architecture
-  if (finding.ast_context && (finding.ast_context.symbol_name || (finding.ast_context.callers && finding.ast_context.callers.length > 0))) {
-    return 'architecture';
-  }
-
-  // 3. Style & Maintainability
-  const styleKeywords = [
-    'style', 'format', 'naming', 'deprecated', 'convention', 'comment',
-    'spacing', 'indent', 'unused', 'duplicate', 'complex', 'nest'
-  ];
-  if (styleKeywords.some(kw => ruleId.includes(kw))) {
-    return 'maintainability';
-  }
-
-  // 4. Code Quality & Bugs (default)
-  return 'quality';
-};
+export { classifyFinding };
 
 export const getRelativePath = (absolutePath: string, targetPath: string | null | undefined): string => {
   if (!absolutePath) return '';
@@ -50,15 +22,15 @@ export function computeDashboardStats(
   report: Report | null
 ): DashboardStats {
   let security = 0;
-  let quality = 0;
-  let architecture = 0;
+  let reliability = 0;
+  let performance = 0;
   let maintainability = 0;
 
   findings.forEach((f) => {
     const category = classifyFinding(f);
     if (category === 'security') security++;
-    else if (category === 'quality') quality++;
-    else if (category === 'architecture') architecture++;
+    else if (category === 'reliability') reliability++;
+    else if (category === 'performance') performance++;
     else if (category === 'maintainability') maintainability++;
   });
 
@@ -167,8 +139,8 @@ export function computeDashboardStats(
 
   return {
     security,
-    quality,
-    architecture,
+    reliability,
+    performance,
     maintainability,
     errors,
     warnings,

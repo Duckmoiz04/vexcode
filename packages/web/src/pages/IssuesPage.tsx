@@ -25,7 +25,7 @@ interface IssuesPageProps {
   setFilterScanStatuses: React.Dispatch<React.SetStateAction<string[]>>;
   filterCounts: {
     severity: { error: number; warning: number; info: number };
-    category: { security: number; quality: number; maintainability: number; architecture: number };
+    category: { security: number; reliability: number; maintainability: number; performance: number };
     status: { open: number; applied: number; false_positive: number; ignored: number };
     language: Record<string, number>;
     scanStatus: { new: number; persisting: number; resolved: number; regressed: number };
@@ -35,6 +35,7 @@ interface IssuesPageProps {
   onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
   onRollbackFix?: (finding: Finding) => Promise<boolean>;
   onStatusChange?: (finding: Finding, status: FindingStatus) => void;
+  onMarkAsDone?: (finding: Finding) => void;
   onReResolve: () => Promise<void>;
   isReResolving: boolean;
   onSelectFindingIndex: (index: number | null) => void;
@@ -68,6 +69,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
   onApplyFix,
   onRollbackFix,
   onStatusChange,
+  onMarkAsDone,
   onReResolve,
   isReResolving,
   onSelectFindingIndex,
@@ -152,6 +154,7 @@ export const IssuesPage: React.FC<IssuesPageProps> = ({
         targetPath={currentReport.target_path || null}
         onApplyFix={onApplyFix}
         onRollbackFix={onRollbackFix}
+        onMarkAsDone={onMarkAsDone}
         metrics={currentReport.metrics}
         onSelectFindingIndex={onSelectFindingIndex}
         allFindings={currentReport.findings}

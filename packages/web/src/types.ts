@@ -26,7 +26,7 @@ export type FindingStatus = 'open' | 'applied' | 'false_positive' | 'ignored';
 export type ScanStatus = 'new' | 'persisting' | 'resolved' | 'regressed';
 
 /** AI-powered classification: how the AI triaged this finding. */
-export type FindingType = 'confirmed' | 'hotspot' | 'false_positive';
+export type FindingType = 'confirmed' | 'false_positive';
 
 export interface Finding {
   id?: string;                   // Stable hash of (file, line, rule_id) - set by scanner
@@ -39,11 +39,15 @@ export interface Finding {
   ast_context?: AstContext;
   /** OWASP Top 10 category (e.g. "OWASP-A03", "OWASP-A07"). Present for security findings when metadata is available. */
   owasp_id?: string;
+  /** ISO 25010 category populated by the Python engine (security / reliability / maintainability / performance). See `web/src/utils/categories.ts`. */
+  category?: string;
+  /** Direct ISO 25010 override used by CCN/complexity findings. */
+  iso_25010?: string;
   /** Per-finding status. Opt-in: missing is treated as 'open'. */
   status?: FindingStatus;
   /** Cross-scan classification from engine comparison with previous report. */
   scan_status?: ScanStatus;
-  /** AI triage classification: confirmed/hotspot/false_positive. Populated by engine after AI resolution. */
+  /** AI triage classification: confirmed/false_positive. Populated by engine after AI resolution. */
   finding_type?: FindingType;
   /** @deprecated Use status === 'applied' instead. Kept for backward compat. */
   _applied?: boolean;
@@ -112,7 +116,6 @@ export interface AiPipelineMetrics {
   errors: number;
   classifications: {
     confirmed: number;
-    hotspot: number;
     false_positive: number;
   };
   fix_success: number;

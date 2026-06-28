@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Filter, RotateCcw, ChevronDown, AlertOctagon, AlertTriangle, Info, Shield, Bug, Wrench, Layout, Clock, CheckCircle2, Ban, EyeOff, Terminal, X, Sparkles, RefreshCw } from 'lucide-react';
+import { Filter, RotateCcw, ChevronDown, AlertOctagon, AlertTriangle, Info, Clock, CheckCircle2, Terminal, X, Sparkles, RefreshCw } from 'lucide-react';
+import { CATEGORIES, CATEGORY_ORDER } from '../utils/categories';
 
 interface FilterPanelProps {
   searchQuery: string;
@@ -16,7 +17,7 @@ interface FilterPanelProps {
   setFilterScanStatuses: React.Dispatch<React.SetStateAction<string[]>>;
   filterCounts: {
     severity: { error: number; warning: number; info: number };
-    category: { security: number; quality: number; maintainability: number; architecture: number };
+    category: { security: number; reliability: number; maintainability: number; performance: number };
     status: { open: number; applied: number; false_positive: number; ignored: number };
     language: Record<string, number>;
     scanStatus: { new: number; persisting: number; resolved: number; regressed: number };
@@ -130,7 +131,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        {opt.icon}
+{opt.icon}
                         <span className="font-sans text-sm font-medium">{opt.label}</span>
                       </div>
                       <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
@@ -144,7 +145,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           </div>
 
           {/* Category Filter */}
-          <div className="pb-[14px] border-b border-text-tertiary/30 pt-[2px]">
+          {/* <div className="pb-[14px] border-b border-text-tertiary/30 pt-[2px]">
             <div className="flex items-center justify-between py-1.5 select-none">
               <div
                 onClick={() => toggleFilterSection('category')}
@@ -168,20 +169,17 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             </div>
             {expandedFilters.category && (
               <div className="flex flex-col gap-1.5 mt-2 animate-fade-in">
-                {[
-                  { id: 'security', label: 'Security', key: 'security', icon: <Shield className="h-4 w-4 text-error shrink-0" /> },
-                  { id: 'quality', label: 'Quality', key: 'quality', icon: <Bug className="h-4 w-4 text-warning shrink-0" /> },
-                  { id: 'maintainability', label: 'Maintainability', key: 'maintainability', icon: <Wrench className="h-4 w-4 text-success shrink-0" /> },
-                  { id: 'architecture', label: 'Architecture', key: 'architecture', icon: <Layout className="h-4 w-4 text-info shrink-0" /> }
-                ].map(opt => {
-                  const isActive = filterCategories.includes(opt.id);
-                  const count = filterCounts.category[opt.key as keyof typeof filterCounts.category] || 0;
+                {CATEGORY_ORDER.map((key) => {
+                  const meta = CATEGORIES[key];
+                  const Icon = meta.icon;
+                  const isActive = filterCategories.includes(key);
+                  const count = filterCounts.category[key as keyof typeof filterCounts.category] || 0;
                   return (
                     <div
-                      key={opt.id}
+                      key={key}
                       onClick={() => {
                         setFilterCategories(prev =>
-                          prev.includes(opt.id) ? prev.filter(x => x !== opt.id) : [...prev, opt.id]
+                          prev.includes(key) ? prev.filter(x => x !== key) : [...prev, key]
                         );
                       }}
                       className={`flex items-center justify-between py-1.5 px-2.5 rounded-sm border text-sm font-semibold cursor-pointer transition-all select-none ${
@@ -191,7 +189,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        {opt.icon}
+{opt.icon}
                         <span className="font-sans text-sm font-medium">{opt.label}</span>
                       </div>
                       <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
@@ -202,7 +200,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 })}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Status Filter */}
           <div className="pb-[14px] border-b border-text-tertiary/30 pt-[2px]">
@@ -230,10 +228,8 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
             {expandedFilters.status && (
               <div className="flex flex-col gap-1.5 mt-2 animate-fade-in">
                 {[
-                  { id: 'open', label: 'Open', key: 'open', icon: <Clock className="h-4 w-4 text-text-secondary shrink-0" /> },
-                  { id: 'applied', label: 'Applied', key: 'applied', icon: <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> },
-                  { id: 'false_positive', label: 'False Positive', key: 'false_positive', icon: <Ban className="h-4 w-4 text-warning shrink-0" /> },
-                  { id: 'ignored', label: 'Ignored', key: 'ignored', icon: <EyeOff className="h-4 w-4 text-info shrink-0" /> },
+                  { id: 'open', label: 'Pending', key: 'open', icon: <Clock className="h-4 w-4 text-text-secondary shrink-0" /> },
+                  { id: 'applied', label: 'Done', key: 'applied', icon: <CheckCircle2 className="h-4 w-4 text-success shrink-0" /> },
                 ].map(opt => {
                   const isActive = filterStatuses.includes(opt.id);
                   const count = filterCounts.status[opt.key as keyof typeof filterCounts.status] || 0;
@@ -252,7 +248,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        {opt.icon}
+{opt.icon}
                         <span className="font-sans text-sm font-medium">{opt.label}</span>
                       </div>
                       <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
@@ -266,7 +262,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
           </div>
 
           {/* Scan Status Filter */}
-          <div className="pb-[14px] border-b border-text-tertiary/30 pt-[2px]">
+          {/* <div className="pb-[14px] border-b border-text-tertiary/30 pt-[2px]">
             <div className="flex items-center justify-between py-1.5 select-none">
               <div
                 onClick={() => toggleFilterSection('scanStatus')}
@@ -313,7 +309,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        {opt.icon}
+{opt.icon}
                         <span className="font-sans text-sm font-medium">{opt.label}</span>
                       </div>
                       <span className="text-xs font-mono font-bold text-text-tertiary bg-bg-primary/45 px-1.5 py-0.5 rounded border border-card-border/20">
@@ -324,7 +320,7 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({
                 })}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Language Filter */}
           {availableLanguages.length > 0 && (

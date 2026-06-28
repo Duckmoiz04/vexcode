@@ -8,8 +8,8 @@ describe('MetricsCards', () => {
   const defaultProps = {
     totalFindings: 42,
     security: 5,
-    quality: 20,
-    architecture: 10,
+    reliability: 20,
+    performance: 10,
     maintainability: 7,
     avgComplexity: 8,
     avgCognitive: 12,
@@ -20,8 +20,8 @@ describe('MetricsCards', () => {
 
     expect(screen.getByText('Total Issues')).toBeInTheDocument();
     expect(screen.getByText('Security')).toBeInTheDocument();
-    expect(screen.getByText('Quality')).toBeInTheDocument();
-    expect(screen.getByText('Architecture')).toBeInTheDocument();
+    expect(screen.getByText('Reliability')).toBeInTheDocument();
+    expect(screen.getByText('Performance')).toBeInTheDocument();
     expect(screen.getByText('Maintainability')).toBeInTheDocument();
   });
 
@@ -33,7 +33,6 @@ describe('MetricsCards', () => {
   it('displays correct category counts', () => {
     renderWithProviders(<MetricsCards {...defaultProps} />);
 
-    // All numbers should appear. Since 42 appears for total, check the others.
     expect(screen.getByText('5')).toBeInTheDocument();
     expect(screen.getByText('20')).toBeInTheDocument();
     expect(screen.getByText('10')).toBeInTheDocument();
@@ -51,7 +50,6 @@ describe('MetricsCards', () => {
       <MetricsCards {...defaultProps} avgComplexity={0} avgCognitive={0} />
     );
     expect(screen.queryByText(/Avg CCN/)).not.toBeInTheDocument();
-    expect(screen.getByText('Style & complexity issues')).toBeInTheDocument();
   });
 
   it('renders zero counts correctly', () => {
@@ -59,15 +57,14 @@ describe('MetricsCards', () => {
       <MetricsCards
         totalFindings={0}
         security={0}
-        quality={0}
-        architecture={0}
+        reliability={0}
+        performance={0}
         maintainability={0}
         avgComplexity={0}
         avgCognitive={0}
       />
     );
 
-    // All zeros should appear
     const zeros = screen.getAllByText('0');
     expect(zeros.length).toBeGreaterThanOrEqual(5);
   });

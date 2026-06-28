@@ -1,0 +1,3332 @@
+{
+  "scanner": "opengrep-mock",
+  "timestamp": "2026-06-23T13:24:21.337201Z",
+  "target_path": "D:\\DATN2",
+  "findings": [
+    {
+      "file": "example.py",
+      "line": 12,
+      "rule_id": "python.lang.security.audit.dangerous-exec",
+      "message": "Found use of exec() with user input, which presents a remote code execution vulnerability.",
+      "severity": "error",
+      "code_text": "    exec(user_input)",
+      "cwe_id": "CWE-94",
+      "owasp_id": "OWASP-A03",
+      "id": "3e246e43c8d7",
+      "category": "security",
+      "language": "python",
+      "ast_context": {
+        "symbol_id": "Function:example.py:run_dangerous_code",
+        "symbol_name": "run_dangerous_code",
+        "kind": "Function",
+        "source_code": "def run_dangerous_code(user_input):\n    exec(user_input)\n",
+        "callers": [
+          {
+            "uid": "Function:main.py:process_request",
+            "name": "process_request",
+            "filePath": "main.py",
+            "relation": "calls"
+          }
+        ],
+        "impact": {
+          "target": {
+            "id": "Function:example.py:run_dangerous_code",
+            "name": "run_dangerous_code",
+            "type": "Function",
+            "filePath": "example.py"
+          },
+          "direction": "upstream",
+          "impactedCount": 1,
+          "risk": "MEDIUM",
+          "summary": {
+            "direct": 1,
+            "processes_affected": 0,
+            "modules_affected": 0
+          },
+          "affected_processes": [],
+          "affected_modules": [],
+          "byDepth": {
+            "1": [
+              {
+                "depth": 1,
+                "id": "Function:main.py:process_request",
+                "name": "process_request",
+                "filePath": "main.py",
+                "relationType": "CALLS",
+                "confidence": 0.95
+              }
+            ]
+          }
+        },
+        "blast_radius": [
+          {
+            "uid": "Function:main.py:process_request",
+            "name": "process_request",
+            "filePath": "main.py",
+            "depth": 1,
+            "relation": "CALLS"
+          }
+        ]
+      },
+      "finding_type": "confirmed"
+    },
+    {
+      "file": "db.py",
+      "line": 45,
+      "rule_id": "python.lang.security.audit.hardcoded-password",
+      "message": "Hardcoded password variable found in connection string.",
+      "severity": "warning",
+      "code_text": "        password = \"admin123\"",
+      "cwe_id": "CWE-798",
+      "owasp_id": "OWASP-A02",
+      "id": "b2f323848215",
+      "category": "security",
+      "language": "python",
+      "ast_context": {
+        "symbol_id": "Method:db.py:DatabaseConnection.connect",
+        "symbol_name": "DatabaseConnection.connect",
+        "kind": "Method",
+        "source_code": "    def connect(self):\n        password = \"admin123\"\n        self.conn = pg.connect(user=\"admin\", password=password)\n",
+        "callers": [
+          {
+            "uid": "Function:db.py:get_user_data",
+            "name": "get_user_data",
+            "filePath": "db.py",
+            "relation": "calls"
+          }
+        ],
+        "impact": {
+          "target": {
+            "id": "Method:db.py:DatabaseConnection.connect",
+            "name": "DatabaseConnection.connect",
+            "type": "Method",
+            "filePath": "db.py"
+          },
+          "direction": "upstream",
+          "impactedCount": 1,
+          "risk": "LOW",
+          "summary": {
+            "direct": 1,
+            "processes_affected": 0,
+            "modules_affected": 0
+          },
+          "affected_processes": [],
+          "affected_modules": [],
+          "byDepth": {
+            "1": [
+              {
+                "depth": 1,
+                "id": "Function:db.py:get_user_data",
+                "name": "get_user_data",
+                "filePath": "db.py",
+                "relationType": "CALLS",
+                "confidence": 0.95
+              }
+            ]
+          }
+        },
+        "blast_radius": [
+          {
+            "uid": "Function:db.py:get_user_data",
+            "name": "get_user_data",
+            "filePath": "db.py",
+            "depth": 1,
+            "relation": "CALLS"
+          }
+        ]
+      },
+      "finding_type": "confirmed"
+    },
+    {
+      "rule_id": "gitleaks/mock-secret",
+      "message": "[Mock] Hardcoded credential detected",
+      "severity": "error",
+      "file": "example.py",
+      "line": 10,
+      "category": "security",
+      "scanner": "gitleaks",
+      "cwe_id": "CWE-798",
+      "owasp_id": "OWASP-A07",
+      "finding_type": "confirmed"
+    },
+    {
+      "rule_id": "ruff/mock-finding",
+      "message": "[Mock] Ruff lint finding (replace me with mock output)",
+      "severity": "info",
+      "file": "example.py",
+      "line": 1,
+      "category": "maintainability",
+      "scanner": "ruff",
+      "cwe_id": "",
+      "finding_type": "confirmed"
+    },
+    {
+      "rule_id": "osv/GHSA-mock-0001-xxxx",
+      "message": "[Mock] Dependency vulnerability in flask 2.0.1 (CVE-2023-1234)",
+      "severity": "warning",
+      "file": "requirements.txt",
+      "line": 1,
+      "category": "security",
+      "scanner": "osv",
+      "cwe_id": "",
+      "finding_type": "confirmed"
+    },
+    {
+      "file": "example.py",
+      "line": 8,
+      "rule_id": "maintainability.naming.obscure",
+      "message": "Tên hàm 'do_it' và tham số 'x' quá chung chung và tối nghĩa. Đề xuất đổi tên để phản ánh rõ chức năng xử lý dữ liệu người dùng.",
+      "severity": "WARNING",
+      "code_text": "def do_it(x):",
+      "finding_type": "confirmed"
+    }
+  ],
+  "ai_resolutions": {
+    "python.lang.security.audit.dangerous-exec": {
+      "suggestion": "Avoid using exec(). Use structured functions or parse inputs securely.",
+      "remediation_code": "import subprocess\n# Avoid exec(user_input)\n# Use safe subprocess with arguments\nsubprocess.run(['echo', user_input])",
+      "classification": "confirmed",
+      "ai_status": "success",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-23T13:24:21.279877+00:00",
+      "remediation_target_file": ""
+    },
+    "python.lang.security.audit.hardcoded-password": {
+      "suggestion": "Load password from environment variables instead of hardcoding it in the connection string.",
+      "remediation_code": "import os\npassword = os.environ.get('DB_PASSWORD')\n# conn = connect(password=password)",
+      "classification": "confirmed",
+      "ai_status": "success",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-23T13:24:21.279877+00:00",
+      "remediation_target_file": ""
+    },
+    "gitleaks/mock-secret": {
+      "suggestion": "Avoid this pattern for rule gitleaks/mock-secret. Ensure input validation and standard security practices.",
+      "remediation_code": "# Remediation for gitleaks/mock-secret\n# Please review and replace dangerous code patterns.",
+      "classification": "confirmed",
+      "ai_status": "fallback_mock",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-23T13:24:38.607797+00:00",
+      "remediation_target_file": ""
+    },
+    "ruff/mock-finding": {
+      "suggestion": "Avoid this pattern for rule ruff/mock-finding. Ensure input validation and standard security practices.",
+      "remediation_code": "# Remediation for ruff/mock-finding\n# Please review and replace dangerous code patterns.",
+      "classification": "confirmed",
+      "ai_status": "fallback_mock",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-23T13:24:38.607797+00:00",
+      "remediation_target_file": ""
+    },
+    "osv/GHSA-mock-0001-xxxx": {
+      "suggestion": "Avoid this pattern for rule osv/GHSA-mock-0001-xxxx. Ensure input validation and standard security practices.",
+      "remediation_code": "# Remediation for osv/GHSA-mock-0001-xxxx\n# Please review and replace dangerous code patterns.",
+      "classification": "confirmed",
+      "ai_status": "fallback_mock",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-23T13:24:38.607797+00:00",
+      "remediation_target_file": ""
+    },
+    "maintainability.naming.obscure": {
+      "suggestion": "Đổi tên hàm 'do_it' thành 'process_user_data' và tham số 'x' thành 'user_input' để tăng tính rõ nghĩa và dễ bảo trì.",
+      "remediation_code": "def process_user_data(user_input):",
+      "classification": "confirmed",
+      "ai_status": "success",
+      "ai_error": "",
+      "model": "mock",
+      "generated_at": "2026-06-23T13:24:21.279877+00:00",
+      "remediation_target_file": ""
+    }
+  },
+  "git_state": {
+    "commit": "a5487d4a0c4df17ae5f1f8bb1cb307fb69827e95",
+    "is_dirty": true
+  },
+  "metrics": {
+    "files": {
+      "AGENTS.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 124,
+        "level": "LOW",
+        "functions": []
+      },
+      "CLAUDE.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 245,
+        "level": "LOW",
+        "functions": []
+      },
+      "opencode.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 12,
+        "level": "LOW",
+        "functions": []
+      },
+      "package-lock.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 5557,
+        "level": "LOW",
+        "functions": []
+      },
+      "package.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 19,
+        "level": "LOW",
+        "functions": []
+      },
+      "PROGRESS.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 73,
+        "level": "LOW",
+        "functions": []
+      },
+      "temp_extract.js": {
+        "complexity": 2,
+        "cognitive_complexity": 0,
+        "loc": 5,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 4,
+            "end_line": 4,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 5,
+            "end_line": 5,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          }
+        ]
+      },
+      "vc-manifest.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 45,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/gitnexus/gitnexus-cli/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 57,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/gitnexus/gitnexus-debugging/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 75,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/gitnexus/gitnexus-exploring/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 60,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/gitnexus/gitnexus-guide/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 111,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/gitnexus/gitnexus-impact-analysis/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 72,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/gitnexus/gitnexus-refactoring/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 91,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-agent-browser/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 250,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-agent-browser/references/agent-browser-vs-chrome-devtools.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 89,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-agent-browser/references/browserbase-cloud-setup.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 119,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-audit-context/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 48,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-audit-context/references/audit-context.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 93,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-audit-context/references/skill-routing-policy.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 9,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-audit-plans/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 29,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-audit-plans/references/audit-plans.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 14,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-audit-vc/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 40,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-autoresearch/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 128,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-autoresearch/references/autonomous-loop-protocol.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 131,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-autoresearch/references/git-memory-pattern.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 81,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-autoresearch/references/guard-and-noise.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 122,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-autoresearch/references/metric-library.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 144,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-autoresearch/references/results-logging.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 56,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-chrome-devtools/SKILL.md": {
+        "complexity": 1,
+        "cognitive_complexity": 0,
+        "loc": 472,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "Default",
+            "start_line": 218,
+            "end_line": 282,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 50
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/references/cdp-domains.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 496,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-chrome-devtools/references/performance-guide.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 685,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-chrome-devtools/references/puppeteer-reference.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 603,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/.browser-session.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 1,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/aria-snapshot.js": {
+        "complexity": 7,
+        "cognitive_complexity": 5,
+        "loc": 322,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "getAriaSnapshotScript",
+            "start_line": 27,
+            "end_line": 298,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 272
+          },
+          {
+            "name": "ariaSnapshot",
+            "start_line": 300,
+            "end_line": 361,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 43
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/attach-listener.js": {
+        "complexity": 42,
+        "cognitive_complexity": 31,
+        "loc": 128,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "parseArgs",
+            "start_line": 15,
+            "end_line": 31,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 17
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 48,
+            "end_line": 48,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 64,
+            "end_line": 72,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 9
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 74,
+            "end_line": 81,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 84,
+            "end_line": 94,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 11
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 95,
+            "end_line": 105,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 11
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 110,
+            "end_line": 119,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 10
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 120,
+            "end_line": 129,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 10
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 131,
+            "end_line": 131,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "main",
+            "start_line": 33,
+            "end_line": 151,
+            "complexity": 13,
+            "cognitive_complexity": 12,
+            "loc": 51
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 153,
+            "end_line": 156,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/click.js": {
+        "complexity": 11,
+        "cognitive_complexity": 9,
+        "loc": 54,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 47,
+            "end_line": 47,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "click",
+            "start_line": 12,
+            "end_line": 82,
+            "complexity": 10,
+            "cognitive_complexity": 9,
+            "loc": 50
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/connect-chrome.js": {
+        "complexity": 20,
+        "cognitive_complexity": 15,
+        "loc": 92,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "getChromeExecutablePath",
+            "start_line": 24,
+            "end_line": 40,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 15
+          },
+          {
+            "name": "launchChromeWithDebugging",
+            "start_line": 47,
+            "end_line": 62,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 14
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 81,
+            "end_line": 81,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "waitForDebugEndpoint",
+            "start_line": 70,
+            "end_line": 84,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 13
+          },
+          {
+            "name": "connectChrome",
+            "start_line": 86,
+            "end_line": 144,
+            "complexity": 11,
+            "cognitive_complexity": 10,
+            "loc": 46
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/console.js": {
+        "complexity": 12,
+        "cognitive_complexity": 8,
+        "loc": 58,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 27,
+            "end_line": 38,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 11
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 41,
+            "end_line": 48,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 57,
+            "end_line": 57,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "monitorConsole",
+            "start_line": 8,
+            "end_line": 79,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 38
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/evaluate.js": {
+        "complexity": 7,
+        "cognitive_complexity": 5,
+        "loc": 38,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 30,
+            "end_line": 34,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "evaluate",
+            "start_line": 8,
+            "end_line": 54,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 33
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/fill.js": {
+        "complexity": 9,
+        "cognitive_complexity": 8,
+        "loc": 51,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "fill",
+            "start_line": 12,
+            "end_line": 75,
+            "complexity": 9,
+            "cognitive_complexity": 8,
+            "loc": 47
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/import-cookies.js": {
+        "complexity": 40,
+        "cognitive_complexity": 33,
+        "loc": 134,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 26,
+            "end_line": 48,
+            "complexity": 10,
+            "cognitive_complexity": 9,
+            "loc": 19
+          },
+          {
+            "name": "parseJsonCookies",
+            "start_line": 25,
+            "end_line": 49,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "parseNetscapeCookies",
+            "start_line": 57,
+            "end_line": 83,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 21
+          },
+          {
+            "name": "detectFormat",
+            "start_line": 90,
+            "end_line": 96,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 160,
+            "end_line": 163,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 184,
+            "end_line": 184,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "importCookies",
+            "start_line": 98,
+            "end_line": 203,
+            "complexity": 16,
+            "cognitive_complexity": 15,
+            "loc": 78
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/inject-auth.js": {
+        "complexity": 47,
+        "cognitive_complexity": 37,
+        "loc": 153,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "parseCookies",
+            "start_line": 29,
+            "end_line": 36,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 7
+          },
+          {
+            "name": "parseStorage",
+            "start_line": 43,
+            "end_line": 49,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 89,
+            "end_line": 110,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 18
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 116,
+            "end_line": 116,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 125,
+            "end_line": 127,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 152,
+            "end_line": 154,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 151,
+            "end_line": 155,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 168,
+            "end_line": 170,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 167,
+            "end_line": 171,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "injectAuth",
+            "start_line": 51,
+            "end_line": 228,
+            "complexity": 27,
+            "cognitive_complexity": 26,
+            "loc": 108
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/inspect-chat-page.js": {
+        "complexity": 12,
+        "cognitive_complexity": 5,
+        "loc": 39,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 14,
+            "end_line": 14,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 20,
+            "end_line": 29,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 10
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 30,
+            "end_line": 38,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 38,
+            "end_line": 42,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 18,
+            "end_line": 44,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "main",
+            "start_line": 7,
+            "end_line": 48,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 12
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 50,
+            "end_line": 50,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/navigate.js": {
+        "complexity": 18,
+        "cognitive_complexity": 16,
+        "loc": 88,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 96,
+            "end_line": 96,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "navigate",
+            "start_line": 24,
+            "end_line": 136,
+            "complexity": 17,
+            "cognitive_complexity": 16,
+            "loc": 85
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/network.js": {
+        "complexity": 20,
+        "cognitive_complexity": 15,
+        "loc": 82,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 25,
+            "end_line": 25,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 28,
+            "end_line": 42,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 14
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 46,
+            "end_line": 63,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 16
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 71,
+            "end_line": 74,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 4
+          },
+          {
+            "name": "monitorNetwork",
+            "start_line": 9,
+            "end_line": 106,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 47
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/package-lock.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 1599,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/package.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 16,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/performance.js": {
+        "complexity": 27,
+        "cognitive_complexity": 16,
+        "loc": 114,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 62,
+            "end_line": 68,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 74,
+            "end_line": 78,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 73,
+            "end_line": 79,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 85,
+            "end_line": 85,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 100,
+            "end_line": 100,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 51,
+            "end_line": 101,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 29
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 50,
+            "end_line": 102,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 106,
+            "end_line": 112,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 105,
+            "end_line": 113,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 126,
+            "end_line": 126,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "measurePerformance",
+            "start_line": 9,
+            "end_line": 149,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 60
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/README.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 183,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/reload-and-listen.js": {
+        "complexity": 32,
+        "cognitive_complexity": 20,
+        "loc": 108,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "parseArgs",
+            "start_line": 13,
+            "end_line": 29,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 17
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 45,
+            "end_line": 45,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 64,
+            "end_line": 71,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 8
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 62,
+            "end_line": 73,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 56,
+            "end_line": 82,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 15
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 84,
+            "end_line": 90,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 97,
+            "end_line": 97,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 99,
+            "end_line": 99,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 100,
+            "end_line": 100,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 101,
+            "end_line": 101,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 1
+          },
+          {
+            "name": "main",
+            "start_line": 31,
+            "end_line": 128,
+            "complexity": 10,
+            "cognitive_complexity": 9,
+            "loc": 53
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 130,
+            "end_line": 133,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/screenshot.js": {
+        "complexity": 24,
+        "cognitive_complexity": 22,
+        "loc": 136,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "compressImageIfNeeded",
+            "start_line": 36,
+            "end_line": 104,
+            "complexity": 10,
+            "cognitive_complexity": 9,
+            "loc": 55
+          },
+          {
+            "name": "screenshot",
+            "start_line": 106,
+            "end_line": 197,
+            "complexity": 14,
+            "cognitive_complexity": 13,
+            "loc": 70
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/select-ref.js": {
+        "complexity": 19,
+        "cognitive_complexity": 16,
+        "loc": 90,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 47,
+            "end_line": 57,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 11
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 99,
+            "end_line": 99,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "selectRef",
+            "start_line": 26,
+            "end_line": 130,
+            "complexity": 15,
+            "cognitive_complexity": 14,
+            "loc": 75
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/snapshot.js": {
+        "complexity": 26,
+        "cognitive_complexity": 22,
+        "loc": 112,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 44,
+            "end_line": 78,
+            "complexity": 11,
+            "cognitive_complexity": 10,
+            "loc": 32
+          },
+          {
+            "name": "getXPath",
+            "start_line": 80,
+            "end_line": 99,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 20
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 27,
+            "end_line": 102,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 19
+          },
+          {
+            "name": "snapshot",
+            "start_line": 9,
+            "end_line": 134,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 40
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/ws-debug.js": {
+        "complexity": 12,
+        "cognitive_complexity": 2,
+        "loc": 31,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 11,
+            "end_line": 13,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 19,
+            "end_line": 19,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 20,
+            "end_line": 20,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 21,
+            "end_line": 21,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 22,
+            "end_line": 22,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 23,
+            "end_line": 23,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 28,
+            "end_line": 28,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 33,
+            "end_line": 33,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 1
+          },
+          {
+            "name": "debugWs",
+            "start_line": 3,
+            "end_line": 39,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 24
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 41,
+            "end_line": 44,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/ws-full-debug.js": {
+        "complexity": 20,
+        "cognitive_complexity": 5,
+        "loc": 81,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 12,
+            "end_line": 18,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 21,
+            "end_line": 23,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 29,
+            "end_line": 32,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 34,
+            "end_line": 37,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 39,
+            "end_line": 47,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 49,
+            "end_line": 52,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 54,
+            "end_line": 57,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 59,
+            "end_line": 61,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 63,
+            "end_line": 65,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 68,
+            "end_line": 72,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 81,
+            "end_line": 81,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 84,
+            "end_line": 84,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 93,
+            "end_line": 93,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "debugWsFull",
+            "start_line": 3,
+            "end_line": 102,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 40
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 104,
+            "end_line": 107,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/lib/browser.js": {
+        "complexity": 78,
+        "cognitive_complexity": 58,
+        "loc": 266,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "resolveHeadless",
+            "start_line": 30,
+            "end_line": 49,
+            "complexity": 10,
+            "cognitive_complexity": 9,
+            "loc": 14
+          },
+          {
+            "name": "getDefaultChromeProfilePath",
+            "start_line": 55,
+            "end_line": 64,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 10
+          },
+          {
+            "name": "readSession",
+            "start_line": 69,
+            "end_line": 82,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 13
+          },
+          {
+            "name": "writeSession",
+            "start_line": 87,
+            "end_line": 96,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 10
+          },
+          {
+            "name": "clearSession",
+            "start_line": 101,
+            "end_line": 109,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 9
+          },
+          {
+            "name": "saveAuthSession",
+            "start_line": 115,
+            "end_line": 124,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 10
+          },
+          {
+            "name": "readAuthSession",
+            "start_line": 130,
+            "end_line": 143,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 13
+          },
+          {
+            "name": "clearAuthSession",
+            "start_line": 148,
+            "end_line": 157,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 10
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 181,
+            "end_line": 183,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 180,
+            "end_line": 184,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 191,
+            "end_line": 193,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 190,
+            "end_line": 194,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "applyAuthSession",
+            "start_line": 164,
+            "end_line": 209,
+            "complexity": 10,
+            "cognitive_complexity": 9,
+            "loc": 29
+          },
+          {
+            "name": "getBrowser",
+            "start_line": 216,
+            "end_line": 294,
+            "complexity": 15,
+            "cognitive_complexity": 14,
+            "loc": 64
+          },
+          {
+            "name": "getPage",
+            "start_line": 310,
+            "end_line": 324,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 13
+          },
+          {
+            "name": "closeBrowser",
+            "start_line": 329,
+            "end_line": 337,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 9
+          },
+          {
+            "name": "disconnectBrowser",
+            "start_line": 343,
+            "end_line": 350,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 8
+          },
+          {
+            "name": "parseArgs",
+            "start_line": 355,
+            "end_line": 375,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 17
+          },
+          {
+            "name": "outputJSON",
+            "start_line": 380,
+            "end_line": 382,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "outputError",
+            "start_line": 387,
+            "end_line": 394,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/lib/selector.js": {
+        "complexity": 27,
+        "cognitive_complexity": 18,
+        "loc": 101,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "parseSelector",
+            "start_line": 12,
+            "end_line": 26,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 10
+          },
+          {
+            "name": "validateXPath",
+            "start_line": 33,
+            "end_line": 57,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 22
+          },
+          {
+            "name": "waitForElement",
+            "start_line": 66,
+            "end_line": 84,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 16
+          },
+          {
+            "name": "clickElement",
+            "start_line": 92,
+            "end_line": 100,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 8
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 124,
+            "end_line": 124,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "typeIntoElement",
+            "start_line": 110,
+            "end_line": 129,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 14
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 141,
+            "end_line": 150,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 10
+          },
+          {
+            "name": "getElement",
+            "start_line": 137,
+            "end_line": 158,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 9
+          },
+          {
+            "name": "enhanceError",
+            "start_line": 166,
+            "end_line": 178,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 13
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/__tests__/error-handling.test.js": {
+        "complexity": 23,
+        "cognitive_complexity": 2,
+        "loc": 77,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 29,
+            "end_line": 29,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 30,
+            "end_line": 30,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 32,
+            "end_line": 34,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 36,
+            "end_line": 38,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 40,
+            "end_line": 43,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 20,
+            "end_line": 44,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 13
+          },
+          {
+            "name": "runScript",
+            "start_line": 19,
+            "end_line": 45,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 49,
+            "end_line": 52,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 54,
+            "end_line": 61,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 48,
+            "end_line": 62,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 65,
+            "end_line": 68,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 64,
+            "end_line": 69,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 72,
+            "end_line": 75,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 71,
+            "end_line": 76,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 79,
+            "end_line": 82,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 78,
+            "end_line": 83,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 86,
+            "end_line": 89,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 85,
+            "end_line": 90,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 96,
+            "end_line": 99,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 92,
+            "end_line": 101,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 6
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 47,
+            "end_line": 102,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          }
+        ]
+      },
+      ".agents/skills/vc-chrome-devtools/scripts/__tests__/selector.test.js": {
+        "complexity": 50,
+        "cognitive_complexity": 0,
+        "loc": 174,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 11,
+            "end_line": 15,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 17,
+            "end_line": 21,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 23,
+            "end_line": 27,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 29,
+            "end_line": 33,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 35,
+            "end_line": 38,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 10,
+            "end_line": 39,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 42,
+            "end_line": 46,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 48,
+            "end_line": 52,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 54,
+            "end_line": 57,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 59,
+            "end_line": 62,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 64,
+            "end_line": 67,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 69,
+            "end_line": 72,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 41,
+            "end_line": 73,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 78,
+            "end_line": 79,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 76,
+            "end_line": 81,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 85,
+            "end_line": 86,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 83,
+            "end_line": 88,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 92,
+            "end_line": 93,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 90,
+            "end_line": 95,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 99,
+            "end_line": 100,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 97,
+            "end_line": 102,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 106,
+            "end_line": 107,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 104,
+            "end_line": 109,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 113,
+            "end_line": 114,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 111,
+            "end_line": 116,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 120,
+            "end_line": 121,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 118,
+            "end_line": 123,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 127,
+            "end_line": 128,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 125,
+            "end_line": 130,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 134,
+            "end_line": 135,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 132,
+            "end_line": 137,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 142,
+            "end_line": 143,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 139,
+            "end_line": 145,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 151,
+            "end_line": 152,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 149,
+            "end_line": 154,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 158,
+            "end_line": 159,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 156,
+            "end_line": 161,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 165,
+            "end_line": 166,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 163,
+            "end_line": 168,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 172,
+            "end_line": 173,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 170,
+            "end_line": 175,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 177,
+            "end_line": 180,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 182,
+            "end_line": 186,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 148,
+            "end_line": 187,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 190,
+            "end_line": 193,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 195,
+            "end_line": 198,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 200,
+            "end_line": 203,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 205,
+            "end_line": 208,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 189,
+            "end_line": 209,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 75,
+            "end_line": 210,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 15
+          }
+        ]
+      },
+      ".agents/skills/vc-context-engineering/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 85,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/context-compression.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 69,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/context-degradation.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 68,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/context-fundamentals.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 54,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/context-optimization.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 55,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/evaluation.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 65,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/memory-systems.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 68,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/multi-agent-patterns.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 64,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/project-development.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 68,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/runtime-awareness.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 157,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/references/tool-design.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 62,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-context-engineering/scripts/compression_evaluator.py": {
+        "complexity": 55,
+        "cognitive_complexity": 45,
+        "loc": 238,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "load_file",
+            "start_line": 22,
+            "end_line": 39,
+            "complexity": 6,
+            "cognitive_complexity": 5,
+            "loc": 17
+          },
+          {
+            "name": "estimate_tokens",
+            "start_line": 85,
+            "end_line": 87,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "extract_facts",
+            "start_line": 90,
+            "end_line": 107,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 16
+          },
+          {
+            "name": "extract_files",
+            "start_line": 110,
+            "end_line": 123,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 12
+          },
+          {
+            "name": "extract_decisions",
+            "start_line": 126,
+            "end_line": 140,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 13
+          },
+          {
+            "name": "generate_probes",
+            "start_line": 143,
+            "end_line": 181,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 29
+          },
+          {
+            "name": "evaluate_response",
+            "start_line": 184,
+            "end_line": 218,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 24
+          },
+          {
+            "name": "calculate_compression_ratio",
+            "start_line": 221,
+            "end_line": 227,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 6
+          },
+          {
+            "name": "evaluate_compression",
+            "start_line": 230,
+            "end_line": 301,
+            "complexity": 14,
+            "cognitive_complexity": 13,
+            "loc": 43
+          },
+          {
+            "name": "main",
+            "start_line": 304,
+            "end_line": 345,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 33
+          }
+        ]
+      },
+      ".agents/skills/vc-context-engineering/scripts/context_analyzer.py": {
+        "complexity": 47,
+        "cognitive_complexity": 36,
+        "loc": 214,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "load_json_file",
+            "start_line": 23,
+            "end_line": 40,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 17
+          },
+          {
+            "name": "estimate_tokens",
+            "start_line": 62,
+            "end_line": 64,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 2
+          },
+          {
+            "name": "estimate_message_tokens",
+            "start_line": 67,
+            "end_line": 78,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 10
+          },
+          {
+            "name": "measure_attention_distribution",
+            "start_line": 81,
+            "end_line": 97,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 12
+          },
+          {
+            "name": "detect_lost_in_middle",
+            "start_line": 100,
+            "end_line": 122,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 18
+          },
+          {
+            "name": "detect_poisoning_patterns",
+            "start_line": 125,
+            "end_line": 160,
+            "complexity": 8,
+            "cognitive_complexity": 7,
+            "loc": 27
+          },
+          {
+            "name": "calculate_health_score",
+            "start_line": 163,
+            "end_line": 176,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 7
+          },
+          {
+            "name": "get_health_status",
+            "start_line": 179,
+            "end_line": 187,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 8
+          },
+          {
+            "name": "analyze_context",
+            "start_line": 190,
+            "end_line": 247,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 33
+          },
+          {
+            "name": "calculate_budget",
+            "start_line": 250,
+            "end_line": 273,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 22
+          },
+          {
+            "name": "main",
+            "start_line": 276,
+            "end_line": 313,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 31
+          }
+        ]
+      },
+      ".agents/skills/vc-context-engineering/scripts/tests/test_edge_cases.py": {
+        "complexity": 33,
+        "cognitive_complexity": 9,
+        "loc": 163,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "valid_json_file",
+            "start_line": 29,
+            "end_line": 33,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "valid_text_file",
+            "start_line": 36,
+            "end_line": 40,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "run_script",
+            "start_line": 42,
+            "end_line": 46,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_missing_file_exits_1",
+            "start_line": 48,
+            "end_line": 52,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_missing_file_error_message",
+            "start_line": 54,
+            "end_line": 59,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          },
+          {
+            "name": "test_invalid_json_exits_1",
+            "start_line": 61,
+            "end_line": 68,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 6
+          },
+          {
+            "name": "test_valid_files_succeed",
+            "start_line": 70,
+            "end_line": 76,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 6
+          },
+          {
+            "name": "test_generate_probes_missing_file",
+            "start_line": 78,
+            "end_line": 82,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_generate_probes_invalid_json",
+            "start_line": 84,
+            "end_line": 91,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 6
+          },
+          {
+            "name": "test_generate_probes_success",
+            "start_line": 93,
+            "end_line": 98,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_utf8_content",
+            "start_line": 100,
+            "end_line": 110,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          },
+          {
+            "name": "test_permission_denied",
+            "start_line": 113,
+            "end_line": 124,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 10
+          },
+          {
+            "name": "valid_context_file",
+            "start_line": 131,
+            "end_line": 141,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 10
+          },
+          {
+            "name": "run_script",
+            "start_line": 143,
+            "end_line": 147,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_missing_file_exits_1",
+            "start_line": 149,
+            "end_line": 153,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 4
+          },
+          {
+            "name": "test_invalid_json_exits_1",
+            "start_line": 155,
+            "end_line": 162,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 6
+          },
+          {
+            "name": "test_valid_file_succeeds",
+            "start_line": 164,
+            "end_line": 169,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          },
+          {
+            "name": "test_utf8_content",
+            "start_line": 171,
+            "end_line": 183,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 11
+          },
+          {
+            "name": "test_empty_messages_array",
+            "start_line": 185,
+            "end_line": 191,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "test_direct_messages_list",
+            "start_line": 193,
+            "end_line": 203,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "test_permission_denied",
+            "start_line": 206,
+            "end_line": 217,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 10
+          },
+          {
+            "name": "test_with_keywords_filter",
+            "start_line": 219,
+            "end_line": 222,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_with_limit",
+            "start_line": 224,
+            "end_line": 227,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "test_large_file_warning_in_code",
+            "start_line": 233,
+            "end_line": 242,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          }
+        ]
+      },
+      ".agents/skills/vc-debug/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 75,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/defense-in-depth.md": {
+        "complexity": 11,
+        "cognitive_complexity": 7,
+        "loc": 90,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "createProject",
+            "start_line": 28,
+            "end_line": 39,
+            "complexity": 5,
+            "cognitive_complexity": 4,
+            "loc": 11
+          },
+          {
+            "name": "initializeWorkspace",
+            "start_line": 46,
+            "end_line": 51,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 5
+          },
+          {
+            "name": "gitInit",
+            "start_line": 58,
+            "end_line": 71,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 11
+          },
+          {
+            "name": "gitInit",
+            "start_line": 78,
+            "end_line": 86,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 8
+          }
+        ]
+      },
+      ".agents/skills/vc-debug/references/frontend-verification.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 69,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/investigation-methodology.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 68,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/log-and-ci-analysis.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 56,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/performance-diagnostics.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 83,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/reporting-standards.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 87,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/root-cause-tracing.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 102,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/systematic-debugging.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 86,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/task-management-debugging.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 116,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/references/verification.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 106,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-debug/scripts/find-polluter.test.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 77,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 34,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs/references/init-workflow.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 30,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs/references/summarize-workflow.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 17,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs/references/update-workflow.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 44,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs-seeker/package.json": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 25,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs-seeker/SKILL.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 67,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs-seeker/references/advanced.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 60,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs-seeker/references/context7-patterns.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 49,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs-seeker/references/errors.md": {
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "loc": 63,
+        "level": "LOW",
+        "functions": []
+      },
+      ".agents/skills/vc-docs-seeker/scripts/analyze-llms-txt.js": {
+        "complexity": 22,
+        "cognitive_complexity": 16,
+        "loc": 141,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "categorizeUrl",
+            "start_line": 37,
+            "end_line": 54,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 13
+          },
+          {
+            "name": "parseUrls",
+            "start_line": 61,
+            "end_line": 83,
+            "complexity": 7,
+            "cognitive_complexity": 6,
+            "loc": 16
+          },
+          {
+            "name": "groupByPriority",
+            "start_line": 90,
+            "end_line": 103,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 12
+          },
+          {
+            "name": "suggestAgentDistribution",
+            "start_line": 110,
+            "end_line": 142,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 33
+          },
+          {
+            "name": "analyzeLlmsTxt",
+            "start_line": 149,
+            "end_line": 165,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 16
+          },
+          {
+            "name": "main",
+            "start_line": 170,
+            "end_line": 198,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 23
+          }
+        ]
+      },
+      ".agents/skills/vc-docs-seeker/scripts/detect-topic.js": {
+        "complexity": 16,
+        "cognitive_complexity": 12,
+        "loc": 99,
+        "level": "MEDIUM",
+        "functions": [
+          {
+            "name": "normalizeTopic",
+            "start_line": 53,
+            "end_line": 61,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 9
+          },
+          {
+            "name": "normalizeLibrary",
+            "start_line": 68,
+            "end_line": 74,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 7
+          },
+          {
+            "name": "detectTopic",
+            "start_line": 81,
+            "end_line": 138,
+            "complexity": 11,
+            "cognitive_complexity": 10,
+            "loc": 41
+          },
+          {
+            "name": "main",
+            "start_line": 143,
+            "end_line": 161,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 16
+          }
+        ]
+      },
+      ".agents/skills/vc-docs-seeker/scripts/fetch-docs.js": {
+        "complexity": 35,
+        "cognitive_complexity": 26,
+        "loc": 138,
+        "level": "HIGH",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 31,
+            "end_line": 33,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 35,
+            "end_line": 43,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 9
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 28,
+            "end_line": 44,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 5
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 23,
+            "end_line": 45,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 6
+          },
+          {
+            "name": "httpsGet",
+            "start_line": 22,
+            "end_line": 46,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "buildContext7Url",
+            "start_line": 54,
+            "end_line": 75,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 15
+          },
+          {
+            "name": "getUrlVariations",
+            "start_line": 83,
+            "end_line": 109,
+            "complexity": 3,
+            "cognitive_complexity": 2,
+            "loc": 19
+          },
+          {
+            "name": "main",
+            "start_line": 183,
+            "end_line": 201,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 16
+          },
+          {
+            "name": "fetchDocs",
+            "start_line": 116,
+            "end_line": 213,
+            "complexity": 17,
+            "cognitive_complexity": 16,
+            "loc": 60
+          }
+        ]
+      },
+      ".agents/skills/vc-docs-seeker/scripts/tests/run-tests.js": {
+        "complexity": 9,
+        "cognitive_complexity": 4,
+        "loc": 55,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "(anonymous)",
+            "start_line": 30,
+            "end_line": 36,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 7
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 20,
+            "end_line": 39,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 11
+          },
+          {
+            "name": "runTest",
+            "start_line": 19,
+            "end_line": 40,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 3
+          },
+          {
+            "name": "(anonymous)",
+            "start_line": 64,
+            "end_line": 64,
+            "complexity": 1,
+            "cognitive_complexity": 0,
+            "loc": 1
+          },
+          {
+            "name": "runAllTests",
+            "start_line": 42,
+            "end_line": 70,
+            "complexity": 4,
+            "cognitive_complexity": 3,
+            "loc": 25
+          }
+        ]
+      },
+      ".agents/skills/vc-docs-seeker/scripts/tests/test-analyze-llms.js": {
+        "complexity": 4,
+        "cognitive_complexity": 2,
+        "loc": 86,
+        "level": "LOW",
+        "functions": [
+          {
+            "name": "assert",
+            "start_line": 19,
+            "end_line": 27,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 9
+          },
+          {
+            "name": "assertEqual",
+            "start_line": 29,
+            "end_line": 39,
+            "complexity": 2,
+            "cognitive_complexity": 1,
+            "loc": 11
+          }
+        ]
+      }
+    }
+  }
+}

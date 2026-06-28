@@ -45,10 +45,10 @@ describe('CodeInspectorHeader ScanStatusBadge', () => {
     expect(screen.queryByText('Regressed')).not.toBeInTheDocument();
   });
 
-  it('renders both Applied/Pending and ScanStatus badges', () => {
+  it('renders both Done/Pending and ScanStatus badges', () => {
     const finding = createMockFinding({ scan_status: 'new', _applied: true });
     renderWithProviders(<CodeInspectorHeader finding={finding} {...defaultProps} />);
-    expect(screen.getByText('Applied')).toBeInTheDocument();
+    expect(screen.getByText('Done')).toBeInTheDocument();
     expect(screen.getByText('New')).toBeInTheDocument();
   });
 });

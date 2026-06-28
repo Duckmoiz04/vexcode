@@ -16,6 +16,7 @@ interface CodeInspectorProps {
   targetPath: string | null;
   onApplyFix: (finding: Finding, remediationCode: string) => Promise<boolean>;
   onRollbackFix?: (finding: Finding) => Promise<boolean>;
+  onMarkAsDone?: (finding: Finding) => void;
   metrics?: Metrics;
   onSelectFindingIndex?: (index: number | null) => void;
   /** All findings in the report — used to highlight sibling error lines
@@ -52,7 +53,7 @@ async function openInIDE(filePath: string, line: number, baseDir: string | null)
 }
 
 export const CodeInspector: React.FC<CodeInspectorProps> = ({
-  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings, theme, onApplyFix, onRollbackFix,
+  finding, aiResolutions, targetPath, metrics, onSelectFindingIndex, allFindings, theme, onApplyFix, onRollbackFix, onMarkAsDone,
 }) => {
   // Guard: parent may pass an out-of-range index, in which case `finding` is
   // undefined. Render a minimal empty state instead of crashing on
@@ -129,6 +130,7 @@ export const CodeInspector: React.FC<CodeInspectorProps> = ({
         onToggleChat={() => setIsChatOpen(!isChatOpen)}
         onBack={onSelectFindingIndex ? () => onSelectFindingIndex(null) : undefined}
         onOpenInIDE={() => openInIDE(finding.file, finding.line, targetPath)}
+        onMarkAsDone={onMarkAsDone ? () => onMarkAsDone(finding) : undefined}
       />
 
       {/* Sibling finding navigation bar — shows when file has multiple findings */}

@@ -8,6 +8,8 @@ interface CodeInspectorHeaderProps {
   onToggleChat: () => void;
   onBack: (() => void) | undefined;
   onOpenInIDE: () => void;
+  /** Mark the finding as Done (status → 'applied'). Hidden when already Done. */
+  onMarkAsDone?: () => void;
 }
 
 /** Badge component showing cross-scan classification status. */
@@ -52,8 +54,10 @@ export const CodeInspectorHeader: React.FC<CodeInspectorHeaderProps> = ({
   onToggleChat,
   onBack,
   onOpenInIDE,
+  onMarkAsDone,
 }) => {
   const severity = (finding.severity || '').toLowerCase();
+  const isDone = finding.status === 'applied' || finding._applied === true;
 
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b border-card-border bg-bg-secondary shrink-0 z-10">
@@ -83,6 +87,16 @@ export const CodeInspectorHeader: React.FC<CodeInspectorHeaderProps> = ({
         <h3 className="text-sm font-bold text-text-primary font-mono truncate max-w-md lg:max-w-xl">{finding.rule_id}</h3>
       </div>
       <div className="flex items-center gap-2.5">
+        {!isDone && onMarkAsDone && (
+          <button
+            onClick={onMarkAsDone}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-success/40 bg-success/10 text-success hover:bg-success/20 hover:border-success/60 text-xs font-semibold transition-all cursor-pointer"
+            title="Mark this finding as Done (status → applied)"
+          >
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            <span>Mark as Done</span>
+         </button>
+        )}
         <button
           onClick={onOpenInIDE}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-card-border/60 bg-bg-tertiary/40 text-text-secondary hover:text-text-primary hover:bg-bg-tertiary/60 text-xs font-semibold transition-all cursor-pointer"
@@ -90,7 +104,7 @@ export const CodeInspectorHeader: React.FC<CodeInspectorHeaderProps> = ({
         >
           <ExternalLink className="h-3.5 w-3.5" />
           <span>Open in IDE</span>
-        </button>
+       </button>
         <button
           onClick={onToggleChat}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
@@ -104,13 +118,13 @@ export const CodeInspectorHeader: React.FC<CodeInspectorHeaderProps> = ({
         </button>
         <span
           className={`text-xs px-2.5 py-0.5 rounded font-semibold border ${
-            finding._applied
+            isDone
               ? 'bg-success/15 border-success/30 text-success'
               : 'bg-bg-tertiary border-card-border text-text-secondary'
           }`}
         >
-          {finding._applied ? 'Applied' : 'Pending'}
-        </span>
+          {isDone ? 'Done' : 'Pending'}
+       </span>
         <ScanStatusBadge scanStatus={finding.scan_status} />
       </div>
     </div>

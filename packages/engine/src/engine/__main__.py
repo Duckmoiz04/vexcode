@@ -298,7 +298,7 @@ def run_analysis(args: argparse.Namespace) -> None:
         )
 
         # 6b. Propagate finding_type from AI resolutions back to each finding.
-        # The AI classifies each unique rule as confirmed/hotspot/false_positive.
+        # The AI classifies each unique rule as confirmed/false_positive.
         # Findings whose rule wasn't AI-resolved default to "confirmed".
         for finding in findings:
             rule_id = finding.get("rule_id", "")

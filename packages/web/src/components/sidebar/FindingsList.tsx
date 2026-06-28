@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { File, AlertTriangle, ShieldAlert, CheckSquare, Square, Calendar } from 'lucide-react';
 import type { Finding, FindingStatus } from '../../types';
+import { classifyFinding, CATEGORIES } from '../../utils/categories';
 import { getRelativePath } from './utils';
 
 const formatDate = (isoString?: string | null): string => {
@@ -65,12 +66,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
   }, [searchedAndFilteredFindings]);
 
 
-  const getSoftwareCategory = (f: Finding) => {
-    if (f.finding_type === 'confirmed') return 'Security';
-    if (f.finding_type === 'hotspot') return 'Security Hotspot';
-    if (f.severity === 'error') return 'Reliability';
-    return 'Maintainability';
-  };
+const getSoftwareCategoryLabel = (f: Finding): string => CATEGORIES[classifyFinding(f)].label;
 
   const getSeverityLabel = (f: Finding) => {
     if (f.severity === 'error') return 'High';
@@ -159,7 +155,7 @@ export const FindingsList: React.FC<FindingsListProps> = ({
                       {/* Cặp nhãn nền nhạt (Khía cạnh + Mức độ) */}
                       <div className="flex items-center gap-1.5">
                         <span className="text-[10px] font-bold font-sans bg-bg-secondary text-text-secondary px-1.5 py-0.5 rounded border border-card-border/40">
-                          {getSoftwareCategory(f)}
+                          {getSoftwareCategoryLabel(f)}
                         </span>
                         <span className={`text-[10px] font-bold font-sans px-1.5 py-0.5 rounded border ${severityColorClass}`}>
                           {getSeverityLabel(f)}

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, X, File, AlertTriangle, ShieldAlert, CheckSquare, Square, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Finding, FindingStatus, Report, PaginationInfo } from '../types';
+import { classifyFinding, CATEGORIES } from '../utils/categories';
 
 interface IssueListProps {
   searchedAndFilteredFindings: Finding[];
@@ -79,12 +80,7 @@ export const IssueList: React.FC<IssueListProps> = ({
   }, [searchedAndFilteredFindings]);
 
 
-  const getSoftwareCategory = (f: Finding) => {
-    if (f.finding_type === 'confirmed') return 'Security';
-    if (f.finding_type === 'hotspot') return 'Security Hotspot';
-    if (f.severity === 'error') return 'Reliability';
-    return 'Maintainability';
-  };
+  const getSoftwareCategoryLabel = (f: Finding): string => CATEGORIES[classifyFinding(f)].label;
 
   const getSeverityLabel = (f: Finding) => {
     if (f.severity === 'error') return 'High';
@@ -217,7 +213,7 @@ export const IssueList: React.FC<IssueListProps> = ({
                             {/* Cặp nhãn nền nhạt (Khía cạnh + Mức độ) */}
                             <div className="flex items-center gap-2">
                               <span className="text-[11px] font-bold font-sans bg-bg-secondary text-text-secondary px-2 py-0.5 rounded border border-card-border/40">
-                                {getSoftwareCategory(f)}
+                                {getSoftwareCategoryLabel(f)}
                               </span>
                               <span className={`text-[11px] font-bold font-sans px-2 py-0.5 rounded border ${severityColorClass}`}>
                                 {getSeverityLabel(f)}
@@ -238,7 +234,7 @@ export const IssueList: React.FC<IssueListProps> = ({
                           <div className="flex items-center justify-between border-t border-card-border/40 pt-3 text-[12px] text-text-tertiary pl-7 flex-wrap gap-y-2">
                             <div className="flex items-center gap-2 flex-wrap">
                               {/* Menu Trạng thái xử lý */}
-                              {onStatusChange ? (
+                              {/* {onStatusChange ? (
                                 <select
                                   value={currentStatus}
                                   onChange={(e) => {
@@ -257,7 +253,7 @@ export const IssueList: React.FC<IssueListProps> = ({
                                 <span className="font-bold text-text-secondary capitalize">{currentStatus}</span>
                               )}
 
-                              <span>•</span>
+                              <span>•</span> */}
 
                               {/* Vị trí dòng */}
                               <span className="font-mono font-semibold text-text-secondary">L{f.line}</span>

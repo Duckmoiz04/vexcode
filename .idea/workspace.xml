@@ -6,74 +6,49 @@
   <component name="ChangeListManager">
     <list default="true" id="2d30c51a-e0d6-43e5-a742-e5369ad6954a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.claude/hooks/.logs/hook-log.jsonl" beforeDir="false" afterPath="$PROJECT_DIR$/.claude/hooks/.logs/hook-log.jsonl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AGENTS.md" beforeDir="false" afterPath="$PROJECT_DIR$/AGENTS.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/__tests/server.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/__tests/server.test.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/bridge.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/bridge.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-DHjvRfEO.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-D_G1Rcyp.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-B6vhUkLK.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/cli/src/public/assets/index-BKAeBf01.css" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/cli/src/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/public/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/chat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/reports.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/reports.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/routes/scan.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/routes/scan.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/cli/src/services/reportService.js" beforeDir="false" afterPath="$PROJECT_DIR$/packages/cli/src/services/reportService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/conf/settings.toml" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/conf/settings.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/config_cli.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/config_cli.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_prompts.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/ai_prompts.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/config/iso25010_taxonomy.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/config/iso25010_taxonomy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/ai_resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/ai_resolver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/ast_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/ast_graph.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/complexity.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/complexity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/core/scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/core/scanner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/enricher.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/enricher.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/gitleaks_scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/gitleaks_scanner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/osv_scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/osv_scanner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/resolver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/sarif_builder.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/src/engine/pipeline/sarif_builder.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_ai_resolver.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_ai_resolver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_ai_resolver_parallel.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_ai_resolver_parallel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_ast_graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_ast_graph.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_complexity.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_complexity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_iso25010_taxonomy.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_iso25010_taxonomy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_pipeline.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_pipeline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/engine/tests/test_scanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/packages/engine/tests/test_scanner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/src/components/CodeInspector.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/CodeInspector.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/IssueList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/IssueList.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/ScanModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/ScanModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/code-inspector/ChatPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/code-inspector/ChatPanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/DashboardPage.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/header/Header.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/header/Header.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/header/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/header/Header.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/header/HeaderNav.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/header/HeaderNav.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/header/HeaderNav.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/header/HeaderNav.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/AgentAssignmentSection.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/SettingsDrawer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/SettingsDrawer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/constants.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/constants.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/useSettingsDrawer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/settings-drawer/useSettingsDrawer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/FileTree.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/FileTree.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/FindingsList.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/FindingsList.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/FilterPanel.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/FilterPanel.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/FilterPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/FilterPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/FindingsList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/FindingsList.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/code-inspector/CodeInspectorHeader.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/code-inspector/CodeInspectorHeader.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/code-inspector/CodeInspectorHeader.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/code-inspector/CodeInspectorHeader.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/AiMetricsPanel.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/CategoryBreakdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/dashboard/CategoryBreakdown.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/HealthScoreChart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/dashboard/HealthScoreChart.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/MetricsCards.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/dashboard/MetricsCards.test.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/MetricsCards.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/dashboard/MetricsCards.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/dashboardTypes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/dashboard/dashboardTypes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/dashboard/dashboardUtils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/dashboard/dashboardUtils.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/FindingsList.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/FindingsList.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/SidebarPanel.test.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/SidebarPanel.test.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/SidebarPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/SidebarPanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/context/AIProviderContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/context/AIProviderContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useChat.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useChat.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useReports.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useReports.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/components/sidebar/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/components/sidebar/utils.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/src/hooks/useReports.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/hooks/useReports.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/pages/DashboardPage.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/src/pages/IssuesPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/pages/IssuesPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/pages/SecurityHotspotsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/pages/SecurityHotspotsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/pages/OverviewPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/pages/OverviewPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/web/src/pages/SecurityHotspotsPage.tsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/packages/web/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/packages/web/src/utils/sarifAdapter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/web/src/utils/sarifAdapter.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.1-phân-tích-bài-toán-code-review.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.1-phân-tích-bài-toán-code-review.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.2-thiết-kế-kiến-trúc-tổng-thể.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.2-thiết-kế-kiến-trúc-tổng-thể.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.3-thiết-kế-chi-tiết-pipeline.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.3-thiết-kế-chi-tiết-pipeline.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.4-thiết-kế-chi-tiết-api.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.4-thiết-kế-chi-tiết-api.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.5-thiết-kế-cơ-sở-dữ-liệu.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.5-thiết-kế-cơ-sở-dữ-liệu.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.6-thiết-kế-giao-diện.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.6-thiết-kế-giao-diện.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.7-bảo-mật-độ-tin-cậy.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-3/3.7-bảo-mật-độ-tin-cậy.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.1-kết-quả-triển-khai.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.1-kết-quả-triển-khai.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.2-kết-quả-kiểm-thử.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.2-kết-quả-kiểm-thử.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.3-đánh-giá-iso25010.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.3-đánh-giá-iso25010.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.4-hạn-chế.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.4-hạn-chế.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.5-tổng-kết-chương.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-5/5.5-tổng-kết-chương.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-6-ket-luan.md" beforeDir="false" afterPath="$PROJECT_DIR$/process/features/vexcode/reports/chuong-6-ket-luan.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -93,23 +68,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.3554915436734745" />
-      <entry key="MS500" value="4.157428296054842" />
-      <entry key="S2" value="11.361545720804186" />
-      <entry key="S5" value="24.993724563895864" />
-      <entry key="S10" value="39.23895497949944" />
-      <entry key="S30" value="57.414617664370226" />
-      <entry key="S60" value="64.0650346136822" />
-      <entry key="M2" value="68.91624236120568" />
-      <entry key="M5" value="80.59851818084792" />
-      <entry key="M10" value="130.29228857925017" />
-      <entry key="M15" value="202.7739063941063" />
-      <entry key="M30" value="417.03918369112637" />
-      <entry key="H1" value="729.6341715816292" />
-      <entry key="H2" value="1205.2844846016565" />
-      <entry key="H4" value="2057.067657395231" />
-      <entry key="D1" value="7182.579524919056" />
-      <entry key="W1" value="13833.098595827303" />
+      <entry key="MS100" value="2.722518019418308" />
+      <entry key="MS500" value="5.950152081698399" />
+      <entry key="S2" value="9.59928936628718" />
+      <entry key="S5" value="11.33843861067287" />
+      <entry key="S10" value="15.239830228363788" />
+      <entry key="S30" value="29.350535135983357" />
+      <entry key="S60" value="42.11208849192523" />
+      <entry key="M2" value="65.17258205333738" />
+      <entry key="M5" value="111.99613785515652" />
+      <entry key="M10" value="163.20486909823737" />
+      <entry key="M15" value="216.78168000943754" />
+      <entry key="M30" value="400.7686474781723" />
+      <entry key="H1" value="725.636917545143" />
+      <entry key="H2" value="1233.7702005420601" />
+      <entry key="H4" value="2112.4737648771743" />
+      <entry key="D1" value="7311.779382210454" />
+      <entry key="W1" value="14038.941968338482" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -131,23 +106,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="1.29290443835694" />
-      <entry key="MS500" value="4.115520323095602" />
-      <entry key="S2" value="11.326291291905774" />
-      <entry key="S5" value="24.96073422808387" />
-      <entry key="S10" value="39.212310175603356" />
-      <entry key="S30" value="57.40129198095431" />
-      <entry key="S60" value="64.05754901081703" />
-      <entry key="M2" value="68.91220178870768" />
-      <entry key="M5" value="80.59657593274113" />
-      <entry key="M10" value="130.29056761338757" />
-      <entry key="M15" value="202.77206119807678" />
-      <entry key="M30" value="417.03727003804585" />
-      <entry key="H1" value="729.6325277596717" />
-      <entry key="H2" value="1205.283210645792" />
-      <entry key="H4" value="2057.066678510064" />
-      <entry key="D1" value="7182.579044924065" />
-      <entry key="W1" value="13833.098460074672" />
+      <entry key="MS100" value="2.5465822740010555" />
+      <entry key="MS500" value="5.88068160636505" />
+      <entry key="S2" value="9.572368313560341" />
+      <entry key="S5" value="11.32579330857138" />
+      <entry key="S10" value="15.231303111614428" />
+      <entry key="S30" value="29.345025681412732" />
+      <entry key="S60" value="42.1081609602706" />
+      <entry key="M2" value="65.16956972274352" />
+      <entry key="M5" value="111.99403875211362" />
+      <entry key="M10" value="163.20324248654063" />
+      <entry key="M15" value="216.78013448874935" />
+      <entry key="M30" value="400.7670459863628" />
+      <entry key="H1" value="725.635397151851" />
+      <entry key="H2" value="1233.7689390724177" />
+      <entry key="H4" value="2112.47276889564" />
+      <entry key="D1" value="7311.778892163282" />
+      <entry key="W1" value="14038.94183042322" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{

@@ -2,8 +2,8 @@ import type { BlastRadiusItem } from '../../types';
 
 export interface DashboardStats {
   security: number;
-  quality: number;
-  architecture: number;
+  reliability: number;
+  performance: number;
   maintainability: number;
   errors: number;
   warnings: number;

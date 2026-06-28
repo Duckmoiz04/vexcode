@@ -20,7 +20,7 @@ describe('FilterPanel Scan Status', () => {
     setFilterScanStatuses: vi.fn(),
     filterCounts: {
       severity: { error: 5, warning: 8, info: 11 },
-      category: { security: 2, quality: 4, maintainability: 1, architecture: 2 },
+      category: { security: 2, reliability: 4, maintainability: 1, performance: 2 },
       status: { open: 6, applied: 2, false_positive: 0, ignored: 1 },
       language: { Python: 5, JavaScript: 4 },
       scanStatus: { new: 3, persisting: 7, resolved: 9, regressed: 10 },

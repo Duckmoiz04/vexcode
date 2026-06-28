@@ -85,7 +85,7 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
       </div>
 
       {/* Severity Distribution Donut SVG */}
-      <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col items-center">
+      {/* <div className="p-5 rounded-xl border border-card-border bg-card-bg backdrop-blur-md flex flex-col items-center">
         <h4 className="text-xs font-bold text-text-secondary mb-4 uppercase tracking-wider self-start">Severity Distribution</h4>
         <div className="relative w-44 h-44 flex items-center justify-center">
           <svg width="180" height="180" viewBox="0 0 42 42" className="donut-chart">
@@ -113,7 +113,7 @@ export const HealthScoreChart: React.FC<HealthScoreChartProps> = ({
             <span className="text-xs text-text-secondary uppercase font-semibold">Issues</span>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

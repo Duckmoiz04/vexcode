@@ -150,7 +150,7 @@ _pipeline_metrics: Dict[str, Any] = {
     "skipped_by_smart_gate": 0,
     "cache_hits": 0,
     "ai_calls": 0,
-    "classifications": {"confirmed": 0, "hotspot": 0, "false_positive": 0},
+    "classifications": {"confirmed": 0, "false_positive": 0},
     "fix_success": 0,
     "fix_failure": 0,
     "review_approved": 0,
@@ -184,7 +184,7 @@ def reset_pipeline_metrics() -> None:
         "skipped_by_smart_gate": 0,
         "cache_hits": 0,
         "ai_calls": 0,
-        "classifications": {"confirmed": 0, "hotspot": 0, "false_positive": 0},
+        "classifications": {"confirmed": 0, "false_positive": 0},
         "fix_success": 0,
         "fix_failure": 0,
         "review_approved": 0,
@@ -393,8 +393,8 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                 _record_metric("ai_calls")
 
             # Simulate classifications
-            class_mod = seed_val % 3
-            classification = "confirmed" if class_mod == 0 else ("hotspot" if class_mod == 1 else "false_positive")
+            class_mod = seed_val % 2
+            classification = "confirmed" if class_mod == 0 else "false_positive"
             _record_metric(f"classifications.{classification}")
 
             # Simulate review decisions
@@ -503,7 +503,7 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
                 remediation_code="",
                 ai_status="fallback_mock",
                 model="mock-skipped",
-                classification="hotspot",
+                classification="confirmed",
             )
             _record_metric("skipped_by_smart_gate")
             completed += 1
@@ -537,12 +537,17 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
             completed += 1
             continue
 
-        classification = analyze_data.get("classification", "hotspot")
+        classification = analyze_data.get("classification", "confirmed")
+        # Normalize: prompt requests confirmed|false_positive, but LLM may return
+        # other values (e.g. "hotspot"). Map anything unexpected to "confirmed".
+        if classification not in ("confirmed", "false_positive"):
+            logger.info(f"AI returned unexpected classification '{classification}' for rule {r_id}, normalizing to 'confirmed'")
+            classification = "confirmed"
         reasoning = analyze_data.get("reasoning", "")
         _record_metric(f"classifications.{classification}")
 
-        # False positives and hotspots stop here - TEMPORARILY DISABLED to allow fixes for all findings
-        # if classification in ("false_positive", "hotspot"):
+        # False positives stop here - TEMPORARILY DISABLED to allow fixes for all findings
+        # if classification in ("false_positive",):
         #     resolutions[r_id] = _make_resolution(
         #         suggestion=f"{classification.replace('_', ' ').title()}: {reasoning}",
         #         remediation_code="",
@@ -629,7 +634,6 @@ def resolve_findings(findings: Any, use_mock: bool = False, target_path: Optiona
         f"skipped={metrics['skipped_by_smart_gate']} cache={metrics['cache_hits']} "
         f"calls={metrics['ai_calls']} errors={metrics['errors']} | "
         f"cls=v:{metrics['classifications']['confirmed']}/"
-        f"h:{metrics['classifications']['hotspot']}/"
         f"fp:{metrics['classifications']['false_positive']} | "
         f"fix={metrics['fix_success']}/{metrics['fix_failure']} | "
         f"review=+{metrics['review_approved']}-{metrics['review_rejected']}~{metrics['review_corrected']}"
@@ -973,7 +977,7 @@ def call_ai_for_rule(item: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
                         if not remediation and suggestion.lower().startswith("false positive"):
                             classification = "false_positive"
                         elif not remediation:
-                            classification = "hotspot"
+                            classification = "confirmed"
                         else:
                             classification = "confirmed"
                     out[real_key] = _make_resolution(

@@ -10,6 +10,7 @@ import { GraphPage } from './pages/GraphPage';
 import { ActivityPage } from './pages/ActivityPage';
 import type { Finding, FindingStatus, Report, Config, ScanStatus } from './types';
 import { apiFetch } from './utils/apiClient';
+import { classifyFinding } from './utils/categories';
 import { useToast } from './hooks/useToast';
 import { useConfig } from './hooks/useConfig';
 import { useReports } from './hooks/useReports';
@@ -63,19 +64,13 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterSeverities, setFilterSeverities] = useState<string[]>([]);
   const [filterCategories, setFilterCategories] = useState<string[]>([]);
-  const [filterStatuses, setFilterStatuses] = useState<string[]>([]);
+  const [filterStatuses, setFilterStatuses] = useState<string[]>(['open']);
   const [filterLanguages, setFilterLanguages] = useState<string[]>([]);
   const [filterScanStatuses, setFilterScanStatuses] = useState<string[]>([]);
 
-  const classifyFinding = (finding: Finding) => {
-    const ruleId = (finding.rule_id || '').toLowerCase();
-    const securityKeywords = ['security', 'vuln', 'injection', 'xss', 'csrf', 'secret', 'key', 'token', 'jwt', 'crypto', 'auth', 'password', 'credential', 'ssrf', 'overflow', 'leak', 'private', 'cert', 'hash', 'ssl', 'tls'];
-    if (securityKeywords.some(kw => ruleId.includes(kw))) return 'security';
-    if (finding.ast_context && (finding.ast_context.symbol_name || (finding.ast_context.callers && finding.ast_context.callers.length > 0))) return 'architecture';
-    const styleKeywords = ['style', 'format', 'naming', 'deprecated', 'convention', 'comment', 'spacing', 'indent', 'unused', 'duplicate', 'complex', 'nest'];
-    if (styleKeywords.some(kw => ruleId.includes(kw))) return 'maintainability';
-    return 'quality';
-  };
+  // Canonical classification comes from utils/categories — replaces the ad-hoc inline
+  // rule_id keyword matcher (which returned 'architecture'/'quality' labels that don't
+  // match the engine's ISO 25010 taxonomy).
 
   const getFileLanguage = useCallback((filePath: string) => {
     if (!filePath) return 'Other';
@@ -110,7 +105,7 @@ export const App: React.FC = () => {
     const raw = currentReport?.findings || [];
     const counts = {
       severity: { error: 0, warning: 0, info: 0 },
-      category: { security: 0, quality: 0, maintainability: 0, architecture: 0 },
+      category: { security: 0, reliability: 0, maintainability: 0, performance: 0 },
       status: { open: 0, applied: 0, false_positive: 0, ignored: 0 },
       language: {} as Record<string, number>,
       scanStatus: { new: 0, persisting: 0, resolved: 0, regressed: 0 },
@@ -232,6 +227,12 @@ export const App: React.FC = () => {
           });
           setCurrentReport({ ...currentReport, findings: updatedFindings });
         }
+        // Auto-promote to Done when the issue is a real vulnerability (not AI-declared false positive).
+        // Persists through the existing /api/finding/.../status endpoint so the index view reflects Done
+        // on the next load.
+        if (finding.finding_type !== 'false_positive') {
+          await handleStatusChange(finding, 'applied');
+        }
         return true;
       } else {
         showToast(data.error || 'Failed to apply resolution fix', 'error');
@@ -312,6 +313,11 @@ export const App: React.FC = () => {
     } catch {
       showToast('Failed to update finding status', 'error');
     }
+  };
+
+  const handleMarkAsDone = (finding: Finding) => {
+    // Shortcut alias for the "Mark as Done" header button. Always sets status → 'applied'.
+    void handleStatusChange(finding, 'applied');
   };
 
   // Triggers selection logic from Overview Dashboard: Top Affected File Selection
@@ -476,9 +482,10 @@ export const App: React.FC = () => {
                     filterCounts={filterCounts}
                     availableLanguages={availableLanguages}
                     searchedAndFilteredFindings={searchedAndFilteredFindings}
-                    onApplyFix={handleApplyFix}
-                    onRollbackFix={handleRollbackFix}
-                    onStatusChange={handleStatusChange}
+        onApplyFix={handleApplyFix}
+        onRollbackFix={handleRollbackFix}
+        onStatusChange={handleStatusChange}
+        onMarkAsDone={handleMarkAsDone}
                     onReResolve={() => handleReResolve(currentReport)}
                     isReResolving={isReResolving}
                     onSelectFindingIndex={handleSelectFindingIndex}

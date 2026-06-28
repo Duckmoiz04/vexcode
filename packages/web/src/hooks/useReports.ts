@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { apiFetch } from '../utils/apiClient';
 import type { Project, ReportListItem, Report, PaginationInfo } from '../types';
+import { migrateLegacyHotspot } from '../utils/reportMigrations';
 
 const DEFAULT_PAGE_SIZE = 50;
 
@@ -63,7 +64,7 @@ export function useReports(showToast: (message: string, type?: 'success' | 'erro
         : `/api/report/${project}/${reportId}`;
       const res = await apiFetch(url);
       const data = await res.json() as Report & { _pagination?: PaginationInfo };
-      setCurrentReport(data ?? null);
+      setCurrentReport(migrateLegacyHotspot(data) ?? null);
       if (data?._pagination) {
         setPagination(data._pagination);
       } else {
